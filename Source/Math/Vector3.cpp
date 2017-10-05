@@ -85,8 +85,7 @@ float Vector3::magnitude() const
 
 Vector3 Vector3::normalized() const
 {
-    float len = magnitude();
-    return Vector3(x / len, y / len, z / len);
+    return *this / magnitude();
 }
 
 Vector3& Vector3::operator += (float scalar)
