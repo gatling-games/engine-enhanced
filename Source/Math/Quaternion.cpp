@@ -89,10 +89,12 @@ Quaternion operator + (const Quaternion &a, const Quaternion &b)
 
 Quaternion operator * (const Quaternion &a, const Quaternion &b)
 {
-    Vector3 va(a.x, a.y, a.z);
-    Vector3 vb(b.x, b.y, b.z);
+    float x = (a.x * b.w) + (a.w * b.x) + (a.y * b.z) - (a.z * b.y);
+    float y = (a.y * b.w) + (a.w * b.y) - (a.x * b.z) + (a.z * b.x);
+    float z = (a.z * b.w) + (a.w * b.z) + (a.x * b.y) - (a.y * b.x);
+    float w = (a.w * b.w) - (a.x * b.x) - (a.y * b.y) - (a.z - b.z);
 
-    return Quaternion(Vector3::cross(va, vb) + (b.w * va) + (a.w * vb), (a.w * b.w) - Vector3::dot(va, vb));
+    return Quaternion(x, y, z, w);
 }
 
 Vector3 operator * (const Quaternion &quat, const Vector3 &vec)
