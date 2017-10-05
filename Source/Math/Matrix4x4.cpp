@@ -96,7 +96,8 @@ Matrix4x4 Matrix4x4::translation(const Vector3 &t)
 
 Matrix4x4 Matrix4x4::rotation(const Quaternion &q)
 {
-    float s = 2.0f / q.norm();
+    // 2 / norm is always 2 for a unit quaternion.
+    float s = 2.0f;
 
     Matrix4x4 mat = Matrix4x4::identity();
     mat.set(0, 0, 1.0f - s * (q.y * q.y + q.z * q.z));
