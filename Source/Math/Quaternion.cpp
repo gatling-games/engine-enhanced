@@ -95,6 +95,18 @@ Quaternion operator * (const Quaternion &a, const Quaternion &b)
     return Quaternion(Vector3::cross(va, vb) + (b.w * va) + (a.w * vb), (a.w * b.w) - Vector3::dot(va, vb));
 }
 
+Vector3 operator * (const Quaternion &quat, const Vector3 &vec)
+{
+    // Convert the vector to a quaternion
+    Quaternion v(vec.x, vec.y, vec.z, 0.0f);
+
+    // Rotate via q * v * q^-1
+    Quaternion rotated = (quat * v * quat.inverse());
+
+    // Return the vector part of the rotated quaternion.
+    return Vector3(rotated.x, rotated.y, rotated.z);
+}
+
 std::ostream& operator << (std::ostream &os, const Quaternion &quat)
 {
     os << "( " << quat.x << ", " << quat.y << ", " << quat.z << ", " << quat.w << " )";

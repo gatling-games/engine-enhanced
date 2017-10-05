@@ -37,5 +37,7 @@ Quaternion operator * (float scalar, const Quaternion &quat);
 Quaternion operator + (const Quaternion &a, const Quaternion &b);
 Quaternion operator * (const Quaternion &a, const Quaternion &b);
 
+Vector3 operator * (const Quaternion &quat, const Vector3 &vec);
+
 std::ostream& operator << (std::ostream &os, const Quaternion &quat);
 std::istream& operator >> (std::istream &is, Quaternion &quat);
