@@ -76,7 +76,7 @@ Quaternion operator * (const Quaternion &a, const Quaternion &b)
     float x = (a.x * b.w) + (a.w * b.x) + (a.y * b.z) - (a.z * b.y);
     float y = (a.y * b.w) + (a.w * b.y) - (a.x * b.z) + (a.z * b.x);
     float z = (a.z * b.w) + (a.w * b.z) + (a.x * b.y) - (a.y * b.x);
-    float w = (a.w * b.w) - (a.x * b.x) - (a.y * b.y) - (a.z - b.z);
+    float w = (a.w * b.w) - (a.x * b.x) - (a.y * b.y) - (a.z * b.z);
 
     // Result is a unit quaternion, if a and b are.
     return Quaternion(x, y, z, w);
