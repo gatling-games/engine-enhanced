@@ -34,7 +34,6 @@ struct Quaternion
 Quaternion operator * (const Quaternion &quat, float scalar);
 Quaternion operator * (float scalar, const Quaternion &quat);
 
-Quaternion operator + (const Quaternion &a, const Quaternion &b);
 Quaternion operator * (const Quaternion &a, const Quaternion &b);
 
 Vector3 operator * (const Quaternion &quat, const Vector3 &vec);

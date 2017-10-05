@@ -82,11 +82,6 @@ Quaternion operator * (float scalar, const Quaternion &q)
     return q * scalar;
 }
 
-Quaternion operator + (const Quaternion &a, const Quaternion &b)
-{
-    return Quaternion(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
-}
-
 Quaternion operator * (const Quaternion &a, const Quaternion &b)
 {
     float x = (a.x * b.w) + (a.w * b.x) + (a.y * b.z) - (a.z * b.y);
