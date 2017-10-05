@@ -13,12 +13,9 @@ struct Quaternion
 
     Quaternion();
     Quaternion(float x, float y, float z, float w);
-    Quaternion(const Vector3 &v, float w);
-
+    
     static Quaternion identity();
 
-    float sqrNorm() const;
-    float norm() const;
     Quaternion conjugate() const;
     Quaternion inverse() const;
 
@@ -30,9 +27,6 @@ struct Quaternion
     static Quaternion euler(float x, float y, float z);
     static Quaternion euler(const Vector3 &euler);
 };
-
-Quaternion operator * (const Quaternion &quat, float scalar);
-Quaternion operator * (float scalar, const Quaternion &quat);
 
 Quaternion operator * (const Quaternion &a, const Quaternion &b);
 

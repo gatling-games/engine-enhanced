@@ -17,25 +17,9 @@ Quaternion::Quaternion(float x, float y, float z, float w)
 
 }
 
-Quaternion::Quaternion(const Vector3 &v, float w)
-    : x(v.x), y(v.y), z(v.z), w(w)
-{
-
-}
-
 Quaternion Quaternion::identity()
 {
     return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
-}
-
-float Quaternion::sqrNorm() const
-{
-    return (x * x) + (y * y) + (z * z) + (w * w);
-}
-
-float Quaternion::norm() const
-{
-    return sqrtf(sqrNorm());
 }
 
 Quaternion Quaternion::conjugate() const
@@ -45,16 +29,31 @@ Quaternion Quaternion::conjugate() const
 
 Quaternion Quaternion::inverse() const
 {
-    return (1.0f / sqrNorm()) * conjugate();
+    // All quaternions are unit quaternions, so inverse = conjugate.
+    return conjugate();
 }
 
 Quaternion Quaternion::rotation(float angle, const Vector3 &axis)
 {
-    float phi = (angle / 2.0f) * ((float)M_PI / 180.0f);
+    // Angle is in degrees
+    float angleRadians = angle * ((float)M_PI / 180.0f);
+
+    // Quaternions apply a rotation of 2xphi
+    float phi = angleRadians * 0.5f;
     float sinPhi = sinf(phi);
     float cosPhi = cosf(phi);
 
-    return Quaternion(sinPhi * axis, cosPhi);
+    // Normalize the axis vector to ensure the quaternion
+    // is a unit quaternion.
+    Vector3 normalizedAxis = axis.normalized();
+
+    // Construct the final quaternion.
+    // [sinPhi * v, cosPhi]
+    float x = sinPhi * normalizedAxis.x;
+    float y = sinPhi * normalizedAxis.y;
+    float z = sinPhi * normalizedAxis.z;
+    float w = cosPhi;
+    return Quaternion(x, y, z, w);
 }
 
 Quaternion Quaternion::euler(float x, float y, float z)
@@ -72,16 +71,6 @@ Quaternion Quaternion::euler(const Vector3 &euler)
     return Quaternion::euler(euler.x, euler.y, euler.z);
 }
 
-Quaternion operator * (const Quaternion &q, float scalar)
-{
-    return Quaternion(scalar * q.x, scalar * q.y, scalar * q.z, scalar * q.w);
-}
-
-Quaternion operator * (float scalar, const Quaternion &q)
-{
-    return q * scalar;
-}
-
 Quaternion operator * (const Quaternion &a, const Quaternion &b)
 {
     float x = (a.x * b.w) + (a.w * b.x) + (a.y * b.z) - (a.z * b.y);
@@ -89,6 +78,7 @@ Quaternion operator * (const Quaternion &a, const Quaternion &b)
     float z = (a.z * b.w) + (a.w * b.z) + (a.x * b.y) - (a.y * b.x);
     float w = (a.w * b.w) - (a.x * b.x) - (a.y * b.y) - (a.z - b.z);
 
+    // Result is a unit quaternion, if a and b are.
     return Quaternion(x, y, z, w);
 }
 
