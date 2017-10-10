@@ -9,5 +9,8 @@
     <ClCompile Include="Tests\Math\QuaternionTests.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Tests\Math\Vector3Tests.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
