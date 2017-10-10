@@ -103,7 +103,7 @@ Color& Color::operator /= (const Color &c)
 
 Color Color::lerpUnclamped(const Color &a, const Color &b, float t)
 {
-    return a + (a - b) * t;
+    return a + (b - a) * t;
 }
 
 Color Color::lerp(const Color &a, const Color &b, float t)
@@ -127,12 +127,17 @@ bool operator != (const Color &a, const Color &b)
 
 Color operator * (const Color &a, float scalar)
 {
-    return Color(a.r * scalar, a.g * scalar, a.b * scalar, a.a);
+    return Color(a.r * scalar, a.g * scalar, a.b * scalar, a.a * scalar);
+}
+
+Color operator * (float scalar, const Color &a)
+{
+    return Color(a.r * scalar, a.g * scalar, a.b * scalar, a.a * scalar);
 }
 
 Color operator / (const Color &a, float scalar)
 {
-    return Color(a.r / scalar, a.g / scalar, a.b / scalar, a.a);
+    return Color(a.r / scalar, a.g / scalar, a.b / scalar, a.a / scalar);
 }
 
 Color operator + (const Color &a, const Color &b)
