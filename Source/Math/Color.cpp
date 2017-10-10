@@ -114,6 +114,17 @@ Color Color::lerp(const Color &a, const Color &b, float t)
     return lerpUnclamped(a, b, t);
 }
 
+bool operator == (const Color &a, const Color &b)
+{
+    Color diff = a - b;
+    return (diff.r * diff.r) + (diff.g * diff.g) + (diff.b * diff.b) + (diff.a * diff.a) < 0.00001f;
+}
+
+bool operator != (const Color &a, const Color &b)
+{
+    return !(a == b);
+}
+
 Color operator * (const Color &a, float scalar)
 {
     return Color(a.r * scalar, a.g * scalar, a.b * scalar, a.a);

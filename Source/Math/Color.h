@@ -39,6 +39,9 @@ struct Color
     static Color lerp(const Color &a, const Color &b, float t);
 };
 
+bool operator == (const Color &a, const Color &b);
+bool operator != (const Color &a, const Color &b);
+
 Color operator * (const Color &c, float scalar);
 Color operator / (const Color &c, float scalar);
 Color operator + (const Color &a, const Color &b);
