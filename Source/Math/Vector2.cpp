@@ -138,8 +138,10 @@ float Vector2::angle(const Vector2 &a, const Vector2 &b)
     float aLength = a.magnitude();
     float bLength = b.magnitude();
     float dotProduct = dot(a, b);
+    float cosTheta = dotProduct / (aLength * bLength);
 
-    return acosf(dotProduct / (aLength * bLength));
+    // Clamp to between -1 and 1 in case of floating point error.
+    return acosf(std::max(-1.0f, std::min(cosTheta, 1.0f)));
 }
 
 Vector2 Vector2::lerpUnclamped(const Vector2 &a, const Vector2 &b, float t)

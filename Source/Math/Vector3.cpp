@@ -162,8 +162,10 @@ float Vector3::angle(const Vector3 &a, const Vector3 &b)
     float aLength = a.magnitude();
     float bLength = b.magnitude();
     float dotProduct = dot(a, b);
+    float cosTheta = dotProduct / (aLength * bLength);
 
-    return acosf(dotProduct / (aLength * bLength));
+    // Clamp to between -1 and 1 in case of floating point error.
+    return acosf(std::max(-1.0f, std::min(cosTheta, 1.0f)));
 }
 
 Vector3 Vector3::cross(const Vector3 &a, const Vector3 &b)
