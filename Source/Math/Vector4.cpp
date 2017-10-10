@@ -61,7 +61,7 @@ Point3 Vector4::asPoint() const
 
 Vector3 Vector4::asVector() const
 {
-    assert(w < 0.0000001f && w > 0.0000001f);
+    assert(w < 0.0000001f && w > -0.0000001f);
     return Vector3(x, y, z);
 }
 
