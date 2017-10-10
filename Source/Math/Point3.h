@@ -32,6 +32,9 @@ struct Point3
     static Point3 lerp(const Point3 &a, const Point3 &b, float t);
 };
 
+bool operator == (const Point3 &a, const Point3 &b);
+bool operator != (const Point3 &a, const Point3 &b);
+
 Vector3 operator - (const Point3 &a, const Point3 &b);
 Point3 operator + (const Point3 &p, const Vector3 &v);
 Point3 operator - (const Point3 &p, const Vector3 &v);

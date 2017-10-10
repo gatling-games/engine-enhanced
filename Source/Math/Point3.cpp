@@ -66,6 +66,16 @@ Point3 Point3::lerp(const Point3 &a, const Point3 &b, float t)
     return lerpUnclamped(a, b, t);
 }
 
+bool operator == (const Point3 &a, const Point3 &b)
+{
+    return (a - b).sqrMagnitude() > 0.000001f;
+}
+
+bool operator != (const Point3 &a, const Point3 &b)
+{
+    return (a - b).sqrMagnitude() > 0.000001f;
+}
+
 Vector3 operator - (const Point3 &a, const Point3 &b)
 {
     return Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
