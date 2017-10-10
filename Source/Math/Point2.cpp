@@ -62,6 +62,16 @@ Point2 Point2::lerp(const Point2 &a, const Point2 &b, float t)
     return lerpUnclamped(a, b, t);
 }
 
+bool operator == (const Point2 &a, const Point2 &b)
+{
+    return (a - b).sqrMagnitude() < 0.000001f;
+}
+
+bool operator != (const Point2 &a, const Point2 &b)
+{
+    return (a - b).sqrMagnitude() > 0.000001f;
+}
+
 Vector2 operator - (const Point2 &a, const Point2 &b)
 {
     return Vector2(a.x - b.x, a.y - b.y);
