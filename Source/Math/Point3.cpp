@@ -68,7 +68,7 @@ Point3 Point3::lerp(const Point3 &a, const Point3 &b, float t)
 
 bool operator == (const Point3 &a, const Point3 &b)
 {
-    return (a - b).sqrMagnitude() > 0.000001f;
+    return (a - b).sqrMagnitude() < 0.000001f;
 }
 
 bool operator != (const Point3 &a, const Point3 &b)
@@ -108,7 +108,7 @@ Point3 operator / (const Point3 &p, float scalar)
 
 Point3 operator / (float scalar, const Point3 &p)
 {
-    return Point3(p.x / scalar, p.y / scalar, p.z / scalar);
+    return Point3(scalar / p.x, scalar / p.y, scalar / p.z);
 }
 
 std::ostream& operator << (std::ostream &os, const Point3 &p)

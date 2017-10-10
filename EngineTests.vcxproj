@@ -96,6 +96,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Math\Point3Tests.cpp" />
     <ClCompile Include="Tests\Math\QuaternionTests.cpp" />
     <ClCompile Include="Tests\Math\Vector3Tests.cpp" />
   </ItemGroup>
