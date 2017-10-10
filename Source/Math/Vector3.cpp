@@ -188,6 +188,16 @@ Vector3 Vector3::lerp(const Vector3 &a, const Vector3 &b, float t)
     return lerpUnclamped(a, b, t);
 }
 
+bool operator == (const Vector3 &a, const Vector3 &b)
+{
+	return (a - b).sqrMagnitude() < 0.000001f;
+}
+
+bool operator != (const Vector3 &a, const Vector3 &b)
+{
+	return (a - b).sqrMagnitude() > 0.000001f;
+}
+
 Vector3 operator + (const Vector3 &a, const Vector3 &b)
 {
     return Vector3(a.x + b.x, a.y + b.y, a.z + b.z);

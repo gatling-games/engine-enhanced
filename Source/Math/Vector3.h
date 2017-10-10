@@ -55,6 +55,9 @@ struct Vector3
     static Vector3 lerp(const Vector3 &a, const Vector3 &b, float t);
 };
 
+bool operator == (const Vector3 &a, const Vector3 &b);
+bool operator != (const Vector3 &a, const Vector3 &b);
+
 Vector3 operator + (const Vector3 &a, const Vector3 &b);
 Vector3 operator - (const Vector3 &a, const Vector3 &b);
 Vector3 operator * (const Vector3 &a, const Vector3 &b);
