@@ -18,5 +18,8 @@
     <ClCompile Include="Tests\Math\Vector2Tests.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Tests\Math\Point2Tests.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

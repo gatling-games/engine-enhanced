@@ -96,6 +96,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Tests\Math\Point2Tests.cpp" />
     <ClCompile Include="Tests\Math\Point3Tests.cpp" />
     <ClCompile Include="Tests\Math\QuaternionTests.cpp" />
     <ClCompile Include="Tests\Math\Vector2Tests.cpp" />
