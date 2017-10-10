@@ -104,7 +104,7 @@ Point2 operator / (const Point2 &p, float scalar)
 
 Point2 operator / (float scalar, const Point2 &p)
 {
-    return Point2(p.x / scalar, p.y / scalar);
+    return Point2(scalar / p.x, scalar / p.y);
 }
 
 std::ostream& operator << (std::ostream &os, const Point2 &p)
