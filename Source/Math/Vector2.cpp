@@ -20,7 +20,7 @@ Vector2::Vector2(float x, float y)
 Vector2::Vector2(const Point2 &p)
     : x(p.x), y(p.y)
 {
-       
+
 }
 
 Vector2 Vector2::zero()
@@ -153,6 +153,16 @@ Vector2 Vector2::lerp(const Vector2 &a, const Vector2 &b, float t)
     if (t > 1.0f) t = 1.0f;
 
     return lerpUnclamped(a, b, t);
+}
+
+bool operator == (const Vector2 &a, const Vector2 &b)
+{
+    return (a - b).sqrMagnitude() < 0.000001f;
+}
+
+bool operator != (const Vector2 &a, const Vector2 &b)
+{
+    return (a - b).sqrMagnitude() > 0.000001f;
 }
 
 Vector2 operator + (const Vector2 &a, const Vector2 &b)
