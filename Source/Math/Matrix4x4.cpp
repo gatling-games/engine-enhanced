@@ -77,7 +77,7 @@ Matrix4x4 Matrix4x4::transpose() const
     m.elements[11] = elements[14];
     m.elements[12] = elements[3];
     m.elements[13] = elements[7];
-    m.elements[15] = elements[11];
+    m.elements[14] = elements[11];
     m.elements[15] = elements[15];
     return m;
 }
