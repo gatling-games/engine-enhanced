@@ -1,5 +1,7 @@
 #include "Matrix4x4.h"
 
+#include <assert.h>
+
 #define _USE_MATH_DEFINES  // M_PI
 #include <math.h>
 
@@ -18,11 +20,15 @@ Matrix4x4::Matrix4x4()
 
 float Matrix4x4::get(int row, int column) const
 {
+	assert(row >= 0 && row < 4);
+	assert(column >= 0 && column < 4);
     return elements[(column * 4) + row];
 }
 
 void Matrix4x4::set(int row, int column, float value)
 {
+	assert(row >= 0 && row < 4);
+	assert(column >= 0 && column < 4);
     elements[(column * 4) + row] = value;
 }
 
@@ -33,6 +39,7 @@ void Matrix4x4::setRow(int row, const float *values)
 
 void Matrix4x4::setRow(int row, float a, float b, float c, float d)
 {
+	assert(row >= 0 && row < 4);
     elements[row] = a;
     elements[row + 4] = b;
     elements[row + 8] = c;
@@ -46,6 +53,7 @@ void Matrix4x4::setCol(int col, const float *values)
 
 void Matrix4x4::setCol(int col, float a, float b, float c, float d)
 {
+	assert(col >= 0 && col < 4);
     elements[col * 4] = a;
     elements[col * 4 + 1] = b;
     elements[col * 4 + 2] = c;
