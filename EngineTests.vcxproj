@@ -95,6 +95,16 @@
       <Project>{9a420477-e72c-45de-8c56-669b2760829a}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Matrix4x4Tests.cpp" />
+    <ClCompile Include="Tests\Math\ColorTests.cpp" />
+    <ClCompile Include="Tests\Math\Point2Tests.cpp" />
+    <ClCompile Include="Tests\Math\Point3Tests.cpp" />
+    <ClCompile Include="Tests\Math\QuaternionTests.cpp" />
+    <ClCompile Include="Tests\Math\Vector2Tests.cpp" />
+    <ClCompile Include="Tests\Math\Vector3Tests.cpp" />
+    <ClCompile Include="Tests\Math\Vector4Tests.cpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
