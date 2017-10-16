@@ -11,8 +11,23 @@ DebugGUI::DebugGUI(GLFWwindow* window, bool initialize)
 
 	ImGui_ImplGlfwGL3_Init(window, true);
 
+	// Adjust the ui scale based on monitor DPI
+	// This allows the ui to work properly with hidpi monitors.
+	// Adapted from http://www.glfw.org/docs/latest/monitor_guide.html
+	int monitorCount;
+	GLFWmonitor** monitors = glfwGetMonitors(&monitorCount);
+	if (monitorCount > 0)
+	{
+		const GLFWvidmode* mode = glfwGetVideoMode(monitors[0]);
 
-	ImGui::GetIO().FontGlobalScale = 2.0f;
+		int widthMM, heightMM;
+		glfwGetMonitorPhysicalSize(monitors[0], &widthMM, &heightMM);
+		const float dpi = mode->width / (widthMM / 25.4f);
+
+		// Set to 1.0 scaling at 110DPI (dont go below 1.0)
+		// Aka 2.0 scaling on a 15" macbook pro retina
+		ImGui::GetIO().FontGlobalScale = (dpi < 110.0f ? 1.0f : dpi / 110.0f);
+	}
 }
 
 DebugGUI::~DebugGUI()
