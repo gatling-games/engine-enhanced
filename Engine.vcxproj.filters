@@ -10,6 +10,12 @@
     <Filter Include="Vendor\imgui">
       <UniqueIdentifier>{d1aebb69-15b3-4ab3-9601-daecc36a4358}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Debug">
+      <UniqueIdentifier>{8392399e-168c-46cb-bab5-fdc35ca2f2fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Vendor\gl3w">
+      <UniqueIdentifier>{fa0d5371-fe36-48fa-8f5c-fcc04632c92c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -54,6 +60,12 @@
     <ClInclude Include="Vendor\imgui\stb_truetype.h">
       <Filter>Vendor\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Debug\DebugGUI.h">
+      <Filter>Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.h">
+      <Filter>Vendor\imgui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -84,6 +96,18 @@
       <Filter>Vendor\imgui</Filter>
     </ClCompile>
     <ClCompile Include="Vendor\imgui\imgui_draw.cpp">
+      <Filter>Vendor\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Debug\DebugGUI.cpp">
+      <Filter>Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.cpp">
+      <Filter>Vendor\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendor\gl3w\GL\gl3w.c">
+      <Filter>Vendor\gl3w</Filter>
+    </ClCompile>
+    <ClCompile Include="Vendor\imgui\imgui_demo.cpp">
       <Filter>Vendor\imgui</Filter>
     </ClCompile>
   </ItemGroup>
