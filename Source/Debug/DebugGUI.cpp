@@ -8,6 +8,7 @@
 DebugGUI::DebugGUI(GLFWwindow* window, bool initialize)
 {
 	window_ = window;
+	visible_ = true;
 
 	ImGui_ImplGlfwGL3_Init(window, true);
 
@@ -35,14 +36,39 @@ DebugGUI::~DebugGUI()
 	ImGui_ImplGlfwGL3_Shutdown();
 }
 
+bool DebugGUI::visible() const
+{
+	return visible_;
+}
+
+void DebugGUI::show()
+{
+	visible_ = true;
+}
+
+void DebugGUI::hide()
+{
+	visible_ = false;
+}
+
 void DebugGUI::frameStart()
 {
+	if (!visible_)
+	{
+		return;
+	}
+
 	ImGui_ImplGlfwGL3_NewFrame();
 	ImGui::ShowTestWindow();
 }
 
 void DebugGUI::render()
 {
+	if (!visible_)
+	{
+		return;
+	}
+
 	int display_w, display_h;
 	glfwGetFramebufferSize(window_, &display_w, &display_h);
 	glViewport(0, 0, display_w, display_h);
