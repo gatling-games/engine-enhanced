@@ -16,6 +16,12 @@
     <Filter Include="Vendor\gl3w">
       <UniqueIdentifier>{fa0d5371-fe36-48fa-8f5c-fcc04632c92c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Importers">
+      <UniqueIdentifier>{0420b16a-050e-4c54-845e-a4914f11bd8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{8e8d6dc4-1da7-40c5-826b-49601ffb9fbc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -66,6 +72,19 @@
     <ClInclude Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.h">
       <Filter>Vendor\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ResourceManager.h" />
+    <ClInclude Include="Source\Importers\TextureImporter.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Renderer\Texture.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Renderer\Mesh.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Importers\MeshImporter.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -109,6 +128,18 @@
     </ClCompile>
     <ClCompile Include="Vendor\imgui\imgui_demo.cpp">
       <Filter>Vendor\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Importers\TextureImporter.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Texture.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Mesh.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Importers\MeshImporter.cpp">
+      <Filter>Importers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

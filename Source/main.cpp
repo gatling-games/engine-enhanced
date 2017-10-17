@@ -11,6 +11,7 @@
 #endif
 
 #include "Debug\DebugGUI.h"
+#include "ResourceManager.h"
 
 GLFWwindow* window;
 
@@ -35,6 +36,7 @@ int main(int argc, const char* argv[])
 
 	// Setup ImGui binding
 	DebugGUI* debugGUI = new DebugGUI(window, true);
+	ResourceManager* resourceManager = new ResourceManager();
 
 	// Run game loop while window not closed
 	while (!glfwWindowShouldClose(window))

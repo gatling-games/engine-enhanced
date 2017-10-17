@@ -1,27 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Core">
-      <UniqueIdentifier>{d6fe76e1-2e06-44c9-97cb-2cf6ec901ab3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Importers">
-      <UniqueIdentifier>{f9eeb9a7-1b80-4e23-ae2d-9fc8e1c57395}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Pipeline\Importers\TextureImporter.h">
-      <Filter>Importers</Filter>
-    </ClInclude>
-    <ClInclude Include="Pipeline\Core\ResourceImporter.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Pipeline\Importers\TextureImporter.cpp">
-      <Filter>Importers</Filter>
-    </ClCompile>
-    <ClCompile Include="Pipeline\Core\ResourceImporter.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
+    <ClCompile Include="Pipeline\main.cpp" />
   </ItemGroup>
 </Project>
