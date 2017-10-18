@@ -1,4 +1,4 @@
-# Ignore the imbuing config file placed in the project root
+# Ignore the imgui config file placed in the project root
 imgui.ini
 
 ## Ignore Visual Studio temporary files, build results, and
