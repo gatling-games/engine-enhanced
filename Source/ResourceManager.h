@@ -1,29 +1,23 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 typedef uint64_t ResourceID;
-
-class File
-{
-public:
-	int sizeBytes();
-	void read(uint8_t* dst, int bytes);
-};
 
 template <class SettingsT>
 class Resource
 {
 public:
-	virtual bool Load(const SettingsT* settings, File &file) = 0;
+	virtual bool Load(const SettingsT* settings, std::ifstream &file) = 0;
 	virtual void Unload() = 0;
 };
 
-template <class SettingsT>
 class ResourceImporter
 {
 public:
-	virtual bool import(SettingsT* settings, File &sourceFile, File &outputFile) = 0;
+	virtual bool canHandleFileType(const std::string &fileExtension) const = 0;
+	virtual bool importFile(const std::string &sourceFile, const std::string &outputFile) const = 0;
 };
 
 class ResourceManager

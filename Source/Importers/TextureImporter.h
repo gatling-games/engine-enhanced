@@ -2,10 +2,9 @@
 
 #include "ResourceManager.h"
 
-struct TextureSettings;
-
-class TextureImporter : public ResourceImporter<TextureSettings>
+class TextureImporter : public ResourceImporter
 {
 public:
-	virtual bool import(TextureSettings* settings, File &sourceFile, File &processedFile) override;
+	bool canHandleFileType(const std::string &fileExtension) const;
+	bool importFile(const std::string &sourceFile, const std::string &outputFile) const override;
 };

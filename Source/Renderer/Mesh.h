@@ -17,6 +17,6 @@ public:
 	Mesh();
 	~Mesh();
 
-	bool load(const MeshSettings* settings, File &file);
+	bool load(const MeshSettings* settings, std::ifstream &file);
 	void unload();
 };

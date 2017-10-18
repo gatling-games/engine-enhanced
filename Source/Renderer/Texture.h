@@ -55,7 +55,7 @@ public:
 	Texture();
 
 protected:
-	bool Load(const TextureSettings* settings, File &file) override;
+	bool Load(const TextureSettings* settings, std::ifstream &file) override;
 	void Unload() override;
 
 private:

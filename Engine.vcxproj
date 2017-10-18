@@ -47,11 +47,17 @@
     <ClCompile Include="Source\Math\Vector4.cpp" />
     <ClCompile Include="Source\Renderer\Mesh.cpp" />
     <ClCompile Include="Source\Renderer\Texture.cpp" />
+    <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Vendor\gl3w\GL\gl3w.c" />
     <ClCompile Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="Vendor\imgui\imgui.cpp" />
     <ClCompile Include="Vendor\imgui\imgui_demo.cpp" />
     <ClCompile Include="Vendor\imgui\imgui_draw.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Vendor\crunch\crnlib\crnlib.2008.vcxproj">
+      <Project>{cf2e70e8-7133-4d96-92c7-68bb406c0664}</Project>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

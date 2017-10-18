@@ -141,5 +141,6 @@
     <ClCompile Include="Source\Importers\MeshImporter.cpp">
       <Filter>Importers</Filter>
     </ClCompile>
+    <ClCompile Include="Source\ResourceManager.cpp" />
   </ItemGroup>
 </Project>
