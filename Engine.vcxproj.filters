@@ -4,6 +4,9 @@
     <Filter Include="Math">
       <UniqueIdentifier>{86fcb781-8cb0-4a73-9817-6cf4c488e4cc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{cb3e0d0d-72df-422f-8106-3c5a1dc2eef1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -30,6 +33,10 @@
     <ClInclude Include="Source\Math\Color.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Utils\BitWriter.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utils\BitReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -56,5 +63,9 @@
     <ClCompile Include="Source\Math\Matrix4x4.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Utils\BitWriter.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\BitReader.cpp" />
   </ItemGroup>
 </Project>

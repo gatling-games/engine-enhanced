@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Utils\BitReader.h" />
+    <ClInclude Include="Source\Utils\BitWriter.h" />
     <ClInclude Include="Source\Math\Color.h" />
     <ClInclude Include="Source\Math\Matrix4x4.h" />
     <ClInclude Include="Source\Math\Point2.h" />
@@ -21,6 +23,8 @@
     <ClInclude Include="Source\Math\Vector4.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Utils\BitReader.cpp" />
+    <ClCompile Include="Source\Utils\BitWriter.cpp" />
     <ClCompile Include="Source\Math\Color.cpp" />
     <ClCompile Include="Source\Math\Matrix4x4.cpp" />
     <ClCompile Include="Source\Math\Point2.cpp" />
