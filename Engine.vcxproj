@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Debug\DebugGUI.h" />
+    <ClInclude Include="Source\InputManager.h" />
     <ClInclude Include="Source\Math\Color.h" />
     <ClInclude Include="Source\Math\Matrix4x4.h" />
     <ClInclude Include="Source\Math\Point2.h" />
@@ -20,6 +21,7 @@
     <ClInclude Include="Source\Math\Vector2.h" />
     <ClInclude Include="Source\Math\Vector3.h" />
     <ClInclude Include="Source\Math\Vector4.h" />
+    <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.h" />
     <ClInclude Include="Vendor\imgui\imconfig.h" />
     <ClInclude Include="Vendor\imgui\imgui.h" />
@@ -30,6 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Debug\DebugGUI.cpp" />
+    <ClCompile Include="Source\InputManager.cpp" />
     <ClCompile Include="Source\Math\Color.cpp" />
     <ClCompile Include="Source\Math\Matrix4x4.cpp" />
     <ClCompile Include="Source\Math\Point2.cpp" />
@@ -38,6 +41,7 @@
     <ClCompile Include="Source\Math\Vector2.cpp" />
     <ClCompile Include="Source\Math\Vector3.cpp" />
     <ClCompile Include="Source\Math\Vector4.cpp" />
+    <ClCompile Include="Source\Utils\Clock.cpp" />
     <ClCompile Include="Vendor\gl3w\GL\gl3w.c" />
     <ClCompile Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="Vendor\imgui\imgui.cpp" />
