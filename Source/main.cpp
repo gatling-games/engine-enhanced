@@ -11,8 +11,8 @@
 #endif
 
 #include "Debug\DebugGUI.h"
-
-GLFWwindow* window;
+#include "InputManager.h"
+#include "Utils\Clock.h"
 
 int main(int argc, const char* argv[])
 {
@@ -28,22 +28,30 @@ int main(int argc, const char* argv[])
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create a window and its OpenGL context - exit with failure if window not initialised
-	window = glfwCreateWindow(1280, 720, "hello gaem", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "hello gaem", NULL, NULL);
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 	gl3wInit();
 
-	// Setup ImGui binding
+    // Create manager classes
+    Clock* clock = new Clock();
 	DebugGUI* debugGUI = new DebugGUI(window, true);
+    InputManager* inputManager = new InputManager(window);
 
 	// Run game loop while window not closed
 	while (!glfwWindowShouldClose(window))
 	{
+        // Poll for GLFW events
         glfwPollEvents();
+
+        // Run frame start methods
 		debugGUI->frameStart();
+        clock->frameStart();
+        inputManager->frameStart(clock);
 
         glClear(GL_COLOR_BUFFER_BIT);
 
+        clock->drawDebugMenu();
 		debugGUI->render();
 
 		// Swap front & back framebuffers
@@ -51,6 +59,8 @@ int main(int argc, const char* argv[])
 	}
 
 	delete debugGUI;
+    delete inputManager;
+    delete clock;
 
 	glfwTerminate();
 	return 0;

@@ -66,6 +66,8 @@
     <ClInclude Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.h">
       <Filter>Vendor\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="Source\InputManager.h" />
+    <ClInclude Include="Source\Utils\Clock.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -110,5 +112,7 @@
     <ClCompile Include="Vendor\imgui\imgui_demo.cpp">
       <Filter>Vendor\imgui</Filter>
     </ClCompile>
+    <ClCompile Include="Source\InputManager.cpp" />
+    <ClCompile Include="Source\Utils\Clock.cpp" />
   </ItemGroup>
 </Project>
