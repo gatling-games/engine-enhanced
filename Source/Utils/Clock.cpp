@@ -3,7 +3,6 @@
 #include <Windows.h>
 #include <imgui.h>
 
-// Clockstructor
 Clock::Clock()
 {
     // Initialise variables
@@ -82,6 +81,17 @@ void Clock::frameStart()
     // Update time values
     realTime_ += realDeltaTime_;
     time_ += deltaTime_;
+}
+
+void Clock::drawDebugMenu()
+{
+    static bool open = false;
+
+    ImGui::CollapsingHeader("Clock", &open);
+    ImGui::Text("Time: %g", time_);
+    ImGui::Text("Real Time: %g", realTime_);
+    ImGui::Text("Delta Time: %g", deltaTime_);
+    ImGui::Text("Real Delta Time: %g", realDeltaTime_);
 }
 
 // Return current time stamp using WINAPI

@@ -51,6 +51,7 @@ int main(int argc, const char* argv[])
 
         glClear(GL_COLOR_BUFFER_BIT);
 
+        clock->drawDebugMenu();
 		debugGUI->render();
 
 		// Swap front & back framebuffers

@@ -5,7 +5,6 @@
 class Clock
 {
 public:
-    // Clockstructor
     Clock();
     
     // Return and set game pause state
@@ -26,6 +25,9 @@ public:
 
     //Called on every frame
     void frameStart();
+
+    // Draws the clock section of the debug menu
+    void drawDebugMenu();
 
 private:
     // Paused flag
