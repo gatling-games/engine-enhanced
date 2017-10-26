@@ -44,9 +44,9 @@ namespace UtilTests
 
             uint32_t* buffer = b.getBuffer();
             BitReader r = BitReader(buffer);
-            int t1 = r.readBits(3);
-            int t2 = r.readBits(10);
-            int t3 = r.readBits(24);
+            int t1 = (int)r.readBits(3);
+            int t2 = (int)r.readBits(10);
+            int t3 = (int)r.readBits(24);
             Assert::AreEqual(4, t1);
             Assert::AreEqual(3, t2);
             Assert::AreEqual(5, t3);
