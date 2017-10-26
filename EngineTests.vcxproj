@@ -96,7 +96,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Matrix4x4Tests.cpp" />
+    <ClCompile Include="Tests\Utils\BitReaderTests.cpp" />
+    <ClCompile Include="Tests\Math\Matrix4x4Tests.cpp" />
     <ClCompile Include="Tests\Math\ColorTests.cpp" />
     <ClCompile Include="Tests\Math\Point2Tests.cpp" />
     <ClCompile Include="Tests\Math\Point3Tests.cpp" />
@@ -104,6 +105,7 @@
     <ClCompile Include="Tests\Math\Vector2Tests.cpp" />
     <ClCompile Include="Tests\Math\Vector3Tests.cpp" />
     <ClCompile Include="Tests\Math\Vector4Tests.cpp" />
+    <ClCompile Include="Tests\Utils\BitWriterTests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

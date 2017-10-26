@@ -16,6 +16,9 @@
     <Filter Include="Vendor\gl3w">
       <UniqueIdentifier>{fa0d5371-fe36-48fa-8f5c-fcc04632c92c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{cb3e0d0d-72df-422f-8106-3c5a1dc2eef1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -68,6 +71,12 @@
     </ClInclude>
     <ClInclude Include="Source\InputManager.h" />
     <ClInclude Include="Source\Utils\Clock.h" />
+    <ClInclude Include="Source\Utils\BitWriter.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utils\BitReader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -114,5 +123,11 @@
     </ClCompile>
     <ClCompile Include="Source\InputManager.cpp" />
     <ClCompile Include="Source\Utils\Clock.cpp" />
+    <ClCompile Include="Source\Utils\BitWriter.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\BitReader.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
