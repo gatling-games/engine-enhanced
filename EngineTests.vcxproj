@@ -96,6 +96,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Tests\Utils\BitReaderTests.cpp" />
     <ClCompile Include="Matrix4x4Tests.cpp" />
     <ClCompile Include="Tests\Math\ColorTests.cpp" />
     <ClCompile Include="Tests\Math\Point2Tests.cpp" />

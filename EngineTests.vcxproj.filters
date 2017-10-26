@@ -36,5 +36,8 @@
     <ClCompile Include="Tests\Utils\BitWriterTests.cpp">
       <Filter>Util</Filter>
     </ClCompile>
+    <ClCompile Include="Tests\Utils\BitReaderTests.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

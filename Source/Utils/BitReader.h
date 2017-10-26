@@ -5,7 +5,7 @@
 class BitReader
 {
 public:
-	BitReader(uint32_t* buffer);
+	BitReader(uint32_t* inputBuffer);
 	~BitReader();
 
 	void flush();
@@ -19,11 +19,13 @@ public:
 
 private:
 	void ensureCapacity(size_t requiredCapacity);
-	void checkOverflow();
+	void readWord();
 
-	size_t capacityWords_;
 	uint64_t scratch_;
 	int scratchBits_;
+	int totalBits_;
+	
+	int numBitsRead_;
 	int wordIndex_;
 	uint32_t* buffer_;
 };

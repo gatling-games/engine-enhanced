@@ -36,7 +36,9 @@
     <ClInclude Include="Source\Utils\BitWriter.h">
       <Filter>Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Utils\BitReader.h" />
+    <ClInclude Include="Source\Utils\BitReader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -66,6 +68,8 @@
     <ClCompile Include="Source\Utils\BitWriter.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Utils\BitReader.cpp" />
+    <ClCompile Include="Source\Utils\BitReader.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

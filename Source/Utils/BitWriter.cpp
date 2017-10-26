@@ -36,7 +36,7 @@ void BitWriter::ensureCapacity(size_t requiredCapacity)
 	// Check to see if buffer is large enough
     if (capacityWords_ < requiredCapacity)
     {
-		//double array capacity
+		//double array capacity until sufficient
         size_t newCapacity = capacityWords_;
 		do
 		{
@@ -56,6 +56,7 @@ void BitWriter::checkOverflow()
 {
 	if (scratchBits_ >= 32)
 	{
+		// Adds 32 bits of scratch to buffer
 		ensureCapacity(wordIndex_ + 1);
 		buffer_[wordIndex_] = (uint32_t)scratch_;
 		wordIndex_++;
@@ -67,7 +68,8 @@ void BitWriter::checkOverflow()
 void BitWriter::flush()
 {
 	if (scratchBits_ > 0)
-	{
+	{	
+		// Clear all remaining bits to buffer
 		ensureCapacity(wordIndex_ + 1);
 		buffer_[wordIndex_] = (uint32_t)scratch_;
 		wordIndex_++;

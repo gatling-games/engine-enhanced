@@ -33,6 +33,15 @@ namespace UtilTests
 			Assert::AreEqual(7u, buffer[1]);
 		}
 
+		TEST_METHOD(CheckSingleWrite)
+		{
+			BitWriter b;
+			b.writeByte(4);
+			uint32_t* buffer = b.getBuffer();
+			Assert::AreEqual(4, b.sizeBytes());
+			Assert::AreEqual(4u, buffer[0]);
+		}
+
 		TEST_METHOD(CheckWriteBits)
 		{
 			BitWriter b;
