@@ -8,17 +8,12 @@ public:
     BitReader(uint32_t* inputBuffer);
     ~BitReader();
 
-    void flush();
-
     size_t readBits(int bitCount);
     uint8_t readByte();
     uint16_t readShort();
     uint32_t readInt();
 
-    uint32_t* getBuffer();
-
 private:
-    void ensureCapacity(size_t requiredCapacity);
     void readWord();
 
     uint64_t scratch_;
