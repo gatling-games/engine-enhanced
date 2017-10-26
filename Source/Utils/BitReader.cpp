@@ -25,14 +25,13 @@ void BitReader::readWord()
 
 size_t BitReader::readBits(int bitcount)
 {
-    if (scratchBits_ - bitcount <= 0)
+    if (scratchBits_ - bitcount < 0)
     {
         readWord();
     }
-    size_t bits = 0;
-    uint32_t mask = -1;
-    mask = ~(mask << bitcount);
-    bits = (scratch_ & mask);
+
+    uint32_t mask = ~(-1 << bitcount);
+    size_t bits = (scratch_ & mask);
     scratch_ >>= bitcount;
     scratchBits_ -= bitcount;
     return bits;
@@ -40,15 +39,15 @@ size_t BitReader::readBits(int bitcount)
 
 uint8_t BitReader::readByte()
 {
-    return readBits(8);
+    return (uint8_t)readBits(8);
 }
 
 uint16_t BitReader::readShort()
 {
-    return readBits(16);
+    return (uint16_t)readBits(16);
 }
 
 uint32_t BitReader::readInt()
 {
-    return readBits(32);
+    return (uint32_t)readBits(32);
 }
