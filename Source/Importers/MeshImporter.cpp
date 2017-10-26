@@ -11,15 +11,15 @@
 
 bool MeshImporter::canHandleFileType(const std::string& fileExtension) const
 {
-	// Support .obj files only.
-	return (fileExtension == ".obj");
+    // Support .obj files only.
+    return (fileExtension == ".obj");
 }
 
 bool MeshImporter::importFile(const std::string& sourceFile, const std::string& outputFile) const
 {
     struct objVertex
     {
-        objVertex() 
+        objVertex()
         {
             position = 0;
             texCoord = 0;
@@ -36,12 +36,12 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
     std::vector<Point2> texCoords;
     std::vector<objVertex> vertices;
 
+    // Flag so we only count number of vertices in face once
     bool countFlag = false;
-    size_t vertexCount;
+    size_t verticesPerFace;
 
     // Open source mesh file as binary to avoid position discrepancy
     std::ifstream file(sourceFile.c_str(), std::ios::binary);
-
     std::cout << "File: " << sourceFile << std::endl;
 
     // Loop through every line in file, looking for vertex attributes
@@ -64,18 +64,21 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
             Point3 v;
             file >> v;
             positions.push_back(v);
+            //vertexCount += 1;
         }
         else if (type == "vn")
         {
             Vector3 vn;
             file >> vn;
             normals.push_back(vn);
+            //normalCount += 1;
         }
         else if (type == "vt")
         {
             Point2 vt;
             file >> vt;
             texCoords.push_back(vt);
+            //texCoordCount += 1;
         }
         else if (type == "f")
         {
@@ -90,9 +93,9 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
 
                 // Get line of file and count number of vertices per face
                 std::getline(file, line);
-                vertexCount = std::count(line.begin(), line.end(), ' ');
+                verticesPerFace = std::count(line.begin(), line.end(), ' ');
 
-                if (vertexCount == 4)
+                if (verticesPerFace == 4)
                 {
                     std::cout << "WARNING: Importing quads" << std::endl;
                 }
@@ -104,7 +107,7 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
             }
 
             //Process accordingly based on number of vertices per face
-            if (vertexCount == 3)
+            if (verticesPerFace == 3)
             {
                 // Create array to hold line data
                 std::string v[3];
@@ -144,7 +147,7 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
                     vertices.push_back(f);
                 }
             }
-            else if (vertexCount == 4)
+            else if (verticesPerFace == 4)
             {
                 // Create array to hold line data
                 std::string v[4];
@@ -181,23 +184,33 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
                     f.normal = std::stoi(token);
                     v[i].erase(0, position + delimiter.length());
 
-                    // push data onto vector
+                    // Push data onto vector
                     vertices.push_back(f);
                 }
             }
         }
     }
 
-    // STEP 1 DONE
-    // We now have a list of all vertex attributes,
-    // and a list of how they are combined
+    // Record face vertex vector size
+    int size = vertices.size();
 
-    // STEP 2
-    // Make 3 new lists for the final vertex positions, texcoords and normals
-    // make them the same size as the objvertex list
-    // Assign 
-    
-	return true;
+    // Create arrays to hold finalised vertex data using size
+    unsigned short* vertexIndices = new unsigned short[size];
+    Point3* vertexList = new Point3[size];
+    Vector3* normalList = new Vector3[size];
+    Point2* texCoordList = new Point2[size];
+
+    // Count through data indices and assign to arrays in desired order
+    for (int i = 0; i < size; i++)
+    {
+        vertexIndices[i] = (unsigned short)vertices[i].position;
+
+        vertexList[i] = positions[vertices[i].position - 1];
+        normalList[i] = normals[vertices[i].normal - 1];
+        texCoordList[i] = texCoords[vertices[i].texCoord - 1];
+    }
+
+    // Don't forget to delete arrays!
+
+    return true;
 }
-//If normals present, require same number as vertices
-//If texcoords present, need same number as vertices
