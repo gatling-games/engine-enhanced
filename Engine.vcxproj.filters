@@ -70,11 +70,13 @@
       <Filter>Vendor\imgui</Filter>
     </ClInclude>
     <ClInclude Include="Source\InputManager.h" />
-    <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Source\Utils\BitWriter.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\Utils\BitReader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utils\Clock.h">
       <Filter>Utils</Filter>
     </ClInclude>
   </ItemGroup>
@@ -122,11 +124,13 @@
       <Filter>Vendor\imgui</Filter>
     </ClCompile>
     <ClCompile Include="Source\InputManager.cpp" />
-    <ClCompile Include="Source\Utils\Clock.cpp" />
     <ClCompile Include="Source\Utils\BitWriter.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\Utils\BitReader.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\Clock.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
   </ItemGroup>

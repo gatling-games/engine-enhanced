@@ -5,12 +5,12 @@
 
 #include <GLFW\glfw3.h>
 
-DebugGUI::DebugGUI(GLFWwindow* window, bool initialize)
+DebugGUI::DebugGUI(GLFWwindow* window, bool setupGLFWCallbacks)
 {
 	window_ = window;
 	visible_ = true;
 
-	ImGui_ImplGlfwGL3_Init(window, true);
+	ImGui_ImplGlfwGL3_Init(window, setupGLFWCallbacks);
 
 	// Adjust the ui scale based on monitor DPI
 	// This allows the ui to work properly with hidpi monitors.
