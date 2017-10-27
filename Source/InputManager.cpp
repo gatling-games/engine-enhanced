@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 
 #include <algorithm>
+#include <imgui.h>
 
 #include "Utils\Clock.h"
 
@@ -44,6 +45,11 @@ void InputManager::frameStart(const Clock* clock)
     // Store array of previously pressed joypad inputs
     previousFrameJoystickButtons_ = joystickButtons_;
     previousFrameJoystickAxes_ = joystickAxes_;
+}
+
+void InputManager::drawDebugMenu()
+{
+    ImGui::Text("Hello Input");
 }
 
 // Returns true if input key is found to be pressed, false if not

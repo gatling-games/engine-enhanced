@@ -79,6 +79,7 @@
     <ClInclude Include="Source\Utils\Clock.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Application.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -133,5 +134,6 @@
     <ClCompile Include="Source\Utils\Clock.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Application.cpp" />
   </ItemGroup>
 </Project>
