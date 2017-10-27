@@ -10,9 +10,8 @@
 #include <GLFW/glfw3native.h>
 #endif
 
-#include "Debug\DebugGUI.h"
 #include "InputManager.h"
-#include "Utils\Clock.h"
+#include "Application.h"
 
 int main(int argc, const char* argv[])
 {
@@ -34,10 +33,8 @@ int main(int argc, const char* argv[])
 	gl3wInit();
 
     // Create manager classes
-    Clock* clock = new Clock();
-	DebugGUI* debugGUI = new DebugGUI(window, true);
-    InputManager* inputManager = new InputManager(window);
-
+    Application* application = new Application(window);
+    
 	// Run game loop while window not closed
 	while (!glfwWindowShouldClose(window))
 	{
@@ -45,22 +42,16 @@ int main(int argc, const char* argv[])
         glfwPollEvents();
 
         // Run frame start methods
-		debugGUI->frameStart();
-        clock->frameStart();
-        inputManager->frameStart(clock);
+        application->frameStart();
 
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        clock->drawDebugMenu();
-		debugGUI->render();
+        // Processing finished. Render a new frame.
+        application->drawFrame();
 
 		// Swap front & back framebuffers
         glfwSwapBuffers(window);
 	}
 
-	delete debugGUI;
-    delete inputManager;
-    delete clock;
+    delete application;
 
 	glfwTerminate();
 	return 0;
