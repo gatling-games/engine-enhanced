@@ -1,7 +1,6 @@
 #include "InputManager.h"
 
 #include <GLFW/glfw3.h>
-#include <imgui\imgui.h>
 
 #include <algorithm>
 
@@ -13,18 +12,14 @@ InputManager::InputManager(GLFWwindow* window)
     window_ = window;
 
     // Initialise vectors for holding key states
-    std::vector<InputKey> pressedKeys_ = {};
-    std::vector<InputKey> previouslyPressedKeys_ = {};
+    pressedKeys_ = {};
+    previouslyPressedKeys_ = {};
 
     //Initialise arrays for holding joypad input states
-    joystickButtons_ = NULL;
-    joystickAxes_ = NULL;
-    previousFrameJoystickButtons_ = NULL;
-    previousFrameJoystickAxes_ = NULL;
-}
-
-InputManager::~InputManager()
-{
+    joystickButtons_ = nullptr;
+    joystickAxes_ = nullptr;
+    previousFrameJoystickButtons_ = nullptr;
+    previousFrameJoystickAxes_ = nullptr;
 }
 
 // Called every time a new frame starts, storing previous frame's input data

@@ -4,7 +4,6 @@
 #include "Math\Vector3.h"
 
 #include <GLFW/glfw3.h>
-#include <cstdint>
 #include <vector>
 
 class Clock;
@@ -140,8 +139,7 @@ struct InputCmd
 class InputManager
 {
 public:
-    InputManager(GLFWwindow* window);
-    ~InputManager();
+    explicit InputManager(GLFWwindow* window);
 
     // Called every frame
     void frameStart(const Clock* clock);
