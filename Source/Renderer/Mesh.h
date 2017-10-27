@@ -11,7 +11,7 @@ struct MeshSettings
 	bool hasTexcoords;
 };
 
-//typedef MeshElementIndex unsigned short;
+typedef unsigned short MeshElementIndex;
 
 class Mesh : public Resource<MeshSettings>
 {
