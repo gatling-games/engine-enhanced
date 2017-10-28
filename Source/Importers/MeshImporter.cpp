@@ -53,7 +53,6 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
 
     // Open source mesh file as binary to avoid position discrepancy
     std::ifstream file(sourceFile.c_str(), std::ios::binary);
-    std::cout << "File: " << sourceFile << std::endl;
 
     // Loop through every line in file, looking for vertex attributes
     while (file.is_open() && !file.eof())
@@ -99,11 +98,6 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
             // Get line of file and count number of vertices per face
             std::getline(file, line);
             verticesPerFace = std::count(line.begin(), line.end(), ' ');
-
-            if (verticesPerFace == 4)
-            {
-                std::cout << "WARNING: Importing quad face" << std::endl;
-            }
 
             // Return to previously recorded file position
             file.seekg(positionInFile);
