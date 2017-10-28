@@ -10,10 +10,7 @@
 #include <GLFW/glfw3native.h>
 #endif
 
-#include "Debug\DebugGUI.h"
-#include "ResourceManager.h"
-
-GLFWwindow* window;
+#include "Application.h"
 
 int main(int argc, const char* argv[])
 {
@@ -29,30 +26,31 @@ int main(int argc, const char* argv[])
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create a window and its OpenGL context - exit with failure if window not initialised
-	window = glfwCreateWindow(1280, 720, "hello gaem", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(1280, 720, "hello gaem", NULL, NULL);
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 	gl3wInit();
 
-	// Setup ImGui binding
-	DebugGUI* debugGUI = new DebugGUI(window, true);
-	ResourceManager* resourceManager = new ResourceManager();
-
+    // Create manager classes
+    Application* application = new Application(window);
+    
 	// Run game loop while window not closed
 	while (!glfwWindowShouldClose(window))
 	{
+        // Poll for GLFW events
         glfwPollEvents();
-		debugGUI->frameStart();
 
-        glClear(GL_COLOR_BUFFER_BIT);
+        // Run frame start methods
+        application->frameStart();
 
-		debugGUI->render();
+        // Processing finished. Render a new frame.
+        application->drawFrame();
 
 		// Swap front & back framebuffers
         glfwSwapBuffers(window);
 	}
 
-	delete debugGUI;
+    delete application;
 
 	glfwTerminate();
 	return 0;

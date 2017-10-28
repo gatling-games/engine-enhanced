@@ -22,6 +22,9 @@
     <Filter Include="Renderer">
       <UniqueIdentifier>{8e8d6dc4-1da7-40c5-826b-49601ffb9fbc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{cb3e0d0d-72df-422f-8106-3c5a1dc2eef1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -85,6 +88,17 @@
     <ClInclude Include="Source\Importers\MeshImporter.h">
       <Filter>Importers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\InputManager.h" />
+    <ClInclude Include="Source\Utils\BitWriter.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utils\BitReader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Utils\Clock.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Application.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -142,5 +156,16 @@
       <Filter>Importers</Filter>
     </ClCompile>
     <ClCompile Include="Source\ResourceManager.cpp" />
+    <ClCompile Include="Source\InputManager.cpp" />
+    <ClCompile Include="Source\Utils\BitWriter.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\BitReader.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Utils\Clock.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Application.cpp" />
   </ItemGroup>
 </Project>
