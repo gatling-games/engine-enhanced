@@ -1,0 +1,5 @@
+*.o
+crnlib/crunch
+
+## Additional ignore rules added by George
+.vs

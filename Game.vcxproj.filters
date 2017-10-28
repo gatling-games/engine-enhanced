@@ -3,4 +3,22 @@
   <ItemGroup>
     <ClCompile Include="Source\main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{8b785db5-9f0c-4a1a-b5b3-211fda6135bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Textures">
+      <UniqueIdentifier>{337df730-cea2-466b-ac62-d0063f6a2a54}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\Textures\olsetpp_2K_Normal.jpg">
+      <Filter>Resources\Textures</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Resources\Textures\olsetpp_2K_Albedo.jpg">
+      <Filter>Resources\Textures</Filter>
+    </CustomBuild>
+  </ItemGroup>
 </Project>
