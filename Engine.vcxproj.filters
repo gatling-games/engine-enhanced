@@ -19,6 +19,9 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{cb3e0d0d-72df-422f-8106-3c5a1dc2eef1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{b9cf5ee8-9feb-4bf7-b2e3-47d18efcda95}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -77,6 +80,9 @@
     <ClInclude Include="Source\Utils\BitReader.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Network\Address.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -128,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="Source\Utils\BitReader.cpp">
       <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\Address.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
