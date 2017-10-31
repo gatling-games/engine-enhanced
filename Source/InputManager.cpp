@@ -49,7 +49,12 @@ void InputManager::frameStart(const Clock* clock)
 
 void InputManager::drawDebugMenu()
 {
-    ImGui::Text("Hello Input");
+    ImGui::Text("Input Manager");
+
+    for (int i = 0; i < pressedKeys_.size(); i++)
+    {
+        ImGui::Text("Key %i pressed", pressedKeys_[i]);
+    }
 }
 
 // Returns true if input key is found to be pressed, false if not
