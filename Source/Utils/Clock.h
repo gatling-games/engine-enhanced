@@ -2,7 +2,9 @@
 
 #include <cstdint>
 
-class Clock
+#include "Application.h"
+
+class Clock : public ApplicationModule
 {
 public:
     Clock();
@@ -27,7 +29,7 @@ public:
     void frameStart();
 
     // Draws the clock section of the debug menu
-    void drawDebugMenu();
+    void drawDebugMenu() override;
 
 private:
     // Paused flag

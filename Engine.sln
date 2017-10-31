@@ -9,6 +9,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine.vcxproj", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EngineTests", "EngineTests.vcxproj", "{C1E8F337-8DAC-4EE4-992B-6BAB2FEF3D1A}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pipeline", "Pipeline.vcxproj", "{0B1182E0-B1CD-4CB7-801C-DFAD6D5419BB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vendor", "Vendor", "{4E63AE7D-5977-401F-A421-ABB7491D9233}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crnlib", "Vendor\crunch\crnlib\crnlib.2008.vcxproj", "{CF2E70E8-7133-4D96-92C7-68BB406C0664}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,9 +33,20 @@ Global
 		{C1E8F337-8DAC-4EE4-992B-6BAB2FEF3D1A}.Debug|x64.Build.0 = Debug|x64
 		{C1E8F337-8DAC-4EE4-992B-6BAB2FEF3D1A}.Release|x64.ActiveCfg = Release|x64
 		{C1E8F337-8DAC-4EE4-992B-6BAB2FEF3D1A}.Release|x64.Build.0 = Release|x64
+		{0B1182E0-B1CD-4CB7-801C-DFAD6D5419BB}.Debug|x64.ActiveCfg = Debug|x64
+		{0B1182E0-B1CD-4CB7-801C-DFAD6D5419BB}.Debug|x64.Build.0 = Debug|x64
+		{0B1182E0-B1CD-4CB7-801C-DFAD6D5419BB}.Release|x64.ActiveCfg = Release|x64
+		{0B1182E0-B1CD-4CB7-801C-DFAD6D5419BB}.Release|x64.Build.0 = Release|x64
+		{CF2E70E8-7133-4D96-92C7-68BB406C0664}.Debug|x64.ActiveCfg = Debug|x64
+		{CF2E70E8-7133-4D96-92C7-68BB406C0664}.Debug|x64.Build.0 = Debug|x64
+		{CF2E70E8-7133-4D96-92C7-68BB406C0664}.Release|x64.ActiveCfg = Release|x64
+		{CF2E70E8-7133-4D96-92C7-68BB406C0664}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CF2E70E8-7133-4D96-92C7-68BB406C0664} = {4E63AE7D-5977-401F-A421-ABB7491D9233}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FABB7812-19AA-4EF7-83EB-F86993DEEC68}

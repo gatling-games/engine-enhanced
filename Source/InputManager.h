@@ -1,10 +1,11 @@
 #pragma once
 
+#include "Application.h"
+
 #include "Math\Vector2.h"
 #include "Math\Vector3.h"
 
 #include <GLFW/glfw3.h>
-#include <cstdint>
 #include <vector>
 
 class Clock;
@@ -137,14 +138,15 @@ struct InputCmd
     // Add commands for shooting etc
 };
 
-class InputManager
+class InputManager : public ApplicationModule
 {
 public:
-    InputManager(GLFWwindow* window);
-    ~InputManager();
+    explicit InputManager(GLFWwindow* window);
 
     // Called every frame
     void frameStart(const Clock* clock);
+
+    void drawDebugMenu() override;
 
     // Returns true if a key is currently down
     bool isKeyDown(InputKey key) const;
