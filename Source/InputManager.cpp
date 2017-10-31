@@ -51,7 +51,7 @@ void InputManager::drawDebugMenu()
 {
     ImGui::Text("Input Manager");
 
-    for (int i = 0; i < pressedKeys_.size(); i++)
+    for (int i = 0; i < (int)pressedKeys_.size(); i++)
     {
         ImGui::Text("Key %i pressed", pressedKeys_[i]);
     }
