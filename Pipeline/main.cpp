@@ -30,37 +30,43 @@ path getOutputRoot(const path &projectRoot)
 	return projectRoot / path("Build/Resources");
 }
 
-path getFileRelativePath(const path &fileFullPath, const path &sourceRoot)
+path getFileRelativePath(const path &fileFullPath, const path &root)
 {
-	// Remove the sourceRoot from the full file path
-	return path(fileFullPath.c_str() + sourceRoot.string().length() + 1);
+    // Remove the root from the full file path
+    return path(fileFullPath.c_str() + root.string().length() + 1);
+}
+
+path getOutputPath(const path &sourceFileFullPath, const path &sourceRoot, const path &outputRoot)
+{
+    // First get the source file's relative path.
+    path sourceFileRelativePath = getFileRelativePath(sourceFileFullPath, sourceRoot);
+
+    // Now hash the path
+    const ResourceID resourceID = ResourceManager::pathToResourceID(sourceFileRelativePath.string());
+
+    // Finally, construct the output path
+    return outputRoot / (std::to_string(resourceID) + ".resource");
 }
 
 // Detects resource files and directories in the output directory that no 
 // longer exist in the source directory and deletes them.
 //
 // Returns the number of deleted resources.
-int processDeletedResources(const path &sourceRoot, const path& outputRoot, int& removedCount)
+void processDeletedResources(const path& outputRoot, const std::vector<path> &resourcePaths, int& removedCount)
 {
-	// Delete files in the output directory that no longer exist
 	for (auto& file : recursive_directory_iterator(outputRoot))
 	{
-		// Get the relative path and source path
-		path filePath(file);
-		path fileRelativePath = getFileRelativePath(file, outputRoot);
-		path sourcePath = sourceRoot / fileRelativePath;
+        // Get the file path
+        const path filePath(file);
 
-		// Check if the file no longer exists
-		if (exists(sourcePath) == false)
-		{
-			std::cout << "Removing file " << fileRelativePath << std::endl;
+        // Check if it exists in the list of valid paths
+        if(find(resourcePaths.begin(), resourcePaths.end(), filePath) == resourcePaths.end())
+        {
+			std::cout << "Removing " << getFileRelativePath(filePath, outputRoot) << std::endl;
 			remove_all(filePath);
-
 			removedCount++;
 		}
 	}
-
-	return removedCount;
 }
 
 ResourceImporter* getImporterForFile(const std::vector<ResourceImporter*> &importers,
@@ -87,7 +93,8 @@ ResourceImporter* getImporterForFile(const std::vector<ResourceImporter*> &impor
 //
 // Returns the number of processed resources.
 void processChangedResources(const std::vector<ResourceImporter*> &importers,
-	const path& sourceRoot, const path& outputRoot, int& processedCount, int& upToDateCount, int& errorCount)
+	const path& sourceRoot, const path& outputRoot, int& processedCount, int& upToDateCount, int& errorCount, 
+    std::vector<path> &resourcePaths)
 {
 	for (auto& file : recursive_directory_iterator(sourceRoot))
 	{
@@ -100,8 +107,11 @@ void processChangedResources(const std::vector<ResourceImporter*> &importers,
 		}
 
 		// Get the relative path and output path
-		path fileRelativePath = getFileRelativePath(file, sourceRoot);
-		path outputPath = outputRoot / fileRelativePath;
+		const path fileRelativePath = getFileRelativePath(file, sourceRoot);
+        const path outputPath = getOutputPath(filePath, sourceRoot, outputRoot);
+
+        // Add to the list of valid output paths
+        resourcePaths.push_back(outputPath);
 
 		// Output the file now being processed.
 		std::cout << fileRelativePath;
@@ -170,13 +180,16 @@ int main(int argc, const char* argv[])
 	int upToDateCount = 0;
 	int errorCount = 0;
 
-	// Remove resource files that no longer exist.
-	std::cout << std::endl << "Scanning for resource files that no longer exist" << std::endl;
-	processDeletedResources(sourceRoot, outputRoot, removedCount);
+    // Keep track of the resource files that *should* exist.
+    std::vector<path> resourcePaths;
 
 	// Import modified and created files in the source directory.
 	std::cout << std::endl << "Scanning for resource files that have been changed" << std::endl;
-	processChangedResources(importers, sourceRoot, outputRoot, processedCount, upToDateCount, errorCount);
+	processChangedResources(importers, sourceRoot, outputRoot, processedCount, upToDateCount, errorCount, resourcePaths);
+
+    // Remove resource files that no longer exist.
+    std::cout << std::endl << "Scanning for resource files that no longer exist" << std::endl;
+    processDeletedResources(outputRoot, resourcePaths, removedCount);
 
 	// Output finished message
 	std::cout << std::endl << "Resource processing finished: ";
@@ -184,7 +197,4 @@ int main(int argc, const char* argv[])
 	std::cout << errorCount << " failed, ";
 	std::cout << upToDateCount << " up to date, ";
 	std::cout << removedCount << " removed." << std::endl;
-
-	int i;
-	std::cin >> i;
 }

@@ -1,1 +1,10 @@
-#include "ResourceManager.h"/*template <typename SettingsT>bool ResourceImporter<SettingsT>::importFile(std::ifstream& sourceFile, std::ofstream& outputFile) const{	// Reserve space at the start of the file for the header.	outputFile.seekp(sizeof(SettingsT));	// Run the importer logic.	SettingsT settings;	if(!import(&settings, sourceFile, outputFile))	{		return false;	}	// Rewind to the start of the output and save the settings	outputFile.seekp(0);	outputFile.write(&settings, sizeof(SettingsT));	outputFile.close();	return true;} */
+#include "ResourceManager.h"
+
+#include <functional>
+#include <string>
+
+ResourceID ResourceManager::pathToResourceID(const std::string &path)
+{
+    // Return a hash of the path string.
+    return std::hash<std::string>{}(path);
+}
