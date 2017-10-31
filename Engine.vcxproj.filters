@@ -105,6 +105,9 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application.h" />
+    <ClInclude Include="Source\Network\Socket.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -176,5 +179,8 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\Network\Socket.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
