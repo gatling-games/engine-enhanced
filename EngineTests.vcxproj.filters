@@ -7,6 +7,9 @@
     <Filter Include="Util">
       <UniqueIdentifier>{2470d2bf-76a0-49b1-8498-a0a75fc54a9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{fe808a36-1c98-467d-a4f6-af0adf0eca19}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests\Math\QuaternionTests.cpp">

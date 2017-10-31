@@ -17,6 +17,8 @@ public:
 
     bool send(const Address &destination, const void *data, int size);
 
+    bool recieve();
+
 private:
 
     int handle_;

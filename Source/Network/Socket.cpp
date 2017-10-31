@@ -32,10 +32,32 @@ bool Socket::open(unsigned short port)
         printf("failed to bind socket\n");
         return false;
     }
+    DWORD nonBlocking = 1;
+    if (ioctlsocket(handle_, FIONBIO, &nonBlocking) != 0)
+    {
+        printf("Failed to set non blocking\n");
+        return false;
+    }
     return true;
 }
 
 void Socket::close()
 {
     closesocket(handle_);
+}
+
+bool Socket::send(const Address &destination, const void *data, int size)
+{
+    int sent_bytes = sendto(handle_, (const char*)data, sizeof(data), 0, (sockaddr*)destination.address(), sizeof(sockaddr_in));
+    if (sent_bytes != sizeof(data))
+    {
+        printf("failed to send packet\n");
+        return false;
+    }
+    return true;
+}
+
+bool Socket::recieve()
+{
+    return true;
 }

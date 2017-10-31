@@ -3,6 +3,7 @@
 #include "Utils/Clock.h"
 #include "Debug/DebugGUI.h"
 #include "InputManager.h"
+#include "Network\NetworkManager.h"
 
 Application::Application(GLFWwindow* window)
 {
@@ -12,16 +13,19 @@ Application::Application(GLFWwindow* window)
 
     // Create engine modules
     inputManager_ = new InputManager(window);
+    networkManager_ = new NetworkManager(window);
 
     // Register engine module debug menus
     debugGUI_->addToDebugMenu(clock_, "Clock Manager");
     debugGUI_->addToDebugMenu(inputManager_, "Input Manager");
+    debugGUI_->addToDebugMenu(networkManager_, "Network Manager");
 }
 
 Application::~Application()
 {
     // Delete modules in opposite order to
     // how they were created.
+    delete networkManager_;
     delete inputManager_;
     delete debugGUI_;
     delete clock_;

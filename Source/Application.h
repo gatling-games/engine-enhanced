@@ -4,6 +4,7 @@ struct GLFWwindow;
 class Clock;
 class DebugGUI;
 class InputManager;
+class NetworkManager;
 
 class ApplicationModule
 {
@@ -24,4 +25,5 @@ private:
     Clock* clock_;
     DebugGUI* debugGUI_;
     InputManager* inputManager_;
+    NetworkManager* networkManager_;
 };
