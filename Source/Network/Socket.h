@@ -17,10 +17,13 @@ public:
 
     bool send(const Address &destination, const void *data, int size);
 
-    bool recieve();
+    int recieve();
+
+    unsigned short port();
 
 private:
 
+    unsigned short port_;
     int handle_;
 
 };

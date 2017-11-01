@@ -1,6 +1,7 @@
 #include "Socket.h"
-#include <winsock2.h>
+#include <WinSock2.h>
 #include <fstream>
+#include <WS2tcpip.h>
 
 Socket::Socket()
 {
@@ -38,6 +39,7 @@ bool Socket::open(unsigned short port)
         printf("Failed to set non blocking\n");
         return false;
     }
+    port_ = port;
     return true;
 }
 
@@ -57,7 +59,32 @@ bool Socket::send(const Address &destination, const void *data, int size)
     return true;
 }
 
-bool Socket::recieve()
+int Socket::recieve()
 {
+    
+    while (true)
+    {
+        unsigned char packetData[256];
+
+        unsigned int maxPacketSize = sizeof(packetData);
+
+        sockaddr_in from;
+        socklen_t fromLenth = sizeof(from);
+
+        int bytes = recvfrom(handle_, (char*)packetData, maxPacketSize, 0, (sockaddr*)&from, &fromLenth);
+        if (bytes <= 0)
+        {
+            break;
+        }
+
+        unsigned int from_address = ntohl(from.sin_addr.s_addr);
+        unsigned int from_port = ntohs(from.sin_port);
+
+    }
     return true;
+}
+
+unsigned short Socket::port()
+{
+    return port_;
 }

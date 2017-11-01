@@ -1,19 +1,20 @@
 #include "NetworkManager.h"
 
 #include <imgui.h>
-#include <winsock2.h>
+#include <WinSock2.h>
 #pragma comment(lib, "Ws2_32.lib")
 
 
 NetworkManager::NetworkManager(GLFWwindow* window)
 {
+    window_ = window;
     if (!initSockets())
     {
 
     }
-    window_ = window;
-    Socket sock;
-    sock.open(30000);
+    socket_ = Socket();
+    socket_.open(30000);
+    socket_.recieve();
 }
 
 NetworkManager::~NetworkManager()
@@ -23,7 +24,7 @@ NetworkManager::~NetworkManager()
 
 void NetworkManager::drawDebugMenu()
 {
-    ImGui::Text("Hello Network");
+    ImGui::Text("Listening on port %d", socket_.port());
 }
 
 bool NetworkManager::initSockets()

@@ -10,10 +10,13 @@ public:
     explicit NetworkManager(GLFWwindow* window);
     ~NetworkManager();
 
-private:
     void drawDebugMenu() override;
+
+private:
     bool initSockets();
     void shutdownSockets();
+    Socket getSocket();
 
     GLFWwindow* window_;
+    Socket socket_;
 };
