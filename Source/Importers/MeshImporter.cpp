@@ -221,8 +221,8 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
 
     // Populate mesh settings object with appropriate data
     MeshSettings settings;
-    settings.vertexCount = vertices.size();
-    settings.elementsCount = vertexIndices.size();
+    settings.vertexCount = (int)vertices.size();
+    settings.elementsCount = (int)vertexIndices.size();
     settings.hasNormals = true;
     settings.hasTangents = true;
     settings.hasTexcoords = true;
