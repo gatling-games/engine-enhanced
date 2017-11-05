@@ -99,6 +99,9 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application.h" />
+    <ClInclude Include="Source\Math\Rect.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -167,5 +170,8 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application.cpp" />
+    <ClCompile Include="Source\Math\Rect.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
