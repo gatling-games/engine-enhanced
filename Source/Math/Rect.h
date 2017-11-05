@@ -1,7 +1,7 @@
 #pragma once
 
-struct Point2;
-struct Vector2;
+#include "Point2.h"
+#include "Vector2.h"
 
 struct Rect
 {

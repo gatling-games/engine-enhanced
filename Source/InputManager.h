@@ -146,6 +146,8 @@ public:
     // Called every frame
     void frameStart(const Clock* clock);
 
+    // ApplicationModule callbacks
+    std::string name() const { return "Input Manager"; }
     void drawDebugMenu() override;
 
     // Returns true if a key is currently down

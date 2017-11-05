@@ -26,19 +26,32 @@ int main(int argc, const char* argv[])
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create a window and its OpenGL context - exit with failure if window not initialised
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "hello gaem", NULL, NULL);
+    int windowWidth = 1920;
+    int windowHeight = 1080;
+    GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "hello gaem", NULL, NULL);
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 	gl3wInit();
 
     // Create manager classes
-    Application* application = new Application(window);
+    Application* application = new Application(window, windowWidth, windowHeight);
     
 	// Run game loop while window not closed
 	while (!glfwWindowShouldClose(window))
 	{
         // Poll for GLFW events
         glfwPollEvents();
+
+        // Check if the window has changed size.
+        int newWidth;
+        int newHeight;
+        glfwGetWindowSize(window, &newWidth, &newHeight);
+        if (newWidth != windowWidth || newHeight != windowHeight)
+        {
+            windowWidth = newWidth;
+            windowHeight = newHeight;
+            application->resize(newWidth, newHeight);
+        }
 
         // Run frame start methods
         application->frameStart();

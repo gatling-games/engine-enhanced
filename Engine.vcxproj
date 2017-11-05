@@ -12,7 +12,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Application.h" />
-    <ClInclude Include="Source\Debug\DebugGUI.h" />
+    <ClInclude Include="Source\EditorManager.h" />
+    <ClInclude Include="Source\Editor\DebugPanel.h" />
+    <ClInclude Include="Source\Editor\EditorMainWindow.h" />
+    <ClInclude Include="Source\Editor\EditorPanel.h" />
+    <ClInclude Include="Source\Editor\GamePanel.h" />
+    <ClInclude Include="Source\Editor\OutputPanel.h" />
+    <ClInclude Include="Source\Editor\PropertiesPanel.h" />
+    <ClInclude Include="Source\Editor\ResourcesPanel.h" />
+    <ClInclude Include="Source\Editor\ScenePanel.h" />
     <ClInclude Include="Source\Importers\MeshImporter.h" />
     <ClInclude Include="Source\Importers\TextureImporter.h" />
     <ClInclude Include="Source\InputManager.h" />
@@ -41,7 +49,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\Debug\DebugGUI.cpp" />
+    <ClCompile Include="Source\EditorManager.cpp" />
+    <ClCompile Include="Source\Editor\DebugPanel.cpp" />
+    <ClCompile Include="Source\Editor\EditorMainWindow.cpp" />
+    <ClCompile Include="Source\Editor\EditorPanel.cpp" />
+    <ClCompile Include="Source\Editor\GamePanel.cpp" />
+    <ClCompile Include="Source\Editor\OutputPanel.cpp" />
+    <ClCompile Include="Source\Editor\PropertiesPanel.cpp" />
+    <ClCompile Include="Source\Editor\ResourcesPanel.cpp" />
+    <ClCompile Include="Source\Editor\ScenePanel.cpp" />
     <ClCompile Include="Source\Importers\MeshImporter.cpp" />
     <ClCompile Include="Source\Importers\TextureImporter.cpp" />
     <ClCompile Include="Source\InputManager.cpp" />
