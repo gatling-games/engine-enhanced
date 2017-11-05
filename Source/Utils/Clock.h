@@ -8,7 +8,11 @@ class Clock : public ApplicationModule
 {
 public:
     Clock();
-    
+
+    // ApplicationModule callbacks
+    std::string name() const { return "Clock Manager"; }
+    void drawDebugMenu() override;
+
     // Return and set game pause state
     bool paused() const;
     void setPaused(bool paused);
@@ -27,9 +31,6 @@ public:
 
     //Called on every frame
     void frameStart();
-
-    // Draws the clock section of the debug menu
-    void drawDebugMenu() override;
 
 private:
     // Paused flag
