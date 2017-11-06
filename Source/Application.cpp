@@ -3,7 +3,7 @@
 #include "Utils/Clock.h"
 #include "Debug/DebugGUI.h"
 #include "InputManager.h"
-#include "Network\NetworkManager.h"
+#include "NetworkManager.h"
 
 Application::Application(GLFWwindow* window)
 {

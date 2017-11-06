@@ -1,7 +1,7 @@
 #pragma once
 #include <GLFW/glfw3.h>
 
-#include "Socket.h"
+#include "Network/Socket.h"
 #include "Application.h"
 
 class NetworkManager : public ApplicationModule
