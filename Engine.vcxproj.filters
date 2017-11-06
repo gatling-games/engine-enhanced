@@ -124,9 +124,6 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="Source\EditorManager.h" />
-    <ClInclude Include="Source\Importers\ImportPipeline.h">
-      <Filter>Importers</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">

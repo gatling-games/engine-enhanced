@@ -21,7 +21,6 @@
     <ClInclude Include="Source\Editor\PropertiesPanel.h" />
     <ClInclude Include="Source\Editor\ResourcesPanel.h" />
     <ClInclude Include="Source\Editor\ScenePanel.h" />
-    <ClInclude Include="Source\Importers\ImportPipeline.h" />
     <ClInclude Include="Source\Importers\MeshImporter.h" />
     <ClInclude Include="Source\Importers\TextureImporter.h" />
     <ClInclude Include="Source\InputManager.h" />

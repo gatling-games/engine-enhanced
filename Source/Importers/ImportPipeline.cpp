@@ -1,4 +1,3 @@
-#include "ImportPipeline.h"
 
 #include "ResourceManager.h"
 #include "MeshImporter.h"
@@ -7,6 +6,7 @@
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
 
+/*
 ImportPipeline::ImportPipeline(const std::string &sourceDirectory, const std::string &outputDirectory)
     : sourceDirectory_(sourceDirectory),
     outputDirectory_(outputDirectory),
@@ -142,3 +142,4 @@ std::string ImportPipeline::getOutputPath(const std::string &sourcePath) const
     // Construct the output path
     return (fs::path(outputDirectory_) / (std::to_string(resourceID) + ".resource")).string();
 }
+*/
