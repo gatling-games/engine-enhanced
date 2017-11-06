@@ -105,10 +105,10 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application.h" />
-    <ClInclude Include="Source\Network\NetworkManager.h">
+    <ClInclude Include="Source\Network\Socket.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Network\Socket.h">
+    <ClInclude Include="Source\NetworkManager.h">
       <Filter>Network</Filter>
     </ClInclude>
   </ItemGroup>
@@ -182,10 +182,10 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\Network\NetworkManager.cpp">
+    <ClCompile Include="Source\Network\Socket.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Network\Socket.cpp">
+    <ClCompile Include="Source\NetworkManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
