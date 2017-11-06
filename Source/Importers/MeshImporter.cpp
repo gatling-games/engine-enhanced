@@ -99,6 +99,12 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
             std::getline(file, line);
             verticesPerFace = std::count(line.begin(), line.end(), ' ');
 
+            if ((verticesPerFace < 3) | (verticesPerFace > 4))
+            {
+                printf(" - ERROR: Cannot import face data - mesh must consist of only triangles and/or quads");
+                return false;
+            }
+
             // Return to previously recorded file position
             file.seekg(positionInFile);
 
