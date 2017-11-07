@@ -14,13 +14,13 @@ const float EditorMainWindow::ScenePanelHeight = 0.5f;
 const float EditorMainWindow::GamePanelAspect = 16.0f / 9.0f;
 const float EditorMainWindow::OutputPanelMaxHeight = 0.8f;
 
-EditorMainWindow::EditorMainWindow()
+EditorMainWindow::EditorMainWindow(ResourceManager* resourceManager)
     : drawImGuiTestWindow_(false),
     gamePanel_(),
     outputPanel_(),
     debugPanel_(),
     scenePanel_(),
-    resourcesPanel_(),
+    resourcesPanel_(resourceManager),
     propertiesPanel_()
 {
 
