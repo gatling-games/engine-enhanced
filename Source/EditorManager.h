@@ -6,7 +6,7 @@
 class EditorManager : public ApplicationModule
 {
 public:
-    EditorManager(GLFWwindow* window, bool setupGLFSCallbacks);
+    EditorManager(GLFWwindow* window, bool setupGLFSCallbacks, ResourceManager* resourceManager);
     ~EditorManager();
 
     // ApplicationModule overrides

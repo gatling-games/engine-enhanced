@@ -7,7 +7,7 @@ struct GLFWwindow;
 class Clock;
 class EditorManager;
 class InputManager;
-class EditorMainWindow;
+class ResourceManager;
 
 class ApplicationModule
 {
@@ -33,4 +33,5 @@ private:
     Clock* clock_;
     EditorManager* editorManager_;
     InputManager* inputManager_;
+    ResourceManager* resourceManager_;
 };

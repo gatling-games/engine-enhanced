@@ -5,7 +5,7 @@
 #include "Utils/Clock.h"
 #include "EditorManager.h"
 #include "InputManager.h"
-#include "Editor\EditorMainWindow.h"
+#include "ResourceManager.h"
 
 Application::Application(GLFWwindow* window, int width, int height)
 {
@@ -13,12 +13,14 @@ Application::Application(GLFWwindow* window, int width, int height)
     clock_ = new Clock();
 
     // Create engine modules
-    editorManager_ = new EditorManager(window, true);
     inputManager_ = new InputManager(window);
+    resourceManager_ = new ResourceManager("Resources/", "Build/Resources");
+    editorManager_ = new EditorManager(window, true, resourceManager_);
 
     // Register engine module debug menus
     editorManager_->addModuleToDebugPanel(clock_);
     editorManager_->addModuleToDebugPanel(inputManager_);
+    editorManager_->addModuleToDebugPanel(resourceManager_);
 }
 
 Application::~Application()

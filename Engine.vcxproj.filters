@@ -217,5 +217,8 @@
       <Filter>Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\EditorManager.cpp" />
+    <ClCompile Include="Source\Importers\ImportPipeline.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

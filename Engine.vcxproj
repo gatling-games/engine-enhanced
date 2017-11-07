@@ -58,6 +58,7 @@
     <ClCompile Include="Source\Editor\PropertiesPanel.cpp" />
     <ClCompile Include="Source\Editor\ResourcesPanel.cpp" />
     <ClCompile Include="Source\Editor\ScenePanel.cpp" />
+    <ClCompile Include="Source\Importers\ImportPipeline.cpp" />
     <ClCompile Include="Source\Importers\MeshImporter.cpp" />
     <ClCompile Include="Source\Importers\TextureImporter.cpp" />
     <ClCompile Include="Source\InputManager.cpp" />

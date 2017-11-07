@@ -55,15 +55,8 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
     std::ifstream file(sourceFile.c_str(), std::ios::binary);
 
     // Loop through every line in file, looking for vertex attributes
-    while (file.is_open() && !file.eof())
+    while (file.is_open() && !file.eof() && !file.fail())
     {
-        // Return false if source file read fails
-        if (file.fail())
-        {
-            printf(" - ERROR: Failed to read source file \n");
-            return false;
-        }
-
         // Read each value from file stream
         std::string type;
         file >> type;
@@ -191,6 +184,13 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
                 }
             }
         }
+    }
+
+    // Check for errors reading the source file
+    if (file.fail())
+    {
+        printf("ERROR - Failed to read file \n");
+        return false;
     }
 
     // Create vectors to hold finalised vertex data using size

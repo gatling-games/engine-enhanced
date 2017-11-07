@@ -5,9 +5,9 @@
 
 #include <GLFW\glfw3.h>
 
-EditorManager::EditorManager(GLFWwindow* window, bool setupGLFWCallbacks)
+EditorManager::EditorManager(GLFWwindow* window, bool setupGLFWCallbacks, ResourceManager* resourceManager)
     : glfwWindow_(window),
-    mainWindow_()
+    mainWindow_(resourceManager)
 {
     // First initilise the imgui GUI library
     ImGui_ImplGlfwGL3_Init(window, setupGLFWCallbacks);
