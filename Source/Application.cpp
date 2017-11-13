@@ -6,6 +6,7 @@
 #include "EditorManager.h"
 #include "InputManager.h"
 #include "ResourceManager.h"
+#include "RenderManager.h"
 
 Application::Application(GLFWwindow* window, int width, int height)
 {
@@ -16,6 +17,7 @@ Application::Application(GLFWwindow* window, int width, int height)
     inputManager_ = new InputManager(window);
     resourceManager_ = new ResourceManager("Resources/", "Build/Resources");
     editorManager_ = new EditorManager(window, true, resourceManager_);
+    renderManager_ = new RenderManager();
 
     // Register engine module debug menus
     editorManager_->addModuleToDebugPanel(clock_);
@@ -45,10 +47,6 @@ void Application::frameStart()
 
 void Application::drawFrame()
 {
-    // Render the frame.
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
     // Re-draw the editor window
     editorManager_->render();
 }
