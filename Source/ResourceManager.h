@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <fstream>
 
 #include "Application.h"
 
@@ -94,22 +95,22 @@ public:
     ResourcePPtr<T> load(ResourceID id)
     {
         // Check all loaded resources for a match.
-        for (unsigned int i = 0; i < resources_.size(); ++i)
+        for (unsigned int i = 0; i < loadedResources_.size(); ++i)
         {
-            if (resources_[i]->id() == id)
+            if (loadedResources_[i]->id() == id)
             {
-                return resources_[i];
+                return loadedResources_[i];
             }
         }
 
         // No existing result. Create a new resource.
         T* r = new T(id);
-        resources_.push_back(r);
+        loadedResources_.push_back(r);
 
         // Load the compiled resource file.
-        std::string resourcePath = 
+        const std::string resourcePath = importedResourcePath(id);
+        std::ifstream resourceFile(resourcePath);
         r->load(resourceFile);
-
         return r;
     }
 
