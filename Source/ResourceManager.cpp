@@ -44,6 +44,7 @@ ResourceManager::~ResourceManager()
     for (unsigned int i = 0; i < loadedResources_.size(); ++i)
     {
         loadedResources_[i]->unload();
+        delete loadedResources_[i];
     }
 }
 
