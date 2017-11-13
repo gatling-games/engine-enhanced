@@ -22,6 +22,7 @@
     <ClInclude Include="Source\Editor\ResourcesPanel.h" />
     <ClInclude Include="Source\Editor\ScenePanel.h" />
     <ClInclude Include="Source\Importers\MeshImporter.h" />
+    <ClInclude Include="Source\Importers\ShaderImporter.h" />
     <ClInclude Include="Source\Importers\TextureImporter.h" />
     <ClInclude Include="Source\InputManager.h" />
     <ClInclude Include="Source\Math\Rect.h" />
@@ -59,6 +60,7 @@
     <ClCompile Include="Source\Editor\ResourcesPanel.cpp" />
     <ClCompile Include="Source\Editor\ScenePanel.cpp" />
     <ClCompile Include="Source\Importers\MeshImporter.cpp" />
+    <ClCompile Include="Source\Importers\ShaderImporter.cpp" />
     <ClCompile Include="Source\Importers\TextureImporter.cpp" />
     <ClCompile Include="Source\InputManager.cpp" />
     <ClCompile Include="Source\Math\Rect.cpp" />
