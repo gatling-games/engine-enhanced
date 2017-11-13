@@ -4,6 +4,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <fstream>
 
 #include "Application.h"
 
@@ -34,7 +35,7 @@ public:
     ResourceID id() const { return id_; }
 
     // Loading and unloading the processed binary resource file.
-    virtual bool load(std::ifstream &file) = 0;
+    virtual void load(std::ifstream &file) = 0;
     virtual void unload() = 0;
 
 private:
@@ -94,22 +95,23 @@ public:
     ResourcePPtr<T> load(ResourceID id)
     {
         // Check all loaded resources for a match.
-        for (unsigned int i = 0; i < resources_.size(); ++i)
+        for (unsigned int i = 0; i < loadedResources_.size(); ++i)
         {
-            if (resources_[i]->id() == id)
+            if (loadedResources_[i]->id() == id)
             {
-                return resources_[i];
+                return (T*)loadedResources_[i];
             }
         }
 
         // No existing result. Create a new resource.
         T* r = new T(id);
-        resources_.push_back(r);
+        loadedResources_.push_back(r);
 
         // Load the compiled resource file.
-        std::string resourcePath = 
+        const std::string resourcePath = importedResourcePath(id);
+        std::ifstream resourceFile(resourcePath);
         r->load(resourceFile);
-
+        resourceFile.close();
         return r;
     }
 

@@ -26,7 +26,7 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
 
     // Grow the loaded resources vector, so there is space for all
     // resources without shifting them about later.
-    loadedResources_.resize(256);
+    loadedResources_.reserve(256);
 
     // Scan the resources directory for changed files.
     importChangedResources();
@@ -44,6 +44,7 @@ ResourceManager::~ResourceManager()
     for (unsigned int i = 0; i < loadedResources_.size(); ++i)
     {
         loadedResources_[i]->unload();
+        delete loadedResources_[i];
     }
 }
 

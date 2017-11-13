@@ -186,13 +186,6 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
         }
     }
 
-    // Check for errors reading the source file
-    if (file.fail())
-    {
-        printf("ERROR - Failed to read file \n");
-        return false;
-    }
-
     // Create vectors to hold finalised vertex data using size
     std::vector<MeshElementIndex> vertexIndices;
     std::vector<Point3> positionAttributes;
@@ -230,7 +223,7 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
     settings.vertexCount = (int)vertices.size();
     settings.elementsCount = (int)vertexIndices.size();
     settings.hasNormals = true;
-    settings.hasTangents = true;
+    settings.hasTangents = false;
     settings.hasTexcoords = true;
 
     // Pack mesh settings and vertex data into binary file
