@@ -35,7 +35,7 @@ public:
     ResourceID id() const { return id_; }
 
     // Loading and unloading the processed binary resource file.
-    virtual bool load(std::ifstream &file) = 0;
+    virtual void load(std::ifstream &file) = 0;
     virtual void unload() = 0;
 
 private:
