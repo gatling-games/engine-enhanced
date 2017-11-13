@@ -223,7 +223,7 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
     settings.vertexCount = (int)vertices.size();
     settings.elementsCount = (int)vertexIndices.size();
     settings.hasNormals = true;
-    settings.hasTangents = true;
+    settings.hasTangents = false;
     settings.hasTexcoords = true;
 
     // Pack mesh settings and vertex data into binary file
