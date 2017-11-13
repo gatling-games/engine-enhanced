@@ -111,6 +111,7 @@ public:
         const std::string resourcePath = importedResourcePath(id);
         std::ifstream resourceFile(resourcePath);
         r->load(resourceFile);
+        resourceFile.close();
         return r;
     }
 
