@@ -99,7 +99,7 @@ public:
         {
             if (loadedResources_[i]->id() == id)
             {
-                return loadedResources_[i];
+                return (T*)loadedResources_[i];
             }
         }
 
