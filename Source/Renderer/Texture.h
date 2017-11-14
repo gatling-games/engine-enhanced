@@ -1,15 +1,9 @@
 #pragma once
 
-#include "ResourceManager.h"
+#include <GL/gl3w.h>
+#include <GL/glext.h>
 
-enum class TextureType
-{
-	Texture2D, // Single 2D texture
-	TextureArray2D, // Array of 2D textures
-	Texture3D, // Single 3D texture
-	Cubemap, // Single cubemap texture
-	CubemapArray, // Array of cubemap textures
-};
+#include "ResourceManager.h"
 
 enum class TextureFormat
 {
@@ -21,6 +15,9 @@ enum class TextureFormat
 	RFloat, // Single channel, 32 bit floating point
 	Depth, // Depth texture, 24 bits per pixel
 	ShadowMap, // Depth texture + hardware PCF, 24 bits per pixel
+
+    // Must be last in the list.
+    Unknown, 
 };
 
 enum class TextureWrapMode
@@ -37,27 +34,60 @@ enum class TextureFilterMode
 	Anisotropic, // Anisotropic, falls back if no mipmap or aniso support
 };
 
-struct TextureSettings
-{
-	TextureType type;
-	TextureFormat format;
-	TextureWrapMode wrapMode;
-	TextureFilterMode filterMode;
-	int width;
-	int height;
-	int depth;
-	int mipLevels;
-};
-
-class Texture : protected Resource<TextureSettings>
+class Texture : public Resource
 {
 public:
-	Texture();
+    Texture(TextureFormat format, int width, int height);
+    ~Texture();
+
+    // Constructor for texture resources.
+    // Should only be used by ResourceManager.cpp
+    explicit Texture(ResourceID resourceID);
+
+    // Handles resource loading and unloading
+    void load(std::ifstream &file) override;
+    void unload() override;
+
+    // Basic settings
+    TextureFormat format() const { return format_; }
+    TextureWrapMode wrapMode() const { return wrapMode_; }
+    TextureFilterMode filterMode() const { return filterMode_; }
+    int width() const { return width_; }
+    int height() const { return height_; }
+    bool hasMipmaps() const;
+    bool isCompressed() const;
+
+    // Setters for basic settings
+    void setWrapMode(TextureWrapMode wrapMode);
+    void setFilterMode(TextureFilterMode filterMode);
+
+    // Attaches the texture to the specified slot for use.
+    // slot must be between 0 and 10, inclusive.
+    void bind(int slot) const;
 
 protected:
-	bool Load(const TextureSettings* settings, std::ifstream &file) override;
-	void Unload() override;
+    TextureFormat format_;
+    TextureWrapMode wrapMode_;
+    TextureFilterMode filterMode_;
+    int width_;
+    int height_;
+    int levels_;
+    GLuint glid_;
+    bool loaded_;
 
-private:
-	TextureSettings settings_;
+    // Determines the size of a mip level for the texture's format.
+    int getMipWidth(int level) const;
+    int getMipHeight(int level) const;
+    int getMipSize(int level) const;
+
+    // Creates and destroys the opengl texture
+    void createGLTexture();
+    void destroyGLTexture();
+
+    // Updates internal opengl texture params
+    void applySettings() const;
+    GLint getWrapS() const;
+    GLint getWrapT() const;
+    GLint getMinFilter() const;
+    GLint getMagFilter() const;
 };
