@@ -1,7 +1,12 @@
 #include "Texture.h"
 
-#include <algorithm>
 #include <memory>
+
+// Define anisotropic filtering values
+#ifndef GL_EXT_texture_filter_anisotropic
+#define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+#endif
 
 // Store required information for each TextureFormat type.
 struct TextureFormatData
