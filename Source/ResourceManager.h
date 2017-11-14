@@ -30,6 +30,8 @@ public:
 
     }
 
+    virtual ~Resource() = default;
+
     // Remove copy and move constructors.
     Resource(const Resource&) = delete;
     Resource(Resource&&) = delete;
