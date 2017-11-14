@@ -19,6 +19,11 @@ using ResourcePPtr = T*;
 class Resource
 {
 public:
+    // Identifies a resource that is created at runtime
+    // but is not saved to disk.
+    const static int NOT_SAVED_RESOURCE = 0;
+
+public:
     explicit Resource(ResourceID id)
         : id_(id)
     {
@@ -94,6 +99,12 @@ public:
     template<typename T>
     ResourcePPtr<T> load(ResourceID id)
     {
+        // Skip not-saved resources
+        if(id == Resource::NOT_SAVED_RESOURCE)
+        {
+            return nullptr;
+        }
+
         // Check all loaded resources for a match.
         for (unsigned int i = 0; i < loadedResources_.size(); ++i)
         {
