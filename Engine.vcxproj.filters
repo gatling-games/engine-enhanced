@@ -127,6 +127,9 @@
     <ClInclude Include="Source\Importers\ShaderImporter.h">
       <Filter>Importers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Renderer\Shader.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -222,6 +225,9 @@
     <ClCompile Include="Source\EditorManager.cpp" />
     <ClCompile Include="Source\Importers\ShaderImporter.cpp">
       <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Shader.cpp">
+      <Filter>Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
