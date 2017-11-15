@@ -1,4 +1,7 @@
 #include "ShaderImporter.h"
+#include <filesystem>
+
+namespace fs = std::experimental::filesystem::v1;
 
 bool ShaderImporter::canHandleFileType(const std::string& fileExtension) const
 {
@@ -17,4 +20,10 @@ bool ShaderImporter::canHandleFileType(const std::string& fileExtension) const
 
     // Not supported.
     return false;
+}
+
+bool ShaderImporter::importFile(const std::string &sourceFile, const std::string &outputFile) const
+{
+    fs::copy(sourceFile, outputFile);
+    return true;
 }
