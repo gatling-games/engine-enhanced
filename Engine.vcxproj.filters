@@ -130,8 +130,10 @@
     <ClInclude Include="Source\Renderer\Renderer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Renderer\UniformBuffer.h" />
     <ClInclude Include="Source\RenderManager.h" />
+    <ClInclude Include="Source\Renderer\UniformBuffer.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -231,7 +233,6 @@
     <ClCompile Include="Source\Renderer\Renderer.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Renderer\UniformBuffer.cpp" />
     <ClCompile Include="Source\RenderManager.cpp" />
   </ItemGroup>
 </Project>
