@@ -134,6 +134,9 @@
     <ClInclude Include="Source\Renderer\UniformBuffer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Renderer\Camera.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -234,5 +237,8 @@
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\RenderManager.cpp" />
+    <ClCompile Include="Source\Renderer\Camera.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
