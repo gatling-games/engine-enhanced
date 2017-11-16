@@ -39,7 +39,7 @@ void Framebuffer::attachColorTexture(const Texture* colorTexture)
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture->glid(), 0);
 }
 
-void Framebuffer::use()
+void Framebuffer::use() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, id_);
 }

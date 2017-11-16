@@ -29,7 +29,7 @@ public:
     void attachColorTexture(const Texture* colorTexture);
 
     // Sets this framebuffer as the active framebuffer.
-    void use();
+    void use() const;
 
 private:
     GLuint id_;
