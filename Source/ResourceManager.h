@@ -122,7 +122,7 @@ public:
 
         // Load the compiled resource file.
         const std::string resourcePath = importedResourcePath(id);
-        std::ifstream resourceFile(resourcePath);
+        std::ifstream resourceFile(resourcePath, std::ifstream::binary);
         r->load(resourceFile);
         resourceFile.close();
         return r;
