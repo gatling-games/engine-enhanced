@@ -78,6 +78,9 @@ public:
     // Attaches the texture to the specified slot for use.
     // slot must be between 0 and 10, inclusive.
     void bind(int slot) const;
+    
+    // Converts a texture format to a human-readable name.
+    static const std::string& getFormatName(TextureFormat format);
 
 protected:
     TextureFormat format_;

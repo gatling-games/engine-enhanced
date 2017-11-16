@@ -1,6 +1,7 @@
 #include "Texture.h"
 
 #include <algorithm>
+#include <string>
 #include <memory>
 #include <cassert>
 
@@ -17,6 +18,9 @@
 // This corresponds with the TextureFormat enum in Texture.h
 struct TextureFormatData
 {
+    // A human-readable name for the format.
+    std::string name;
+
     // Size of each texture block
     // non-block-based 
     int blockWidth;
@@ -32,15 +36,15 @@ struct TextureFormatData
 
 // See https://www.khronos.org/opengl/wiki/Image_Format
 TextureFormatData formatsTable[] = {
-    //  block size,  gl internal format,                 compressed 
-    {   4, 4, 8,     GL_COMPRESSED_RGB_S3TC_DXT1_EXT,    true        }, // RGB_DXT1s
-    {   4, 4, 16,    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,   true        }, // RGBA_DXT5
-    {   1, 1, 3,     GL_RGB8,                            false       }, // RGB8
-    {   1, 1, 4,     GL_RGBA8,                           false       }, // RGBA8
-    {   1, 1, 1,     GL_R8,                              false       }, // R8
-    {   1, 1, 4,     GL_R32F,                            false       }, // RFloat
-    {   1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // Depth
-    {   1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // ShadowMap
+    //  name            block size,  gl internal format,                 compressed 
+    {   "RGB_DXT1",      4, 4, 8,     GL_COMPRESSED_RGB_S3TC_DXT1_EXT,    true        }, // RGB_DXT1s
+    {   "RGBA_DXT5",     4, 4, 16,    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,   true        }, // RGBA_DXT5
+    {   "RGB8",          1, 1, 3,     GL_RGB8,                            false       }, // RGB8
+    {   "RGBA8",         1, 1, 4,     GL_RGBA8,                           false       }, // RGBA8
+    {   "R8",            1, 1, 1,     GL_R8,                              false       }, // R8
+    {   "R32F",          1, 1, 4,     GL_R32F,                            false       }, // RFloat
+    {   "Depth 16",      1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // Depth
+    {   "ShadowMap",     1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // ShadowMap
 };
 
 TextureFormatData* getFormatData(TextureFormat type)
@@ -255,6 +259,11 @@ void Texture::bind(int slot) const
 {
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, glid_);
+}
+
+const std::string& Texture::getFormatName(TextureFormat format)
+{
+    return getFormatData(format)->name;
 }
 
 int Texture::getMipWidth(int fullWidth, int mipLevel)
