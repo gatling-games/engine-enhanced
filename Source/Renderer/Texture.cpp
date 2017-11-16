@@ -98,7 +98,6 @@ void Texture::load(std::ifstream& file)
     // pixel block, respectively.
 
     // Defines for the dds spec below
-    typedef uint32_t DWORD;
     typedef uint8_t BYTE;
 
     // From MSDN DDS file format docs
