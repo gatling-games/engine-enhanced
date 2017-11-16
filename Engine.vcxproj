@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Renderer\Framebuffer.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\EditorManager.h" />
     <ClInclude Include="Source\Editor\DebugPanel.h" />
@@ -48,6 +49,7 @@
     <ClInclude Include="Vendor\imgui\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Renderer\Framebuffer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\EditorManager.cpp" />
     <ClCompile Include="Source\Editor\DebugPanel.cpp" />
