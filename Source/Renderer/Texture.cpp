@@ -205,7 +205,6 @@ void Texture::load(std::ifstream& file)
         const int mipWidth = getMipWidth(imageWidth, mipLevel);
         const int mipHeight = getMipHeight(imageHeight, mipLevel);
         const int mipSize = getMipSize(format, imageWidth, imageHeight, mipLevel);
-        printf("Mip level %d is size %d and resolution %d x %d \n", mipLevel, mipSize, mipWidth, mipHeight);
 
         // Load that amount of data from the dds file.
         std::unique_ptr<uint8_t[]> mipData(new uint8_t[mipSize]);
