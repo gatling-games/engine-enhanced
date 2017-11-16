@@ -200,6 +200,12 @@ void Texture::load(std::ifstream& file)
     // Get the format description
     TextureFormatData* typeData = getFormatData(format_);
 
+    // Allocate a block of data to hold the mip data loaded from
+    // the file. It needs to be big enough to hold the mips one
+    // at a time, i.e. big enough to hold the biggest mip.
+    const int biggestMipSize = getMipSize(format, imageWidth, imageHeight, 0);
+    std::unique_ptr<uint8_t[]> mipData(new uint8_t[biggestMipSize]);
+
     // After the header, the rest of the DDS file is raw texture
     // data for each mip level, largest first. Load it.
     for (int mipLevel = 0; mipLevel < levels_; ++mipLevel)
@@ -209,8 +215,7 @@ void Texture::load(std::ifstream& file)
         const int mipHeight = getMipHeight(imageHeight, mipLevel);
         const int mipSize = getMipSize(format, imageWidth, imageHeight, mipLevel);
 
-        // Load that amount of data from the dds file.
-        std::unique_ptr<uint8_t[]> mipData(new uint8_t[mipSize]);
+        // Load the mip from the file
         file.read((char*)mipData.get(), mipSize);
         assert(file.good());
 
