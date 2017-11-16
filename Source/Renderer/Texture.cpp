@@ -274,14 +274,14 @@ int Texture::getMipWidth(int fullWidth, int mipLevel)
 {
     // Each mip is half the width of the one before it.
     // Ensure that each mip is no smaller than 1px.
-    return max(1, fullWidth >> mipLevel);
+    return std::max(1, fullWidth >> mipLevel);
 }
 
 int Texture::getMipHeight(int fullHeight, int mipLevel)
 {
     // Each mip is half the height of the one before it.
     // Ensure that each mip is no smaller than 1px.
-    return max(1, fullHeight >> mipLevel);
+    return std::max(1, fullHeight >> mipLevel);
 }
 
 int Texture::getMipSize(TextureFormat format, int fullWidth, int fullHeight, int mipLevel)
