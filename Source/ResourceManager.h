@@ -19,11 +19,18 @@ using ResourcePPtr = T*;
 class Resource
 {
 public:
+    // Identifies a resource that is created at runtime
+    // but is not saved to disk.
+    const static int NOT_SAVED_RESOURCE = 0;
+
+public:
     explicit Resource(ResourceID id)
         : id_(id)
     {
 
     }
+
+    virtual ~Resource() = default;
 
     // Remove copy and move constructors.
     Resource(const Resource&) = delete;
@@ -94,6 +101,12 @@ public:
     template<typename T>
     ResourcePPtr<T> load(ResourceID id)
     {
+        // Skip not-saved resources
+        if(id == Resource::NOT_SAVED_RESOURCE)
+        {
+            return nullptr;
+        }
+
         // Check all loaded resources for a match.
         for (unsigned int i = 0; i < loadedResources_.size(); ++i)
         {
@@ -109,7 +122,7 @@ public:
 
         // Load the compiled resource file.
         const std::string resourcePath = importedResourcePath(id);
-        std::ifstream resourceFile(resourcePath);
+        std::ifstream resourceFile(resourcePath, std::ifstream::binary);
         r->load(resourceFile);
         resourceFile.close();
         return r;
