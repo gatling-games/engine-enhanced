@@ -26,7 +26,6 @@ public:
 
     Matrix4x4 getWorldToCameraMatrix(float aspectRatio) const;
 
-
 private:
     Point3 position_;
     Quaternion rotation_;

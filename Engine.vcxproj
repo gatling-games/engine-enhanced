@@ -70,7 +70,6 @@
     <ClCompile Include="Source\InputManager.cpp" />
     <ClCompile Include="Source\Math\Rect.cpp" />
     <ClCompile Include="Source\Renderer\Framebuffer.cpp" />
-    <ClCompile Include="Source\Renderer\UniformBuffer.cpp" />
     <ClCompile Include="Source\RenderManager.cpp" />
     <ClCompile Include="Source\Utils\BitReader.cpp" />
     <ClCompile Include="Source\Utils\BitWriter.cpp" />
