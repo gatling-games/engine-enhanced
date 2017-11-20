@@ -2,6 +2,7 @@
 
 #include <Gl/gl3w.h>
 #include "ResourceManager.h"
+#include <assert.h>
 #include <string>
 #include <memory>
 #include <iostream>
@@ -37,19 +38,25 @@ void Shader::load(std::ifstream& file)
     std::unique_ptr<char[]> sourceData(new char[size]);
     file.read((char*)sourceData.get(), size);
 
-    //Split Vertex and Fragment shaders
-    char *vertex = "#ifdef VERTEX_SHADER\n";
-    char *fragment = "ifdef FRAGMENT_SHADER\n";
-    const char *vshader[2] = { vertex, (char*)sourceData.get() };
-    const char *fshader[2] = { fragment, (char*)sourceData.get() };
+    // The single file contains the vertex and fragment shader source code,
+    // #ifdef VERTEX_SHADER and #ifdef FRAGMENT_SHADER are used to separate
+    // the source code for each stage.
+    const std::string originalSource = sourceData.get();
 
-    //Compile shaders
-    if (!compileShader(GL_VERTEX_SHADER, *vshader, vertexShader_))
+    // Apply preprocessing to the source code for each shader stage.
+    // This adds stage-specific and variant-specific #defines and handles
+    // custom preprocessor steps (eg adding extra source code and the version header).
+    const std::string vertexSource = preprocessSource(GL_VERTEX_SHADER, originalSource);
+    const std::string fragmentSource = preprocessSource(GL_FRAGMENT_SHADER, originalSource);
+
+    // Attempt to compile the vertex shader code.
+    if (!compileShader(GL_VERTEX_SHADER, vertexSource.c_str(), vertexShader_))
     {
         printf("Failed to compile vertex shader");
     }
 
-    if (!compileShader(GL_FRAGMENT_SHADER, *fshader, fragmentShader_))
+    // Attempt to compile the fragment shader code.
+    if (!compileShader(GL_FRAGMENT_SHADER, fragmentSource.c_str(), fragmentShader_))
     {
         printf("Failed to compile fragment shader");
     }
@@ -84,6 +91,31 @@ void Shader::bind()
 {
     glUseProgram(program_);
     glUniform1i(mainTextureLoc_, 0);
+}
+
+std::string Shader::preprocessSource(GLenum shaderStage, const std::string &originalSource) const
+{
+    // Construct the processed shader string from start to finish.
+    // First, start with the version define
+    std::string finalSource = "#version 450 \n";
+
+    // Next, add a stage-specific define
+    assert(shaderStage == GL_VERTEX_SHADER || shaderStage == GL_FRAGMENT_SHADER);
+    if (shaderStage == GL_VERTEX_SHADER)
+    {
+        finalSource += "#define VERTEX_SHADER 1 \n";
+    }
+    else if (shaderStage == GL_FRAGMENT_SHADER)
+    {
+        finalSource += "#define FRAGMENT_SHADER 1 \n";
+    }
+
+    // Finally, include the actual shader source code.
+    // Ensure there is whitespace after the source.
+    finalSource += originalSource;
+
+    // Done. Return the preprocessed source code.
+    return finalSource;
 }
 
 bool Shader::compileShader(GLenum type, const char* shader, GLuint& id)

@@ -1,5 +1,3 @@
-#version 330
-
 // Scene uniform buffer
 layout(std140) uniform scene_data
 {

@@ -27,6 +27,10 @@ private:
 
     GLint mainTextureLoc_;
 
+    // Handles preprocessing for a shader source code string.
+    // This performs eg. version header adding and #defines
+    std::string preprocessSource(GLenum shaderStage, const std::string &originalSource) const;
+
     bool compileShader(GLenum type, const char* shader, GLuint &id);
     bool checkShaderErrors(GLuint shaderID);
     bool checkLinkerErrors(GLuint programID);
