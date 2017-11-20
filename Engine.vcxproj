@@ -47,13 +47,6 @@
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Source\Utils\Singleton.h" />
-    <ClInclude Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.h" />
-    <ClInclude Include="Vendor\imgui\imconfig.h" />
-    <ClInclude Include="Vendor\imgui\imgui.h" />
-    <ClInclude Include="Vendor\imgui\imgui_internal.h" />
-    <ClInclude Include="Vendor\imgui\stb_rect_pack.h" />
-    <ClInclude Include="Vendor\imgui\stb_textedit.h" />
-    <ClInclude Include="Vendor\imgui\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Renderer\Camera.cpp" />
@@ -90,15 +83,16 @@
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\Utils\Clock.cpp" />
-    <ClCompile Include="Vendor\gl3w\gl3w.c" />
-    <ClCompile Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.cpp" />
-    <ClCompile Include="Vendor\imgui\imgui.cpp" />
-    <ClCompile Include="Vendor\imgui\imgui_demo.cpp" />
-    <ClCompile Include="Vendor\imgui\imgui_draw.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\crunch\crnlib\crnlib.2008.vcxproj">
       <Project>{cf2e70e8-7133-4d96-92c7-68bb406c0664}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Vendor\gl3w\gl3w.vcxproj">
+      <Project>{937a010e-3824-4831-b56d-97aaac7d851c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Vendor\imgui\imgui.vcxproj">
+      <Project>{e1fb8fa3-337a-4f39-971f-8948575cb35f}</Project>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -136,13 +130,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>Build\$(Platform)$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>Build\$(Platform)$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Build\$(Platform)$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\Build\$(Platform)$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>Build\$(Platform)$(Configuration)\$(ProjectName)\</OutDir>
-    <IntDir>Build\$(Platform)$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)\Build\$(Platform)$(Configuration)\$(ProjectName)\</OutDir>
+    <IntDir>$(SolutionDir)\Build\$(Platform)$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
