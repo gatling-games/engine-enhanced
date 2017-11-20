@@ -114,7 +114,7 @@ bool Shader::checkShaderErrors(GLuint shaderID)
 
         char* log = new char[logLength];
         glGetShaderInfoLog(shaderID, logLength, NULL, log);
-        printf("Shader Error. Log: &s \n", log);
+        printf("Shader Error. Log: %s \n", log);
         delete[] log;
 
         return false;
