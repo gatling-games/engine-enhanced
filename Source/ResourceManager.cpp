@@ -7,6 +7,7 @@
 
 #include "Importers/MeshImporter.h"
 #include "Importers/TextureImporter.h"
+#include "Importers/ShaderImporter.h"
 
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
@@ -23,6 +24,7 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     // Create the importer instances
     importers_.push_back(new MeshImporter());
     importers_.push_back(new TextureImporter());
+    importers_.push_back(new ShaderImporter());
 
     // Grow the loaded resources vector, so there is space for all
     // resources without shifting them about later.

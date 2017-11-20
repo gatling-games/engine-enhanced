@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 #include <stack>
+#include "Renderer\Shader.h"
 
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
@@ -69,6 +70,8 @@ void ResourcesPanel::drawNodes(const std::vector<TreeNode> &nodes)
 void ResourcesPanel::resourceSelected(const std::string &sourcePath)
 {
     printf("Resource %s selected \n", sourcePath.c_str());
+
+    resourceManager_->load<Shader>(sourcePath);
 }
 
 void ResourcesPanel::addToTree(const std::string &sourcePath)
