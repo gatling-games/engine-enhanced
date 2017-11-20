@@ -4,6 +4,7 @@
 #include "ResourceManager.h"
 #include <assert.h>
 #include <string>
+#include <sstream>
 #include <memory>
 #include <iostream>
 
@@ -29,19 +30,12 @@ void Shader::load(std::ifstream& file)
         unload();
     }
     
-    //Get file length
-    file.seekg(0, file.end);
-    size_t size = file.tellg();
-    file.seekg(0, file.beg);
-
-    //Read file data into array
-    std::unique_ptr<char[]> sourceData(new char[size]);
-    file.read((char*)sourceData.get(), size);
-
     // The single file contains the vertex and fragment shader source code,
     // #ifdef VERTEX_SHADER and #ifdef FRAGMENT_SHADER are used to separate
     // the source code for each stage.
-    const std::string originalSource = sourceData.get();
+    std::stringstream fileStringStream;
+    fileStringStream << file.rdbuf();
+    const std::string originalSource = fileStringStream.str();
 
     // Apply preprocessing to the source code for each shader stage.
     // This adds stage-specific and variant-specific #defines and handles
@@ -111,7 +105,6 @@ std::string Shader::preprocessSource(GLenum shaderStage, const std::string &orig
     }
 
     // Finally, include the actual shader source code.
-    // Ensure there is whitespace after the source.
     finalSource += originalSource;
 
     // Done. Return the preprocessed source code.
