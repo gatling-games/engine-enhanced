@@ -1,12 +1,22 @@
 #pragma once
 
 #include "Editor/EditorPanel.h"
+#include "Renderer/Texture.h"
+#include "Renderer/Framebuffer.h"
 
 class GamePanel : public EditorPanel
 {
 public:
-    // EditorPanel overrides
-    virtual std::string name() const { return "Game Panel"; }
-    virtual void draw();
+    GamePanel();
+    ~GamePanel();
 
+    // EditorPanel overrides
+    std::string name() const override { return "Game Panel"; }
+    void draw() override;
+    void onResize(int width, int height) override;
+
+private:
+    Framebuffer* frameBuffer_;
+    Texture* depthBuffer_;
+    Texture* colorBuffer_;
 };

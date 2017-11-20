@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Renderer\Camera.h" />
+    <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\EditorManager.h" />
     <ClInclude Include="Source\Editor\DebugPanel.h" />
@@ -28,6 +30,8 @@
     <ClInclude Include="Source\Math\Rect.h" />
     <ClInclude Include="Source\Renderer\Framebuffer.h" />
     <ClInclude Include="Source\Renderer\Shader.h" />
+    <ClInclude Include="Source\Renderer\UniformBuffer.h" />
+    <ClInclude Include="Source\RenderManager.h" />
     <ClInclude Include="Source\Utils\BitReader.h" />
     <ClInclude Include="Source\Utils\BitWriter.h" />
     <ClInclude Include="Source\Math\Color.h" />
@@ -52,6 +56,8 @@
     <ClInclude Include="Vendor\imgui\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Renderer\Camera.cpp" />
+    <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\EditorManager.cpp" />
     <ClCompile Include="Source\Editor\DebugPanel.cpp" />
@@ -69,6 +75,7 @@
     <ClCompile Include="Source\Math\Rect.cpp" />
     <ClCompile Include="Source\Renderer\Framebuffer.cpp" />
     <ClCompile Include="Source\Renderer\Shader.cpp" />
+    <ClCompile Include="Source\RenderManager.cpp" />
     <ClCompile Include="Source\Utils\BitReader.cpp" />
     <ClCompile Include="Source\Utils\BitWriter.cpp" />
     <ClCompile Include="Source\Math\Color.cpp" />

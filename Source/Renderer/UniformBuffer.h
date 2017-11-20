@@ -1,0 +1,86 @@
+#pragma once
+
+#include <GL/gl3w.h>
+
+#include "Math/Vector3.h"
+#include "Math/Vector4.h"
+#include "Math/Matrix4x4.h"
+#include "Math/Color.h"
+
+// Enum for specifying buffer type to UniformBuffer constructor
+enum class UniformBufferType
+{
+    SceneBuffer = 0,
+    CameraBuffer = 1,
+    ShadowsBuffer = 2,
+    PerDrawBuffer = 3,
+    PerMaterialBuffer = 4
+};
+
+// Plain old uniform data for scene
+struct SceneUniformData
+{
+    Color ambientLightColor;
+    Color lightColor;
+    Vector4 toLightDirection;
+};
+
+// Plain old uniform data for camera
+struct CameraUniformData
+{
+    Vector4 screenResolution;
+    Vector4 cameraPosition;
+    Matrix4x4 worldToClip;
+    Matrix4x4 clipToWorld;
+};
+
+// Plain old uniform data for converting object local coordinates to world space
+struct PerDrawUniformData
+{
+    Matrix4x4 localToWorld;
+};
+
+struct PerMaterialUniformData
+{
+    
+};
+
+template <typename T>
+class UniformBuffer
+{
+public:
+    explicit UniformBuffer(UniformBufferType type)
+    {
+        // Set buffer type
+        type_ = type;
+
+        // Generate buffer and set buffer ID
+        glGenBuffers(1, &bufferID_);
+    }
+    ~UniformBuffer()
+    {
+        // Delete uniform buffer
+        glDeleteBuffers(1, &bufferID_);
+    }
+
+    // Prevent the buffer being copied
+    UniformBuffer(const UniformBuffer&) = delete;
+    UniformBuffer& operator=(const UniformBuffer&) = delete;
+
+    // Bind a buffer object to memory on GPU and create/populate buffer data store
+    void update(const T &data) const
+    {
+        glBindBuffer(GL_UNIFORM_BUFFER, bufferID_);
+        glBufferData(GL_UNIFORM_BUFFER, sizeof(T), static_cast<const GLvoid*>(&data), GL_DYNAMIC_DRAW);
+    }
+
+    // Bind buffer to usage slot governed by buffer type
+    void use() const
+    {
+        glBindBufferBase(GL_UNIFORM_BUFFER, static_cast<GLuint>(type_), bufferID_);
+    }
+
+private:
+    UniformBufferType type_;
+    GLuint bufferID_;
+};

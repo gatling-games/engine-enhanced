@@ -12,7 +12,7 @@ struct Vector3
 
     Vector3();
     Vector3(float x, float y, float z);
-    explicit Vector3(const Point3 &p);
+    Vector3(const Point3 &p);
 
     static Vector3 zero();
     static Vector3 one();

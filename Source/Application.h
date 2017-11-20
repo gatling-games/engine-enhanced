@@ -8,6 +8,7 @@ class Clock;
 class EditorManager;
 class InputManager;
 class ResourceManager;
+class RenderManager;
 
 class ApplicationModule
 {
@@ -25,7 +26,7 @@ public:
     // Called when the window is resized.
     void resize(int newWidth, int newHeight);
 
-    // Called during theg game loop.
+    // Called during the game loop.
     void frameStart();
     void drawFrame();
 
@@ -34,4 +35,5 @@ private:
     EditorManager* editorManager_;
     InputManager* inputManager_;
     ResourceManager* resourceManager_;
+    RenderManager* renderManager_;
 };
