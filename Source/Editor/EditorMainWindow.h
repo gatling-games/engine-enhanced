@@ -70,5 +70,5 @@ private:
     Rect propertiesPanelRect() const;
 
     // Draws a panel in the specified screen location.
-    void drawPanel(EditorPanel &panel, const Rect &location);
+    void drawPanel(EditorPanel &panel);
 };
