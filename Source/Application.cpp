@@ -15,7 +15,7 @@ Application::Application(GLFWwindow* window, int width, int height)
     // Create engine modules
     inputManager_ = new InputManager(window);
     resourceManager_ = new ResourceManager("Resources/", "Build/Resources");
-    editorManager_ = new EditorManager(window, true, resourceManager_);
+    editorManager_ = new EditorManager(window, true);
 
     // Register engine module debug menus
     editorManager_->addModuleToDebugPanel(clock_);

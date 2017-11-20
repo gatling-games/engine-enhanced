@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Application.h"
-
+#include "Utils/Singleton.h"
 #include "Math\Vector2.h"
 #include "Math\Vector3.h"
 
@@ -138,7 +138,7 @@ struct InputCmd
     // Add commands for shooting etc
 };
 
-class InputManager : public ApplicationModule
+class InputManager : public ApplicationModule, public Singleton<InputManager>
 {
 public:
     explicit InputManager(GLFWwindow* window);

@@ -42,6 +42,7 @@
     <ClInclude Include="Source\Renderer\Texture.h" />
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\Utils\Clock.h" />
+    <ClInclude Include="Source\Utils\Singleton.h" />
     <ClInclude Include="Vendor\imgui\examples\opengl3_example\imgui_impl_glfw_gl3.h" />
     <ClInclude Include="Vendor\imgui\imconfig.h" />
     <ClInclude Include="Vendor\imgui\imgui.h" />

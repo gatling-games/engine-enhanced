@@ -7,6 +7,7 @@
 #include <fstream>
 
 #include "Application.h"
+#include "Utils/Singleton.h"
 
 // Resources are identified by a 64 bit hash of their path.
 typedef uint64_t ResourceID;
@@ -56,7 +57,7 @@ public:
     virtual bool importFile(const std::string &sourceFile, const std::string &outputFile) const = 0;
 };
 
-class ResourceManager : public ApplicationModule
+class ResourceManager : public ApplicationModule, public Singleton<ResourceManager>
 {
 public:
     ResourceManager(const std::string sourceDirectory, const std::string importedDirectory);

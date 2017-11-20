@@ -3,13 +3,13 @@
 #include <imgui.h>
 #include <stack>
 #include "Renderer\Shader.h"
+#include "ResourceManager.h"
 
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
 
-ResourcesPanel::ResourcesPanel(ResourceManager* resourceManager)
-    : resourceManager_(resourceManager),
-    resourceTreeRoot_()
+ResourcesPanel::ResourcesPanel()
+    : resourceTreeRoot_()
 {
     updateTree();
 }
@@ -19,7 +19,7 @@ void ResourcesPanel::draw()
     if (ImGui::Button("Scan for changes"))
     {
         // Check for changed resources
-        resourceManager_->importChangedResources();
+        ResourceManager::instance()->importChangedResources();
 
         // Recreate the resources tree.
         updateTree();
@@ -35,7 +35,7 @@ void ResourcesPanel::updateTree()
     resourceTreeRoot_.childNodes.clear();
 
     // (Re)add every source file to the tree
-    auto resourceList = resourceManager_->allSourceFiles();
+    auto resourceList = ResourceManager::instance()->allSourceFiles();
     for (unsigned int i = 0; i < resourceList->size(); ++i)
     {
         addToTree(resourceList->at(i));
@@ -71,7 +71,7 @@ void ResourcesPanel::resourceSelected(const std::string &sourcePath)
 {
     printf("Resource %s selected \n", sourcePath.c_str());
 
-    resourceManager_->load<Shader>(sourcePath);
+    ResourceManager::instance()->load<Shader>(sourcePath);
 }
 
 void ResourcesPanel::addToTree(const std::string &sourcePath)

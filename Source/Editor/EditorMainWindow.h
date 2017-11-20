@@ -24,7 +24,7 @@ private:
     static const float OutputPanelMaxHeight;
 
 public:
-    EditorMainWindow(ResourceManager* resourceManager);
+    EditorMainWindow();
 
     // Pointers to each editor panel
     GamePanel* gamePanel() { return &gamePanel_; }
