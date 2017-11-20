@@ -124,6 +124,7 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="Source\EditorManager.h" />
+<<<<<<< HEAD
     <ClInclude Include="Source\Renderer\Framebuffer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
@@ -227,6 +228,7 @@
       <Filter>Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\EditorManager.cpp" />
+<<<<<<< HEAD
     <ClCompile Include="Vendor\gl3w\gl3w.c">
       <Filter>Vendor\gl3w</Filter>
     </ClCompile>
