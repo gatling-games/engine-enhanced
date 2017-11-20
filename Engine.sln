@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game.vcxproj", "{7BC8F47D-DE5C-40C2-A5D7-82923BE4003F}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Vendor", "Vendor", "{4E63AE7D-5977-401F-A421-ABB7491D9233}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crnlib", "Vendor\crunch\crnlib\crnlib.2008.vcxproj", "{CF2E70E8-7133-4D96-92C7-68BB406C0664}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui", "Vendor\imgui\imgui.vcxproj", "{E1FB8FA3-337A-4F39-971F-8948575CB35F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,12 +37,17 @@ Global
 		{CF2E70E8-7133-4D96-92C7-68BB406C0664}.Debug|x64.Build.0 = Debug|x64
 		{CF2E70E8-7133-4D96-92C7-68BB406C0664}.Release|x64.ActiveCfg = Release|x64
 		{CF2E70E8-7133-4D96-92C7-68BB406C0664}.Release|x64.Build.0 = Release|x64
+		{E1FB8FA3-337A-4F39-971F-8948575CB35F}.Debug|x64.ActiveCfg = Debug|x64
+		{E1FB8FA3-337A-4F39-971F-8948575CB35F}.Debug|x64.Build.0 = Debug|x64
+		{E1FB8FA3-337A-4F39-971F-8948575CB35F}.Release|x64.ActiveCfg = Release|x64
+		{E1FB8FA3-337A-4F39-971F-8948575CB35F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{CF2E70E8-7133-4D96-92C7-68BB406C0664} = {4E63AE7D-5977-401F-A421-ABB7491D9233}
+		{E1FB8FA3-337A-4F39-971F-8948575CB35F} = {4E63AE7D-5977-401F-A421-ABB7491D9233}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FABB7812-19AA-4EF7-83EB-F86993DEEC68}
