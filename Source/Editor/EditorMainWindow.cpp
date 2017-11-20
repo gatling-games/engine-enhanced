@@ -79,6 +79,7 @@ void EditorMainWindow::drawMainMenu()
 
         if (ImGui::BeginMenu("View"))
         {
+            resize(windowWidth_, windowHeight_);
             ImGui::MenuItem("Close");
             ImGui::EndMenu();
         }
@@ -233,6 +234,7 @@ void EditorMainWindow::drawPanel(EditorPanel &panel)
     flags |= ImGuiWindowFlags_NoMove;
     flags |= ImGuiWindowFlags_NoResize;
 
+    // Get desired panel size
     const Rect size = panel.size();
 
     // Set the position and size of the panel.

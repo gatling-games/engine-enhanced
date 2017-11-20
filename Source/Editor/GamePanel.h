@@ -11,13 +11,12 @@ public:
     ~GamePanel();
 
     // EditorPanel overrides
-    virtual std::string name() const { return "Game Panel"; }
-    virtual void draw();
+    std::string name() const override { return "Game Panel"; }
+    void draw() override;
+    void onResize(int width, int height) override;
 
 private:
     Framebuffer* frameBuffer_;
     Texture* depthBuffer_;
     Texture* colorBuffer_;
-
-    float* colour_;
 };
