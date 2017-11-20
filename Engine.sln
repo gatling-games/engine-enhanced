@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "crnlib", "Vendor\crunch\crn
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "imgui", "Vendor\imgui\imgui.vcxproj", "{E1FB8FA3-337A-4F39-971F-8948575CB35F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gl3w", "Vendor\gl3w\gl3w.vcxproj", "{937A010E-3824-4831-B56D-97AAAC7D851C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -41,6 +43,10 @@ Global
 		{E1FB8FA3-337A-4F39-971F-8948575CB35F}.Debug|x64.Build.0 = Debug|x64
 		{E1FB8FA3-337A-4F39-971F-8948575CB35F}.Release|x64.ActiveCfg = Release|x64
 		{E1FB8FA3-337A-4F39-971F-8948575CB35F}.Release|x64.Build.0 = Release|x64
+		{937A010E-3824-4831-B56D-97AAAC7D851C}.Debug|x64.ActiveCfg = Debug|x64
+		{937A010E-3824-4831-B56D-97AAAC7D851C}.Debug|x64.Build.0 = Debug|x64
+		{937A010E-3824-4831-B56D-97AAAC7D851C}.Release|x64.ActiveCfg = Release|x64
+		{937A010E-3824-4831-B56D-97AAAC7D851C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +54,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{CF2E70E8-7133-4D96-92C7-68BB406C0664} = {4E63AE7D-5977-401F-A421-ABB7491D9233}
 		{E1FB8FA3-337A-4F39-971F-8948575CB35F} = {4E63AE7D-5977-401F-A421-ABB7491D9233}
+		{937A010E-3824-4831-B56D-97AAAC7D851C} = {4E63AE7D-5977-401F-A421-ABB7491D9233}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FABB7812-19AA-4EF7-83EB-F86993DEEC68}

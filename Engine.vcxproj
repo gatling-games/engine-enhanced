@@ -83,11 +83,13 @@
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\Utils\Clock.cpp" />
-    <ClCompile Include="Vendor\gl3w\gl3w.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\crunch\crnlib\crnlib.2008.vcxproj">
       <Project>{cf2e70e8-7133-4d96-92c7-68bb406c0664}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Vendor\gl3w\gl3w.vcxproj">
+      <Project>{937a010e-3824-4831-b56d-97aaac7d851c}</Project>
     </ProjectReference>
     <ProjectReference Include="Vendor\imgui\imgui.vcxproj">
       <Project>{e1fb8fa3-337a-4f39-971f-8948575cb35f}</Project>

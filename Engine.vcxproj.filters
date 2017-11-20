@@ -4,12 +4,6 @@
     <Filter Include="Math">
       <UniqueIdentifier>{86fcb781-8cb0-4a73-9817-6cf4c488e4cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Vendor">
-      <UniqueIdentifier>{8cee84c6-1406-4be7-9129-a8172016fb0b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Vendor\gl3w">
-      <UniqueIdentifier>{fa0d5371-fe36-48fa-8f5c-fcc04632c92c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Importers">
       <UniqueIdentifier>{0420b16a-050e-4c54-845e-a4914f11bd8a}</UniqueIdentifier>
     </Filter>
@@ -200,9 +194,6 @@
       <Filter>Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\EditorManager.cpp" />
-    <ClCompile Include="Vendor\gl3w\gl3w.c">
-      <Filter>Vendor\gl3w</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Importers\ShaderImporter.cpp">
       <Filter>Importers</Filter>
     </ClCompile>
