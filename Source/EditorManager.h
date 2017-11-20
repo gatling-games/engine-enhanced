@@ -2,11 +2,12 @@
 
 #include "Application.h"
 #include "Editor/EditorMainWindow.h"
+#include "Utils/Singleton.h"
 
-class EditorManager : public ApplicationModule
+class EditorManager : public ApplicationModule, public Singleton<EditorManager>
 {
 public:
-    EditorManager(GLFWwindow* window, bool setupGLFSCallbacks, ResourceManager* resourceManager);
+    EditorManager(GLFWwindow* window, bool setupGLFSCallbacks);
     ~EditorManager();
 
     // ApplicationModule overrides

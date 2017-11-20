@@ -3,8 +3,9 @@
 #include <cstdint>
 
 #include "Application.h"
+#include "Utils/Singleton.h"
 
-class Clock : public ApplicationModule
+class Clock : public ApplicationModule, public Singleton<Clock>
 {
 public:
     Clock();

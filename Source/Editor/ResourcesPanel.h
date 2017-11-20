@@ -7,14 +7,13 @@
 class ResourcesPanel : public EditorPanel
 {
 public:
-    explicit ResourcesPanel(ResourceManager* resourceManager);
+    ResourcesPanel();
 
     // EditorPanel overrides
     virtual std::string name() const { return "Resources Panel"; }
     virtual void draw();
 
 private:
-    ResourceManager* resourceManager_;
 
     // Store the values to display in a tree structure
     struct TreeNode
