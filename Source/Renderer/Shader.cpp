@@ -27,7 +27,7 @@ void Shader::load(std::ifstream& file)
     {
         unload();
     }
-    /*
+    
     //Get file length
     file.seekg(0, file.end);
     size_t size = file.tellg();
@@ -62,7 +62,7 @@ void Shader::load(std::ifstream& file)
 
     mainTextureLoc_ = glGetUniformLocation(program_, "_MainTexture");
 
-    //Set load flag*/
+    //Set load flag
     loaded_ = true;
 }
 
