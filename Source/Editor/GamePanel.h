@@ -18,4 +18,6 @@ private:
     Framebuffer* frameBuffer_;
     Texture* depthBuffer_;
     Texture* colorBuffer_;
+
+    float* colour_;
 };
