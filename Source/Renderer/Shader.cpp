@@ -3,19 +3,57 @@
 #include <Gl/gl3w.h>
 #include "ResourceManager.h"
 #include <string>
+#include <memory>
 #include <iostream>
 
 Shader::Shader(ResourceID id)
+    : Resource(id),
+    loaded_(false)
 {
-    if(!compileShader(GL_VERTEX_SHADER, id, vertexShader_))
+    
+}
+
+Shader::~Shader()
+{
+    if (loaded_)
     {
-        
+        unload();
+    }
+}
+
+void Shader::load(std::ifstream& file)
+{
+    if (loaded_)
+    {
+        unload();
+    }
+    /*
+    //Get file length
+    file.seekg(0, file.end);
+    size_t size = file.tellg();
+    file.seekg(0, file.beg);
+
+    //Read file data into array
+    std::unique_ptr<char[]> sourceData(new char[size]);
+    file.read((char*)sourceData.get(), size);
+
+    //Split Vertex and Fragment shaders
+    char *vertex = "#ifdef VERTEX_SHADER\n";
+    char *fragment = "ifdef FRAGMENT_SHADER\n";
+    const char *vshader[2] = { vertex, (char*)sourceData.get() };
+    const char *fshader[2] = { fragment, (char*)sourceData.get() };
+
+    //Compile shaders
+    if (!compileShader(GL_VERTEX_SHADER, *vshader, vertexShader_))
+    {
+        printf("Failed to compile vertex shader");
     }
 
-    if (!compileShader(GL_FRAGMENT_SHADER, id, fragmentShader_))
+    if (!compileShader(GL_FRAGMENT_SHADER, *fshader, fragmentShader_))
     {
-
+        printf("Failed to compile fragment shader");
     }
+
     //Create Program
     program_ = glCreateProgram();
     glAttachShader(program_, vertexShader_);
@@ -23,28 +61,59 @@ Shader::Shader(ResourceID id)
     glLinkProgram(program_);
 
     mainTextureLoc_ = glGetUniformLocation(program_, "_MainTexture");
+
+    //Set load flag*/
+    loaded_ = true;
 }
 
-
-Shader::~Shader()
+void Shader::unload()
 {
     glDeleteProgram(program_);
     glDeleteShader(vertexShader_);
     glDeleteShader(fragmentShader_);
+
+    loaded_ = false;
 }
 
 void Shader::bind()
 {
-    //TODO
     glUseProgram(program_);
     glUniform1i(mainTextureLoc_, 0);
 }
 
-bool Shader::compileShader(GLenum type, ResourceID shaderId, GLuint& id)
+bool Shader::compileShader(GLenum type, const char* shader, GLuint& id)
 {
+    //Setup and compile shader
     id = glCreateShader(type);
-    glShaderSource(id, 1, NULL, NULL);
+    glShaderSource(id, 1, &shader, NULL);
     glCompileShader(id);
+
+    if (!checkShaderErrors(id))
+    {
+        printf("Error compiling shader with ID: %d \n", id);
+        return false;
+    }
     return true;
 }
 
+bool Shader::checkShaderErrors(GLuint shaderID)
+{
+    //Check shader compile
+    GLint ok;
+    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &ok);
+
+    if (!ok)
+    {
+        GLint logLength;
+        glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
+
+        char* log = new char[logLength];
+        glGetShaderInfoLog(shaderID, logLength, NULL, log);
+        printf("Shader Error. Log: &s \n", log);
+        delete[] log;
+
+        return false;
+    }
+
+    return true;
+}

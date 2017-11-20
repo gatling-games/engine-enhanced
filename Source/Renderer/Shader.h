@@ -2,11 +2,15 @@
 #include <GL/gl3w.h>
 #include "ResourceManager.h"
 
-class Shader
+class Shader : public Resource
 {
 public:
     Shader(ResourceID shaderId);
     ~Shader();
+
+    void load(std::ifstream& file) override;
+    void unload() override;
+
 
     GLuint program() const { return program_; }
     GLuint vertexShader() const { return vertexShader_; }
@@ -15,12 +19,15 @@ public:
     void bind();
 
 private:
+    bool loaded_;
+
     GLuint program_;
     GLuint vertexShader_;
     GLuint fragmentShader_;
 
     GLint mainTextureLoc_;
 
-    bool compileShader(GLenum type, ResourceID shaderId, GLuint &id);
+    bool compileShader(GLenum type, const char* shader, GLuint &id);
+    bool checkShaderErrors(GLuint shaderID);
     
 };
