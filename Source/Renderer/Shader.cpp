@@ -60,6 +60,11 @@ void Shader::load(std::ifstream& file)
     glAttachShader(program_, fragmentShader_);
     glLinkProgram(program_);
 
+    if (!checkLinkerErrors(program_))
+    {
+        printf("Failed to create program \n");
+    }
+
     mainTextureLoc_ = glGetUniformLocation(program_, "_MainTexture");
 
     //Set load flag
@@ -115,5 +120,27 @@ bool Shader::checkShaderErrors(GLuint shaderID)
         return false;
     }
 
+    return true;
+}
+
+bool Shader::checkLinkerErrors(GLuint programID)
+{
+    //Check for linking errors
+    GLint linked = 0;
+    glGetProgramiv(programID, GL_LINK_STATUS, (int*)&linked);
+
+    if (!linked)
+    {
+        GLint logLength;
+        glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &logLength);
+
+        //Print error
+        char* log = new char[logLength];
+        glGetProgramInfoLog(programID, logLength, NULL, log);
+        printf("Program link error. Log %s \n", log);
+        delete[] log;
+
+        return false;
+    }
     return true;
 }

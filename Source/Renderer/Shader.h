@@ -29,5 +29,6 @@ private:
 
     bool compileShader(GLenum type, const char* shader, GLuint &id);
     bool checkShaderErrors(GLuint shaderID);
+    bool checkLinkerErrors(GLuint programID);
     
 };
