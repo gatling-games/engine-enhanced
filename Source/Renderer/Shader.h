@@ -38,4 +38,5 @@ private:
     bool checkShaderErrors(GLuint shaderID);
     bool checkLinkerErrors(GLuint programID);
     void setUniformBufferBinding(const char *blockName, UniformBufferType type);
+    void setTextureLocation(const char* textureName, int slot);
 };

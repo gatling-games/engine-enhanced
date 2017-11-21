@@ -74,8 +74,8 @@ void Shader::load(std::ifstream& file)
     setUniformBufferBinding("per_draw_data", UniformBufferType::PerDrawBuffer);
     setUniformBufferBinding("per_material_data", UniformBufferType::PerMaterialBuffer);
 
-    // Determine texture locations
-    mainTextureLoc_ = glGetUniformLocation(program_, "_MainTexture");
+    // Set texture locations
+    setTextureLocation("_MainTexture", 0);
 
     // Set loaded flag
     loaded_ = true;
@@ -93,7 +93,6 @@ void Shader::unload()
 void Shader::bind()
 {
     glUseProgram(program_);
-    glUniform1i(mainTextureLoc_, 0);
 }
 
 std::string Shader::preprocessSource(GLenum shaderStage, const std::string &originalSource) const
@@ -186,5 +185,14 @@ void Shader::setUniformBufferBinding(const char *blockName, UniformBufferType ty
     if (blockIndex != GL_INVALID_INDEX)
     {
         glUniformBlockBinding(program_, blockIndex, (GLint)type);
+    }
+}
+
+void Shader::setTextureLocation(const char* textureName, int slot)
+{
+    const GLuint textureIndex = glGetUniformLocation(program_, "_MainTexture");
+    if(textureIndex != -1)
+    {
+        glUniform1i(textureIndex, slot);
     }
 }
