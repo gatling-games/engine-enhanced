@@ -68,6 +68,7 @@ public:
 
 private:
     bool loaded_;
+    //Store all shader variants
     std::vector<ShaderVariant> loadedVariants_;
     std::string originalSource_;
 };

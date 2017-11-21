@@ -200,7 +200,7 @@ void Shader::load(std::ifstream& file)
     {
         unload();
     }
-    
+    //Load in source file to variable for later use in variants.
     std::stringstream fileStringStream;
     fileStringStream << file.rdbuf();
     originalSource_ = fileStringStream.str();
@@ -210,12 +210,14 @@ void Shader::load(std::ifstream& file)
 
 void Shader::unload()
 {
+    //Unloads all shader variants calls their destructor
     loadedVariants_.clear();
     loaded_ = false;
 }
 
 void Shader::bindVariant(ShaderFeatureList features)
 {
+    //Loop through all variants to see if it already exists.
     for(int variant = 0; variant < loadedVariants_.size(); ++variant)
     {
         ShaderVariant current = loadedVariants_.at(0);
@@ -225,7 +227,9 @@ void Shader::bindVariant(ShaderFeatureList features)
             return;
         }
     }
+    //If not, compile and bind new variant, and add it to the list.
     ShaderVariant newVariant = ShaderVariant(features);
     loadedVariants_.push_back(newVariant);
+    newVariant.load(originalSource_);
     newVariant.bind();
 }
