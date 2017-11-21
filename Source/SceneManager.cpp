@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "imgui.h"
 
 SceneManager::SceneManager()
     : gameObjects_(),
@@ -6,13 +7,28 @@ SceneManager::SceneManager()
     cameras_(),
     staticMeshes_()
 {
-    gameObjects_.push_back(std::unique_ptr<GameObject>(new GameObject(1, "Camera")));
-    gameObjects_.push_back(std::unique_ptr<GameObject>(new GameObject(2, "Cube")));
-    transforms_.push_back(std::unique_ptr<Transform>(new Transform(1)));
-    transforms_[0]->setPositionLocal(Point3(0.0f, 1.0f, -2.0f));
-    transforms_.push_back(std::unique_ptr<Transform>(new Transform(2)));
-    cameras_.push_back(std::unique_ptr<Camera>(new Camera(1)));
-    staticMeshes_.push_back(std::unique_ptr<StaticMesh>(new StaticMesh(2)));
+    gameObjects_.push_back(std::shared_ptr<GameObject>(new GameObject(1, "Camera")));
+    gameObjects_.push_back(std::shared_ptr<GameObject>(new GameObject(2, "Cube")));
+    gameObjects_.push_back(std::shared_ptr<GameObject>(new GameObject(3, "Cube")));
+    transforms_.push_back(std::shared_ptr<Transform>(new Transform(1)));
+    transforms_[0]->setPositionLocal(Point3(0.5f, 2.0f, -10.0f));
+    transforms_.push_back(std::shared_ptr<Transform>(new Transform(2)));
+    transforms_[1]->setRotationLocal(Quaternion::euler(0.0f, 30.0f, 0.0f));
+    transforms_.push_back(std::shared_ptr<Transform>(new Transform(3)));
+    transforms_[2]->setPositionLocal(Point3(-4.0f, 0.0f, 0.0f));
+    cameras_.push_back(std::shared_ptr<Camera>(new Camera(1)));
+    staticMeshes_.push_back(std::shared_ptr<StaticMesh>(new StaticMesh(2)));
+    staticMeshes_.push_back(std::shared_ptr<StaticMesh>(new StaticMesh(3)));
+}
+
+void SceneManager::drawDebugMenu()
+{
+    Point3 pos = transforms_[1]->positionLocal();
+    Vector3 scale = transforms_[1]->scaleLocal();
+    ImGui::DragFloat3("Cube Pos", (float*)&pos);
+    ImGui::DragFloat3("Cube Scale", (float*)&scale);
+    transforms_[1]->setPositionLocal(pos);
+    transforms_[1]->setScaleLocal(scale);
 }
 
 GameObject* SceneManager::findGameObject(GameObjectID id) const

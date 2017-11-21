@@ -18,6 +18,11 @@ public:
 
     // ApplicationModule overrides
     std::string name() const override { return "Scene Manager"; }
+    void drawDebugMenu() override;
+
+    // Gets the first camera added to the scene.
+    Camera* mainCamera() const { return cameras_[0].get(); }
+    const std::vector<std::shared_ptr<StaticMesh>>& staticMeshes() const { return staticMeshes_; }
 
     // Finds game objects and components by id
     GameObject* findGameObject(GameObjectID id) const;
@@ -28,8 +33,8 @@ public:
 private:
     // For now, store objects in a vector of pointers
     // This should be replaced with a more cache-friendly structure
-    std::vector<std::unique_ptr<GameObject>> gameObjects_;
-    std::vector<std::unique_ptr<Transform>> transforms_;
-    std::vector<std::unique_ptr<Camera>> cameras_;
-    std::vector<std::unique_ptr<StaticMesh>> staticMeshes_;
+    std::vector<std::shared_ptr<GameObject>> gameObjects_;
+    std::vector<std::shared_ptr<Transform>> transforms_;
+    std::vector<std::shared_ptr<Camera>> cameras_;
+    std::vector<std::shared_ptr<StaticMesh>> staticMeshes_;
 };
