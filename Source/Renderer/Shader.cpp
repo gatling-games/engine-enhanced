@@ -85,11 +85,11 @@ std::string ShaderVariant::createFeatureDefines() const
     std::string defines = "";
 
     // Shader feature defines
-    if (hasFeature(SF_Texture)) defines += "\n #define TEXTURE_ON";
-    if (hasFeature(SF_NormalMap)) defines += "\n #define NORMAL_MAP_ON";
-    if (hasFeature(SF_Specular)) defines += "\n #define SPECULAR_ON";
-    if (hasFeature(SF_Cutout)) defines += "\n #define ALPHA_TEST_ON";
-    if (hasFeature(SF_Fog)) defines += "\n #define FOG_ON";
+    if (hasFeature(SF_Texture)) defines += "#define TEXTURE_ON \n";
+    if (hasFeature(SF_NormalMap)) defines += "#define NORMAL_MAP_ON \n";
+    if (hasFeature(SF_Specular)) defines += "#define SPECULAR_ON \n";
+    if (hasFeature(SF_Cutout)) defines += "#define ALPHA_TEST_ON \n";
+    if (hasFeature(SF_Fog)) defines += "#define FOG_ON \n";
 
     return defines;
 }
