@@ -146,42 +146,128 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
             {
                 // Create array to hold line data
                 std::string v[4];
+
+                // Create array for second pass through vertices
+                std::string w[4];
+
                 file >> v[0];
                 file >> v[1];
                 file >> v[2];
                 file >> v[3];
 
+                for (int i=0; i<4; i++)
+                {
+                    w[i] = v[i];
+                }               
+
                 objVertex f;
 
-                // Count through each vertex in line
+                // Count through first triangle on face
                 for (int i = 0; i < 4; i++)
                 {
-                    std::string token;
-                    size_t position = 0;
+                    // Exclude vertex 3
+                    if (i != 2)
+                    {
+                        std::string token;
+                        size_t position = 0;
 
-                    // Find position of delimiting character
-                    position = v[i].find(delimiter);
+                        // Find position of delimiting character
+                        position = v[i].find(delimiter);
 
-                    // Get value from string using delimiter and shorten string once stored + repeat
-                    token = v[i].substr(0, position);
-                    f.position = std::stoi(token);
-                    v[i].erase(0, position + delimiter.length());
+                        // Get value from string using delimiter and shorten string once stored + repeat
+                        token = v[i].substr(0, position);
+                        f.position = std::stoi(token);
+                        v[i].erase(0, position + delimiter.length());
 
-                    position = v[i].find(delimiter);
+                        position = v[i].find(delimiter);
 
-                    token = v[i].substr(0, position);
-                    f.texCoord = std::stoi(token);
-                    v[i].erase(0, position + delimiter.length());
+                        token = v[i].substr(0, position);
+                        f.texCoord = std::stoi(token);
+                        v[i].erase(0, position + delimiter.length());
 
-                    position = v[i].find(delimiter);
+                        position = v[i].find(delimiter);
 
-                    token = v[i].substr(0, position);
-                    f.normal = std::stoi(token);
-                    v[i].erase(0, position + delimiter.length());
+                        token = v[i].substr(0, position);
+                        f.normal = std::stoi(token);
+                        v[i].erase(0, position + delimiter.length());
 
-                    // Push data onto vector
-                    vertices.push_back(f);
+                        // Push data onto vector
+                        vertices.push_back(f);
+                    }
                 }
+
+                // Following code acquires second triangle from quad face
+                std::string token;
+                size_t position = 0;
+
+                // Find position of delimiting character
+                position = w[0].find(delimiter);
+
+                // Get value from string using delimiter and shorten string once stored + repeat
+                token = w[0].substr(0, position);
+                f.position = std::stoi(token);
+                w[0].erase(0, position + delimiter.length());
+
+                position = w[0].find(delimiter);
+
+                token = w[0].substr(0, position);
+                f.texCoord = std::stoi(token);
+                w[0].erase(0, position + delimiter.length());
+
+                position = w[0].find(delimiter);
+
+                token = w[0].substr(0, position);
+                f.normal = std::stoi(token);
+                w[0].erase(0, position + delimiter.length());
+
+                // Push data onto vector
+                vertices.push_back(f);
+
+                // Find position of delimiting character
+                position = w[3].find(delimiter);
+
+                // Get value from string using delimiter and shorten string once stored + repeat
+                token = w[3].substr(0, position);
+                f.position = std::stoi(token);
+                w[3].erase(0, position + delimiter.length());
+
+                position = w[3].find(delimiter);
+
+                token = w[3].substr(0, position);
+                f.texCoord = std::stoi(token);
+                w[3].erase(0, position + delimiter.length());
+
+                position = w[3].find(delimiter);
+
+                token = w[3].substr(0, position);
+                f.normal = std::stoi(token);
+                w[3].erase(0, position + delimiter.length());
+
+                // Push data onto vector
+                vertices.push_back(f);
+
+                // Find position of delimiting character
+                position = w[2].find(delimiter);
+
+                // Get value from string using delimiter and shorten string once stored + repeat
+                token = w[2].substr(0, position);
+                f.position = std::stoi(token);
+                w[2].erase(0, position + delimiter.length());
+
+                position = w[2].find(delimiter);
+
+                token = w[2].substr(0, position);
+                f.texCoord = std::stoi(token);
+                w[2].erase(0, position + delimiter.length());
+
+                position = w[2].find(delimiter);
+
+                token = w[2].substr(0, position);
+                f.normal = std::stoi(token);
+                w[2].erase(0, position + delimiter.length());
+
+                // Push data onto vector
+                vertices.push_back(f);
             }
         }
     }
@@ -225,6 +311,9 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
     settings.hasNormals = true;
     settings.hasTangents = false;
     settings.hasTexcoords = true;
+
+    std::cout << vertexIndices.size() << std::endl;
+    
 
     // Pack mesh settings and vertex data into binary file
     std::ofstream outputStream(outputFile.c_str());
