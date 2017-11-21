@@ -1,6 +1,9 @@
 #pragma once
+
 #include <GL/gl3w.h>
+
 #include "ResourceManager.h"
+#include "Renderer/UniformBuffer.h"
 
 class Shader : public Resource
 {
@@ -34,5 +37,5 @@ private:
     bool compileShader(GLenum type, const char* shader, GLuint &id);
     bool checkShaderErrors(GLuint shaderID);
     bool checkLinkerErrors(GLuint programID);
-    
+    void setUniformBufferBinding(const char *blockName, UniformBufferType type);
 };
