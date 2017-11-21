@@ -33,8 +33,8 @@ void GamePanel::draw()
 
     frameBuffer_->use();
 
-    glClear(GL_COLOR_BUFFER_BIT);
     glClearColor(180.0f, 0.0f, 180.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     Framebuffer::backbuffer()->use();
 
