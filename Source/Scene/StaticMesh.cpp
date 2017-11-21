@@ -5,4 +5,5 @@ StaticMesh::StaticMesh(const GameObjectID gameObjectID)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/cube.obj");
     shader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader");
+    texture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/wood_planks_diffuse.png");
 }
