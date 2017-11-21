@@ -16,7 +16,7 @@ const float EditorMainWindow::OutputPanelMaxHeight = 0.8f;
 
 EditorMainWindow::EditorMainWindow()
     : drawImGuiTestWindow_(false),
-    gamePanel_(resourceManager),
+    gamePanel_(),
     outputPanel_(),
     debugPanel_(),
     scenePanel_(),
