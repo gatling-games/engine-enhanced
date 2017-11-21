@@ -88,13 +88,19 @@ void EditorManager::render()
     // Set up imgui for the new frame
     ImGui_ImplGlfwGL3_NewFrame();
 
-    // Draw the main window
+    // Create the draw lists for the main window.
     mainWindow_.repaint();
 
-    // Now actually render the glfw draw list.
+    // Find the size of the glfw window.
     int width;
     int height;
     glfwGetFramebufferSize(glfwWindow_, &width, &height);
+
+    // Render the imgui draw list to the entire screen.
+    // Ensure the screen is cleared to black so that any 1px 
+    // gaps between panels don't stand out.
     glViewport(0, 0, width, height);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
     ImGui::Render();
 }

@@ -42,6 +42,7 @@ void GamePanel::draw()
     // Clear the screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glClearColor(180.0f, 0.0f, 180.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     // Setup the camera uniform buffer
     CameraUniformData cud;
