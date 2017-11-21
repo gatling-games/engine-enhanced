@@ -24,6 +24,9 @@ public:
     Camera* mainCamera() const { return cameras_[0].get(); }
     const std::vector<std::shared_ptr<StaticMesh>>& staticMeshes() const { return staticMeshes_; }
 
+    // Gets a list of all game objects in the scene.
+    const std::vector<std::shared_ptr<GameObject>> gameObjects() const { return gameObjects_; }
+
     // Finds game objects and components by id
     GameObject* findGameObject(GameObjectID id) const;
     Transform* findTransform(GameObjectID gameObjectID) const;
