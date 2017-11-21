@@ -4,7 +4,9 @@ Transform::Transform(const GameObjectID gameObject)
     : GameObjectComponent(gameObject),
     position_(Point3::origin()),
     rotation_(Quaternion::identity()),
-    scale_(Vector3::one())
+    scale_(Vector3::one()),
+    localToWorld_(Matrix4x4::identity()),
+    worldToLocal_(Matrix4x4::identity())
 {
 
 }
