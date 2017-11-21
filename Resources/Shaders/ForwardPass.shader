@@ -1,16 +1,16 @@
 // Scene uniform buffer
 layout(std140) uniform scene_data
 {
-    uniform vec3 _AmbientColor;
-    uniform vec3 _LightColor;
-    uniform vec3 _LightDirection;
+    uniform vec4 _AmbientColor;
+    uniform vec4 _LightColor;
+    uniform vec4 _LightDirection;
 };
 
 // Camera uniform buffer
 layout(std140) uniform camera_data
 {
-    uniform vec2 _ScreenResolution;
-    uniform vec3 _CameraPosition;
+    uniform vec4 _ScreenResolution;
+    uniform vec4 _CameraPosition;
     uniform mat4x4 _ViewProjectionMatrix;
     uniform mat4x4 _ClipToWorld;
 };
@@ -62,7 +62,7 @@ out vec4 fragColor;
 
 vec3 LambertLight(vec4 surface, vec3 worldNormal)
 {
-    return max(0.0, dot(worldNormal, _LightDirection)) * _LightColor * surface.rgb;
+    return max(0.0, dot(worldNormal, _LightDirection.xyz)) * _LightColor.rgb * surface.rgb;
 }
 
 void main()
@@ -72,7 +72,7 @@ void main()
     
 	// Compute lambert direct light and flat ambient light
     vec3 directLight = LambertLight(col, worldNormal);
-    vec3 ambientLight = col.rgb * _AmbientColor;
+    vec3 ambientLight = col.rgb * _AmbientColor.rgb;
     vec3 finalColor = directLight + ambientLight;
 	
 	// Output the final color
