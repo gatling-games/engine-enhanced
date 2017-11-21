@@ -13,10 +13,11 @@ public:
     // EditorPanel overrides
     std::string name() const override { return "Game Panel"; }
     void draw() override;
-    void onResize(int width, int height) override;
 
 private:
     Framebuffer* frameBuffer_;
     Texture* depthBuffer_;
     Texture* colorBuffer_;
+
+    void createFramebuffer(int width, int height);
 };

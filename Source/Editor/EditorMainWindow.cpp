@@ -30,14 +30,6 @@ void EditorMainWindow::resize(int width, int height)
 {
     windowWidth_ = width;
     windowHeight_ = height;
-
-    // Recompute size for each panel on editor main window
-    gamePanel_.setSize(gamePanelRect());
-    outputPanel_.setSize(outputPanelRect());
-    debugPanel_.setSize(debugPanelRect());
-    scenePanel_.setSize(scenePanelRect());
-    resourcesPanel_.setSize(resourcesPanelRect());
-    propertiesPanel_.setSize(propertiesPanelRect());
 }
 
 void EditorMainWindow::repaint()
@@ -53,12 +45,12 @@ void EditorMainWindow::repaint()
     }
 
     // Draw each editor panel in the correct location
-    drawPanel(gamePanel_);
-    drawPanel(outputPanel_);
-    drawPanel(debugPanel_);
-    drawPanel(scenePanel_);
-    drawPanel(resourcesPanel_);
-    drawPanel(propertiesPanel_);
+    drawPanel(gamePanel_, gamePanelRect());
+    drawPanel(outputPanel_, outputPanelRect());
+    drawPanel(debugPanel_, debugPanelRect());
+    drawPanel(scenePanel_, scenePanelRect());
+    drawPanel(resourcesPanel_, resourcesPanelRect());
+    drawPanel(propertiesPanel_, propertiesPanelRect());
 }
 
 void EditorMainWindow::drawMainMenu()
@@ -224,7 +216,7 @@ Rect EditorMainWindow::propertiesPanelRect() const
     return Rect(minx, miny, width, height).roundedToPixels();
 }
 
-void EditorMainWindow::drawPanel(EditorPanel &panel)
+void EditorMainWindow::drawPanel(EditorPanel &panel, const Rect &size)
 {
     // Ensure the panel has borders and can't be moved
     // or collapsed by the user.
@@ -233,9 +225,6 @@ void EditorMainWindow::drawPanel(EditorPanel &panel)
     flags |= ImGuiWindowFlags_NoCollapse;
     flags |= ImGuiWindowFlags_NoMove;
     flags |= ImGuiWindowFlags_NoResize;
-
-    // Get desired panel size
-    const Rect size = panel.size();
 
     // Set the position and size of the panel.
     ImGui::SetNextWindowPos(ImVec2(size.minx, size.miny));
