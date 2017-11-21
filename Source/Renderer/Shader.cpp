@@ -5,7 +5,6 @@
 #include <assert.h>
 #include <string>
 #include <sstream>
-#include <memory>
 #include <iostream>
 
 Shader::Shader(ResourceID id)
