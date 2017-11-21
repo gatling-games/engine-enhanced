@@ -28,20 +28,13 @@ GamePanel::~GamePanel()
 
 void GamePanel::draw()
 {
-    // On first draw, load the scene and camera
-    if(objects_.empty())
+    // Determine the size of the region we need to render for
+    const ImVec2 renderTextureSize = ImGui::GetContentRegionAvail();
+    if(frameBuffer_ == nullptr 
+        || colorBuffer_->width() != renderTextureSize.x 
+        || colorBuffer_->height() != renderTextureSize.y)
     {
-        Shader* cubeShader = resourceManager_->load<Shader>("Shader/ForwardPass.shader");
-        Mesh* cubeMesh = resourceManager_->load<Mesh>("Meshes/cube.obj");
-       // Texture* cubeTexture = resourceManager_->load<Texture>("Textures/cube.png");
-        Material* cubeMaterial = new Material();
-        cubeMaterial->shader = cubeShader;
-        cubeMaterial->texture = nullptr;
-        SceneObject cubeSO;
-        cubeSO.mesh = cubeMesh;
-        cubeSO.material = cubeMaterial;
-        cubeSO.localToWorld = Matrix4x4::trs(Vector3(0.0f, 0.0f, 10.0f), Quaternion::identity(), Vector3::one());
-        objects_.push_back(cubeSO);
+        createFramebuffer(renderTextureSize.x, renderTextureSize.y);
     }
 
     frameBuffer_->use();
@@ -71,14 +64,11 @@ void GamePanel::draw()
 
     Framebuffer::backbuffer()->use();
 
-    // Get texture size
-    const Rect rect = size();
-
     // Draw the texture
-    ImGui::Image(reinterpret_cast<ImTextureID>(colorBuffer_->glid()), ImVec2(rect.width, rect.height));
+    ImGui::Image(reinterpret_cast<ImTextureID>(colorBuffer_->glid()), ImGui::GetContentRegionAvail());
 }
 
-void GamePanel::onResize(int width, int height)
+void GamePanel::createFramebuffer(int width, int height)
 {
     // Delete any existing framebuffer
     if (frameBuffer_ != nullptr)

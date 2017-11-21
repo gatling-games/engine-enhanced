@@ -166,9 +166,6 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\Editor\EditorPanel.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Editor\EditorMainWindow.cpp">
       <Filter>Editor</Filter>
     </ClCompile>

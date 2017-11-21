@@ -70,8 +70,6 @@ void ResourcesPanel::drawNodes(const std::vector<TreeNode> &nodes)
 void ResourcesPanel::resourceSelected(const std::string &sourcePath)
 {
     printf("Resource %s selected \n", sourcePath.c_str());
-
-    ResourceManager::instance()->load<Shader>(sourcePath);
 }
 
 void ResourcesPanel::addToTree(const std::string &sourcePath)
