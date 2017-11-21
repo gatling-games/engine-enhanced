@@ -55,7 +55,6 @@
     <ClCompile Include="Source\EditorManager.cpp" />
     <ClCompile Include="Source\Editor\DebugPanel.cpp" />
     <ClCompile Include="Source\Editor\EditorMainWindow.cpp" />
-    <ClCompile Include="Source\Editor\EditorPanel.cpp" />
     <ClCompile Include="Source\Editor\GamePanel.cpp" />
     <ClCompile Include="Source\Editor\OutputPanel.cpp" />
     <ClCompile Include="Source\Editor\PropertiesPanel.cpp" />

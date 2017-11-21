@@ -22,6 +22,15 @@ GamePanel::~GamePanel()
 
 void GamePanel::draw()
 {
+    // Determine the size of the region we need to render for
+    const ImVec2 renderTextureSize = ImGui::GetContentRegionAvail();
+    if(frameBuffer_ == nullptr 
+        || colorBuffer_->width() != renderTextureSize.x 
+        || colorBuffer_->height() != renderTextureSize.y)
+    {
+        createFramebuffer(renderTextureSize.x, renderTextureSize.y);
+    }
+
     frameBuffer_->use();
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -29,14 +38,11 @@ void GamePanel::draw()
 
     Framebuffer::backbuffer()->use();
 
-    // Get texture size
-    const Rect rect = size();
-
     // Draw the texture
-    ImGui::Image(reinterpret_cast<ImTextureID>(colorBuffer_->glid()), ImVec2(rect.width, rect.height));
+    ImGui::Image(reinterpret_cast<ImTextureID>(colorBuffer_->glid()), ImGui::GetContentRegionAvail());
 }
 
-void GamePanel::onResize(int width, int height)
+void GamePanel::createFramebuffer(int width, int height)
 {
     // Delete any existing framebuffer
     if (frameBuffer_ != nullptr)
