@@ -8,6 +8,7 @@ class Clock;
 class EditorManager;
 class InputManager;
 class ResourceManager;
+class SceneManager;
 class RenderManager;
 
 class ApplicationModule
@@ -35,5 +36,6 @@ private:
     EditorManager* editorManager_;
     InputManager* inputManager_;
     ResourceManager* resourceManager_;
+    SceneManager* sceneManager_;
     RenderManager* renderManager_;
 };
