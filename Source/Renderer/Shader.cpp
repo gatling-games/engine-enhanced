@@ -7,35 +7,26 @@
 #include <sstream>
 #include <iostream>
 
-Shader::Shader(ResourceID id)
-    : Resource(id),
-    loaded_(false)
+ShaderVariant::ShaderVariant(ShaderFeatureList features)
+    : loaded_(false),
+    features_(features)
 {
     
 }
 
-Shader::~Shader()
+ShaderVariant::~ShaderVariant()
 {
-    if (loaded_)
+    if(loaded_)
     {
         unload();
     }
 }
 
-void Shader::load(std::ifstream& file)
+void ShaderVariant::load(const std::string originalSource)
 {
-    if (loaded_)
-    {
-        unload();
-    }
-    
     // The single file contains the vertex and fragment shader source code,
     // #ifdef VERTEX_SHADER and #ifdef FRAGMENT_SHADER are used to separate
     // the source code for each stage.
-    std::stringstream fileStringStream;
-    fileStringStream << file.rdbuf();
-    const std::string originalSource = fileStringStream.str();
-
     // Apply preprocessing to the source code for each shader stage.
     // This adds stage-specific and variant-specific #defines and handles
     // custom preprocessor steps (eg adding extra source code and the version header).
@@ -65,13 +56,12 @@ void Shader::load(std::ifstream& file)
         printf("Failed to create program \n");
     }
 
-    mainTextureLoc_ = glGetUniformLocation(program_, "_MainTexture");
-
     //Set load flag
     loaded_ = true;
 }
 
-void Shader::unload()
+
+void ShaderVariant::unload()
 {
     glDeleteProgram(program_);
     glDeleteShader(vertexShader_);
@@ -80,13 +70,31 @@ void Shader::unload()
     loaded_ = false;
 }
 
-void Shader::bind()
+void ShaderVariant::bind() const
 {
     glUseProgram(program_);
-    glUniform1i(mainTextureLoc_, 0);
 }
 
-std::string Shader::preprocessSource(GLenum shaderStage, const std::string &originalSource) const
+bool ShaderVariant::hasFeature(ShaderFeature feature) const
+{
+    return (features_ & feature) != 0;
+}
+
+std::string ShaderVariant::createFeatureDefines() const
+{
+    std::string defines = "";
+
+    // Shader feature defines
+    if (hasFeature(SF_Texture)) defines += "\n #define TEXTURE_ON";
+    if (hasFeature(SF_NormalMap)) defines += "\n #define NORMAL_MAP_ON";
+    if (hasFeature(SF_Specular)) defines += "\n #define SPECULAR_ON";
+    if (hasFeature(SF_Cutout)) defines += "\n #define ALPHA_TEST_ON";
+    if (hasFeature(SF_Fog)) defines += "\n #define FOG_ON";
+
+    return defines;
+}
+
+std::string ShaderVariant::preprocessSource(GLenum shaderStage, const std::string &originalSource) const
 {
     // Construct the processed shader string from start to finish.
     // First, start with the version define
@@ -102,7 +110,7 @@ std::string Shader::preprocessSource(GLenum shaderStage, const std::string &orig
     {
         finalSource += "#define FRAGMENT_SHADER 1 \n";
     }
-
+    finalSource += createFeatureDefines();
     // Finally, include the actual shader source code.
     finalSource += originalSource;
 
@@ -110,7 +118,7 @@ std::string Shader::preprocessSource(GLenum shaderStage, const std::string &orig
     return finalSource;
 }
 
-bool Shader::compileShader(GLenum type, const char* shader, GLuint& id)
+bool ShaderVariant::compileShader(GLenum type, const char* shader, GLuint& id)
 {
     //Setup and compile shader
     id = glCreateShader(type);
@@ -125,7 +133,7 @@ bool Shader::compileShader(GLenum type, const char* shader, GLuint& id)
     return true;
 }
 
-bool Shader::checkShaderErrors(GLuint shaderID)
+bool ShaderVariant::checkShaderErrors(GLuint shaderID)
 {
     //Check shader compile
     GLint ok;
@@ -147,7 +155,7 @@ bool Shader::checkShaderErrors(GLuint shaderID)
     return true;
 }
 
-bool Shader::checkLinkerErrors(GLuint programID)
+bool ShaderVariant::checkLinkerErrors(GLuint programID)
 {
     //Check for linking errors
     GLint linked = 0;
@@ -167,4 +175,57 @@ bool Shader::checkLinkerErrors(GLuint programID)
         return false;
     }
     return true;
+}
+
+
+//Shader
+Shader::Shader(ResourceID id)
+    : Resource(id),
+    loaded_(false)
+{
+    
+}
+
+Shader::~Shader()
+{
+    if (loaded_)
+    {
+        unload();
+    }
+}
+
+void Shader::load(std::ifstream& file)
+{
+    if (loaded_)
+    {
+        unload();
+    }
+    
+    std::stringstream fileStringStream;
+    fileStringStream << file.rdbuf();
+    originalSource_ = fileStringStream.str();
+
+    loaded_ = true;
+}
+
+void Shader::unload()
+{
+    loadedVariants_.clear();
+    loaded_ = false;
+}
+
+void Shader::bindVariant(ShaderFeatureList features)
+{
+    for(int variant = 0; variant < loadedVariants_.size(); ++variant)
+    {
+        ShaderVariant current = loadedVariants_.at(0);
+        if (current.features() == features)
+        {
+            current.bind();
+            return;
+        }
+    }
+    ShaderVariant newVariant = ShaderVariant(features);
+    loadedVariants_.push_back(newVariant);
+    newVariant.bind();
 }

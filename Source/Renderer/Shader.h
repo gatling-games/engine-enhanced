@@ -15,10 +15,6 @@ enum ShaderFeature
     SF_Cutout = 8,
 
     SF_Fog = 16,
-
-    SF_Debug_ShadowMapTexutre = 32,
-
-    SF_DebugDepthTexture = 64,
 };
 
 typedef unsigned int ShaderFeatureList;
@@ -34,17 +30,29 @@ public:
     void load(const std::string originalSource);
     void unload();
 
+    bool hasFeature(ShaderFeature feature) const;
+    std::string createFeatureDefines() const;
+
     GLuint program() const { return program_; }
     GLuint vertexShader() const { return vertexShader_; }
     GLuint fragmentShader() const { return fragmentShader_; }
 
     void bind() const;
+
 private:
     bool loaded_;
     GLuint program_;
     GLuint vertexShader_;
     GLuint fragmentShader_;
     ShaderFeatureList features_;
+
+    // Handles preprocessing for a shader source code string.
+    // This performs eg. version header adding and #defines
+    std::string preprocessSource(GLenum shaderStage, const std::string &originalSource) const;
+
+    bool compileShader(GLenum type, const char* shader, GLuint &id);
+    bool checkShaderErrors(GLuint shaderID);
+    bool checkLinkerErrors(GLuint programID);
 };
 
 class Shader : public Resource
@@ -60,15 +68,6 @@ public:
 
 private:
     bool loaded_;
-
     std::vector<ShaderVariant> loadedVariants_;
-    std::string originalSource;
-
-    // Handles preprocessing for a shader source code string.
-    // This performs eg. version header adding and #defines
-    std::string preprocessSource(GLenum shaderStage, const std::string &originalSource) const;
-
-    bool compileShader(GLenum type, const char* shader, GLuint &id);
-    bool checkShaderErrors(GLuint shaderID);
-    bool checkLinkerErrors(GLuint programID);
+    std::string originalSource_;
 };
