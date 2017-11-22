@@ -7,22 +7,8 @@
 #include <sstream>
 #include <iostream>
 
-ShaderVariant::ShaderVariant(ShaderFeatureList features)
-    : loaded_(false),
-    features_(features)
-{
-    
-}
-
-ShaderVariant::~ShaderVariant()
-{
-    if(loaded_)
-    {
-        unload();
-    }
-}
-
-void ShaderVariant::load(const std::string originalSource)
+ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &originalSource)
+    : features_(features)
 {
     // The single file contains the vertex and fragment shader source code,
     // #ifdef VERTEX_SHADER and #ifdef FRAGMENT_SHADER are used to separate
@@ -45,29 +31,34 @@ void ShaderVariant::load(const std::string originalSource)
         printf("Failed to compile fragment shader");
     }
 
-    //Create Program
+    // Create and link the shader program.
     program_ = glCreateProgram();
     glAttachShader(program_, vertexShader_);
     glAttachShader(program_, fragmentShader_);
     glLinkProgram(program_);
 
+    // Check that the program linking succeeded.
     if (!checkLinkerErrors(program_))
     {
         printf("Failed to create program \n");
     }
 
-    //Set load flag
-    loaded_ = true;
+    // Set uniform block binding
+    setUniformBufferBinding("scene_data", UniformBufferType::SceneBuffer);
+    setUniformBufferBinding("camera_data", UniformBufferType::CameraBuffer);
+    setUniformBufferBinding("shadows_data", UniformBufferType::ShadowsBuffer);
+    setUniformBufferBinding("per_draw_data", UniformBufferType::PerDrawBuffer);
+    setUniformBufferBinding("per_material_data", UniformBufferType::PerMaterialBuffer);
+
+    // Set texture locations
+    setTextureLocation("_MainTexture", 0);
 }
 
-
-void ShaderVariant::unload()
+ShaderVariant::~ShaderVariant()
 {
     glDeleteProgram(program_);
     glDeleteShader(vertexShader_);
     glDeleteShader(fragmentShader_);
-
-    loaded_ = false;
 }
 
 void ShaderVariant::bind() const
@@ -174,45 +165,56 @@ bool ShaderVariant::checkLinkerErrors(GLuint programID)
 
         return false;
     }
+	
     return true;
 }
 
+void ShaderVariant::setUniformBufferBinding(const char *blockName, UniformBufferType type)
+{
+    const GLuint blockIndex = glGetUniformBlockIndex(program_, blockName);
+
+    if (blockIndex != GL_INVALID_INDEX)
+    {
+        glUniformBlockBinding(program_, blockIndex, (GLint)type);
+    }
+}
+
+void ShaderVariant::setTextureLocation(const char* textureName, int slot)
+{
+    const GLuint textureIndex = glGetUniformLocation(program_, "_MainTexture");
+    if(textureIndex != -1)
+    {
+        glUniform1i(textureIndex, slot);
+    }
+}
 
 //Shader
 Shader::Shader(ResourceID id)
-    : Resource(id),
-    loaded_(false)
+    : Resource(id)
 {
     
 }
 
 Shader::~Shader()
 {
-    if (loaded_)
-    {
-        unload();
-    }
+    unload();
 }
 
 void Shader::load(std::ifstream& file)
 {
-    if (loaded_)
-    {
-        unload();
-    }
+	// Unload any loaded shader variants
+    unload();
+	
     //Load in source file to variable for later use in variants.
     std::stringstream fileStringStream;
     fileStringStream << file.rdbuf();
     originalSource_ = fileStringStream.str();
-
-    loaded_ = true;
 }
 
 void Shader::unload()
 {
     //Unloads all shader variants calls their destructor
     loadedVariants_.clear();
-    loaded_ = false;
 }
 
 void Shader::bindVariant(ShaderFeatureList features)
@@ -227,9 +229,9 @@ void Shader::bindVariant(ShaderFeatureList features)
             return;
         }
     }
+	
     //If not, compile and bind new variant, and add it to the list.
-    ShaderVariant newVariant = ShaderVariant(features);
+    ShaderVariant newVariant = ShaderVariant(features, originalSource_);
     loadedVariants_.push_back(newVariant);
-    newVariant.load(originalSource_);
     newVariant.bind();
 }

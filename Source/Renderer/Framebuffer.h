@@ -16,11 +16,19 @@ private:
 
 public:
     // Gets a reference to the main backbuffer (aka framebuffer 0).
-    static const Framebuffer* backbuffer();
+    static Framebuffer* backbuffer();
 
     // Prevent the framebuffer from being copied
     Framebuffer(const Framebuffer&) = delete;
     Framebuffer& operator=(const Framebuffer) = delete;
+
+    // The resolution of the framebuffer
+    int width() const { return width_; }
+    int height() const { return height_; }
+
+    // Changes the framebuffer resolution
+    // Note - this should be used for the back buffer only.
+    void setResolution(int width, int height);
 
     // Sets the depth texture used by the framebuffer.
     void attachDepthTexture(const Texture* depthTexture);
@@ -33,4 +41,6 @@ public:
 
 private:
     GLuint id_;
+    int width_;
+    int height_;
 };

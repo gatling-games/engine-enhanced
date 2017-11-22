@@ -312,11 +312,8 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
     settings.hasTangents = false;
     settings.hasTexcoords = true;
 
-    std::cout << vertexIndices.size() << std::endl;
-    
-
     // Pack mesh settings and vertex data into binary file
-    std::ofstream outputStream(outputFile.c_str());
+    std::ofstream outputStream(outputFile.c_str(), std::ofstream::binary);
     outputStream.write((const char*)&settings, sizeof(MeshSettings));
     outputStream.write((const char*)&positionAttributes[0], sizeof(Point3) * positionAttributes.size());
     outputStream.write((const char*)&normalAttributes[0], sizeof(Vector3) * normalAttributes.size());

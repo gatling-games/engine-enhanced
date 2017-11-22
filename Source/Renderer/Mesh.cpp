@@ -51,6 +51,7 @@ void Mesh::load(std::ifstream& file)
         glBindBuffer(GL_ARRAY_BUFFER, attributeBuffers_[PositionsBuffer]);
         glBufferData(GL_ARRAY_BUFFER, positionsSize, positionsData.get(), GL_STATIC_DRAW);
         glVertexAttribPointer(PositionsBuffer, 3, GL_FLOAT, false, 0, (void*)0);
+        glEnableVertexAttribArray(PositionsBuffer);
     }
 
     // Load the normals attribute buffer
@@ -63,6 +64,7 @@ void Mesh::load(std::ifstream& file)
         glBindBuffer(GL_ARRAY_BUFFER, attributeBuffers_[NormalsBuffer]);
         glBufferData(GL_ARRAY_BUFFER, normalsSize, normalsData.get(), GL_STATIC_DRAW);
         glVertexAttribPointer(NormalsBuffer, 3, GL_FLOAT, false, 0, (void*)0);
+        glEnableVertexAttribArray(NormalsBuffer);
     }
 
     // Load the tangents attribute buffer
@@ -75,6 +77,7 @@ void Mesh::load(std::ifstream& file)
         glBindBuffer(GL_ARRAY_BUFFER, attributeBuffers_[TangentsBuffer]);
         glBufferData(GL_ARRAY_BUFFER, tangentsSize, tangentsData.get(), GL_STATIC_DRAW);
         glVertexAttribPointer(TangentsBuffer, 4, GL_FLOAT, false, 0, (void*)0);
+        glEnableVertexAttribArray(TangentsBuffer);
     }
 
     // Load the texcoords attribute buffer
@@ -87,6 +90,7 @@ void Mesh::load(std::ifstream& file)
         glBindBuffer(GL_ARRAY_BUFFER, attributeBuffers_[TexcoordsBuffer]);
         glBufferData(GL_ARRAY_BUFFER, texcoordsSize, texcoordsData.get(), GL_STATIC_DRAW);
         glVertexAttribPointer(TexcoordsBuffer, 2, GL_FLOAT, false, 0, (void*)0);
+        glEnableVertexAttribArray(TexcoordsBuffer);
     }
 
     // Load the elements buffer

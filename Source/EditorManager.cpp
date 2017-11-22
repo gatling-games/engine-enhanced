@@ -91,6 +91,9 @@ void EditorManager::render()
     // Create the draw lists for the main window.
     mainWindow_.repaint();
 
+    // Switch to rendering directly to the window
+    Framebuffer::backbuffer()->use();
+
     // Find the size of the glfw window.
     int width;
     int height;
@@ -102,5 +105,7 @@ void EditorManager::render()
     glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+	
+    // Now actually render the glfw draw list.
     ImGui::Render();
 }

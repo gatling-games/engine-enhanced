@@ -2,11 +2,16 @@
 
 #include <imgui.h>
 
+#include "SceneManager.h"
+#include "Scene/Camera.h"
+
 GamePanel::GamePanel()
     : frameBuffer_(nullptr)
     , depthBuffer_(nullptr)
     , colorBuffer_(nullptr)
+    , renderer_(nullptr)
 {
+
 }
 
 GamePanel::~GamePanel()
@@ -17,29 +22,27 @@ GamePanel::~GamePanel()
         delete frameBuffer_;
         delete depthBuffer_;
         delete colorBuffer_;
+        delete renderer_;
     }
 }
 
 void GamePanel::draw()
 {
     // Determine the size of the region we need to render for
+    // and create / recreate the framebuffer when needed.
     const ImVec2 renderTextureSize = ImGui::GetContentRegionAvail();
-    if(frameBuffer_ == nullptr 
-        || colorBuffer_->width() != renderTextureSize.x 
+    if (frameBuffer_ == nullptr
+        || colorBuffer_->width() != renderTextureSize.x
         || colorBuffer_->height() != renderTextureSize.y)
     {
         createFramebuffer(renderTextureSize.x, renderTextureSize.y);
     }
 
-    frameBuffer_->use();
-
-    glClearColor(180.0f, 0.0f, 180.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    Framebuffer::backbuffer()->use();
+    // Re-render the framebuffer on each draw
+    renderer_->renderFrame(SceneManager::instance()->mainCamera());
 
     // Draw the texture
-    ImGui::Image(reinterpret_cast<ImTextureID>(colorBuffer_->glid()), ImGui::GetContentRegionAvail());
+    ImGui::Image(reinterpret_cast<ImTextureID>(colorBuffer_->glid()), ImGui::GetContentRegionAvail(), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 }
 
 void GamePanel::createFramebuffer(int width, int height)
@@ -50,6 +53,7 @@ void GamePanel::createFramebuffer(int width, int height)
         delete frameBuffer_;
         delete depthBuffer_;
         delete colorBuffer_;
+        delete renderer_;
     }
 
     // Create new framebuffer and textures with new panel dimensions
@@ -60,4 +64,7 @@ void GamePanel::createFramebuffer(int width, int height)
     // Attach new textures to new framebuffer
     frameBuffer_->attachDepthTexture(depthBuffer_);
     frameBuffer_->attachColorTexture(colorBuffer_);
+
+    // Then create a renderer for the framebuffer.
+    renderer_ = new Renderer(frameBuffer_);
 }

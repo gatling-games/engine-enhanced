@@ -65,3 +65,18 @@ Vector3 Vector4::asVector() const
     return Vector3(x, y, z);
 }
 
+std::ostream& operator << (std::ostream &os, const Vector4 &vec)
+{
+    os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << ")";
+    return os;
+}
+
+std::istream& operator >> (std::istream &is, Vector4 &vec)
+{
+    is >> vec.x;
+    is >> vec.y;
+    is >> vec.z;
+    is >> vec.w;
+
+    return is;
+}

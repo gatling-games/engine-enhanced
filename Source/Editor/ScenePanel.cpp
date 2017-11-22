@@ -2,47 +2,32 @@
 
 #include <imgui.h>
 
+#include "SceneManager.h"
+#include "Scene/GameObject.h"
+
 void ScenePanel::draw()
 {
-    if (ImGui::TreeNode("Terrain"))
+    // Get a list of game objects in the scene.
+    auto gameObjects = SceneManager::instance()->gameObjects();
+
+    // Draw all of the game objects in the scene with no parent.
+    for (unsigned int i = 0; i < gameObjects.size(); ++i)
     {
-        ImGui::Text("base_renderer");
-        ImGui::Text("vegetation_renderer");
-        ImGui::TreePop();
+        drawNode(gameObjects[i].get());
     }
+}
 
-    for (int i = 0; i < 5; ++i)
+void ScenePanel::drawNode(GameObject* gameObject)
+{
+    // If the gameobject has no root nodes, draw a simple button.
+    ImGui::Bullet();
+    if (ImGui::Selectable(gameObject->name().c_str()))
     {
-        if (ImGui::TreeNode((const void*)i, "enemy_tank"))
-        {
-            ImGui::Text("collider");
-
-            if (ImGui::TreeNode("turret"))
-            {
-                ImGui::Text("light");
-                ImGui::Text("fire_effects");
-
-                ImGui::TreePop();
-            }
-
-            ImGui::TreePop();
-        }
+        gameObjectSelected(gameObject);
     }
+}
 
-    if (ImGui::TreeNode("player_helicopter"))
-    {
-        ImGui::Text("guns_left");
-        ImGui::Text("guns_right");
-        ImGui::Text("rotor_blades");
-
-        if (ImGui::TreeNode("player"))
-        {
-            ImGui::Text("head");
-            ImGui::Text("hand_left");
-            ImGui::Text("hand_right");
-            ImGui::TreePop();
-        }
-
-        ImGui::TreePop();
-    }
+void ScenePanel::gameObjectSelected(GameObject* gameObject)
+{
+    printf("GameObject %s selected \n", gameObject->name().c_str());
 }

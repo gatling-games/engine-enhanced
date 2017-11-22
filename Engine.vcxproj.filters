@@ -16,6 +16,9 @@
     <Filter Include="Editor">
       <UniqueIdentifier>{6bb1e262-52e0-4678-b0b5-502977dc3cca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{f27819fb-5fdf-4945-a12b-5fbc0c1f1b7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -113,8 +116,18 @@
     <ClInclude Include="Source\Renderer\UniformBuffer.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Renderer\Camera.h">
-      <Filter>Renderer</Filter>
+    <ClInclude Include="Source\SceneManager.h" />
+    <ClInclude Include="Source\Scene\GameObject.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Transform.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Camera.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\StaticMesh.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -201,11 +214,21 @@
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\RenderManager.cpp" />
-    <ClCompile Include="Source\Renderer\Camera.cpp">
-      <Filter>Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Renderer\Framebuffer.cpp">
       <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneManager.cpp" />
+    <ClCompile Include="Source\Scene\GameObject.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Transform.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Camera.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\StaticMesh.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

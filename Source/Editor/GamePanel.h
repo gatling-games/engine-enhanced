@@ -1,8 +1,10 @@
 #pragma once
 
 #include "Editor/EditorPanel.h"
+
 #include "Renderer/Texture.h"
 #include "Renderer/Framebuffer.h"
+#include "Renderer/Renderer.h"
 
 class GamePanel : public EditorPanel
 {
@@ -18,6 +20,7 @@ private:
     Framebuffer* frameBuffer_;
     Texture* depthBuffer_;
     Texture* colorBuffer_;
-
+    Renderer* renderer_;
+	
     void createFramebuffer(int width, int height);
 };

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 struct Point3;
 struct Vector3;
 
@@ -23,3 +25,6 @@ struct Vector4
     Point3 asPoint() const;
     Vector3 asVector() const;
 };
+
+std::ostream& operator << (std::ostream &os, const Vector4 &vec);
+std::istream& operator >> (std::istream &is, Vector4 &vec);

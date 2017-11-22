@@ -107,15 +107,8 @@ bool ResourceManager::resourceLoaded(ResourceID id) const
 
 ResourceID ResourceManager::pathToResourceID(const std::string &sourcePath) const
 {
-    // Remove the root path, if the source path begins with it
-    std::string relativeSourcePath = sourcePath;
-    if (sourcePath.compare(0, sourceDirectory_.length(), sourceDirectory_))
-    {
-        relativeSourcePath = std::string(sourcePath.c_str() + sourceDirectory_.length());
-    }
-
     // Return a hash of the path string.
-    return std::hash<std::string>{}(relativeSourcePath);
+    return std::hash<std::string>{}(fs::path(sourcePath).string());
 }
 
 std::string ResourceManager::resourceIDToPath(ResourceID id) const
