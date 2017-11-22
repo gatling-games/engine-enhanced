@@ -57,9 +57,9 @@ public:
 
     // Methods for finding components attached to the gameobject.
     // Note: These methods can be slow. Caching the result may be worthwile.
-    Transform* transformComponent() const;
-    Camera* cameraComponent() const;
-    StaticMesh* staticMeshComponent() const;
+    Transform* transform() const;
+    Camera* camera() const;
+    StaticMesh* staticMesh() const;
 
 private:
     const GameObjectID id_;

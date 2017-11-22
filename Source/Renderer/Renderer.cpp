@@ -71,7 +71,7 @@ void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw) const
 {
     // Gather the new contents of the per-draw buffer
     PerDrawUniformData data;
-    data.localToWorld = draw->gameObject()->transformComponent()->localToWorld();
+    data.localToWorld = draw->gameObject()->transform()->localToWorld();
 
     // Update the uniform buffer.
     perDrawUniformBuffer_.update(data);

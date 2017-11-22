@@ -30,21 +30,21 @@ void GameObject::deserialize(BitReader& reader)
     
 }
 
-Transform* GameObject::transformComponent() const
+Transform* GameObject::transform() const
 {
     // Check the scene transform list for one with the
     // correct game object id.
     return SceneManager::instance()->findTransform(id_);
 }
 
-Camera* GameObject::cameraComponent() const
+Camera* GameObject::camera() const
 {
     // Check the scene camera list for one with the
     // correct game object id.
     return SceneManager::instance()->findCamera(id_);
 }
 
-StaticMesh* GameObject::staticMeshComponent() const
+StaticMesh* GameObject::staticMesh() const
 {
     // Check the scene static mesh list for one with the
     // correct game object id.

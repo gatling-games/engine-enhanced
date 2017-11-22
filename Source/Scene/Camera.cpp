@@ -42,7 +42,7 @@ void Camera::setHorizontalFOV(const float& FOV)
 
 Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio) const
 {
-    const Transform* transform = gameObject()->transformComponent();
+    const Transform* transform = gameObject()->transform();
     const Matrix4x4 worldToLocal = transform->worldToLocal();
     const Matrix4x4 projection = Matrix4x4::perspective(horizontalFOV_, aspectRatio, nearPlaneDistance_, farPlaneDistance_);
 
