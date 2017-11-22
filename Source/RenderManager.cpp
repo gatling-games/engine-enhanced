@@ -30,8 +30,5 @@ Renderer* RenderManager::createRenderer()
 
 void RenderManager::render()
 {
-    for (size_t renderIndex = 0; renderIndex < renderers_.size(); renderIndex++)
-    {
-        renderers_[renderIndex]->renderFrame();
-    }
+    // Individual renderers are currently rendered on-demand.
 }
