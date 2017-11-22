@@ -10,10 +10,34 @@
 #include <fstream>
 #include <iostream>
 
+#include <filesystem>
+namespace fs = std::experimental::filesystem::v1;
+
 bool MeshImporter::canHandleFileType(const std::string& fileExtension) const
 {
-    // Support .obj files only.
-    return (fileExtension == ".obj");
+    // Support .obj files and .mesh only.
+    return (fileExtension == ".obj" || fileExtension == ".mesh");
+}
+
+bool MeshImporter::importFile(const std::string& sourceFile, const std::string& outputFile) const
+{
+    // Determine the file extension that we are importing.
+    const std::string fileExtension = fs::path(sourceFile).extension().string();
+
+    // Use the obj importer for .obj files
+    if (fileExtension == ".obj")
+    {
+        return importObjFile(sourceFile, outputFile);
+    }
+
+    // Use the .mesh importer for .mesh files
+    if (fileExtension == ".mesh")
+    {
+        return importDotMeshFile(sourceFile, outputFile);
+    }
+
+    printf("MeshImporter cannot handle %s files \n", fileExtension.c_str());
+    return false;
 }
 
 int attributeSearch(const std::vector<Point3> &positionAttributes, const std::vector<Vector3> &normalAttributes,
@@ -33,7 +57,7 @@ int attributeSearch(const std::vector<Point3> &positionAttributes, const std::ve
     return -1;
 }
 
-bool MeshImporter::importFile(const std::string& sourceFile, const std::string& outputFile) const
+bool MeshImporter::importObjFile(const std::string& sourceFile, const std::string& outputFile) const
 {
     struct objVertex
     {
@@ -155,10 +179,10 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
                 file >> v[2];
                 file >> v[3];
 
-                for (int i=0; i<4; i++)
+                for (int i = 0; i < 4; i++)
                 {
                     w[i] = v[i];
-                }               
+                }
 
                 objVertex f;
 
@@ -276,6 +300,7 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
     std::vector<MeshElementIndex> vertexIndices;
     std::vector<Point3> positionAttributes;
     std::vector<Vector3> normalAttributes;
+    std::vector<Vector4> tangentAttributes;
     std::vector<Point2> texCoordAttributes;
 
     // Count through data indices and assign to arrays in desired order
@@ -304,22 +329,95 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
         vertexIndices.push_back((MeshElementIndex)attributeIndex);
     }
 
+    // Output the obj data as a binary file
+    writeBinaryMesh(outputFile, positionAttributes, normalAttributes, tangentAttributes, texCoordAttributes, vertexIndices);
+    return true;
+}
+
+bool MeshImporter::importDotMeshFile(const std::string &sourceFile, const std::string &outputFile) const
+{
+    std::vector<Point3> positions;
+    std::vector<Vector3> normals;
+    std::vector<Vector4> tangents;
+    std::vector<Point2> texcoords;
+    std::vector<MeshElementIndex> elements;
+
+    std::ifstream file(sourceFile);
+
+    // Read lines from the mesh file
+    while (file.is_open() && !file.fail() && !file.eof())
+    {
+        std::string type;
+        file >> type;
+
+        if (type == "vertex")
+        {
+            Point3 v;
+            file >> v;
+            positions.push_back(v);
+        }
+        else if (type == "normal")
+        {
+            Vector3 n;
+            file >> n;
+            normals.push_back(n);
+        }
+        else if (type == "tangent")
+        {
+            Vector4 t;
+            file >> t;
+            tangents.push_back(t);
+        }
+        else if (type == "texcoord")
+        {
+            Point2 t;
+            file >> t;
+            texcoords.push_back(t);
+        }
+        else if (type == "triangle")
+        {
+            MeshElementIndex a, b, c;
+            file >> a >> b >> c;
+            elements.push_back(c);
+            elements.push_back(b);
+            elements.push_back(a);
+        }
+    }
+
+    // Check for file reading errors
+    if (file.fail())
+    {
+        printf("Error reading mesh file \n");
+        return false;
+    }
+
+    // Success. Output the binary mesh.
+    writeBinaryMesh(outputFile, positions, normals, tangents, texcoords, elements);
+    return true;
+}
+
+void MeshImporter::writeBinaryMesh(const std::string &outputFile,
+    const std::vector<Point3> &positionAttributes,
+    const std::vector<Vector3> &normalAttributes,
+    const std::vector<Vector4> &tangentAttributes,
+    const std::vector<Point2> &texcoordAttributes,
+    const std::vector<MeshElementIndex> &elementIndexes) const
+{
     // Populate mesh settings object with appropriate data
     MeshSettings settings;
-    settings.vertexCount = (int)vertices.size();
-    settings.elementsCount = (int)vertexIndices.size();
-    settings.hasNormals = true;
-    settings.hasTangents = false;
-    settings.hasTexcoords = true;
+    settings.vertexCount = (int)positionAttributes.size();
+    settings.elementsCount = (int)elementIndexes.size();
+    settings.hasNormals = (normalAttributes.size() == positionAttributes.size());
+    settings.hasTangents = (tangentAttributes.size() == positionAttributes.size());
+    settings.hasTexcoords = (texcoordAttributes.size() == positionAttributes.size());
 
     // Pack mesh settings and vertex data into binary file
     std::ofstream outputStream(outputFile.c_str(), std::ofstream::binary);
     outputStream.write((const char*)&settings, sizeof(MeshSettings));
     outputStream.write((const char*)&positionAttributes[0], sizeof(Point3) * positionAttributes.size());
-    outputStream.write((const char*)&normalAttributes[0], sizeof(Vector3) * normalAttributes.size());
-    outputStream.write((const char*)&texCoordAttributes[0], sizeof(Point2) * texCoordAttributes.size());
-    outputStream.write((const char*)&vertexIndices[0], sizeof(MeshElementIndex) * vertexIndices.size());
+    if (settings.hasNormals) outputStream.write((const char*)&normalAttributes[0], sizeof(Vector3) * normalAttributes.size());
+    if (settings.hasTangents) outputStream.write((const char*)&tangentAttributes[0], sizeof(Vector4) * tangentAttributes.size());
+    if (settings.hasTexcoords)outputStream.write((const char*)&texcoordAttributes[0], sizeof(Point2) * texcoordAttributes.size());
+    outputStream.write((const char*)&elementIndexes[0], sizeof(MeshElementIndex) * elementIndexes.size());
     outputStream.close();
-
-    return true;
 }
