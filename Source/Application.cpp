@@ -41,6 +41,10 @@ Application::~Application()
 
 void Application::resize(int width, int height)
 {
+    // Each time a resize occurs we need to update the backbuffer size.
+    Framebuffer::backbuffer()->setResolution(width, height);
+
+    // Inform relevent modules of the resize
     editorManager_->resize(width, height);
 }
 

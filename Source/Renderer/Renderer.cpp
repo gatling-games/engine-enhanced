@@ -54,9 +54,14 @@ void Renderer::updateSceneUniformBuffer() const
 
 void Renderer::updateCameraUniformBuffer(const Camera* camera) const
 {
+    // Find out the resolution and aspect ratio of the framebuffer
+    const int width = targetFramebuffer_->width();
+    const int height = targetFramebuffer_->height();
+    const float aspect = width / (float)height;
+
     // Gather the new contents of the camera buffer
     CameraUniformData data;
-    data.worldToClip = camera->getWorldToCameraMatrix(1.0f);
+    data.worldToClip = camera->getWorldToCameraMatrix(aspect);
     
     // Update the uniform buffer.
     cameraUniformBuffer_.update(data);
