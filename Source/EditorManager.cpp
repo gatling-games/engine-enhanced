@@ -91,6 +91,9 @@ void EditorManager::render()
     // Draw the main window
     mainWindow_.repaint();
 
+    // Switch to rendering directly to the window
+    Framebuffer::backbuffer()->use();
+
     // Now actually render the glfw draw list.
     int width;
     int height;
