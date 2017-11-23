@@ -27,10 +27,18 @@ public:
     ShaderVariant(ShaderFeatureList features, const std::string &originalSource);
     ~ShaderVariant();
 
+    // Prevent a shader variant from being copied
+    ShaderVariant(const ShaderVariant&) = delete;
+    ShaderVariant& operator=(const ShaderVariant&) = delete;
+
+    // Allow a variant to be moved
+    ShaderVariant(ShaderVariant&& other);
+    ShaderVariant& operator=(ShaderVariant&& other);
+
+    // Gets the features in the variant.
     ShaderFeatureList features() const { return features_; }
 
-    GLuint program() const { return program_; }
-
+    // Sets the variant as the active shader program.
     void bind() const;
 
 private:

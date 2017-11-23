@@ -39,6 +39,10 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     glAttachShader(program_, fragmentShader);
     glLinkProgram(program_);
 
+    // We are using program id 0 to mean no program.
+    // Ensure that opengl does not create a program with id 0.
+    assert(program_ != 0);
+
     // Check that the program linking succeeded.
     if (!checkLinkerErrors(program_))
     {
@@ -65,7 +69,37 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
 
 ShaderVariant::~ShaderVariant()
 {
-    glDeleteProgram(program_);
+    if (program_ != 0)
+    {
+        glDeleteProgram(program_);
+    }
+}
+
+ShaderVariant::ShaderVariant(ShaderVariant&& other)
+{
+    // Steal the contents of other
+    features_ = other.features_;
+    program_ = other.program_;
+
+    // Reset other
+    other.features_ = 0;
+    other.program_ = 0;
+}
+
+ShaderVariant& ShaderVariant::operator=(ShaderVariant&& other)
+{
+    if (this != &other)
+    {
+        // Steal the contents of other
+        features_ = other.features_;
+        program_ = other.program_;
+
+        // Reset other
+        other.features_ = 0;
+        other.program_ = 0;
+    }
+
+    return *this;
 }
 
 void ShaderVariant::bind() const
@@ -229,7 +263,7 @@ void Shader::bindVariant(ShaderFeatureList features)
     //Loop through all variants to see if it already exists.
     for (int variant = 0; variant < loadedVariants_.size(); ++variant)
     {
-        ShaderVariant current = loadedVariants_[variant];
+        ShaderVariant& current = loadedVariants_[variant];
         if (current.features() == features)
         {
             current.bind();
@@ -238,7 +272,6 @@ void Shader::bindVariant(ShaderFeatureList features)
     }
 
     //If not, compile and bind new variant, and add it to the list.
-    ShaderVariant newVariant = ShaderVariant(features, originalSource_);
-    loadedVariants_.push_back(newVariant);
-    newVariant.bind();
+    loadedVariants_.push_back(ShaderVariant(features, originalSource_));
+    loadedVariants_.back().bind();
 }
