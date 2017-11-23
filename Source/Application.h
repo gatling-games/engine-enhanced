@@ -10,6 +10,7 @@ class InputManager;
 class ResourceManager;
 class SceneManager;
 class RenderManager;
+class NetworkManager;
 
 class ApplicationModule
 {
@@ -38,4 +39,5 @@ private:
     ResourceManager* resourceManager_;
     SceneManager* sceneManager_;
     RenderManager* renderManager_;
+    NetworkManager* networkManager_;
 };

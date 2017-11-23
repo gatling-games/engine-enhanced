@@ -4,9 +4,8 @@
 #include <WinSock2.h>
 
 
-NetworkManager::NetworkManager(GLFWwindow* window)
+NetworkManager::NetworkManager()
 {
-    window_ = window;
     if (!initSockets())
     {
 

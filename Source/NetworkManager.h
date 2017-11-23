@@ -7,8 +7,10 @@
 class NetworkManager : public ApplicationModule
 {
 public:
-    explicit NetworkManager(GLFWwindow* window);
+    NetworkManager();
     ~NetworkManager();
+
+    std::string name() const override { return "Network Manager"; }
 
     void drawDebugMenu() override;
 
@@ -17,6 +19,5 @@ private:
     void shutdownSockets();
     Socket getSocket();
 
-    GLFWwindow* window_;
     Socket socket_;
 };

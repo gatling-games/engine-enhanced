@@ -8,6 +8,7 @@
 #include "InputManager.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
+#include "NetworkManager.h"
 #include "RenderManager.h"
 
 Application::Application(GLFWwindow* window, int width, int height)
@@ -20,6 +21,7 @@ Application::Application(GLFWwindow* window, int width, int height)
     resourceManager_ = new ResourceManager("Resources/", "Build/Resources");
     sceneManager_ = new SceneManager();
     editorManager_ = new EditorManager(window, true);
+    networkManager_ = new NetworkManager();
     renderManager_ = new RenderManager();
 
     // Register engine module debug menus
