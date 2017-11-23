@@ -181,7 +181,7 @@ void ShaderVariant::setUniformBufferBinding(const char *blockName, UniformBuffer
 
 void ShaderVariant::setTextureLocation(const char* textureName, int slot)
 {
-    const GLuint textureIndex = glGetUniformLocation(program_, "_MainTexture");
+    const GLuint textureIndex = glGetUniformLocation(program_, textureName);
     if(textureIndex != -1)
     {
         glUniform1i(textureIndex, slot);
