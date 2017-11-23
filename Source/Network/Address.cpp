@@ -16,13 +16,3 @@ Address::Address(unsigned int address, unsigned short port)
     address_ = address;
     port_ = port;
 }
-
-unsigned int Address::address() const
-{
-    return address_;
-}
-
-unsigned short Address::port() const
-{
-    return port_;
-}

@@ -34,3 +34,8 @@ void NetworkManager::shutdownSockets()
 {
     WSACleanup();
 }
+
+void NetworkManager::frameStart()
+{
+    socket_.recieve();
+}

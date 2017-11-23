@@ -1,5 +1,5 @@
 #pragma once
-
+#include <string>
 class Address
 {
 public:
@@ -15,8 +15,8 @@ public:
     Address(unsigned int address,
         unsigned short port);
 
-    unsigned int address() const;
-    unsigned short port() const;
+    unsigned int address() const { return address_; }
+    unsigned short port() const { return port_; }
 
 private:
 

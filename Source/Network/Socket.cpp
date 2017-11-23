@@ -41,7 +41,7 @@ bool Socket::open(unsigned short port)
         return false;
     }
     getsockname(handle_, (sockaddr*)&address, &len);
-    port_ = address.sin_port;
+    port_ = ntohs(address.sin_port);
     return true;
 }
 
@@ -57,7 +57,6 @@ bool Socket::send(const Address &destination, const void *data, int size)
     to.sin_addr.s_addr = htonl(destination.address());
     to.sin_port = htons(destination.port());
     int sent_bytes = sendto(handle_, (const char*)data, sizeof(data), 0, (sockaddr*)&to, sizeof(sockaddr_in));
-
     if (sent_bytes != sizeof(data))
     {
         printf("failed to send packet\n");
@@ -83,10 +82,9 @@ int Socket::recieve()
         {
             break;
         }
-
         unsigned int from_address = ntohl(from.sin_addr.s_addr);
         unsigned int from_port = ntohs(from.sin_port);
-
+        printf("Bytes recieved: %d\n Sender:%d %d\n Data:%s\n", bytes, from_address, from_port, packetData);
     }
     return true;
 }
