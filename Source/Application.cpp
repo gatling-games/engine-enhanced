@@ -48,6 +48,14 @@ void Application::resize(int width, int height)
     editorManager_->resize(width, height);
 }
 
+void Application::windowFocused()
+{
+    // Resources may have been changed via external tools
+    // so check for changed resources when focus switches
+    // back to the application window.
+    resourceManager_->importChangedResources();
+}
+
 void Application::frameStart()
 {
     clock_->frameStart();

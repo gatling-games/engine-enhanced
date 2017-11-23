@@ -27,6 +27,9 @@ public:
     // Called when the window is resized.
     void resize(int newWidth, int newHeight);
 
+    // Called when the window (re)gains focus.
+    void windowFocused();
+
     // Called during the game loop.
     void frameStart();
     void drawFrame();

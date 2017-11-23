@@ -12,6 +12,20 @@
 
 #include "Application.h"
 
+// Contain the main application code in a class.
+Application* application;
+
+// glfw callback
+// Triggered when the window gains or loses focus
+void windowFocusCallback(GLFWwindow* window, int focused)
+{
+    if (focused)
+    {
+        // Notify the application class when it regains focus
+        application->windowFocused();
+    }
+}
+
 int main(int argc, const char* argv[])
 {
 	// Initialise GLFW library
@@ -33,8 +47,12 @@ int main(int argc, const char* argv[])
 	glfwSwapInterval(1);
 	gl3wInit();
 
-    // Create manager classes
-    Application* application = new Application(window, windowWidth, windowHeight);
+    // Register glfw callbacks
+    glfwSetWindowFocusCallback(window, &windowFocusCallback);
+
+    // Create the main application class.
+    application = new Application(window, windowWidth, windowHeight);
+    application->resize(windowWidth, windowHeight);
     
 	// Run game loop while window not closed
 	while (!glfwWindowShouldClose(window))
