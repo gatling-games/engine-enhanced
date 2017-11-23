@@ -30,16 +30,12 @@ public:
     ShaderFeatureList features() const { return features_; }
 
     GLuint program() const { return program_; }
-    GLuint vertexShader() const { return vertexShader_; }
-    GLuint fragmentShader() const { return fragmentShader_; }
 
     void bind() const;
 
 private:
     ShaderFeatureList features_;
     GLuint program_;
-    GLuint vertexShader_;
-    GLuint fragmentShader_;
 
     bool hasFeature(ShaderFeature feature) const;
     std::string createFeatureDefines() const;
@@ -51,11 +47,11 @@ private:
     bool compileShader(GLenum type, const char* shader, GLuint &id);
     bool checkShaderErrors(GLuint shaderID);
     bool checkLinkerErrors(GLuint programID);
-	
-	// Binds a uniform buffer type to the shader ubo block with the specified name
+
+    // Binds a uniform buffer type to the shader ubo block with the specified name
     void setUniformBufferBinding(const char *blockName, UniformBufferType type);
-	
-	// Sets the texture slot for a sampler with the specified name.
+
+    // Sets the texture slot for a sampler with the specified name.
     void setTextureLocation(const char* textureName, int slot);
 };
 

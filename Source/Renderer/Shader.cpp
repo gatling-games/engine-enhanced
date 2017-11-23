@@ -20,21 +20,23 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     const std::string fragmentSource = preprocessSource(GL_FRAGMENT_SHADER, originalSource);
 
     // Attempt to compile the vertex shader code.
-    if (!compileShader(GL_VERTEX_SHADER, vertexSource.c_str(), vertexShader_))
+    GLuint vertexShader;
+    if (!compileShader(GL_VERTEX_SHADER, vertexSource.c_str(), vertexShader))
     {
         printf("Failed to compile vertex shader");
     }
 
     // Attempt to compile the fragment shader code.
-    if (!compileShader(GL_FRAGMENT_SHADER, fragmentSource.c_str(), fragmentShader_))
+    GLuint fragmentShader;
+    if (!compileShader(GL_FRAGMENT_SHADER, fragmentSource.c_str(), fragmentShader))
     {
         printf("Failed to compile fragment shader");
     }
 
     // Create and link the shader program.
     program_ = glCreateProgram();
-    glAttachShader(program_, vertexShader_);
-    glAttachShader(program_, fragmentShader_);
+    glAttachShader(program_, vertexShader);
+    glAttachShader(program_, fragmentShader);
     glLinkProgram(program_);
 
     // Check that the program linking succeeded.
@@ -42,6 +44,13 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     {
         printf("Failed to create program \n");
     }
+
+    // We no longer need the vertex and fragment shader objects
+    // as the shader program is now compiled.
+    glDetachShader(program_, vertexShader);
+    glDetachShader(program_, fragmentShader);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
 
     // Set uniform block binding
     setUniformBufferBinding("scene_data", UniformBufferType::SceneBuffer);
@@ -57,8 +66,6 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
 ShaderVariant::~ShaderVariant()
 {
     glDeleteProgram(program_);
-    glDeleteShader(vertexShader_);
-    glDeleteShader(fragmentShader_);
 }
 
 void ShaderVariant::bind() const
@@ -165,7 +172,7 @@ bool ShaderVariant::checkLinkerErrors(GLuint programID)
 
         return false;
     }
-	
+
     return true;
 }
 
@@ -182,7 +189,7 @@ void ShaderVariant::setUniformBufferBinding(const char *blockName, UniformBuffer
 void ShaderVariant::setTextureLocation(const char* textureName, int slot)
 {
     const GLuint textureIndex = glGetUniformLocation(program_, textureName);
-    if(textureIndex != -1)
+    if (textureIndex != -1)
     {
         glUniform1i(textureIndex, slot);
     }
@@ -192,7 +199,7 @@ void ShaderVariant::setTextureLocation(const char* textureName, int slot)
 Shader::Shader(ResourceID id)
     : Resource(id)
 {
-    
+
 }
 
 Shader::~Shader()
@@ -202,9 +209,9 @@ Shader::~Shader()
 
 void Shader::load(std::ifstream& file)
 {
-	// Unload any loaded shader variants
+    // Unload any loaded shader variants
     unload();
-	
+
     //Load in source file to variable for later use in variants.
     std::stringstream fileStringStream;
     fileStringStream << file.rdbuf();
@@ -220,7 +227,7 @@ void Shader::unload()
 void Shader::bindVariant(ShaderFeatureList features)
 {
     //Loop through all variants to see if it already exists.
-    for(int variant = 0; variant < loadedVariants_.size(); ++variant)
+    for (int variant = 0; variant < loadedVariants_.size(); ++variant)
     {
         ShaderVariant current = loadedVariants_[variant];
         if (current.features() == features)
@@ -229,7 +236,7 @@ void Shader::bindVariant(ShaderFeatureList features)
             return;
         }
     }
-	
+
     //If not, compile and bind new variant, and add it to the list.
     ShaderVariant newVariant = ShaderVariant(features, originalSource_);
     loadedVariants_.push_back(newVariant);
