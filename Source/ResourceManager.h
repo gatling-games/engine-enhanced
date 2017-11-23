@@ -156,6 +156,12 @@ private:
     // Updates the list of all resources in the project.
     void updateResourcesList();
 
+    // Unloads a reloads the resource with the given id, if
+    // it is currently loaded.
+    //
+    // Used for hot-reloading of resources when the change at runtime.
+    void reloadResourceIfLoaded(ResourceID id);
+
     // Gets the compiled binary file path for a resource
     std::string importedResourcePath(ResourceID id) const;
     std::string importedResourcePath(const std::string &sourcePath) const;

@@ -153,6 +153,9 @@ void ResourceManager::importResource(ResourceID id)
         return;
     }
 
+    // Finally, reload the asset if it is loaded.
+    reloadResourceIfLoaded(id);
+
     // Print a finished message
     printf("Done \n");
 }
@@ -244,6 +247,26 @@ void ResourceManager::updateResourcesList()
             resourceIDs_.push_back(id);
             resourceSourcePaths_.push_back(sourcePath);
             resourceImportedPaths_.push_back(importedPath);
+        }
+    }
+}
+
+void ResourceManager::reloadResourceIfLoaded(ResourceID id)
+{
+    // Check if the resource is in the list of loaded resources.
+    for (unsigned int i = 0; i < loadedResources_.size(); ++i)
+    {
+        if (loadedResources_[i]->id() == id)
+        {
+            // If the resource is found, first unload it.
+            loadedResources_[i]->unload();
+
+            // Now find the imported path and reload the resource.
+            const std::string importedPath = importedResourcePath(id);
+
+            // Finally, load the resource again.
+            std::ifstream importedFile(importedPath, std::ifstream::binary);
+            loadedResources_[i]->load(importedFile);
         }
     }
 }
