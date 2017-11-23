@@ -11,8 +11,7 @@ NetworkManager::NetworkManager()
 
     }
     socket_ = Socket();
-    socket_.open(30000);
-    socket_.recieve();
+    socket_.open(0);
 }
 
 NetworkManager::~NetworkManager()

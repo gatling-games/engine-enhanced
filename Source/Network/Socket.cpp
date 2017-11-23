@@ -24,6 +24,7 @@ bool Socket::open(unsigned short port)
     }
 
     sockaddr_in address;
+    socklen_t len = sizeof(address);
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(port);
@@ -39,7 +40,8 @@ bool Socket::open(unsigned short port)
         printf("Failed to set non blocking\n");
         return false;
     }
-    port_ = port;
+    getsockname(handle_, (sockaddr*)&address, &len);
+    port_ = address.sin_port;
     return true;
 }
 
@@ -50,7 +52,12 @@ void Socket::close()
 
 bool Socket::send(const Address &destination, const void *data, int size)
 {
-    int sent_bytes = sendto(handle_, (const char*)data, sizeof(data), 0, (sockaddr*)destination.address(), sizeof(sockaddr_in));
+    sockaddr_in to;
+    to.sin_family = AF_INET;
+    to.sin_addr.s_addr = htonl(destination.address());
+    to.sin_port = htons(destination.port());
+    int sent_bytes = sendto(handle_, (const char*)data, sizeof(data), 0, (sockaddr*)&to, sizeof(sockaddr_in));
+
     if (sent_bytes != sizeof(data))
     {
         printf("failed to send packet\n");

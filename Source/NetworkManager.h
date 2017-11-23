@@ -3,8 +3,9 @@
 
 #include "Network/Socket.h"
 #include "Application.h"
+#include "Utils/Singleton.h"
 
-class NetworkManager : public ApplicationModule
+class NetworkManager : public ApplicationModule, public Singleton<NetworkManager>
 {
 public:
     NetworkManager();
@@ -13,6 +14,10 @@ public:
     std::string name() const override { return "Network Manager"; }
 
     void drawDebugMenu() override;
+    //Called every frame
+    void frameStart();
+
+    Socket getSocket() const { return socket_; }
 
 private:
     bool initSockets();

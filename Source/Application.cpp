@@ -28,6 +28,7 @@ Application::Application(GLFWwindow* window, int width, int height)
     editorManager_->addModuleToDebugPanel(clock_);
     editorManager_->addModuleToDebugPanel(inputManager_);
     editorManager_->addModuleToDebugPanel(resourceManager_);
+    editorManager_->addModuleToDebugPanel(networkManager_);
     editorManager_->addModuleToDebugPanel(sceneManager_);
 }
 
@@ -54,6 +55,7 @@ void Application::frameStart()
 {
     clock_->frameStart();
     inputManager_->frameStart(clock_);
+    networkManager_->frameStart();
 }
 
 void Application::drawFrame()
