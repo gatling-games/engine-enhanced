@@ -156,9 +156,7 @@ private:
     // Updates the list of all resources in the project.
     void updateResourcesList();
 
-    // Unloads a reloads the resource with the given id, if
-    // it is currently loaded.
-    //
+    // Unloads and reloads the resource with the given id, if it is currently loaded.
     // Used for hot-reloading of resources when the change at runtime.
     void reloadResourceIfLoaded(ResourceID id);
 
