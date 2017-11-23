@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\NetworkManager.h" />
+    <ClInclude Include="Source\Network\Address.h" />
+    <ClInclude Include="Source\Network\Socket.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\EditorManager.h" />
@@ -53,6 +56,9 @@
     <ClInclude Include="Source\Utils\Singleton.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\NetworkManager.cpp" />
+    <ClCompile Include="Source\Network\Address.cpp" />
+    <ClCompile Include="Source\Network\Socket.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\EditorManager.cpp" />

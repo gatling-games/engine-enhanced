@@ -19,6 +19,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{f27819fb-5fdf-4945-a12b-5fbc0c1f1b7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{18aa17a3-a0ce-4806-9fc2-fa3e2393752e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -129,6 +132,13 @@
     <ClInclude Include="Source\Scene\StaticMesh.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\NetworkManager.h" />
+    <ClInclude Include="Source\Network\Address.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\Socket.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -229,6 +239,13 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\StaticMesh.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\NetworkManager.cpp" />
+    <ClCompile Include="Source\Network\Address.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\Socket.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
