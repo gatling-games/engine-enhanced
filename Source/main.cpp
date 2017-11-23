@@ -15,6 +15,13 @@
 // Contain the main application code in a class.
 Application* application;
 
+//glfw callback
+// Triggered when the window is resized.
+void windowSizeCallback(GLFWwindow* window, int newWidth, int newHeight)
+{
+    application->resize(newWidth, newHeight);
+}
+
 // glfw callback
 // Triggered when the window gains or loses focus
 void windowFocusCallback(GLFWwindow* window, int focused)
@@ -48,6 +55,7 @@ int main(int argc, const char* argv[])
 	gl3wInit();
 
     // Register glfw callbacks
+    glfwSetWindowSizeCallback(window, &windowSizeCallback);
     glfwSetWindowFocusCallback(window, &windowFocusCallback);
 
     // Create the main application class.
@@ -59,17 +67,6 @@ int main(int argc, const char* argv[])
 	{
         // Poll for GLFW events
         glfwPollEvents();
-
-        // Check if the window has changed size.
-        int newWidth;
-        int newHeight;
-        glfwGetWindowSize(window, &newWidth, &newHeight);
-        if (newWidth != windowWidth || newHeight != windowHeight)
-        {
-            windowWidth = newWidth;
-            windowHeight = newHeight;
-            application->resize(newWidth, newHeight);
-        }
 
         // Run frame start methods
         application->frameStart();
