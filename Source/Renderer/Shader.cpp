@@ -222,7 +222,7 @@ void Shader::bindVariant(ShaderFeatureList features)
     //Loop through all variants to see if it already exists.
     for(int variant = 0; variant < loadedVariants_.size(); ++variant)
     {
-        ShaderVariant current = loadedVariants_[0];
+        ShaderVariant current = loadedVariants_[variant];
         if (current.features() == features)
         {
             current.bind();
