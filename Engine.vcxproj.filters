@@ -108,9 +108,7 @@
     <ClInclude Include="Source\Network\Socket.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="Source\NetworkManager.h">
-      <Filter>Network</Filter>
-    </ClInclude>
+    <ClInclude Include="Source\NetworkManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -185,8 +183,6 @@
     <ClCompile Include="Source\Network\Socket.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="Source\NetworkManager.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
+    <ClCompile Include="Source\NetworkManager.cpp" />
   </ItemGroup>
 </Project>
