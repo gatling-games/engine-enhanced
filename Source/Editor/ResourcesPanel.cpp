@@ -16,15 +16,6 @@ ResourcesPanel::ResourcesPanel()
 
 void ResourcesPanel::draw()
 {
-    if (ImGui::Button("Scan for changes"))
-    {
-        // Check for changed resources
-        ResourceManager::instance()->importChangedResources();
-
-        // Recreate the resources tree.
-        updateTree();
-    }
-
     // Draw the root nodes in the view
     drawNodes(resourceTreeRoot_.childNodes);
 }
