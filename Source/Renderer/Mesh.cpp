@@ -39,68 +39,96 @@ void Mesh::load(std::ifstream& file)
     file.read((char*)&settings_, sizeof(MeshSettings));
 
     // First, create the vertex array object.
-    glGenVertexArrays(1, &vertexArray_);
-    glBindVertexArray(vertexArray_);
+    glCreateVertexArrays(1, &vertexArray_);
 
     // Load the positions attribute buffer.
     {
+        // First read in the attribute data
         const int positionsSize = sizeof(Point3) * vertexCount();
         std::unique_ptr<Point3[]> positionsData(new Point3[vertexCount()]);
         file.read((char*)positionsData.get(), positionsSize);
-        glGenBuffers(1, &attributeBuffers_[PositionsBuffer]);
-        glBindBuffer(GL_ARRAY_BUFFER, attributeBuffers_[PositionsBuffer]);
-        glBufferData(GL_ARRAY_BUFFER, positionsSize, positionsData.get(), GL_STATIC_DRAW);
-        glVertexAttribPointer(PositionsBuffer, 3, GL_FLOAT, false, 0, (void*)0);
-        glEnableVertexAttribArray(PositionsBuffer);
+
+        // Create a buffer to hold the data.
+        glCreateBuffers(1, &attributeBuffers_[PositionsBuffer]);      
+        glNamedBufferData(attributeBuffers_[PositionsBuffer], positionsSize, positionsData.get(), GL_STATIC_DRAW);
+
+        // Now link the buffer to the vertex array attribute
+        glVertexArrayVertexBuffer(vertexArray_, PositionsBuffer, attributeBuffers_[PositionsBuffer], 0, 3 * sizeof(float));
+        glVertexArrayAttribFormat(vertexArray_, PositionsBuffer, 3, GL_FLOAT, false, 0);
+        glVertexArrayAttribBinding(vertexArray_, PositionsBuffer, PositionsBuffer);
+        glEnableVertexArrayAttrib(vertexArray_, PositionsBuffer);
     }
 
     // Load the normals attribute buffer
     if (hasNormals())
     {
+        // First read in the attribute data
         const int normalsSize = sizeof(Vector3) * vertexCount();
         std::unique_ptr<Vector3[]> normalsData(new Vector3[vertexCount()]);
         file.read((char*)normalsData.get(), normalsSize);
-        glGenBuffers(1, &attributeBuffers_[NormalsBuffer]);
-        glBindBuffer(GL_ARRAY_BUFFER, attributeBuffers_[NormalsBuffer]);
-        glBufferData(GL_ARRAY_BUFFER, normalsSize, normalsData.get(), GL_STATIC_DRAW);
-        glVertexAttribPointer(NormalsBuffer, 3, GL_FLOAT, false, 0, (void*)0);
-        glEnableVertexAttribArray(NormalsBuffer);
+
+        // Create a buffer to hold the data.
+        glCreateBuffers(1, &attributeBuffers_[NormalsBuffer]);
+        glNamedBufferData(attributeBuffers_[NormalsBuffer], normalsSize, normalsData.get(), GL_STATIC_DRAW);
+
+        // Now link the buffer to the vertex array attribute
+        glVertexArrayVertexBuffer(vertexArray_, NormalsBuffer, attributeBuffers_[NormalsBuffer], 0, 3 * sizeof(float));
+        glVertexArrayAttribFormat(vertexArray_, NormalsBuffer, 3, GL_FLOAT, false, 0);
+        glVertexArrayAttribBinding(vertexArray_, NormalsBuffer, NormalsBuffer);
+        glEnableVertexArrayAttrib(vertexArray_, NormalsBuffer);
     }
 
     // Load the tangents attribute buffer
     if (hasTangents())
     {
+        // First read in the attribute data
         const int tangentsSize = sizeof(Vector4) * vertexCount();
         std::unique_ptr<Vector4[]> tangentsData(new Vector4[vertexCount()]);
         file.read((char*)tangentsData.get(), tangentsSize);
-        glGenBuffers(1, &attributeBuffers_[TangentsBuffer]);
-        glBindBuffer(GL_ARRAY_BUFFER, attributeBuffers_[TangentsBuffer]);
-        glBufferData(GL_ARRAY_BUFFER, tangentsSize, tangentsData.get(), GL_STATIC_DRAW);
-        glVertexAttribPointer(TangentsBuffer, 4, GL_FLOAT, false, 0, (void*)0);
-        glEnableVertexAttribArray(TangentsBuffer);
+
+        // Create a buffer to hold the data.
+        glCreateBuffers(1, &attributeBuffers_[TangentsBuffer]);
+        glNamedBufferData(attributeBuffers_[TangentsBuffer], tangentsSize, tangentsData.get(), GL_STATIC_DRAW);
+
+        // Now link the buffer to the vertex array attribute
+        glVertexArrayVertexBuffer(vertexArray_, TangentsBuffer, attributeBuffers_[TangentsBuffer], 0, 4 * sizeof(float));
+        glVertexArrayAttribFormat(vertexArray_, TangentsBuffer, 4, GL_FLOAT, false, 0);
+        glVertexArrayAttribBinding(vertexArray_, TangentsBuffer, TangentsBuffer);
+        glEnableVertexArrayAttrib(vertexArray_, TangentsBuffer);
     }
 
     // Load the texcoords attribute buffer
     if (hasTexcoords())
     {
+        // First read in the attribute data
         const int texcoordsSize = sizeof(Vector2) * vertexCount();
         std::unique_ptr<Vector2[]> texcoordsData(new Vector2[vertexCount()]);
         file.read((char*)texcoordsData.get(), texcoordsSize);
-        glGenBuffers(1, &attributeBuffers_[TexcoordsBuffer]);
-        glBindBuffer(GL_ARRAY_BUFFER, attributeBuffers_[TexcoordsBuffer]);
-        glBufferData(GL_ARRAY_BUFFER, texcoordsSize, texcoordsData.get(), GL_STATIC_DRAW);
-        glVertexAttribPointer(TexcoordsBuffer, 2, GL_FLOAT, false, 0, (void*)0);
-        glEnableVertexAttribArray(TexcoordsBuffer);
+
+        // Create a buffer to hold the data.
+        glCreateBuffers(1, &attributeBuffers_[TexcoordsBuffer]);
+        glNamedBufferData(attributeBuffers_[TexcoordsBuffer], texcoordsSize, texcoordsData.get(), GL_STATIC_DRAW);
+
+        // Now link the buffer to the vertex array attribute
+        glVertexArrayVertexBuffer(vertexArray_, TexcoordsBuffer, attributeBuffers_[TexcoordsBuffer], 0, 2 * sizeof(float));
+        glVertexArrayAttribFormat(vertexArray_, TexcoordsBuffer, 2, GL_FLOAT, false, 0);
+        glVertexArrayAttribBinding(vertexArray_, TexcoordsBuffer, TexcoordsBuffer);
+        glEnableVertexArrayAttrib(vertexArray_, TexcoordsBuffer);
     }
 
     // Load the elements buffer
     {
+        // Read in the elements list
         const int elementsSize = sizeof(MeshElementIndex) * elementsCount();
         std::unique_ptr<MeshElementIndex[]> elementsData(new MeshElementIndex[elementsCount()]);
         file.read((char*)elementsData.get(), elementsSize);
-        glGenBuffers(1, &elementsBuffer_);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementsBuffer_);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, elementsSize, elementsData.get(), GL_STATIC_DRAW);
+
+        // Create a buffer to hold the elements
+        glCreateBuffers(1, &elementsBuffer_);
+        glNamedBufferData(elementsBuffer_, elementsSize, elementsData.get(), GL_STATIC_DRAW);
+
+        // Now attack the elements buffer to the vertex array.
+        glVertexArrayElementBuffer(vertexArray_, elementsBuffer_);
     }
 
     // Now loaded
