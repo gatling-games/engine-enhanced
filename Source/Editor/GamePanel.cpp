@@ -30,12 +30,14 @@ void GamePanel::draw()
 {
     // Determine the size of the region we need to render for
     // and create / recreate the framebuffer when needed.
-    const ImVec2 renderTextureSize = ImGui::GetContentRegionAvail();
+    const ImVec2 regionSize = ImGui::GetContentRegionAvail();
+    const int renderTextureWidth = (int)regionSize.x;
+    const int renderTextureHeight = (int)regionSize.y;
     if (frameBuffer_ == nullptr
-        || colorBuffer_->width() != renderTextureSize.x
-        || colorBuffer_->height() != renderTextureSize.y)
+        || colorBuffer_->width() != renderTextureWidth
+        || colorBuffer_->height() != renderTextureHeight)
     {
-        createFramebuffer(renderTextureSize.x, renderTextureSize.y);
+        createFramebuffer(renderTextureWidth, renderTextureHeight);
     }
 
     // Re-render the framebuffer on each draw
