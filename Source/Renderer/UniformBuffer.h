@@ -55,8 +55,9 @@ public:
         type_ = type;
 
         // Generate buffer and set buffer ID
-        glGenBuffers(1, &bufferID_);
+        glCreateBuffers(1, &bufferID_);
     }
+
     ~UniformBuffer()
     {
         // Delete uniform buffer
@@ -70,8 +71,7 @@ public:
     // Bind a buffer object to memory on GPU and create/populate buffer data store
     void update(const T &data) const
     {
-        glBindBuffer(GL_UNIFORM_BUFFER, bufferID_);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(T), static_cast<const GLvoid*>(&data), GL_DYNAMIC_DRAW);
+        glNamedBufferData(bufferID_, sizeof(T), &data, GL_DYNAMIC_DRAW);
     }
 
     // Bind buffer to usage slot governed by buffer type
