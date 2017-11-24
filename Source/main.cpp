@@ -80,9 +80,6 @@ int main(int argc, const char* argv[])
     application = new Application(window, windowWidth, windowHeight);
     application->resize(windowWidth, windowHeight);
 
-    // Create manager classes
-    Application* application = new Application(window, windowWidth, windowHeight);
-
     // Run game loop while window not closed
     while (!glfwWindowShouldClose(window))
     {
