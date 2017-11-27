@@ -23,3 +23,5 @@ private:
     unsigned int address_;
     unsigned short port_;
 };
+
+std::ostream& operator << (std::ostream &os, const Address &a);

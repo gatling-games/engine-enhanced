@@ -1,4 +1,5 @@
 #include "Address.h"
+#include <winsock.h>
 
 Address::Address()
 {
@@ -15,4 +16,12 @@ Address::Address(unsigned int address, unsigned short port)
 {
     address_ = address;
     port_ = port;
+}
+
+std::ostream& operator<<(std::ostream& os, const Address& a)
+{
+    sockaddr_in d;
+    d.sin_addr.s_addr = htonl(a.address());
+    os << inet_ntoa(d.sin_addr);
+    return os;
 }

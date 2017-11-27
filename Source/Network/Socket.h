@@ -17,7 +17,7 @@ public:
 
     bool send(const Address &destination, const void *data, int size);
 
-    int recieve();
+    bool recieve();
 
     unsigned short port();
 

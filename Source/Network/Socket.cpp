@@ -65,7 +65,7 @@ bool Socket::send(const Address &destination, const void *data, int size)
     return true;
 }
 
-int Socket::recieve()
+bool Socket::recieve()
 {
     
     while (true)
