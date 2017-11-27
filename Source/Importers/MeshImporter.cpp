@@ -64,44 +64,52 @@ struct objVertex
     int normal;
 };
 
-void parseFace(std::string face[3], std::vector<objVertex> &vertices)
+objVertex extractVertexData(std::string vertex)
 {
     std::string token;
     std::string delimiter = "/";
 
-    objVertex f;
+    objVertex objV;
+
+    // Find position of delimiting character
+    size_t position = vertex.find(delimiter);
+
+    // Get substring from start of string until delimiting character
+    token = vertex.substr(0, position);
+    // Convert substring to integer and store as vertex index
+    objV.position = std::stoi(token);
+    // Erase substring and delimiting character from string
+    vertex.erase(0, position + delimiter.length());
+
+    //Repeat process until string has been consumed
+    position = vertex.find(delimiter);
+
+    token = vertex.substr(0, position);
+    objV.texCoord = std::stoi(token);
+    vertex.erase(0, position + delimiter.length());
+
+    position = vertex.find(delimiter);
+
+    token = vertex.substr(0, position);
+    objV.normal = std::stoi(token);
+    vertex.erase(0, position + delimiter.length());
+
+    // Push data stored in f onto vector
+    return objV;
+}
+
+std::vector<objVertex> parseFace(std::string* face, const size_t verticesPerFace)
+{
+    std::vector<objVertex> faceVerts;
 
     // Count through each vertex in line
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < verticesPerFace; i++)
     {
-        size_t position = 0;
-
-        // Find position of delimiting character
-        position = face[i].find(delimiter);
-
-        // Get substring from start of string until delimiting character
-        token = face[i].substr(0, position);
-        // Convert substring to integer and store as vertex index
-        f.position = std::stoi(token);
-        // Erase substring and delimiting character from string
-        face[i].erase(0, position + delimiter.length());
-
-        //Repeat process until string has been consumed
-        position = face[i].find(delimiter);
-
-        token = face[i].substr(0, position);
-        f.texCoord = std::stoi(token);
-        face[i].erase(0, position + delimiter.length());
-
-        position = face[i].find(delimiter);
-
-        token = face[i].substr(0, position);
-        f.normal = std::stoi(token);
-        face[i].erase(0, position + delimiter.length());
-
-        // Push data stored in f onto vector
-        vertices.push_back(f);
+        // Extract data for objVertex from string and push to vertices vector
+        faceVerts.push_back(extractVertexData(face[i]));
     }
+
+    return faceVerts;
 }
 
 bool MeshImporter::importObjFile(const std::string& sourceFile, const std::string& outputFile) const
@@ -146,9 +154,8 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
         }
         else if (type == "f")
         {
-            // Parse face data using delimiter
+            // String for holding line from file
             std::string line;
-            std::string delimiter = "/";
 
             // Preserve current position in file stream
             int positionInFile = (int)file.tellg();
@@ -157,18 +164,25 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
             std::getline(file, line);
             verticesPerFace = std::count(line.begin(), line.end(), ' ');
 
-            assert(verticesPerFace == 3);
-
             // Return to previously recorded file position
             file.seekg(positionInFile);
 
             // Create array to hold line data
-            std::string v[3];
-            file >> v[0];
-            file >> v[1];
-            file >> v[2];
+            std::string* v = new std::string[verticesPerFace];
+            
+            for (int i=0; i<verticesPerFace; i++)
+            {
+                file >> v[i];
+            }
 
-            parseFace(v, vertices);
+            std::vector<objVertex> face = parseFace(v, verticesPerFace);
+
+            for (int i=2; i<verticesPerFace; i++)
+            {
+                vertices.push_back(face[0]);
+                vertices.push_back(face[i]);
+                vertices.push_back(face[i - 1]);
+            }
         }
     }
 
@@ -183,10 +197,7 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
     assert(vertices.size() % 3 == 0);
     for (unsigned int i = 0; i < vertices.size(); i++)
     {
-        /***
-         THIS IS A DIRTY, FILTHY HACK AND SHOULD NOT REMAIN FOR LONGER THAN IS NEEDED
-         ***/
-        objVertex vertex = vertices[vertices.size() - 1 - i];
+        objVertex vertex = vertices[i];
 
         // Get attributes for next vertex
         Point3 position = positions[vertex.position - 1];
