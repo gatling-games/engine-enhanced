@@ -55,23 +55,53 @@ public:
         type_ = type;
 
         // Generate buffer and set buffer ID
-        glGenBuffers(1, &bufferID_);
+        glCreateBuffers(1, &bufferID_);
     }
+
     ~UniformBuffer()
     {
-        // Delete uniform buffer
-        glDeleteBuffers(1, &bufferID_);
+        if (bufferID_ != 0)
+        {
+            glDeleteBuffers(1, &bufferID_);
+        }
     }
 
     // Prevent the buffer being copied
     UniformBuffer(const UniformBuffer&) = delete;
     UniformBuffer& operator=(const UniformBuffer&) = delete;
 
+    // Allow the buffer to be moved
+    UniformBuffer(UniformBuffer&& other)
+    {
+        // Steal the contents of other
+        type_ = other.type_;
+        bufferID_ = other.bufferID_;
+        
+        // Reset other
+        other.type_ = 0;
+        other.bufferID_ = 0;
+    }
+
+    UniformBuffer& operator=(UniformBuffer&& other)
+    {
+        if (this != &other)
+        {
+            // Steal the contents of other
+            type_ = other.type_;
+            bufferID_ = other.bufferID_;
+
+            // Reset other
+            other.type_ = 0;
+            other.bufferID_ = 0;
+        }
+
+        return *this;
+    }
+
     // Bind a buffer object to memory on GPU and create/populate buffer data store
     void update(const T &data) const
     {
-        glBindBuffer(GL_UNIFORM_BUFFER, bufferID_);
-        glBufferData(GL_UNIFORM_BUFFER, sizeof(T), static_cast<const GLvoid*>(&data), GL_DYNAMIC_DRAW);
+        glNamedBufferData(bufferID_, sizeof(T), &data, GL_DYNAMIC_DRAW);
     }
 
     // Bind buffer to usage slot governed by buffer type

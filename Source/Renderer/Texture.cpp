@@ -224,7 +224,7 @@ void Texture::load(std::ifstream& file)
         // and the buffer uses immutable storage (via glTexStorage2D). We therefore
         // cannot use glCompressedImage2D as that function works only for mutable
         // texture storage.
-        glCompressedTexSubImage2D(GL_TEXTURE_2D, mipLevel, 0, 0, mipWidth, mipHeight, typeData->glInternalFormat, mipSize, mipData.get());
+        glCompressedTextureSubImage2D(glid_, mipLevel, 0, 0, mipWidth, mipHeight, typeData->glInternalFormat, mipSize, mipData.get());
     }
 
     // The texture is now loaded. We just need to check that all texture 
@@ -321,11 +321,10 @@ void Texture::createGLTexture(TextureFormat format, int width, int height, int m
     TextureFormatData* formatData = getFormatData(format_);
 
     // Create the actual texture
-    glGenTextures(1, &glid_);
-    glBindTexture(GL_TEXTURE_2D, glid_);
-
+    glCreateTextures(GL_TEXTURE_2D, 1, &glid_);
+    
     // Assign texture storage for the correct format, resolution and mip count.
-    glTexStorage2D(GL_TEXTURE_2D, levels_, formatData->glInternalFormat, width_, height_);
+    glTextureStorage2D(glid_, levels_, formatData->glInternalFormat, width_, height_);
 
     // The texture is now created.
     created_ = true;
@@ -348,36 +347,32 @@ void Texture::applySettings() const
         return;
     }
 
-    // First bind the texture
-    glBindTexture(GL_TEXTURE_2D, glid_);
-
     // Set wrap mode
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, getWrapS());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, getWrapT());
+    glTextureParameteri(glid_, GL_TEXTURE_WRAP_S, getWrapS());
+    glTextureParameteri(glid_, GL_TEXTURE_WRAP_T, getWrapT());
 
     // Set filter mode
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, getMinFilter());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, getMagFilter());
+    glTextureParameteri(glid_, GL_TEXTURE_MIN_FILTER, getMinFilter());
+    glTextureParameteri(glid_, GL_TEXTURE_MAG_FILTER, getMagFilter());
 
     // Set anisotropic filtering
     if (filterMode_ == TextureFilterMode::Anisotropic)
     {
         GLfloat maxAniso;
         glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAniso);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAniso);
+        glTextureParameterf(glid_, GL_TEXTURE_MAX_ANISOTROPY_EXT, maxAniso);
     }
     else
     {
         const GLfloat minAniso = 1.0f;
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, minAniso);
+        glTextureParameterf(glid_, GL_TEXTURE_MAX_ANISOTROPY_EXT, minAniso);
     }
 
     // Set shadow mapping compare mode
     if (format_ == TextureFormat::ShadowMap)
     {
-        glBindTexture(GL_TEXTURE_2D, glid_);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+        glTextureParameteri(glid_, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTextureParameteri(glid_, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
     }
 }
 

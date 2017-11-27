@@ -83,7 +83,7 @@ void Renderer::executeForwardPass() const
     targetFramebuffer_->use();
 
     // First, clear the colour and depth buffers
-    glClearColor(180.0f, 0.0f, 180.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Ensure that depth testing and backface culling

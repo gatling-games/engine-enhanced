@@ -6,7 +6,7 @@
 
 Framebuffer::Framebuffer()
 {
-    glGenFramebuffers(1, &id_);
+    glCreateFramebuffers(1, &id_);
 }
 
 Framebuffer::~Framebuffer()
@@ -44,8 +44,7 @@ void Framebuffer::setResolution(int width, int height)
 
 void Framebuffer::attachDepthTexture(const Texture* depthTexture)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, id_);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTexture->glid(), 0);
+    glNamedFramebufferTexture(id_, GL_DEPTH_ATTACHMENT, depthTexture->glid(), 0);
 
     // Store the width and height of the framebuffer
     width_ = depthTexture->width();
@@ -54,8 +53,7 @@ void Framebuffer::attachDepthTexture(const Texture* depthTexture)
 
 void Framebuffer::attachColorTexture(const Texture* colorTexture)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, id_);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorTexture->glid(), 0);
+    glNamedFramebufferTexture(id_, GL_COLOR_ATTACHMENT0, colorTexture->glid(), 0);
 
     // Store the width and height of the framebuffer
     width_ = colorTexture->width();

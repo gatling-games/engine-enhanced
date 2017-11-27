@@ -94,15 +94,8 @@ void EditorManager::render()
     // Switch to rendering directly to the window
     Framebuffer::backbuffer()->use();
 
-    // Find the size of the glfw window.
-    int width;
-    int height;
-    glfwGetFramebufferSize(glfwWindow_, &width, &height);
-
-    // Render the imgui draw list to the entire screen.
     // Ensure the screen is cleared to black so that any 1px 
     // gaps between panels don't stand out.
-    glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 	
