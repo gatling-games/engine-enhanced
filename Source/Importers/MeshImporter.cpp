@@ -207,11 +207,6 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
         vertexIndices.push_back((MeshElementIndex)attributeIndex);
     }
 
-    for (int i = 0; i < vertexIndices.size(); i++)
-    {
-        std::cout << vertexIndices[i] << std::endl;
-    }
-
     // Output the obj data as a binary file
     writeBinaryMesh(outputFile, positionAttributes, normalAttributes, tangentAttributes, texCoordAttributes, vertexIndices);
     return true;
