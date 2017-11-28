@@ -18,6 +18,8 @@ struct Point3
 
     Point3& operator += (const Vector3 &vec);
     Point3& operator -= (const Vector3 &vec);
+    Point3& operator *= (float scalar);
+    Point3& operator /= (float scalar);
 
     // Returns the square of the distance between 2 points.
     static float sqrDistance(const Point3 &a, const Point3 &b);

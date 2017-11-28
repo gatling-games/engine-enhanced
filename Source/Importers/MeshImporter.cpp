@@ -207,6 +207,13 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
         vertexIndices.push_back((MeshElementIndex)attributeIndex);
     }
 
+    // Apply obj file scale.
+    // From maya, files are imported as centimeters, so convert to meters.
+    for (unsigned int i = 0; i < positionAttributes.size(); ++i)
+    {
+        positionAttributes[i] *= 0.01f;
+    }
+
     // Output the obj data as a binary file
     writeBinaryMesh(outputFile, positionAttributes, normalAttributes, tangentAttributes, texCoordAttributes, vertexIndices);
     return true;
