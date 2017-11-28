@@ -11,6 +11,8 @@
 
 #include "Renderer/Mesh.h"
 
+
+
 class MeshImporter : public ResourceImporter
 {
 public:
@@ -26,6 +28,8 @@ private:
 
     // Imports a file in the .mesh file format
     bool importDotMeshFile(const std::string &sourceFile, const std::string &outputFile) const;
+
+    //objVertex 
 
     // Writes the mesh attributes to an output file.
     void writeBinaryMesh(const std::string &outputFile,

@@ -43,6 +43,22 @@ Point3& Point3::operator -= (const Vector3 &vec)
     return *this;
 }
 
+Point3& Point3::operator *= (float scalar)
+{
+    x *= scalar;
+    y *= scalar;
+    z *= scalar;
+    return *this;
+}
+
+Point3& Point3::operator /= (float scalar)
+{
+    x *= scalar;
+    y *= scalar;
+    z *= scalar;
+    return *this;
+}
+
 float Point3::sqrDistance(const Point3 &a, const Point3 &b)
 {
     return (a - b).sqrMagnitude();

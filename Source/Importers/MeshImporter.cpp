@@ -9,6 +9,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
@@ -57,26 +58,57 @@ int attributeSearch(const std::vector<Point3> &positionAttributes, const std::ve
     return -1;
 }
 
+struct objVertex
+{
+    int position;
+    int texCoord;
+    int normal;
+};
+
+objVertex parseVertex(std::string vertex)
+{
+    std::string token;
+    std::string delimiter = "/";
+
+    objVertex objV;
+
+    // Find position of delimiting character
+    size_t position = vertex.find(delimiter);
+
+    // Get substring from start of string until delimiting character
+    token = vertex.substr(0, position);
+    // Convert substring to integer and store as vertex index
+    objV.position = std::stoi(token);
+    // Erase substring and delimiting character from string
+    vertex.erase(0, position + delimiter.length());
+
+    //Repeat process until string has been consumed
+    position = vertex.find(delimiter);
+
+    token = vertex.substr(0, position);
+    objV.texCoord = std::stoi(token);
+    vertex.erase(0, position + delimiter.length());
+
+    position = vertex.find(delimiter);
+
+    token = vertex.substr(0, position);
+    objV.normal = std::stoi(token);
+    vertex.erase(0, position + delimiter.length());
+
+    // Push data stored in f onto vector
+    return objV;
+}
+
 bool MeshImporter::importObjFile(const std::string& sourceFile, const std::string& outputFile) const
 {
-    struct objVertex
-    {
-        int position;
-        int texCoord;
-        int normal;
-    };
-
     // Vectors to store mesh attributes
     std::vector<Point3> positions;
     std::vector<Vector3> normals;
     std::vector<Point2> texCoords;
     std::vector<objVertex> vertices;
 
-    // For counting number of vertices in face
-    size_t verticesPerFace;
-
     // Open source mesh file as binary to avoid position discrepancy
-    std::ifstream file(sourceFile.c_str(), std::ios::binary);
+    std::ifstream file(sourceFile.c_str());
 
     // Loop through every line in file, looking for vertex attributes
     while (file.is_open() && !file.eof() && !file.fail())
@@ -106,192 +138,33 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
         }
         else if (type == "f")
         {
-            // Parse face data using delimiter
-            std::string line;
-            std::string delimiter = "/";
-            // Preserve current position in file stream
-            int positionInFile = (int)file.tellg();
+            // An f line contains 3 or more vertices forming a face.
+            // eg. f 1/1/1 2/1/2 3/1/3 4/1/4
 
-            // Get line of file and count number of vertices per face
-            std::getline(file, line);
-            verticesPerFace = std::count(line.begin(), line.end(), ' ');
+            // Read the entire face into a string syream.
+            std::string face;
+            std::getline(file, face);
+            std::stringstream faceStream(face);
 
-            if ((verticesPerFace < 3) | (verticesPerFace > 4))
+            // Read each vertex from the face stream in turn.
+            std::vector<objVertex> faceVertices;
+            while (faceStream.eof() == false)
             {
-                printf(" - ERROR: Cannot import face data - mesh must consist of only triangles and/or quads");
-                return false;
+                // Read the vert from the stream
+                std::string vert;
+                faceStream >> vert;
+
+                // Parse the vertex and add it to the list.
+                faceVertices.push_back(parseVertex(vert));
             }
 
-            // Return to previously recorded file position
-            file.seekg(positionInFile);
-
-            //Process accordingly based on number of vertices per face
-            if (verticesPerFace == 3)
+            // We need to trianglulate the face.
+            // For now, assume the face is convex and use a triangle fan.
+            for (unsigned int i = 2; i < faceVertices.size(); i++)
             {
-                // Create array to hold line data
-                std::string v[3];
-                file >> v[0];
-                file >> v[1];
-                file >> v[2];
-
-                objVertex f;
-
-                // Count through each vertex in line
-                for (int i = 0; i < 3; i++)
-                {
-                    std::string token;
-                    size_t position = 0;
-
-                    // Find position of delimiting character
-                    position = v[i].find(delimiter);
-
-                    // Get value from string using delimiter and shorten string once stored + repeat
-                    token = v[i].substr(0, position);
-                    f.position = std::stoi(token);
-                    v[i].erase(0, position + delimiter.length());
-
-                    position = v[i].find(delimiter);
-
-                    token = v[i].substr(0, position);
-                    f.texCoord = std::stoi(token);
-                    v[i].erase(0, position + delimiter.length());
-
-                    position = v[i].find(delimiter);
-
-                    token = v[i].substr(0, position);
-                    f.normal = std::stoi(token);
-                    v[i].erase(0, position + delimiter.length());
-
-                    // Push data onto vector
-                    vertices.push_back(f);
-                }
-            }
-            else if (verticesPerFace == 4)
-            {
-                // Create array to hold line data
-                std::string v[4];
-
-                // Create array for second pass through vertices
-                std::string w[4];
-
-                file >> v[0];
-                file >> v[1];
-                file >> v[2];
-                file >> v[3];
-
-                for (int i = 0; i < 4; i++)
-                {
-                    w[i] = v[i];
-                }
-
-                objVertex f;
-
-                // Count through first triangle on face
-                for (int i = 0; i < 4; i++)
-                {
-                    // Exclude vertex 3
-                    if (i != 2)
-                    {
-                        std::string token;
-                        size_t position = 0;
-
-                        // Find position of delimiting character
-                        position = v[i].find(delimiter);
-
-                        // Get value from string using delimiter and shorten string once stored + repeat
-                        token = v[i].substr(0, position);
-                        f.position = std::stoi(token);
-                        v[i].erase(0, position + delimiter.length());
-
-                        position = v[i].find(delimiter);
-
-                        token = v[i].substr(0, position);
-                        f.texCoord = std::stoi(token);
-                        v[i].erase(0, position + delimiter.length());
-
-                        position = v[i].find(delimiter);
-
-                        token = v[i].substr(0, position);
-                        f.normal = std::stoi(token);
-                        v[i].erase(0, position + delimiter.length());
-
-                        // Push data onto vector
-                        vertices.push_back(f);
-                    }
-                }
-
-                // Following code acquires second triangle from quad face
-                std::string token;
-                size_t position = 0;
-
-                // Find position of delimiting character
-                position = w[0].find(delimiter);
-
-                // Get value from string using delimiter and shorten string once stored + repeat
-                token = w[0].substr(0, position);
-                f.position = std::stoi(token);
-                w[0].erase(0, position + delimiter.length());
-
-                position = w[0].find(delimiter);
-
-                token = w[0].substr(0, position);
-                f.texCoord = std::stoi(token);
-                w[0].erase(0, position + delimiter.length());
-
-                position = w[0].find(delimiter);
-
-                token = w[0].substr(0, position);
-                f.normal = std::stoi(token);
-                w[0].erase(0, position + delimiter.length());
-
-                // Push data onto vector
-                vertices.push_back(f);
-
-                // Find position of delimiting character
-                position = w[3].find(delimiter);
-
-                // Get value from string using delimiter and shorten string once stored + repeat
-                token = w[3].substr(0, position);
-                f.position = std::stoi(token);
-                w[3].erase(0, position + delimiter.length());
-
-                position = w[3].find(delimiter);
-
-                token = w[3].substr(0, position);
-                f.texCoord = std::stoi(token);
-                w[3].erase(0, position + delimiter.length());
-
-                position = w[3].find(delimiter);
-
-                token = w[3].substr(0, position);
-                f.normal = std::stoi(token);
-                w[3].erase(0, position + delimiter.length());
-
-                // Push data onto vector
-                vertices.push_back(f);
-
-                // Find position of delimiting character
-                position = w[2].find(delimiter);
-
-                // Get value from string using delimiter and shorten string once stored + repeat
-                token = w[2].substr(0, position);
-                f.position = std::stoi(token);
-                w[2].erase(0, position + delimiter.length());
-
-                position = w[2].find(delimiter);
-
-                token = w[2].substr(0, position);
-                f.texCoord = std::stoi(token);
-                w[2].erase(0, position + delimiter.length());
-
-                position = w[2].find(delimiter);
-
-                token = w[2].substr(0, position);
-                f.normal = std::stoi(token);
-                w[2].erase(0, position + delimiter.length());
-
-                // Push data onto vector
-                vertices.push_back(f);
+                vertices.push_back(faceVertices[0]);
+                vertices.push_back(faceVertices[i]);
+                vertices.push_back(faceVertices[i - 1]);
             }
         }
     }
@@ -304,6 +177,7 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
     std::vector<Point2> texCoordAttributes;
 
     // Count through data indices and assign to arrays in desired order
+    assert(vertices.size() % 3 == 0);
     for (unsigned int i = 0; i < vertices.size(); i++)
     {
         objVertex vertex = vertices[i];
@@ -315,6 +189,7 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
 
         // Determine which location in the attributes list has those values
         int attributeIndex = attributeSearch(positionAttributes, normalAttributes, texCoordAttributes, position, normal, texCoord);
+
         if (attributeIndex == -1)
         {
             // Not found, insert the values
@@ -327,6 +202,29 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
         }
 
         vertexIndices.push_back((MeshElementIndex)attributeIndex);
+    }
+
+    // Apply obj file scale.
+    // From maya, files are imported as centimeters, so convert to meters.
+    for (unsigned int i = 0; i < positionAttributes.size(); ++i)
+    {
+        positionAttributes[i] *= 0.01f;
+    }
+
+    // Invert texture coords to match the actual imported textures.
+    for (unsigned int i = 0; i < texCoordAttributes.size(); ++i)
+    {
+        texCoordAttributes[i] = Point2(texCoordAttributes[i].x, 1.0f - texCoordAttributes[i].y);
+    }
+    
+    // Flip the mesh on the x axis to match maya
+    for (unsigned int i = 0; i < positionAttributes.size(); ++i) positionAttributes[i].x *= -1.0f;
+    for (unsigned int i = 0; i < normalAttributes.size(); ++i) normalAttributes[i].x *= -1.0f;
+
+    // We also need to reverse the winding order as the mesh was flipped.
+    for (int i = 0; i < vertexIndices.size() / 3; ++i)
+    {
+        std::swap(vertexIndices[i * 3], vertexIndices[i * 3 + 2]);
     }
 
     // Output the obj data as a binary file
