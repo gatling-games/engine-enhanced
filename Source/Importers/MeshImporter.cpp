@@ -9,6 +9,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
@@ -64,7 +65,7 @@ struct objVertex
     int normal;
 };
 
-objVertex extractVertexData(std::string vertex)
+objVertex parseVertex(std::string vertex)
 {
     std::string token;
     std::string delimiter = "/";
@@ -98,20 +99,6 @@ objVertex extractVertexData(std::string vertex)
     return objV;
 }
 
-std::vector<objVertex> parseFace(std::string* face, const size_t verticesPerFace)
-{
-    std::vector<objVertex> faceVerts;
-
-    // Count through each vertex in line
-    for (int i = 0; i < verticesPerFace; i++)
-    {
-        // Extract data for objVertex from string and push to vertices vector
-        faceVerts.push_back(extractVertexData(face[i]));
-    }
-
-    return faceVerts;
-}
-
 bool MeshImporter::importObjFile(const std::string& sourceFile, const std::string& outputFile) const
 {
     // Vectors to store mesh attributes
@@ -124,7 +111,7 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
     size_t verticesPerFace;
 
     // Open source mesh file as binary to avoid position discrepancy
-    std::ifstream file(sourceFile.c_str(), std::ifstream::binary);
+    std::ifstream file(sourceFile.c_str());
 
     // Loop through every line in file, looking for vertex attributes
     while (file.is_open() && !file.eof() && !file.fail())
@@ -154,34 +141,33 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
         }
         else if (type == "f")
         {
+            // An f line contains 3 or more vertices forming a face.
+            // eg. f 1/1/1 2/1/2 3/1/3 4/1/4
+
             // String for holding line from file
             std::string line;
-
-            // Preserve current position in file stream
-            int positionInFile = (int)file.tellg();
-
-            // Get line of file and count number of vertices per face
             std::getline(file, line);
-            verticesPerFace = std::count(line.begin(), line.end(), ' ');
+            std::stringstream faceStream(line);
 
-            // Return to previously recorded file position
-            file.seekg(positionInFile);
-
-            // Create array to hold line data
-            std::string* v = new std::string[verticesPerFace];
-            
-            for (int i=0; i<verticesPerFace; i++)
+            // Read each vertex from the face stream in turn.
+            std::vector<objVertex> faceVertices;
+            while (faceStream.eof() == false)
             {
-                file >> v[i];
+                // Read the vert from the stream
+                std::string vert;
+                faceStream >> vert;
+
+                // Parse the vertex and add it to the list.
+                faceVertices.push_back(parseVertex(vert));
             }
 
-            std::vector<objVertex> face = parseFace(v, verticesPerFace);
-
-            for (int i=2; i<verticesPerFace; i++)
+            // We need to trianglulate the face.
+            // For now, assume the face is convex and use a triangle fan.
+            for (unsigned int i = 2; i < faceVertices.size(); i++)
             {
-                vertices.push_back(face[0]);
-                vertices.push_back(face[i]);
-                vertices.push_back(face[i - 1]);
+                vertices.push_back(faceVertices[0]);
+                vertices.push_back(faceVertices[i]);
+                vertices.push_back(faceVertices[i - 1]);
             }
         }
     }
@@ -221,7 +207,7 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
         vertexIndices.push_back((MeshElementIndex)attributeIndex);
     }
 
-    for (int i=0; i<vertexIndices.size(); i++)
+    for (int i = 0; i < vertexIndices.size(); i++)
     {
         std::cout << vertexIndices[i] << std::endl;
     }
