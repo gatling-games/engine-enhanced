@@ -107,9 +107,6 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
     std::vector<Point2> texCoords;
     std::vector<objVertex> vertices;
 
-    // For counting number of vertices in face
-    size_t verticesPerFace;
-
     // Open source mesh file as binary to avoid position discrepancy
     std::ifstream file(sourceFile.c_str());
 
