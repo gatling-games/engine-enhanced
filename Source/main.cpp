@@ -38,7 +38,10 @@ void glErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
     printf("GLError: %s\n", message);
 #else
     // Debug mode - throw an exception.
-    throw std::exception(("GLError: " + std::string(message)).c_str());
+    if (!severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+    {
+        throw std::exception(("GLError: " + std::string(message)).c_str());
+    }
 #endif
 }
 
