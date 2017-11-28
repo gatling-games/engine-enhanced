@@ -141,10 +141,10 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
             // An f line contains 3 or more vertices forming a face.
             // eg. f 1/1/1 2/1/2 3/1/3 4/1/4
 
-            // String for holding line from file
-            std::string line;
-            std::getline(file, line);
-            std::stringstream faceStream(line);
+            // Read the entire face into a string syream.
+            std::string face;
+            std::getline(file, face);
+            std::stringstream faceStream(face);
 
             // Read each vertex from the face stream in turn.
             std::vector<objVertex> faceVertices;
