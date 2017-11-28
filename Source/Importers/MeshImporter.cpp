@@ -211,6 +211,12 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
         positionAttributes[i] *= 0.01f;
     }
 
+    // Invert texture coords to match the actual imported textures.
+    for (unsigned int i = 0; i < texCoordAttributes.size(); ++i)
+    {
+        texCoordAttributes[i] = Point2(texCoordAttributes[i].x, 1.0f - texCoordAttributes[i].y);
+    }
+    
     // Output the obj data as a binary file
     writeBinaryMesh(outputFile, positionAttributes, normalAttributes, tangentAttributes, texCoordAttributes, vertexIndices);
     return true;
