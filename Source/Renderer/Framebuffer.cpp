@@ -63,4 +63,5 @@ void Framebuffer::attachColorTexture(const Texture* colorTexture)
 void Framebuffer::use() const
 {
     glBindFramebuffer(GL_FRAMEBUFFER, id_);
+    glViewport(0, 0, width_, height_);
 }
