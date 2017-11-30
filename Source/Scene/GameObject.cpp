@@ -13,7 +13,7 @@ GameObject* GameObjectComponent::gameObject() const
     return SceneManager::instance()->findGameObject(gameObjectID_);
 }
 
-GameObject::GameObject(const GameObjectID id, const std::string name)
+GameObject::GameObject(const GameObjectID id, const std::string &name)
     : id_(id),
     name_(name)
 {

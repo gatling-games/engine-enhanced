@@ -44,7 +44,7 @@ private:
 class GameObject
 {
 public:
-    explicit GameObject(const GameObjectID id, const std::string name);
+    explicit GameObject(const GameObjectID id, const std::string &name);
 
     // Getters for basic gameobject properties
     GameObjectID id() const { return id_; }
@@ -63,5 +63,5 @@ public:
 
 private:
     const GameObjectID id_;
-    std::string name_;
+    const std::string name_;
 };
