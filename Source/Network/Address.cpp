@@ -20,8 +20,7 @@ Address::Address(unsigned int address, unsigned short port)
 
 std::ostream& operator<<(std::ostream& os, const Address& a)
 {
-    sockaddr_in d;
-    d.sin_addr.s_addr = htonl(a.address());
-    os << inet_ntoa(d.sin_addr);
+    unsigned int n = a.address();
+    os << ((n >> 24) & 0xff) << "." << ((n >> 16) & 0xff) << "." << ((n >> 8) & 0xff) << "." << (n & 0xff);
     return os;
 }
