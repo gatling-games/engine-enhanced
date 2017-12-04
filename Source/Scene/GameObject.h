@@ -27,6 +27,7 @@ class GameObjectComponent
 {
 public:
     explicit GameObjectComponent(const GameObjectID gameObjectID);
+    virtual ~GameObjectComponent() { }
 
     // Gets the id of the gameobject this component is attached to.
     GameObjectID gameObjectID() const { return gameObjectID_; }
