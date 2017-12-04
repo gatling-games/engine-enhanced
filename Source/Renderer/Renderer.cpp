@@ -19,6 +19,10 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
 {
     // Load the shaders required for each render pass
     forwardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader");
+
+    // Load skybox shader and mesh
+    skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
+    skyboxMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/skydome.obj");
 }
 
 void Renderer::renderFrame(const Camera* camera) const
@@ -35,6 +39,7 @@ void Renderer::renderFrame(const Camera* camera) const
 
     // Execute each render pass in turn.
     executeForwardPass();
+    executeSkyboxPass(camera);
 }
 
 void Renderer::updateSceneUniformBuffer() const
@@ -47,6 +52,8 @@ void Renderer::updateSceneUniformBuffer() const
     data.ambientLightColor = Color(0.6f, 0.6f, 0.6f);
     data.lightColor = Color(1.0f, 1.0f, 1.0f);
     data.toLightDirection = Vector4(Vector3(1.0f, 1.0f, 1.0f).normalized());
+    data.skyTopColor = Color(0.0f, 0.0f, 1.0);
+    data.skyHorizonColor = Color(0.3f, 0.0f, 0.6f);
 
     // Update the uniform buffer
     sceneUniformBuffer_.update(data);
@@ -62,7 +69,7 @@ void Renderer::updateCameraUniformBuffer(const Camera* camera) const
     // Gather the new contents of the camera buffer
     CameraUniformData data;
     data.worldToClip = camera->getWorldToCameraMatrix(aspect);
-    
+
     // Update the uniform buffer.
     cameraUniformBuffer_.update(data);
 }
@@ -82,9 +89,8 @@ void Renderer::executeForwardPass() const
     // The forward pass renders into the target framebuffer
     targetFramebuffer_->use();
 
-    // First, clear the colour and depth buffers
-    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // First, clear the depth buffer - don't need to clear color buffer as skybox will cover background
+    glClear(GL_DEPTH_BUFFER_BIT);
 
     // Ensure that depth testing and backface culling
     // are turned on for this pass
@@ -111,4 +117,31 @@ void Renderer::executeForwardPass() const
         // Draw the mesh
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
     }
+}
+
+void Renderer::executeSkyboxPass(const Camera* camera) const
+{
+    // Ensure skybox shader is being used
+    skyboxShader_->bindVariant(~0);
+
+    // Ensure skybox mesh is being used
+    skyboxMesh_->bind();
+
+    // Compute scale for skydome - must ensure it's big enough without exceeding far clipping plane
+    const float farPlane = camera->getFarPlaneDistance();
+    const float skyboxScaleSqr = (1.0f / 3.0f) * farPlane * farPlane;
+    const float skyboxScale = sqrtf(skyboxScaleSqr);
+    const Matrix4x4 scaleMatrix = Matrix4x4::scale(Vector3(skyboxScale, skyboxScale, skyboxScale));
+
+    // Compute position of skydome -
+    // ensure the skybox is centered on the camera
+    const Matrix4x4 translationMatrix = Matrix4x4::translation(camera->gameObject()->transform()->positionWorld());
+    
+    // Set the local to world matrix in per draw data
+    PerDrawUniformData data;
+    data.localToWorld = translationMatrix * scaleMatrix;
+    perDrawUniformBuffer_.update(data);
+
+    // Draw skybox mesh
+    glDrawElements(GL_TRIANGLES, skyboxMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
 }

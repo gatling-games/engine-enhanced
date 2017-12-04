@@ -5,6 +5,8 @@
 #include "Renderer/UniformBuffer.h"
 
 #include "Scene/Camera.h"
+#include "Renderer/Shader.h"
+#include "Renderer/Mesh.h"
 
 class Renderer
 {
@@ -30,6 +32,10 @@ private:
 
     // Shaders used for each render pass
     ResourcePPtr<Shader> forwardShader_;
+    ResourcePPtr<Shader> skyboxShader_;
+
+    // Specific meshes used for forward shader pass
+    ResourcePPtr<Mesh> skyboxMesh_;
 
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;
@@ -38,4 +44,5 @@ private:
 
     // Methods for each render pass
     void executeForwardPass() const;
+    void executeSkyboxPass(const Camera* camera) const;
 };

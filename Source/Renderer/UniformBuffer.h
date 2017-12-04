@@ -23,6 +23,8 @@ struct SceneUniformData
     Color ambientLightColor;
     Color lightColor;
     Vector4 toLightDirection;
+    Color skyTopColor;
+    Color skyHorizonColor;
 };
 
 // Plain old uniform data for camera
