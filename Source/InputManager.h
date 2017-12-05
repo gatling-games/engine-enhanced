@@ -171,6 +171,8 @@ public:
     // Returns true on any frame where any key is down
     bool anyKeyDown() const;
 
+    float getAxis(InputKey key1, InputKey key2);
+
 private:
     // Reference to GLFW window object
     GLFWwindow* window_;
