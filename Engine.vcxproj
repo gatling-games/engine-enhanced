@@ -34,6 +34,7 @@
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\Scene\Camera.h" />
     <ClInclude Include="Source\Scene\Component.h" />
+    <ClInclude Include="Source\Scene\Freecam.h" />
     <ClInclude Include="Source\Scene\GameObject.h" />
     <ClInclude Include="Source\Scene\StaticMesh.h" />
     <ClInclude Include="Source\Scene\Transform.h" />
@@ -75,6 +76,7 @@
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\Scene\Camera.cpp" />
     <ClCompile Include="Source\Scene\Component.cpp" />
+    <ClCompile Include="Source\Scene\Freecam.cpp" />
     <ClCompile Include="Source\Scene\GameObject.cpp" />
     <ClCompile Include="Source\Scene\StaticMesh.cpp" />
     <ClCompile Include="Source\Scene\Transform.cpp" />

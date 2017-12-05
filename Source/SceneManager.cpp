@@ -7,6 +7,7 @@
 #include "Scene/StaticMesh.h"
 
 #include "Utils/Clock.h"
+#include "Scene/Freecam.h"
 
 SceneManager::SceneManager()
     : gameObjects_()
@@ -18,6 +19,7 @@ SceneManager::SceneManager()
     gameObjects_[1]->createComponent<Transform>()->setRotationLocal(Quaternion::euler(0.0f, 30.0f, 0.0f));
     gameObjects_[2]->createComponent<Transform>()->setPositionLocal(Point3(-4.0f, 0.0f, 0.0f));
     gameObjects_[0]->createComponent<Camera>();
+    gameObjects_[0]->createComponent<Freecam>();
     gameObjects_[1]->createComponent<StaticMesh>();
     gameObjects_[2]->createComponent<StaticMesh>();
 }
