@@ -45,6 +45,9 @@ public:
     // Translates the object by the vector
     void translateLocal(const Vector3 &translation);
 
+    // Rotates object around a vector
+    void rotateLocal(float angle, const Vector3 &axis);
+
 private:
     // Local space transformation values
     Point3 position_;

@@ -40,6 +40,11 @@ void Freecam::update(float deltaTime)
     // Add sprint factor if key is held down
     const float speed = InputManager::instance()->isKeyDown(InputKey::LShift) ? 20.0f : 1.0f;
 
+    float mouseDeltaX = InputManager::instance()->mouseDeltaX();
+    float mouseDeltaY = InputManager::instance()->mouseDeltaY();
+
     // Transform camera
     transform_->translateLocal(Vector3(lateral, vertical, forward)*moveDuration_*speed);
+    transform_->rotateLocal(mouseDeltaX, Vector3::up());
+    transform_->rotateLocal(mouseDeltaY, transform_->right());
 }

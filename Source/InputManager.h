@@ -173,6 +173,10 @@ public:
 
     float getAxis(InputKey key1, InputKey key2);
 
+    float mouseDeltaX();
+
+    float mouseDeltaY();
+
 private:
     // Reference to GLFW window object
     GLFWwindow* window_;
@@ -192,6 +196,12 @@ private:
     const float* joystickAxes_;
     const float* previousFrameJoystickAxes_;
 
+    double mouseDeltaX_;
+    double mouseDeltaY_;
+    double prevMouseX_;
+    double prevMouseY_;
+
     void pollJoystick();
     void pollKeyboard();
+    void pollMouse();
 };

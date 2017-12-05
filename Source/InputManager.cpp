@@ -21,6 +21,9 @@ InputManager::InputManager(GLFWwindow* window)
     joystickAxes_ = nullptr;
     previousFrameJoystickButtons_ = nullptr;
     previousFrameJoystickAxes_ = nullptr;
+
+    prevMouseX_ = 0.0;
+    prevMouseY_ = 0.0;
 }
 
 // Called every time a new frame starts, storing previous frame's input data
@@ -32,6 +35,7 @@ void InputManager::frameStart(const Clock* clock)
     // Poll keyboard and joystick inputs
     pollKeyboard();
     pollJoystick();
+    pollMouse();
 
     // Create object holding input data to send to server
     InputCmd inputs;
@@ -139,6 +143,15 @@ float InputManager::getAxis(InputKey key1, InputKey key2)
     return axisPlus - axisMinus;
 }
 
+float InputManager::mouseDeltaX()
+{
+    return mouseDeltaX_;
+}
+
+float InputManager::mouseDeltaY()
+{
+    return mouseDeltaY_;
+}
 
 // Method which takes input GLFW key code and outputs in our own format
 InputKey InputManager::convertGLFWKey(int key) const
@@ -278,4 +291,17 @@ void InputManager::pollKeyboard()
             keyReleased(convertGLFWKey(i));
         }
     }
+}
+
+void InputManager::pollMouse()
+{
+    double mouseX;
+    double mouseY;
+    glfwGetCursorPos(window_, &mouseX, &mouseY);
+
+    mouseDeltaX_ = mouseX - prevMouseX_;
+    mouseDeltaY_ = mouseY - prevMouseY_;
+
+    prevMouseX_ = mouseX;
+    prevMouseY_ = mouseY;
 }
