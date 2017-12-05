@@ -18,11 +18,15 @@ typedef uint32_t GameObjectID;
 // Most of the actual work is deferred to the scene manager.
 class GameObject
 {
-public:
-    explicit GameObject(const GameObjectID id, const std::string &name);
+    friend class SceneManager;
 
+private:
+    // This is only called by SceneManager
+    // To create a GameObject, call SceneManager->createGameObject.
+    explicit GameObject(const std::string &name);
+
+public:
     // Getters for basic gameobject properties
-    GameObjectID id() const { return id_; }
     const std::string& name() const { return name_; }
 
     // Serialization methods.
@@ -80,8 +84,10 @@ public:
     Camera* camera() const;
     StaticMesh* staticMesh() const;
 
+    // Gets a list of all components attached to the gameobject
+    const std::vector<Component*> componentList() { return components_; }
+
 private:
-    const GameObjectID id_;
     const std::string name_;
 
     // The components that currently exist on the GameObject

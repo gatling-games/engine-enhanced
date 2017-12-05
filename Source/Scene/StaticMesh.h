@@ -12,6 +12,9 @@ public:
     explicit StaticMesh(GameObject* gameObject);
     ~StaticMesh() override { }
 
+    // Draws the properties fold out
+    void drawProperties() override;
+
     Mesh* mesh() const { return mesh_; }
     Shader* shader() const { return shader_; }
     Texture* texture() const { return texture_; }

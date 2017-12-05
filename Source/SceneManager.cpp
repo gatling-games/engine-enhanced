@@ -11,15 +11,20 @@
 SceneManager::SceneManager()
     : gameObjects_()
 {
-    gameObjects_.push_back(new GameObject(1, "Camera"));
-    gameObjects_.push_back(new GameObject(2, "Cube"));
-    gameObjects_.push_back(new GameObject(3, "Cube"));
-    gameObjects_[0]->createComponent<Transform>()->setPositionLocal(Point3(0.5f, 2.0f, -10.0f));
-    gameObjects_[1]->createComponent<Transform>()->setRotationLocal(Quaternion::euler(0.0f, 30.0f, 0.0f));
-    gameObjects_[2]->createComponent<Transform>()->setPositionLocal(Point3(-4.0f, 0.0f, 0.0f));
-    gameObjects_[0]->createComponent<Camera>();
-    gameObjects_[1]->createComponent<StaticMesh>();
-    gameObjects_[2]->createComponent<StaticMesh>();
+    // Create a camera in the scene
+    GameObject* cameraGO = createGameObject("Camera");
+    cameraGO->createComponent<Transform>()->setPositionLocal(Point3(0.5f, 2.0f, -10.0f));
+    cameraGO->createComponent<Camera>();
+
+    // Create a cube mesh infront of the camera
+    GameObject* mesh1GO = createGameObject("Cube 1");
+    mesh1GO->createComponent<Transform>()->setRotationLocal(Quaternion::euler(0.0f, 30.0f, 0.0f));
+    mesh1GO->createComponent<StaticMesh>();
+
+    // Create a second cube infront of the camera
+    GameObject* mesh2GO = createGameObject("Cube 2");
+    mesh2GO->createComponent<Transform>()->setPositionLocal(Point3(-4.0f, 0.0f, 0.0f));
+    mesh2GO->createComponent<StaticMesh>();
 }
 
 void SceneManager::drawDebugMenu()
@@ -36,10 +41,18 @@ void SceneManager::frameStart()
 {
     const float deltaTime = Clock::instance()->deltaTime();
 
-    for(unsigned int i = 0; i < gameObjects_.size(); ++i)
+    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
     {
         gameObjects_[i]->update(deltaTime);
     }
+}
+
+GameObject* SceneManager::createGameObject(const std::string& name)
+{
+    GameObject* go = new GameObject(name);
+    gameObjects_.push_back(go);
+
+    return go;
 }
 
 Camera* SceneManager::mainCamera() const
@@ -72,21 +85,6 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
             meshes.push_back(mesh);
         }
     }
-    
+
     return meshes;
-}
-
-GameObject* SceneManager::findGameObject(GameObjectID id) const
-{
-    // Search the game objects list for a match.
-    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
-    {
-        if (gameObjects_[i]->id() == id)
-        {
-            return gameObjects_[i];
-        }
-    }
-
-    // No match
-    return nullptr;
 }

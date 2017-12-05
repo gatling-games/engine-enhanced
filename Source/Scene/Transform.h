@@ -12,7 +12,10 @@ class Transform : public Component
 {
 public:
     explicit Transform(GameObject* gameObject);
-    ~Transform() override { };
+    ~Transform() override { }
+
+    // Draws the transform properties fold out
+    void drawProperties() override;
 
     // Transform position / rotation / scale in local space
     Point3 positionLocal() const { return position_; }

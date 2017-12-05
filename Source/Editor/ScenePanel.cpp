@@ -2,6 +2,9 @@
 
 #include <imgui.h>
 
+#include "EditorManager.h"
+#include "Editor/PropertiesPanel.h"
+
 #include "SceneManager.h"
 #include "Scene/GameObject.h"
 
@@ -19,9 +22,16 @@ void ScenePanel::draw()
 
 void ScenePanel::drawNode(GameObject* gameObject)
 {
-    // If the gameobject has no root nodes, draw a simple button.
-    ImGui::Bullet();
-    if (ImGui::Selectable(gameObject->name().c_str()))
+    // Determine the tree flags, based on selection state.
+    ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
+    if (PropertiesPanel::instance()->current() == gameObject)
+    {
+        nodeFlags |= ImGuiTreeNodeFlags_Selected;
+    }
+
+    // Draw the actual tree node
+    ImGui::TreeNodeEx(gameObject->name().c_str(), nodeFlags);
+    if (ImGui::IsItemClicked())
     {
         gameObjectSelected(gameObject);
     }
@@ -29,5 +39,6 @@ void ScenePanel::drawNode(GameObject* gameObject)
 
 void ScenePanel::gameObjectSelected(GameObject* gameObject)
 {
-    printf("GameObject %s selected \n", gameObject->name().c_str());
+    // Inspect the object in the properties panel
+    PropertiesPanel::instance()->inspect(gameObject);
 }

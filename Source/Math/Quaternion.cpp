@@ -22,6 +22,19 @@ Quaternion Quaternion::identity()
     return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
+void Quaternion::normalize()
+{
+    const float length = sqrtf(x*x + y*y + z*z + w*w);
+
+    if (fabs(length) > 0.0001f)
+    {
+        x /= length;
+        y /= length;
+        z /= length;
+        w /= length;
+    }
+}
+
 Quaternion Quaternion::conjugate() const
 {
     return Quaternion(-x, -y, -z, w);
