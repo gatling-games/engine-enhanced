@@ -1,7 +1,7 @@
 #include "StaticMesh.h"
 
-StaticMesh::StaticMesh(const GameObjectID gameObjectID)
-    : GameObjectComponent(gameObjectID)
+StaticMesh::StaticMesh(GameObject* gameObject)
+    : Component(gameObject)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/cube.obj");
     shader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader");

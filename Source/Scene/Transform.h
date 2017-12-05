@@ -1,16 +1,18 @@
 #pragma once
 
 #include "GameObject.h"
+#include "Component.h"
 
 #include "Math/Point3.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
 #include "Math/Matrix4x4.h"
 
-class Transform : public GameObjectComponent
+class Transform : public Component
 {
 public:
-    explicit Transform(const GameObjectID gameObject);
+    explicit Transform(GameObject* gameObject);
+    ~Transform() override { };
 
     // Transform position / rotation / scale in local space
     Point3 positionLocal() const { return position_; }

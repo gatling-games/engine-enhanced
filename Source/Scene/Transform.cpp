@@ -1,7 +1,7 @@
 #include "Transform.h"
 
-Transform::Transform(const GameObjectID gameObject)
-    : GameObjectComponent(gameObject),
+Transform::Transform(GameObject* gameObject)
+    : Component(gameObject),
     position_(Point3::origin()),
     rotation_(Quaternion::identity()),
     scale_(Vector3::one()),

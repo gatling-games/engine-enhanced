@@ -129,6 +129,9 @@
     <ClInclude Include="Source\Scene\StaticMesh.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\Component.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -228,6 +231,9 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\StaticMesh.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Component.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>

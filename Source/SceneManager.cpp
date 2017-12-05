@@ -1,34 +1,67 @@
 #include "SceneManager.h"
 #include "imgui.h"
 
+#include "Scene/GameObject.h"
+#include "Scene/Transform.h"
+#include "Scene/Camera.h"
+#include "Scene/StaticMesh.h"
+
 SceneManager::SceneManager()
-    : gameObjects_(),
-    transforms_(),
-    cameras_(),
-    staticMeshes_()
+    : gameObjects_()
 {
-    gameObjects_.push_back(std::shared_ptr<GameObject>(new GameObject(1, "Camera")));
-    gameObjects_.push_back(std::shared_ptr<GameObject>(new GameObject(2, "Cube")));
-    gameObjects_.push_back(std::shared_ptr<GameObject>(new GameObject(3, "Cube")));
-    transforms_.push_back(std::shared_ptr<Transform>(new Transform(1)));
-    transforms_[0]->setPositionLocal(Point3(0.5f, 2.0f, -10.0f));
-    transforms_.push_back(std::shared_ptr<Transform>(new Transform(2)));
-    transforms_[1]->setRotationLocal(Quaternion::euler(0.0f, 30.0f, 0.0f));
-    transforms_.push_back(std::shared_ptr<Transform>(new Transform(3)));
-    transforms_[2]->setPositionLocal(Point3(-4.0f, 0.0f, 0.0f));
-    cameras_.push_back(std::shared_ptr<Camera>(new Camera(1)));
-    staticMeshes_.push_back(std::shared_ptr<StaticMesh>(new StaticMesh(2)));
-    staticMeshes_.push_back(std::shared_ptr<StaticMesh>(new StaticMesh(3)));
+    gameObjects_.push_back(new GameObject(1, "Camera"));
+    gameObjects_.push_back(new GameObject(2, "Cube"));
+    gameObjects_.push_back(new GameObject(3, "Cube"));
+    gameObjects_[0]->createComponent<Transform>()->setPositionLocal(Point3(0.5f, 2.0f, -10.0f));
+    gameObjects_[1]->createComponent<Transform>()->setRotationLocal(Quaternion::euler(0.0f, 30.0f, 0.0f));
+    gameObjects_[2]->createComponent<Transform>()->setPositionLocal(Point3(-4.0f, 0.0f, 0.0f));
+    gameObjects_[0]->createComponent<Camera>();
+    gameObjects_[1]->createComponent<StaticMesh>();
+    gameObjects_[2]->createComponent<StaticMesh>();
 }
 
 void SceneManager::drawDebugMenu()
 {
-    Point3 pos = transforms_[1]->positionLocal();
-    Vector3 scale = transforms_[1]->scaleLocal();
+    Point3 pos = gameObjects_[1]->transform()->positionLocal();
+    Vector3 scale = gameObjects_[1]->transform()->scaleLocal();
     ImGui::DragFloat3("Cube Pos", (float*)&pos);
     ImGui::DragFloat3("Cube Scale", (float*)&scale);
-    transforms_[1]->setPositionLocal(pos);
-    transforms_[1]->setScaleLocal(scale);
+    gameObjects_[1]->transform()->setPositionLocal(pos);
+    gameObjects_[1]->transform()->setScaleLocal(scale);
+}
+
+Camera* SceneManager::mainCamera() const
+{
+    // Check every game object for a camera component
+    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    {
+        Camera* camera = gameObjects_[i]->findComponent<Camera>();
+        if (camera != nullptr)
+        {
+            return camera;
+        }
+    }
+
+    // No camera in the scene
+    return nullptr;
+}
+
+const std::vector<StaticMesh*> SceneManager::staticMeshes() const
+{
+    // Make a vector to store the meshes
+    std::vector<StaticMesh*> meshes;
+
+    // Check every game object for a StaticMesh component
+    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    {
+        StaticMesh* mesh = gameObjects_[i]->findComponent<StaticMesh>();
+        if (mesh != nullptr)
+        {
+            meshes.push_back(mesh);
+        }
+    }
+    
+    return meshes;
 }
 
 GameObject* SceneManager::findGameObject(GameObjectID id) const
@@ -38,52 +71,7 @@ GameObject* SceneManager::findGameObject(GameObjectID id) const
     {
         if (gameObjects_[i]->id() == id)
         {
-            return gameObjects_[i].get();
-        }
-    }
-
-    // No match
-    return nullptr;
-}
-
-Transform* SceneManager::findTransform(GameObjectID gameObjectID) const
-{
-    // Search the component list for a match.
-    for (unsigned int i = 0; i < transforms_.size(); ++i)
-    {
-        if (transforms_[i]->gameObjectID() == gameObjectID)
-        {
-            return transforms_[i].get();
-        }
-    }
-
-    // No match
-    return nullptr;
-}
-
-Camera* SceneManager::findCamera(GameObjectID gameObjectID) const
-{
-    // Search the component list for a match.
-    for (unsigned int i = 0; i < cameras_.size(); ++i)
-    {
-        if (cameras_[i]->gameObjectID() == gameObjectID)
-        {
-            return cameras_[i].get();
-        }
-    }
-
-    // No match
-    return nullptr;
-}
-
-StaticMesh* SceneManager::findStaticMesh(GameObjectID gameObjectID) const
-{
-    // Search the component list for a match.
-    for (unsigned int i = 0; i < staticMeshes_.size(); ++i)
-    {
-        if (staticMeshes_[i]->gameObjectID() == gameObjectID)
-        {
-            return staticMeshes_[i].get();
+            return gameObjects_[i];
         }
     }
 

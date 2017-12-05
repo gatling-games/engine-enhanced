@@ -2,8 +2,8 @@
 
 #include "Scene/Transform.h"
 
-Camera::Camera(const GameObjectID gameObjectID)
-    : GameObjectComponent(gameObjectID)
+Camera::Camera(GameObject* gameObject)
+    : Component(gameObject)
 {
     nearPlaneDistance_ = 0.1f;
     farPlaneDistance_ = 500.0f;
@@ -42,7 +42,7 @@ void Camera::setHorizontalFOV(const float& FOV)
 
 Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio) const
 {
-    const Transform* transform = gameObject()->transform();
+    const Transform* transform = gameObject()->findComponent<Transform>();
     const Matrix4x4 worldToLocal = transform->worldToLocal();
     const Matrix4x4 projection = Matrix4x4::perspective(horizontalFOV_, aspectRatio, nearPlaneDistance_, farPlaneDistance_);
 

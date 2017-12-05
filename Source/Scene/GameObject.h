@@ -1,44 +1,18 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
-#include "Utils/BitReader.h"
-#include "Utils/BitWriter.h"
+class Component;
+class BitWriter;
+class BitReader;
 
-class GameObject;
-
-// Forward declare component types.
-// If we use #include it creates a loop.
 class Transform;
 class Camera;
 class StaticMesh;
 
 // Identify gameobjects with a unique 32 bit ID
 typedef uint32_t GameObjectID;
-
-// Base class for all components.
-//
-// GameObject instances do not contain the components, they are 
-// stored by the scene manager is separate lists.
-// 
-// This component class therefore stores the id of the gameobject
-// that the component belongs to, so it can be looked up.
-class GameObjectComponent
-{
-public:
-    explicit GameObjectComponent(const GameObjectID gameObjectID);
-    virtual ~GameObjectComponent() { }
-
-    // Gets the id of the gameobject this component is attached to.
-    GameObjectID gameObjectID() const { return gameObjectID_; }
-    
-    // Finds the game object that the component belongs to.
-    // Note: This method can be slow. Caching the result may be worthwile.
-    GameObject* gameObject() const;
-
-private:
-    const GameObjectID gameObjectID_;
-};
 
 // Class for a game object
 // Most of the actual work is deferred to the scene manager.
@@ -56,8 +30,49 @@ public:
     void serialize(BitWriter &writer) const;
     void deserialize(BitReader &reader);
 
-    // Methods for finding components attached to the gameobject.
-    // Note: These methods can be slow. Caching the result may be worthwile.
+    // Looks for a component of the given type on the GameObject.
+    // Returns nullptr if none is found.
+    // Note: This method can be slow. Caching the result may be worthwile.
+    template<class T>
+    T* findComponent() const
+    {
+        // Check each existing component to see if any are an instance of T
+        for (unsigned int i = 0; i < components_.size(); ++i)
+        {
+            // Try to cast to a T
+            T* existing = dynamic_cast<T*>(components_[i]);
+            
+            // dynamic_cast gives us nullptr if it failed
+            if (existing != nullptr)
+            {
+                return existing;
+            }
+        }
+
+        // No component exists.
+        return nullptr;
+    }
+
+    // Adds a component of the given type to the GameObject, if none exists already.
+    // Returns the new, or existing, component.
+    // Note: This method can be slow. Caching the result may be worthwile.
+    template<class T>
+    T* createComponent()
+    {
+        // Look for an existing component of the correct type.
+        T* existing = findComponent<T>();
+        if (existing != nullptr)
+        {
+            return existing;
+        }
+
+        // Not found. Create a new component and add it to the gameobject.
+        T* newObject = new T(this);
+        components_.push_back(newObject);
+        return newObject;
+    }
+
+    // Shortcut methods for finding components
     Transform* transform() const;
     Camera* camera() const;
     StaticMesh* staticMesh() const;
@@ -65,4 +80,7 @@ public:
 private:
     const GameObjectID id_;
     const std::string name_;
+
+    // The components that currently exist on the GameObject
+    std::vector<Component*> components_;
 };

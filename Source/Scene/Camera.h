@@ -1,12 +1,15 @@
 #pragma once
 
 #include "GameObject.h"
+#include "Component.h"
+
 #include "Math/Matrix4x4.h"
 
-class Camera : public GameObjectComponent
+class Camera : public Component
 {
 public:
-    Camera(const GameObjectID gameObjectID);
+    explicit Camera(GameObject* gameObject);
+    ~Camera() override { }
 
     float getNearPlaneDistance() const;
     void setNearPlaneDistance(const float &distance);

@@ -1,14 +1,16 @@
 #pragma once
 
-#include "Scene/GameObject.h"
+#include "Scene/Component.h"
+
 #include "Renderer/Shader.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/Texture.h"
 
-class StaticMesh : public GameObjectComponent
+class StaticMesh : public Component
 {
 public:
-    StaticMesh(const GameObjectID gameObjectID);
+    explicit StaticMesh(GameObject* gameObject);
+    ~StaticMesh() override { }
 
     Mesh* mesh() const { return mesh_; }
     Shader* shader() const { return shader_; }
