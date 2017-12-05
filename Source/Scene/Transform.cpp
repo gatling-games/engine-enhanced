@@ -102,6 +102,15 @@ void Transform::translateLocal(const Vector3& translation)
     recomputeMatrices();
 }
 
+void Transform::rotateLocal(float angle, const Vector3& axis)
+{
+    // Construct quaternion using input angle and axis
+    const Quaternion newRotation = Quaternion::rotation(angle, axis);
+
+    // Apply new rotation to existing local space rotation
+    rotation_ = newRotation * rotation_;
+}
+
 void Transform::recomputeMatrices()
 {
     localToWorld_ = Matrix4x4::trs(position_, rotation_, scale_);

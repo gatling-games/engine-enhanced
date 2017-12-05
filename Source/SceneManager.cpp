@@ -7,6 +7,7 @@
 #include "Scene/StaticMesh.h"
 
 #include "Utils/Clock.h"
+#include "Scene/Freecam.h"
 
 SceneManager::SceneManager()
     : gameObjects_()
@@ -15,6 +16,7 @@ SceneManager::SceneManager()
     GameObject* cameraGO = createGameObject("Camera");
     cameraGO->createComponent<Transform>()->setPositionLocal(Point3(0.5f, 2.0f, -10.0f));
     cameraGO->createComponent<Camera>();
+    cameraGO->createComponent<Freecam>();
 
     // Create a cube mesh infront of the camera
     GameObject* mesh1GO = createGameObject("Cube 1");

@@ -21,6 +21,9 @@ InputManager::InputManager(GLFWwindow* window)
     joystickAxes_ = nullptr;
     previousFrameJoystickButtons_ = nullptr;
     previousFrameJoystickAxes_ = nullptr;
+
+    prevMouseX_ = 0.0;
+    prevMouseY_ = 0.0;
 }
 
 // Called every time a new frame starts, storing previous frame's input data
@@ -32,6 +35,7 @@ void InputManager::frameStart(const Clock* clock)
     // Poll keyboard and joystick inputs
     pollKeyboard();
     pollJoystick();
+    pollMouse();
 
     // Create object holding input data to send to server
     InputCmd inputs;
@@ -121,6 +125,34 @@ bool InputManager::anyKeyDown() const
     return false;
 }
 
+float InputManager::getAxis(InputKey key1, InputKey key2)
+{
+    float axisPlus = 0.0f;
+    float axisMinus = 0.0f;
+
+    if (isKeyDown(key1))
+    {
+        axisPlus += 1.0f;
+    }
+
+    if (isKeyDown(key2))
+    {
+        axisMinus += 1.0f;
+    }
+
+    return axisPlus - axisMinus;
+}
+
+float InputManager::mouseDeltaX()
+{
+    return mouseDeltaX_;
+}
+
+float InputManager::mouseDeltaY()
+{
+    return mouseDeltaY_;
+}
+
 // Method which takes input GLFW key code and outputs in our own format
 InputKey InputManager::convertGLFWKey(int key) const
 {
@@ -180,7 +212,7 @@ InputKey InputManager::convertGLFWKey(int key) const
     case GLFW_KEY_TAB: return InputKey::Tab;
     case GLFW_KEY_CAPS_LOCK: return InputKey::CapsLock;
     case GLFW_KEY_LEFT_CONTROL: return InputKey::LCtrl;
-    case GLFW_KEY_RIGHT_CONTROL: return InputKey::LCtrl;
+    case GLFW_KEY_RIGHT_CONTROL: return InputKey::RCtrl;
     case GLFW_KEY_LEFT_ALT: return InputKey::LAlt;
     case GLFW_KEY_RIGHT_ALT: return InputKey::RAlt;
     case GLFW_KEY_UP: return InputKey::Up;
@@ -259,4 +291,17 @@ void InputManager::pollKeyboard()
             keyReleased(convertGLFWKey(i));
         }
     }
+}
+
+void InputManager::pollMouse()
+{
+    double mouseX;
+    double mouseY;
+    glfwGetCursorPos(window_, &mouseX, &mouseY);
+
+    mouseDeltaX_ = mouseX - prevMouseX_;
+    mouseDeltaY_ = mouseY - prevMouseY_;
+
+    prevMouseX_ = mouseX;
+    prevMouseY_ = mouseY;
 }

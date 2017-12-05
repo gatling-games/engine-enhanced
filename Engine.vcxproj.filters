@@ -134,6 +134,9 @@
     </ClInclude>
     <ClInclude Include="Source\Utils\ImGuiExtensions.h">
       <Filter>Utils</Filter>
+	</ClInclude>
+    <ClInclude Include="Source\Scene\Freecam.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -241,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="Source\Utils\ImGuiExtensions.cpp">
       <Filter>Utils</Filter>
+	</ClCompile>
+    <ClCompile Include="Source\Scene\Freecam.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
