@@ -36,7 +36,7 @@ void PropertiesPanel::draw()
         const char* componentName = typeid(*components[i]).name() + 6;
 
         // Put the component controls inside a drop down
-        if (ImGui::CollapsingHeader(componentName, true))
+        if (ImGui::CollapsingHeader(componentName, ImGuiTreeNodeFlags_DefaultOpen))
         {
             components[i]->drawProperties();
         }
