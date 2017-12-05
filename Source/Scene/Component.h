@@ -13,6 +13,9 @@ public:
     // The GameObject that the component is attached to
     GameObject* gameObject() const { return gameObject_; }
 
+    // Called each frame.
+    virtual void update(float deltaTime) { }
+
     // Serialization and deserialization of the component.
     // Triggered when loading, saving, or sending over the network.
     virtual void serialize(BitWriter &writer) { }
