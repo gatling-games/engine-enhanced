@@ -23,6 +23,9 @@ public:
     // Called each frame.
     void frameStart();
 
+    // Creates a new GameObject in the scene
+    GameObject* createGameObject(const std::string &name);
+
     // Gets the first camera added to the scene.
     Camera* mainCamera() const;
     
@@ -31,9 +34,6 @@ public:
 
     // Gets a list of all static mesh components in the scene
     const std::vector<StaticMesh*> staticMeshes() const;
-
-    // Finds game objects and components by id
-    GameObject* findGameObject(GameObjectID id) const;
 
 private:
     // For now, store objects in a vector of pointers

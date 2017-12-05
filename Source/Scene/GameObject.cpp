@@ -5,9 +5,8 @@
 #include "Scene/Component.h"
 #include "Scene/Transform.h"
 
-GameObject::GameObject(const GameObjectID id, const std::string &name)
-    : id_(id),
-    name_(name)
+GameObject::GameObject(const std::string &name)
+    : name_(name)
 {
     // Give every GameObject instance a transform component
     // This ensures that gameobject can be parented inside each other.

@@ -18,9 +18,14 @@ typedef uint32_t GameObjectID;
 // Most of the actual work is deferred to the scene manager.
 class GameObject
 {
-public:
+    friend class SceneManager;
+
+private:
+    // This is only called by SceneManager
+    // To create a GameObject, call SceneManager->createGameObject.
     explicit GameObject(const std::string &name);
 
+public:
     // Getters for basic gameobject properties
     const std::string& name() const { return name_; }
 
