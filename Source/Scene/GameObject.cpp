@@ -1,6 +1,8 @@
 #include "GameObject.h"
 
 #include "SceneManager.h"
+
+#include "Scene/Component.h"
 #include "Scene/Transform.h"
 
 GameObject::GameObject(const GameObjectID id, const std::string &name)
@@ -20,6 +22,14 @@ void GameObject::serialize(BitWriter& writer) const
 void GameObject::deserialize(BitReader& reader)
 {
     
+}
+
+void GameObject::update(float deltaTime)
+{
+    for(unsigned int i = 0; i < components_.size(); ++i)
+    {
+        components_[i]->update(deltaTime);
+    }
 }
 
 Transform* GameObject::transform() const

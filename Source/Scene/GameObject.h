@@ -30,6 +30,9 @@ public:
     void serialize(BitWriter &writer) const;
     void deserialize(BitReader &reader);
 
+    // Called once per frame
+    void update(float deltaTime);
+
     // Looks for a component of the given type on the GameObject.
     // Returns nullptr if none is found.
     // Note: This method can be slow. Caching the result may be worthwile.

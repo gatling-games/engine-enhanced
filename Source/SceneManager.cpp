@@ -6,6 +6,8 @@
 #include "Scene/Camera.h"
 #include "Scene/StaticMesh.h"
 
+#include "Utils/Clock.h"
+
 SceneManager::SceneManager()
     : gameObjects_()
 {
@@ -28,6 +30,16 @@ void SceneManager::drawDebugMenu()
     ImGui::DragFloat3("Cube Scale", (float*)&scale);
     gameObjects_[1]->transform()->setPositionLocal(pos);
     gameObjects_[1]->transform()->setScaleLocal(scale);
+}
+
+void SceneManager::frameStart()
+{
+    const float deltaTime = Clock::instance()->deltaTime();
+
+    for(unsigned int i = 0; i < gameObjects_.size(); ++i)
+    {
+        gameObjects_[i]->update(deltaTime);
+    }
 }
 
 Camera* SceneManager::mainCamera() const
