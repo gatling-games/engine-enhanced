@@ -11,9 +11,9 @@
 SceneManager::SceneManager()
     : gameObjects_()
 {
-    gameObjects_.push_back(new GameObject(1, "Camera"));
-    gameObjects_.push_back(new GameObject(2, "Cube"));
-    gameObjects_.push_back(new GameObject(3, "Cube"));
+    gameObjects_.push_back(new GameObject("Camera"));
+    gameObjects_.push_back(new GameObject("Cube"));
+    gameObjects_.push_back(new GameObject("Cube"));
     gameObjects_[0]->createComponent<Transform>()->setPositionLocal(Point3(0.5f, 2.0f, -10.0f));
     gameObjects_[1]->createComponent<Transform>()->setRotationLocal(Quaternion::euler(0.0f, 30.0f, 0.0f));
     gameObjects_[2]->createComponent<Transform>()->setPositionLocal(Point3(-4.0f, 0.0f, 0.0f));

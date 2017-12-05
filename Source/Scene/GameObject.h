@@ -19,10 +19,9 @@ typedef uint32_t GameObjectID;
 class GameObject
 {
 public:
-    explicit GameObject(const GameObjectID id, const std::string &name);
+    explicit GameObject(const std::string &name);
 
     // Getters for basic gameobject properties
-    GameObjectID id() const { return id_; }
     const std::string& name() const { return name_; }
 
     // Serialization methods.
@@ -81,7 +80,6 @@ public:
     StaticMesh* staticMesh() const;
 
 private:
-    const GameObjectID id_;
     const std::string name_;
 
     // The components that currently exist on the GameObject
