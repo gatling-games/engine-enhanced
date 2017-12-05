@@ -12,7 +12,7 @@ class Transform : public Component
 {
 public:
     explicit Transform(GameObject* gameObject);
-    ~Transform() override { };
+    ~Transform() override { }
 
     // Transform position / rotation / scale in local space
     Point3 positionLocal() const { return position_; }
