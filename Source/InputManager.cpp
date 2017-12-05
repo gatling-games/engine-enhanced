@@ -22,8 +22,10 @@ InputManager::InputManager(GLFWwindow* window)
     previousFrameJoystickButtons_ = nullptr;
     previousFrameJoystickAxes_ = nullptr;
 
-    prevMouseX_ = 0.0;
-    prevMouseY_ = 0.0;
+    // Initialise the mouse position
+    glfwGetCursorPos(window, &prevMouseX_, &prevMouseY_);
+    mouseDeltaX_ = 0.0;
+    mouseDeltaY_ = 0.0;
 }
 
 // Called every time a new frame starts, storing previous frame's input data
