@@ -51,6 +51,7 @@
     <ClInclude Include="Source\Renderer\Texture.h" />
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\Utils\Clock.h" />
+    <ClInclude Include="Source\Utils\ImGuiExtensions.h" />
     <ClInclude Include="Source\Utils\Singleton.h" />
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +93,7 @@
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\Utils\Clock.cpp" />
+    <ClCompile Include="Source\Utils\ImGuiExtensions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\crunch\crnlib\crnlib.2008.vcxproj">
