@@ -15,6 +15,9 @@ public:
     virtual std::string name() const { return "Properties Panel"; }
     virtual void draw();
 
+    // The game object being inspected
+    GameObject* current() const { return currentGameObject_; }
+
     // Changes the gameobject being inspected
     void inspect(GameObject* gameObject);
 
