@@ -106,7 +106,7 @@ void Renderer::executeForwardPass() const
         staticMesh->texture()->bind(0);
 
         // Update the per draw uniform buffer
-        updatePerDrawUniformBuffer(staticMesh.get());
+        updatePerDrawUniformBuffer(staticMesh);
 
         // Draw the mesh
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);

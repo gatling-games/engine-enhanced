@@ -1,23 +1,15 @@
 #include "GameObject.h"
 
 #include "SceneManager.h"
+#include "Scene/Transform.h"
 
-GameObjectComponent::GameObjectComponent(const GameObjectID gameObjectID)
-    : gameObjectID_(gameObjectID)
-{
-    
-}
-
-GameObject* GameObjectComponent::gameObject() const
-{
-    return SceneManager::instance()->findGameObject(gameObjectID_);
-}
-
-GameObject::GameObject(const GameObjectID id, const std::string name)
+GameObject::GameObject(const GameObjectID id, const std::string &name)
     : id_(id),
     name_(name)
 {
-    
+    // Give every GameObject instance a transform component
+    // This ensures that gameobject can be parented inside each other.
+    createComponent<Transform>();
 }
 
 void GameObject::serialize(BitWriter& writer) const
@@ -32,21 +24,15 @@ void GameObject::deserialize(BitReader& reader)
 
 Transform* GameObject::transform() const
 {
-    // Check the scene transform list for one with the
-    // correct game object id.
-    return SceneManager::instance()->findTransform(id_);
+    return findComponent<Transform>();
 }
 
 Camera* GameObject::camera() const
 {
-    // Check the scene camera list for one with the
-    // correct game object id.
-    return SceneManager::instance()->findCamera(id_);
+    return findComponent<Camera>();
 }
 
 StaticMesh* GameObject::staticMesh() const
 {
-    // Check the scene static mesh list for one with the
-    // correct game object id.
-    return SceneManager::instance()->findStaticMesh(id_);
+    return findComponent<StaticMesh>();
 }

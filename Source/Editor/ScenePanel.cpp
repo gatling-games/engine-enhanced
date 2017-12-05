@@ -13,7 +13,7 @@ void ScenePanel::draw()
     // Draw all of the game objects in the scene with no parent.
     for (unsigned int i = 0; i < gameObjects.size(); ++i)
     {
-        drawNode(gameObjects[i].get());
+        drawNode(gameObjects[i]);
     }
 }
 

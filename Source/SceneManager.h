@@ -21,23 +21,19 @@ public:
     void drawDebugMenu() override;
 
     // Gets the first camera added to the scene.
-    Camera* mainCamera() const { return cameras_[0].get(); }
-    const std::vector<std::shared_ptr<StaticMesh>>& staticMeshes() const { return staticMeshes_; }
-
+    Camera* mainCamera() const;
+    
     // Gets a list of all game objects in the scene.
-    const std::vector<std::shared_ptr<GameObject>> gameObjects() const { return gameObjects_; }
+    const std::vector<GameObject*>& gameObjects() { return gameObjects_; }
+
+    // Gets a list of all static mesh components in the scene
+    const std::vector<StaticMesh*> staticMeshes() const;
 
     // Finds game objects and components by id
     GameObject* findGameObject(GameObjectID id) const;
-    Transform* findTransform(GameObjectID gameObjectID) const;
-    Camera* findCamera(GameObjectID gameObjectID) const;
-    StaticMesh* findStaticMesh(GameObjectID gameObjectID) const;
 
 private:
     // For now, store objects in a vector of pointers
     // This should be replaced with a more cache-friendly structure
-    std::vector<std::shared_ptr<GameObject>> gameObjects_;
-    std::vector<std::shared_ptr<Transform>> transforms_;
-    std::vector<std::shared_ptr<Camera>> cameras_;
-    std::vector<std::shared_ptr<StaticMesh>> staticMeshes_;
+    std::vector<GameObject*> gameObjects_;
 };
