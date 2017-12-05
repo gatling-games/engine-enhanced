@@ -2,6 +2,9 @@
 
 #include <imgui.h>
 
+#include "EditorManager.h"
+#include "Editor/PropertiesPanel.h"
+
 #include "SceneManager.h"
 #include "Scene/GameObject.h"
 
@@ -29,5 +32,6 @@ void ScenePanel::drawNode(GameObject* gameObject)
 
 void ScenePanel::gameObjectSelected(GameObject* gameObject)
 {
-    printf("GameObject %s selected \n", gameObject->name().c_str());
+    // Inspect the object in the properties panel
+    PropertiesPanel::instance()->inspect(gameObject);
 }

@@ -14,6 +14,9 @@ public:
     explicit Transform(GameObject* gameObject);
     ~Transform() override { }
 
+    // Draws the transform properties fold out
+    void drawProperties() override;
+
     // Transform position / rotation / scale in local space
     Point3 positionLocal() const { return position_; }
     Quaternion rotationLocal() const { return rotation_; }

@@ -16,6 +16,9 @@ public:
     // Called each frame.
     virtual void update(float deltaTime) { }
 
+    // Used to draw the imgui properties section
+    virtual void drawProperties() { }
+
     // Serialization and deserialization of the component.
     // Triggered when loading, saving, or sending over the network.
     virtual void serialize(BitWriter &writer) { }

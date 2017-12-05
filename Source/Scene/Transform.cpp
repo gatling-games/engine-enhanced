@@ -1,5 +1,7 @@
 #include "Transform.h"
 
+#include <imgui.h>
+
 Transform::Transform(GameObject* gameObject)
     : Component(gameObject),
     position_(Point3::origin()),
@@ -9,6 +11,16 @@ Transform::Transform(GameObject* gameObject)
     worldToLocal_(Matrix4x4::identity())
 {
 
+}
+
+void Transform::drawProperties()
+{
+    ImGui::DragFloat3("Position", &position_.x, 0.1f);
+    ImGui::DragFloat3("Scale", &scale_.x, 0.1f);
+
+    // The matrices may be changes by the above editing
+    // Recompute them every time the properties editor is shown.
+    recomputeMatrices();
 }
 
 Point3 Transform::positionWorld() const

@@ -1,5 +1,7 @@
 #include "Camera.h"
 
+#include <imgui.h>
+
 #include "Scene/Transform.h"
 
 Camera::Camera(GameObject* gameObject)
@@ -8,6 +10,13 @@ Camera::Camera(GameObject* gameObject)
     nearPlaneDistance_ = 0.1f;
     farPlaneDistance_ = 500.0f;
     horizontalFOV_ = 60.0f;
+}
+
+void Camera::drawProperties()
+{
+    ImGui::DragFloat("Near Plane", &nearPlaneDistance_, 0.1f, 0.001f, 100.0f);
+    ImGui::DragFloat("Far Plane", &farPlaneDistance_, 1.0f, 50.0f, 10000.0f);
+    ImGui::DragFloat("Horiz FOV", &horizontalFOV_, 1.0f, 1.0f, 180.0f);
 }
 
 float Camera::getNearPlaneDistance() const

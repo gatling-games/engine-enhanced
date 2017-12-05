@@ -11,6 +11,9 @@ public:
     explicit Camera(GameObject* gameObject);
     ~Camera() override { }
 
+    // Draws the camera properties fold out
+    void drawProperties() override;
+
     float getNearPlaneDistance() const;
     void setNearPlaneDistance(const float &distance);
 

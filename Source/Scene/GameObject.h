@@ -84,6 +84,9 @@ public:
     Camera* camera() const;
     StaticMesh* staticMesh() const;
 
+    // Gets a list of all components attached to the gameobject
+    const std::vector<Component*> componentList() { return components_; }
+
 private:
     const std::string name_;
 
