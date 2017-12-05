@@ -16,6 +16,11 @@ struct Quaternion
     
     static Quaternion identity();
 
+    // Adjusts the quaternion to have a norm of 1.0
+    // This should be rarely used, all quaternions are unit length already
+    // unless manually modifying the components.
+    void normalize();
+
     Quaternion conjugate() const;
     Quaternion inverse() const;
 

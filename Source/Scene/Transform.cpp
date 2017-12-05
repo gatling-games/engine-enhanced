@@ -16,7 +16,11 @@ Transform::Transform(GameObject* gameObject)
 void Transform::drawProperties()
 {
     ImGui::DragFloat3("Position", &position_.x, 0.1f);
+    ImGui::DragFloat4("Rotation", (float*)&rotation_, 0.01f, -1.0f, 1.0f);
     ImGui::DragFloat3("Scale", &scale_.x, 0.1f);
+
+    // The rotation quat needs to be re-normalized.
+    rotation_.normalize();
 
     // The matrices may be changes by the above editing
     // Recompute them every time the properties editor is shown.
