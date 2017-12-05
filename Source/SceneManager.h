@@ -20,6 +20,9 @@ public:
     std::string name() const override { return "Scene Manager"; }
     void drawDebugMenu() override;
 
+    // Called each frame.
+    void frameStart();
+
     // Gets the first camera added to the scene.
     Camera* mainCamera() const;
     
