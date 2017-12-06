@@ -145,6 +145,11 @@ float InputManager::getAxis(InputKey key1, InputKey key2)
     return axisPlus - axisMinus;
 }
 
+bool InputManager::mouseButtonDown(MouseButton button) const
+{
+    return glfwGetMouseButton(window_, (int)button);
+}
+
 float InputManager::mouseDeltaX()
 {
     return mouseDeltaX_;

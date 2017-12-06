@@ -125,6 +125,13 @@ enum class InputKey
     GamepadY = 109
 };
 
+enum class MouseButton
+{
+    Left = GLFW_MOUSE_BUTTON_LEFT,
+    Right = GLFW_MOUSE_BUTTON_RIGHT,
+    Middle = GLFW_MOUSE_BUTTON_MIDDLE,
+};
+
 struct InputCmd
 {
     float deltaTime;
@@ -173,8 +180,11 @@ public:
 
     float getAxis(InputKey key1, InputKey key2);
 
-    float mouseDeltaX();
+    // Returns true if the specified mouse button is currently pressed.
+    bool mouseButtonDown(MouseButton button) const;
 
+    // The number of pixels that the mouse has moved in the last frame.
+    float mouseDeltaX();
     float mouseDeltaY();
 
 private:
