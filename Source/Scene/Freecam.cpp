@@ -20,7 +20,7 @@ void Freecam::update(float deltaTime)
     // Calculate forward, vertical and lateral movement using pressed keys
     const float forward = InputManager::instance()->getAxis(InputKey::W, InputKey::S);
     const float lateral = InputManager::instance()->getAxis(InputKey::D, InputKey::A);
-    const float vertical = InputManager::instance()->getAxis(InputKey::Q, InputKey::E);
+    const float vertical = InputManager::instance()->getAxis(InputKey::E, InputKey::Q);
 
     // Add deltatime to movement duration and reset to 0 if stopped
     if (fabs(forward) > 0.01f || fabs(lateral) > 0.01f || fabs(vertical) > 0.01f)
@@ -36,9 +36,22 @@ void Freecam::update(float deltaTime)
         }
     }
 
+    // Determine the direction to move in by applying the 3 input
+    // axis in the 3 local axis of the camera transform.
+    Vector3 moveDirection = ((transform_->forwards() * forward)
+        + (transform_->right() * lateral)
+        + (transform_->up() * vertical));
+  
+    // Normalize the move direction, if nonzero
+    float moveDirectionMagnitude = moveDirection.magnitude();
+    if (moveDirectionMagnitude > 0.1f)
+    {
+        moveDirection /= moveDirectionMagnitude;
+    }
+
     // Transform the camera
     // Use moveDuration_ so the camera gets faster as it moves for longer.
-    transform_->translateLocal(Vector3(lateral, vertical, forward) * moveDuration_);
+    transform_->translateLocal(moveDirection * moveDuration_);
 
     // Apply mouse look when the right mouse button is held down
     if (InputManager::instance()->mouseButtonDown(MouseButton::Right))
