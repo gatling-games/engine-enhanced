@@ -4,11 +4,11 @@
 #include "InputManager.h"
 
 Freecam::Freecam(GameObject* gameObject)
-    : Component(gameObject)
+    : Component(gameObject),
+    moveDuration_(0.0f)
 {
     // Attach transform component
     transform_ = gameObject->createComponent<Transform>();
-    moveDuration_ = 0.0f;
 }
 
 Freecam::~Freecam()
