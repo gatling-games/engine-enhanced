@@ -125,6 +125,13 @@ enum class InputKey
     GamepadY = 109
 };
 
+enum class MouseButton
+{
+    Left = GLFW_MOUSE_BUTTON_LEFT,
+    Right = GLFW_MOUSE_BUTTON_RIGHT,
+    Middle = GLFW_MOUSE_BUTTON_MIDDLE,
+};
+
 struct InputCmd
 {
     float deltaTime;
@@ -171,11 +178,16 @@ public:
     // Returns true on any frame where any key is down
     bool anyKeyDown() const;
 
-    float getAxis(InputKey key1, InputKey key2);
+    // Returns -1, 0, or 1 based on which keys are pressed.
+    // Only positive = 1, only negative = -1, both/neither = 0
+    float getAxis(InputKey positiveKey, InputKey negativeKey) const;
 
-    float mouseDeltaX();
+    // Returns true if the specified mouse button is currently pressed.
+    bool mouseButtonDown(MouseButton button) const;
 
-    float mouseDeltaY();
+    // The number of pixels that the mouse has moved in the last frame.
+    float mouseDeltaX() const { return (float)mouseDeltaX_; }
+    float mouseDeltaY() const { return (float)mouseDeltaY_; }
 
 private:
     // Reference to GLFW window object

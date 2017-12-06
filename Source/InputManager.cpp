@@ -22,8 +22,10 @@ InputManager::InputManager(GLFWwindow* window)
     previousFrameJoystickButtons_ = nullptr;
     previousFrameJoystickAxes_ = nullptr;
 
-    prevMouseX_ = 0.0;
-    prevMouseY_ = 0.0;
+    // Initialise the mouse position
+    glfwGetCursorPos(window, &prevMouseX_, &prevMouseY_);
+    mouseDeltaX_ = 0.0;
+    mouseDeltaY_ = 0.0;
 }
 
 // Called every time a new frame starts, storing previous frame's input data
@@ -125,17 +127,17 @@ bool InputManager::anyKeyDown() const
     return false;
 }
 
-float InputManager::getAxis(InputKey key1, InputKey key2)
+float InputManager::getAxis(InputKey positiveKey, InputKey negativeKey) const
 {
     float axisPlus = 0.0f;
     float axisMinus = 0.0f;
 
-    if (isKeyDown(key1))
+    if (isKeyDown(positiveKey))
     {
         axisPlus += 1.0f;
     }
 
-    if (isKeyDown(key2))
+    if (isKeyDown(negativeKey))
     {
         axisMinus += 1.0f;
     }
@@ -143,14 +145,9 @@ float InputManager::getAxis(InputKey key1, InputKey key2)
     return axisPlus - axisMinus;
 }
 
-float InputManager::mouseDeltaX()
+bool InputManager::mouseButtonDown(MouseButton button) const
 {
-    return mouseDeltaX_;
-}
-
-float InputManager::mouseDeltaY()
-{
-    return mouseDeltaY_;
+    return glfwGetMouseButton(window_, (int)button);
 }
 
 // Method which takes input GLFW key code and outputs in our own format
