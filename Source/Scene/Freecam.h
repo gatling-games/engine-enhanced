@@ -9,7 +9,7 @@ class Freecam : public Component
 {
 public:
     explicit Freecam(GameObject* gameObject);
-    ~Freecam() override;
+    ~Freecam() override { }
 
     // Runs every frame to update freecam
     void update(float deltaTime) override;

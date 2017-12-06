@@ -11,10 +11,6 @@ Freecam::Freecam(GameObject* gameObject)
     transform_ = gameObject->createComponent<Transform>();
 }
 
-Freecam::~Freecam()
-{
-}
-
 void Freecam::update(float deltaTime)
 {
     // Calculate forward, vertical and lateral movement using pressed keys
