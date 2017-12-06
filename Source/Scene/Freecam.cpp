@@ -44,9 +44,11 @@ void Freecam::update(float deltaTime)
     // Apply mouse look when the right mouse button is held down
     if (InputManager::instance()->mouseButtonDown(MouseButton::Right))
     {
-        float mouseDeltaX = InputManager::instance()->mouseDeltaX();
-        float mouseDeltaY = InputManager::instance()->mouseDeltaY();
-        transform_->rotateLocal(mouseDeltaX, Vector3::up());
-        transform_->rotateLocal(mouseDeltaY, transform_->right());
+        const float mouseDeltaX = InputManager::instance()->mouseDeltaX();
+        const float mouseDeltaY = InputManager::instance()->mouseDeltaY();
+        const float sensitivity = 0.5f;
+
+        transform_->rotateLocal(mouseDeltaX * sensitivity, Vector3::up());
+        transform_->rotateLocal(mouseDeltaY * sensitivity, transform_->right());
     }
 }
