@@ -22,19 +22,18 @@ void Freecam::update(float deltaTime)
     const float lateral = InputManager::instance()->getAxis(InputKey::D, InputKey::A);
     const float vertical = InputManager::instance()->getAxis(InputKey::Q, InputKey::E);
 
-    // Variables for checking whether or not camera is moving
-    bool ifForward = forward > 0.1f || forward < -0.1f;
-    bool ifLateral = lateral > 0.1f || lateral < -0.1f;
-    bool ifVertical = vertical > 0.1f || vertical < -0.1f;
-
     // Add deltatime to movement duration and reset to 0 if stopped
-    if (ifForward || ifLateral || ifVertical)
+    if (fabs(forward) > 0.01f || fabs(lateral) > 0.01f || fabs(vertical) > 0.01f)
     {
         moveDuration_ += deltaTime;
     }
     else
     {
-        moveDuration_ = 0.0f;
+        moveDuration_ -= deltaTime * 5.0f;
+        if (moveDuration_ < 0.0f)
+        {
+            moveDuration_ = 0.0f;
+        }
     }
 
     // Transform the camera
