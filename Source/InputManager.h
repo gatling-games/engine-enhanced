@@ -178,14 +178,16 @@ public:
     // Returns true on any frame where any key is down
     bool anyKeyDown() const;
 
-    float getAxis(InputKey key1, InputKey key2);
+    // Returns -1, 0, or 1 based on which keys are pressed.
+    // Only positive = 1, only negative = -1, both/neither = 0
+    float getAxis(InputKey positiveKey, InputKey negativeKey) const;
 
     // Returns true if the specified mouse button is currently pressed.
     bool mouseButtonDown(MouseButton button) const;
 
     // The number of pixels that the mouse has moved in the last frame.
-    float mouseDeltaX();
-    float mouseDeltaY();
+    float mouseDeltaX() const { return (float)mouseDeltaX_; }
+    float mouseDeltaY() const { return (float)mouseDeltaY_; }
 
 private:
     // Reference to GLFW window object

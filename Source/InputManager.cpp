@@ -127,17 +127,17 @@ bool InputManager::anyKeyDown() const
     return false;
 }
 
-float InputManager::getAxis(InputKey key1, InputKey key2)
+float InputManager::getAxis(InputKey positiveKey, InputKey negativeKey) const
 {
     float axisPlus = 0.0f;
     float axisMinus = 0.0f;
 
-    if (isKeyDown(key1))
+    if (isKeyDown(positiveKey))
     {
         axisPlus += 1.0f;
     }
 
-    if (isKeyDown(key2))
+    if (isKeyDown(negativeKey))
     {
         axisMinus += 1.0f;
     }
@@ -148,16 +148,6 @@ float InputManager::getAxis(InputKey key1, InputKey key2)
 bool InputManager::mouseButtonDown(MouseButton button) const
 {
     return glfwGetMouseButton(window_, (int)button);
-}
-
-float InputManager::mouseDeltaX()
-{
-    return mouseDeltaX_;
-}
-
-float InputManager::mouseDeltaY()
-{
-    return mouseDeltaY_;
 }
 
 // Method which takes input GLFW key code and outputs in our own format
