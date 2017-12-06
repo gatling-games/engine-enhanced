@@ -37,14 +37,16 @@ void Freecam::update(float deltaTime)
         moveDuration_ = 0.0f;
     }
 
-    // Add sprint factor if key is held down
-    const float speed = InputManager::instance()->isKeyDown(InputKey::LShift) ? 20.0f : 1.0f;
+    // Transform the camera
+    // Use moveDuration_ so the camera gets faster as it moves for longer.
+    transform_->translateLocal(Vector3(lateral, vertical, forward) * moveDuration_);
 
-    float mouseDeltaX = InputManager::instance()->mouseDeltaX();
-    float mouseDeltaY = InputManager::instance()->mouseDeltaY();
-
-    // Transform camera
-    transform_->translateLocal(Vector3(lateral, vertical, forward)*moveDuration_*speed);
-    transform_->rotateLocal(mouseDeltaX, Vector3::up());
-    transform_->rotateLocal(mouseDeltaY, transform_->right());
+    // Apply mouse look when the right mouse button is held down
+    if (InputManager::instance()->mouseButtonDown(MouseButton::Right))
+    {
+        float mouseDeltaX = InputManager::instance()->mouseDeltaX();
+        float mouseDeltaY = InputManager::instance()->mouseDeltaY();
+        transform_->rotateLocal(mouseDeltaX, Vector3::up());
+        transform_->rotateLocal(mouseDeltaY, transform_->right());
+    }
 }
