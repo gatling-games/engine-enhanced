@@ -59,6 +59,10 @@ private:
     // Draws the menu at the top of the window.
     void drawMainMenu();
 
+    // Draws a menu dropdown in the main menu.
+    // Gives a chance for each panel to draw into the menu.
+    void drawMenu(const std::string &name);
+
     // Regions for each editor panel.
     Rect fullRect() const;
     Rect mainMenuRect() const;

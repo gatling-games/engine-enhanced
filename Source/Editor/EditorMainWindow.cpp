@@ -57,54 +57,38 @@ void EditorMainWindow::drawMainMenu()
 {
     if (ImGui::BeginMainMenuBar())
     {
-        if (ImGui::BeginMenu("File"))
-        {
-            ImGui::MenuItem("Close");
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Edit"))
-        {
-            ImGui::MenuItem("Close");
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("View"))
-        {
-            resize(windowWidth_, windowHeight_);
-            ImGui::MenuItem("Close");
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Game"))
-        {
-            ImGui::MenuItem("Close");
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Resources"))
-        {
-            ImGui::MenuItem("Close");
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Scene"))
-        {
-            ImGui::MenuItem("Close");
-            ImGui::EndMenu();
-        }
-
-        if (ImGui::BeginMenu("Tools"))
-        {
-            if (ImGui::MenuItem("Toggle ImGui Test"))
-            {
-                drawImGuiTestWindow_ = !drawImGuiTestWindow_;
-            }
-
-            ImGui::EndMenu();
-        }
+        drawMenu("File");
+        drawMenu("Edit");
+        drawMenu("View");
+        drawMenu("Game");
+        drawMenu("Scene");
+        drawMenu("Resources");
+        drawMenu("Tools");
 
         ImGui::EndMainMenuBar();
+    }
+}
+
+void EditorMainWindow::drawMenu(const std::string &menuName)
+{
+    if (ImGui::BeginMenu(menuName.c_str()))
+    {
+        // Ensure the Tools menu includes an imgui test windw toggle
+        if (menuName == "Tools" && ImGui::MenuItem("Toggle ImGui Test"))
+        {
+            drawImGuiTestWindow_ = !drawImGuiTestWindow_;
+        }
+
+        // Let each panel draw into the menu
+        gamePanel_.drawMenu(menuName);
+        debugPanel_.drawMenu(menuName);
+        outputPanel_.drawMenu(menuName);
+        scenePanel_.drawMenu(menuName);
+        resourcesPanel_.drawMenu(menuName);
+        propertiesPanel_.drawMenu(menuName);
+
+        // Finally, close the menu
+        ImGui::EndMenu();
     }
 }
 
