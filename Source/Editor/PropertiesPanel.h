@@ -23,4 +23,8 @@ public:
 
 private:
     GameObject* currentGameObject_;
+
+    void drawGameObjectSection();
+    void drawComponentsSection();
+    void drawAddComponentSection();
 };

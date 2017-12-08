@@ -7,7 +7,9 @@ class EditorPanel
 public:
     virtual std::string name() const = 0;
     
-    // Panel callbacks
-    // Triggered at certain stages of the editor ui rendering
+    // Called when drawing a window main menu with the specified name
+    virtual void drawMenu(const std::string menuName) { }
+
+    // Called when the actual panel is drawn
     virtual void draw() = 0;
 };
