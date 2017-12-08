@@ -36,7 +36,7 @@ private:
     // Resources used for skybox shader pass
     ResourcePPtr<Shader> skyboxShader_;
     ResourcePPtr<Mesh> skyboxMesh_;
-    ResourcePPtr<Texture> skyboxTexture_;
+    ResourcePPtr<Texture> skyboxCloudThicknessTexture_;
 
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;
