@@ -1,12 +1,13 @@
 #pragma once
 
+#include <GL/gl3w.h>
+#include <GLFW/glfw3.h>
+#include <vector>
+
 #include "Application.h"
 #include "Utils/Singleton.h"
 #include "Math\Vector2.h"
 #include "Math\Vector3.h"
-
-#include <GLFW/glfw3.h>
-#include <vector>
 
 class Clock;
 
