@@ -1,14 +1,23 @@
 #include "Freecam.h"
 
+#include <imgui.h>
+
 #include "Scene/Transform.h"
 #include "InputManager.h"
+#include "Utils/Clock.h"
 
 Freecam::Freecam(GameObject* gameObject)
     : Component(gameObject),
+    timeScaleIndependent_(true),
     moveDuration_(0.0f)
 {
     // Attach transform component
     transform_ = gameObject->createComponent<Transform>();
+}
+
+void Freecam::drawProperties()
+{
+    ImGui::Checkbox("Timescale Independent", &timeScaleIndependent_);
 }
 
 void Freecam::update(float deltaTime)
@@ -17,6 +26,12 @@ void Freecam::update(float deltaTime)
     const float forward = InputManager::instance()->getAxis(InputKey::W, InputKey::S);
     const float lateral = InputManager::instance()->getAxis(InputKey::D, InputKey::A);
     const float vertical = InputManager::instance()->getAxis(InputKey::E, InputKey::Q);
+
+    // Deltatime is scaled by time scale
+    if(timeScaleIndependent_)
+    {
+        deltaTime = Clock::instance()->realDeltaTime();
+    }
 
     // Add deltatime to movement duration and reset to 0 if stopped
     if (fabs(forward) > 0.01f || fabs(lateral) > 0.01f || fabs(vertical) > 0.01f)
