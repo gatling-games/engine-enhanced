@@ -30,12 +30,13 @@ private:
     UniformBuffer<CameraUniformData> cameraUniformBuffer_;
     UniformBuffer<PerDrawUniformData> perDrawUniformBuffer_;
 
-    // Shaders used for each render pass
+    // Shader used for forward pass
     ResourcePPtr<Shader> forwardShader_;
-    ResourcePPtr<Shader> skyboxShader_;
 
-    // Specific meshes used for forward shader pass
+    // Resources used for skybox shader pass
+    ResourcePPtr<Shader> skyboxShader_;
     ResourcePPtr<Mesh> skyboxMesh_;
+    ResourcePPtr<Texture> skyboxTexture_;
 
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;

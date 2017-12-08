@@ -23,6 +23,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     // Load skybox shader and mesh
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
     skyboxMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/skydome.obj");
+    skyboxTexture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/clouds.psd");
 }
 
 void Renderer::renderFrame(const Camera* camera) const
@@ -54,6 +55,7 @@ void Renderer::updateSceneUniformBuffer() const
     data.toLightDirection = Vector4(Vector3(1.0f, 1.0f, 1.0f).normalized());
     data.skyTopColor = Color(0.0f, 0.0f, 1.0);
     data.skyHorizonColor = Color(0.3f, 0.0f, 0.6f);
+    data.sunParams = Vector4(16.0f, 256.0f, 0.0f, 0.0f); // x = size, y = falloff
 
     // Update the uniform buffer
     sceneUniformBuffer_.update(data);
@@ -126,6 +128,7 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
     // Ensure skybox mesh is being used
     skyboxMesh_->bind();
+    skyboxTexture_->bind(0);
 
     // Compute scale for skydome - must ensure it's big enough without exceeding far clipping plane
     const float farPlane = camera->getFarPlaneDistance();
