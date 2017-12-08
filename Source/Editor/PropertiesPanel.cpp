@@ -2,6 +2,8 @@
 
 #include <imgui.h>
 
+#include "InputManager.h"
+
 #include "Scene/Component.h"
 #include "Scene/Camera.h"
 #include "Scene/StaticMesh.h"
@@ -9,13 +11,29 @@
 PropertiesPanel::PropertiesPanel()
     : currentGameObject_(nullptr)
 {
-    
+
 }
 
 void PropertiesPanel::draw()
 {
-    // Exit if we are not looking at an object
-    if(currentGameObject_ == nullptr)
+    // Draw the gameobject header
+    drawGameObjectSection();
+
+    // Draw each component's section in turn
+    drawComponentsSection();
+
+    // Place an add component button under the components list
+    drawAddComponentSection();
+}
+
+void PropertiesPanel::inspect(GameObject* gameObject)
+{
+    currentGameObject_ = gameObject;
+}
+
+void PropertiesPanel::drawGameObjectSection()
+{
+    if (currentGameObject_ == nullptr)
     {
         return;
     }
@@ -25,10 +43,18 @@ void PropertiesPanel::draw()
     {
         ImGui::InputText("Name", (char*)currentGameObject_->name().c_str(), 32);
     }
+}
+
+void PropertiesPanel::drawComponentsSection()
+{
+    if (currentGameObject_ == nullptr)
+    {
+        return;
+    }
 
     // Draw each component's section in turn
     auto components = currentGameObject_->componentList();
-    for(unsigned int i = 0; i < components.size(); ++i)
+    for (unsigned int i = 0; i < components.size(); ++i)
     {
         // Place a space before the component
         ImGui::Spacing();
@@ -43,25 +69,28 @@ void PropertiesPanel::draw()
             components[i]->drawProperties();
         }
     }
+}
 
-    // Display a big add component button at the bottom
+void PropertiesPanel::drawAddComponentSection()
+{
+    if (currentGameObject_ == nullptr)
+    {
+        return;
+    }
+
+    // Display a big add component button
     ImGui::Spacing();
-    if(ImGui::Button("Add Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    if (ImGui::Button("Add Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
     {
         ImGui::OpenPopup("Add Component");
     }
 
     // Draw the add component popup, when selected
-    if(ImGui::BeginPopupContextItem("Add Component"))
+    if (ImGui::BeginPopupContextItem("Add Component"))
     {
         if (ImGui::Selectable("Camera")) currentGameObject_->createComponent<Camera>();
         if (ImGui::Selectable("Static Mesh")) currentGameObject_->createComponent<StaticMesh>();
 
         ImGui::EndPopup();
     }
-}
-
-void PropertiesPanel::inspect(GameObject* gameObject)
-{
-    currentGameObject_ = gameObject;
 }
