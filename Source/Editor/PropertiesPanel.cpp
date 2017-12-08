@@ -3,6 +3,8 @@
 #include <imgui.h>
 
 #include "Scene/Component.h"
+#include "Scene/Camera.h"
+#include "Scene/StaticMesh.h"
 
 PropertiesPanel::PropertiesPanel()
     : currentGameObject_(nullptr)
@@ -40,6 +42,22 @@ void PropertiesPanel::draw()
         {
             components[i]->drawProperties();
         }
+    }
+
+    // Display a big add component button at the bottom
+    ImGui::Spacing();
+    if(ImGui::Button("Add Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    {
+        ImGui::OpenPopup("Add Component");
+    }
+
+    // Draw the add component popup, when selected
+    if(ImGui::BeginPopupContextItem("Add Component"))
+    {
+        if (ImGui::Selectable("Camera")) currentGameObject_->createComponent<Camera>();
+        if (ImGui::Selectable("Static Mesh")) currentGameObject_->createComponent<StaticMesh>();
+
+        ImGui::EndPopup();
     }
 }
 
