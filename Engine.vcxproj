@@ -38,8 +38,6 @@
     <ClInclude Include="Source\Scene\GameObject.h" />
     <ClInclude Include="Source\Scene\StaticMesh.h" />
     <ClInclude Include="Source\Scene\Transform.h" />
-    <ClInclude Include="Source\Utils\BitReader.h" />
-    <ClInclude Include="Source\Utils\BitWriter.h" />
     <ClInclude Include="Source\Math\Color.h" />
     <ClInclude Include="Source\Math\Matrix4x4.h" />
     <ClInclude Include="Source\Math\Point2.h" />
@@ -51,6 +49,8 @@
     <ClInclude Include="Source\Renderer\Mesh.h" />
     <ClInclude Include="Source\Renderer\Texture.h" />
     <ClInclude Include="Source\ResourceManager.h" />
+    <ClInclude Include="Source\Serialization\BitReader.h" />
+    <ClInclude Include="Source\Serialization\BitWriter.h" />
     <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Source\Utils\ImGuiExtensions.h" />
     <ClInclude Include="Source\Utils\Singleton.h" />
@@ -81,8 +81,6 @@
     <ClCompile Include="Source\Scene\GameObject.cpp" />
     <ClCompile Include="Source\Scene\StaticMesh.cpp" />
     <ClCompile Include="Source\Scene\Transform.cpp" />
-    <ClCompile Include="Source\Utils\BitReader.cpp" />
-    <ClCompile Include="Source\Utils\BitWriter.cpp" />
     <ClCompile Include="Source\Math\Color.cpp" />
     <ClCompile Include="Source\Math\Matrix4x4.cpp" />
     <ClCompile Include="Source\Math\Point2.cpp" />
@@ -94,6 +92,8 @@
     <ClCompile Include="Source\Renderer\Mesh.cpp" />
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
+    <ClCompile Include="Source\Serialization\BitReader.cpp" />
+    <ClCompile Include="Source\Serialization\BitWriter.cpp" />
     <ClCompile Include="Source\Utils\Clock.cpp" />
     <ClCompile Include="Source\Utils\ImGuiExtensions.cpp" />
   </ItemGroup>
