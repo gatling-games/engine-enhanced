@@ -42,5 +42,8 @@
     <ClCompile Include="Tests\Serialization\BitWriterTests.cpp">
       <Filter>Serialization</Filter>
     </ClCompile>
+    <ClCompile Include="Tests\Serialization\PropertyTableTests.cpp">
+      <Filter>Serialization</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -107,6 +107,7 @@
     <ClCompile Include="Tests\Math\Vector4Tests.cpp" />
     <ClCompile Include="Tests\Serialization\BitReaderTests.cpp" />
     <ClCompile Include="Tests\Serialization\BitWriterTests.cpp" />
+    <ClCompile Include="Tests\Serialization\PropertyTableTests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

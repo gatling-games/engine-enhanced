@@ -1,6 +1,6 @@
 #include "CppUnitTest.h"
 
-#include "Utils/BitWriter.h"
+#include "Serialization/BitWriter.h"
 #include <cstring>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
