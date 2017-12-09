@@ -4,6 +4,9 @@
     <Filter Include="Math">
       <UniqueIdentifier>{1db1437a-09f0-4610-ae1f-30fce67722fc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Serialization">
+      <UniqueIdentifier>{956e0811-8a24-400e-b6c7-2ff8a8acbc73}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests\Math\QuaternionTests.cpp">
@@ -33,7 +36,11 @@
     <ClCompile Include="Tests\Math\RectTests.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Tests\Serialization\BitReaderTests.cpp" />
-    <ClCompile Include="Tests\Serialization\BitWriterTests.cpp" />
+    <ClCompile Include="Tests\Serialization\BitReaderTests.cpp">
+      <Filter>Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\Serialization\BitWriterTests.cpp">
+      <Filter>Serialization</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
