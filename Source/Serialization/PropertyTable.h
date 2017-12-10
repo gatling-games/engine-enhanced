@@ -4,6 +4,9 @@
 #include <sstream>
 #include <vector>
 
+// Needed for serialize<ResourcePtr> method
+#include "ResourceManager.h"
+
 // Stores a collection of named properties for a serialized object.
 
 // Properties can be written into a property table and read out again,
@@ -88,8 +91,53 @@ public:
         }
     }
 
-    // Methods for serializing datatypes that do not work with the above templated method.
+    // Method for serializing a string value
+    // This doesn't work with the default sstream implementation (above), as it breaks down
+    // on strings that contain whitespace.
     void serialize(const std::string &name, std::string &value, const std::string default);
+
+    // Method for serializing a resource ptr value.
+    // This writes the source path of the resource to the property value.
+    template<typename T>
+    void serialize(const std::string &name, ResourcePPtr<T> &value, const ResourcePPtr<T> default)
+    {
+        if (mode_ == PropertyTableMode::Reading)
+        {
+            // Look for the named property
+            const SerializedProperty* property = tryFindProperty(name);
+            if (property == nullptr)
+            {
+                // The property wasnt found. Use the default.
+                value = default;
+                return;
+            }
+
+            // The property exists. It will be "0" if the resource is nullptr and
+            // it will be the source path otherwise.
+            if (property->value == "0")
+            {
+                value = nullptr;
+            }
+            else
+            {
+                const std::string sourcePath = property->value;
+                value = ResourceManager::instance()->load<T>(sourcePath);
+            }
+        }
+        else
+        {
+            // Default values are not stored in the property table
+            if (value == default)
+            {
+                tryDeleteProperty(name);
+                return;
+            }
+
+            // If the resource is nullptr use 0 for the value. Otherwise, use the source path.
+            findOrCreateProperty(name)->value = (value == nullptr) ? "0"
+                : ResourceManager::instance()->resourceIDToPath(value->id());
+        }
+    }
 
     // Converts the properties inside the table to the string-based property list format.
     const std::string toString() const;
