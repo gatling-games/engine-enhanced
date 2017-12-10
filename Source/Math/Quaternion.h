@@ -33,6 +33,9 @@ struct Quaternion
     static Quaternion euler(const Vector3 &euler);
 };
 
+bool operator == (const Quaternion &a, const Quaternion &b);
+bool operator != (const Quaternion &a, const Quaternion &b);
+
 Quaternion operator * (const Quaternion &a, const Quaternion &b);
 
 Vector3 operator * (const Quaternion &quat, const Vector3 &vec);
