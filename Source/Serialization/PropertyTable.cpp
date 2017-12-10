@@ -66,39 +66,6 @@ void PropertyTable::serialize(const std::string &name, std::string &value, const
     }
 }
 
-void PropertyTable::serialize(const std::string &name, bool &value, const bool default)
-{
-    // Treat bools as an int
-    int& intValue = (int&)value;
-    const int intDefault = (int)default;
-    serialize(name, intValue, intDefault);
-}
-
-void PropertyTable::serialize(const std::string &name, int &value, const int default)
-{
-    // Integers are stored as readable strings in the property table
-
-    if (mode_ == PropertyTableMode::Reading)
-    {
-        const std::string defaultAsString = std::to_string(default);
-        const std::string valueAsString = getProperty(name, defaultAsString);
-
-        value = std::atoi(valueAsString.c_str());
-    }
-    else
-    {
-        // Default values are not stored in the property table
-        if (value == default)
-        {
-            tryDeleteProperty(name);
-            return;
-        }
-
-        // Other values are stored as a string
-        findOrCreateProperty(name)->value = std::to_string(value);
-    }
-}
-
 const std::string PropertyTable::toString() const
 {
     std::stringstream stream;

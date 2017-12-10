@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <sstream>
 #include <vector>
 
 // Stores a collection of named properties for a serialized object.
@@ -43,10 +44,52 @@ public:
     // If it does not exist, the default value is returned.
     const std::string getProperty(const std::string &name, const std::string &default) const;
 
-    // Methods for storing and loading properties.
+    // Serializes a property to or from the property table, depending on the current mode.
+    // In writing mode, the value is saved as a property with the given name. If
+    //          it matches the default value, the property is skipped.
+    // In reading mode, the value is set to the value of the property with the given
+    //          name. If no matching property can be found, the value is set to the
+    //          provided default.
+    // This method is templated and works with any data type that can support << and >> with
+    // a stringstream instance. Additional data types are supported with overloaded methods 
+    // below this one.
+    template<typename T>
+    void serialize(const std::string &name, T &value, const T default)
+    {
+        if (mode_ == PropertyTableMode::Reading)
+        {
+            // Look for the named property.
+            const SerializedProperty* property = tryFindProperty(name);
+            if (property == nullptr)
+            {
+                // The property wasnt found. Use the default.
+                value = default;
+                return;
+            }
+
+            // Property exists.
+            // Place into a stringStream and extract the value
+            std::stringstream stream(property->value);
+            stream >> value;
+        }
+        else
+        {
+            // Default values are not stored in the property table
+            if (value == default)
+            {
+                tryDeleteProperty(name);
+                return;
+            }
+
+            // Load the value into a stringstream and use the contents as the property value.
+            std::stringstream stream;
+            stream << value;
+            findOrCreateProperty(name)->value = stream.str();
+        }
+    }
+
+    // Methods for serializing datatypes that do not work with the above templated method.
     void serialize(const std::string &name, std::string &value, const std::string default);
-    void serialize(const std::string &name, bool &value, const bool default);
-    void serialize(const std::string &name, int &value, const int default);
 
     // Converts the properties inside the table to the string-based property list format.
     const std::string toString() const;
