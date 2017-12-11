@@ -98,7 +98,7 @@ void Transform::setScaleLocal(const Vector3& scale)
 
 void Transform::translateLocal(const Vector3& translation)
 {
-    position_ += translation;
+    position_ += rotation_*translation;
     recomputeMatrices();
 }
 

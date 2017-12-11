@@ -21,34 +21,20 @@ void Freecam::update(float deltaTime)
     // Add deltatime to movement duration and reset to 0 if stopped
     if (fabs(forward) > 0.01f || fabs(lateral) > 0.01f || fabs(vertical) > 0.01f)
     {
-        moveDuration_ += deltaTime;
+        if (fabs(moveDuration_) < 3.0f)
+        {
+            moveDuration_ += deltaTime;
+        }        
     }
     else
     {
-        moveDuration_ -= deltaTime * 5.0f;
-        if (moveDuration_ < 0.0f)
-        {
-            moveDuration_ = 0.0f;
-        }
-    }
-
-    // Determine the direction to move in by applying the 3 input
-    // axis in the 3 local axis of the camera transform.
-    Vector3 moveDirection = ((transform_->forwards() * forward)
-        + (transform_->right() * lateral)
-        + (transform_->up() * vertical));
-  
-    // Normalize the move direction, if nonzero
-    float moveDirectionMagnitude = moveDirection.magnitude();
-    if (moveDirectionMagnitude > 0.1f)
-    {
-        moveDirection /= moveDirectionMagnitude;
+        moveDuration_ = 0.0f;        
     }
 
     // Transform the camera
     // Use moveDuration_ so the camera gets faster as it moves for longer.
     const float moveSpeed = powf(moveDuration_, 1.5f);
-    transform_->translateLocal(moveDirection * moveSpeed);
+    transform_->translateLocal(Vector3(lateral, vertical, forward) * moveSpeed);
 
     // Apply mouse look when the right mouse button is held down
     if (InputManager::instance()->mouseButtonDown(MouseButton::Right))
