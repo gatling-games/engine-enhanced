@@ -137,6 +137,25 @@ public:
         return load<T>(pathToResourceID(sourcePath));
     }
 
+    // Returns a list of all the resources of type T that are currently loaded.
+    template<typename T>
+    std::vector<T*> loadedResourcesOfType() const
+    {
+        std::vector<T*> results;
+
+        // Attempt to convert every resource to an instance of T.
+        for(unsigned int i = 0; i < loadedResources_.size(); ++i)
+        {
+            T* resourceAsT = dynamic_cast<T*>(loadedResources_[i]);
+            if(resourceAsT != nullptr)
+            {
+                results.push_back(resourceAsT);
+            }
+        }
+
+        return results;
+    }
+
 private:
     std::string sourceDirectory_;
     std::string importedDirectory_;
