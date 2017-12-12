@@ -17,6 +17,10 @@ public:
     // Draws the transform properties fold out
     void drawProperties() override;
 
+    // Override of Component::serialize().
+    // Handles component serialization
+    void serialize(PropertyTable &table) override;
+
     // Transform position / rotation / scale in local space
     Point3 positionLocal() const { return position_; }
     Quaternion rotationLocal() const { return rotation_; }

@@ -16,3 +16,10 @@ void StaticMesh::drawProperties()
     ImGui::ResourceSelect<Texture>("Texture", "Select Texture Resource", texture_);
     ImGui::ResourceSelect<Mesh>("Mesh", "Select Mesh Resource", mesh_);
 }
+
+void StaticMesh::serialize(PropertyTable &table)
+{
+   table.serialize("Mesh", mesh_, ResourceManager::instance()->load<Mesh>("Resources/Meshes/cube.obj"));
+   table.serialize("Shader", shader_, ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader"));
+   table.serialize("Texture", texture_, ResourceManager::instance()->load<Texture>("Resources/Textures/test.png"));
+}
