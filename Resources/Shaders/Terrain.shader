@@ -32,13 +32,9 @@ layout(std140) uniform per_draw_data
 
 #ifdef VERTEX_SHADER
 
-
 // Vertex attributes
-uniform sampler2D _heightmap;
-layout(location = 0) in vec4 _position;
-layout(location = 1) in vec3 _normal;
-layout(location = 2) in vec4 _tangent;
-layout(location = 3) in vec2 _texcoord;
+layout (binding = 0) uniform sampler2D _heightmap;
+layout (location = 0) in vec4 _position;
 
 // Interpolated values to fragment shader
 out vec3 worldNormal;
@@ -46,16 +42,25 @@ out vec2 texcoord;
 
 void main()
 {
-    vec3 offset = vec3(1.0, 1.0, 0.0);
-    float y = texture(_heightmap, _texcoord).r *20;
+	//Treat the X and Z of the terrain position as the tex coords
+	texcoord = _position.xz*_TerrainCoordinateOffsetScale.zw+_TerrainCoordinateOffsetScale.xy;
+    float y = texture(_heightmap, _position.xz).r * _TerrainSize.y;
     // Project the vertex position to clip space
-    gl_Position = _ViewProjectionMatrix * vec4(_position.x, y, _position.z, 1);
+    gl_Position = _ViewProjectionMatrix * vec4(_position.x*_TerrainSize.x, y, _position.z*_TerrainSize.z, 1);
     
+	ivec2 heightmapRes = textureSize(_heightmap, 0);
+	vec2 heightmapTexelSize = 1.0 / heightmapRes;
+
     // Get the normal in world space
-    worldNormal = normalize(mat3(_LocalToWorld) * _normal);
-	
-    // Texcoord does not need to be modified.
-    texcoord = _texcoord;
+	vec4 h;
+	h.x = texture(_heightmap, texcoord + heightmapTexelSize * vec2(0.0, -1.0)).r * _TerrainSize.y;
+	h.y = texture(_heightmap, texcoord + heightmapTexelSize * vec2(-1.0, 0.0)).r * _TerrainSize.y;
+	h.z = texture(_heightmap, texcoord + heightmapTexelSize * vec2(1.0, 0.0)).r * _TerrainSize.y;
+	h.w = texture(_heightmap, texcoord + heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
+	worldNormal.z = h.x - h.w;
+	worldNormal.x = h.y - h.z;
+	worldNormal.y = 1.0;
+	worldNormal = normalize(worldNormal);  
 }
 
 #endif // VERTEX_SHADER
@@ -63,7 +68,8 @@ void main()
 #ifdef FRAGMENT_SHADER
 
 // Texture inputs
-uniform sampler2D _MainTexture;
+layout (binding=0) uniform sampler2D _HeightmapTexture;
+layout (binding=1) uniform sampler2D _Texture;
 
 // Interpolated values from vertex shader
 in vec3 worldNormal;
@@ -80,7 +86,7 @@ vec3 LambertLight(vec4 surface, vec3 worldNormal)
 void main()
 {
     // Use the main texture for the surface color
-    vec4 col = texture(_MainTexture, texcoord);
+    vec4 col = texture(_Texture, texcoord);
     //fragColor = sin(col.r*30) > 0.8 ? vec4(1.0) : vec4(0.0);
     //return;
 
@@ -91,7 +97,7 @@ void main()
 	
 	// Output the final color
     fragColor = vec4(finalColor.rgb, 1.0);
-    fragColor.xyz = worldNormal * 0.5 + 0.5;
+	//fragColor.xyz = LambertLight(vec4(0.5), worldNormal);
 }
 
 #endif // FRAGMENT_SHADER

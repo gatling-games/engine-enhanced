@@ -4,6 +4,7 @@
 
 #include "Renderer/Mesh.h"
 #include "Renderer/Texture.h"
+#include "Math/Vector2.h"
 
 struct TerrainLayer
 {
@@ -23,15 +24,16 @@ public:
     // Draws the properties fold out
     void drawProperties() override;
 
-    void generateTerrain();
-
     Mesh* mesh() const { return mesh_; }
     Texture* heightmap() const { return heightmap_; }
     Texture* texture() const { return texture_; }
+	Vector2 terrainDimensions() const { return dimensions_;; }
+	float scale() const { return terrainScale_; }
 
 private:
     Mesh* mesh_;
     Texture* heightmap_;
     Texture* texture_;
-    int dimensions_;
+    Vector2 dimensions_;
+	float terrainScale_;
 };

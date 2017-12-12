@@ -29,6 +29,7 @@ void Renderer::renderFrame(const Camera* camera) const
     sceneUniformBuffer_.use();
     cameraUniformBuffer_.use();
     perDrawUniformBuffer_.use();
+	terrainUniformBuffer_.use();
 
     // Ensure the contents of the uniform buffers is up to date
     // The per-draw buffer is handled separately
@@ -79,6 +80,17 @@ void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw) const
     perDrawUniformBuffer_.update(data);
 }
 
+void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
+{
+	TerrainUniformData data;
+	Vector2 dimens = terrain->gameObject()->terrain()->terrainDimensions();
+	float scale = terrain->gameObject()->terrain()->scale();
+	data.terrainSize = Vector4(dimens.x,scale,dimens.y,1.0f);
+
+	data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+	terrainUniformBuffer_.update(data);
+}
+
 void Renderer::executeForwardPass() const
 {
     // The forward pass renders into the target framebuffer
@@ -114,6 +126,7 @@ void Renderer::executeForwardPass() const
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
     }
 
+
     //Draw terrain
     terrainShader_->bindVariant(~0);
     auto terrains = SceneManager::instance()->terrains();
@@ -125,6 +138,9 @@ void Renderer::executeForwardPass() const
         //Set mesh and heightmap
         terrain->mesh()->bind();
         terrain->heightmap()->bind(0);
+		terrain->texture()->bind(1);
+
+		updateTerrainUniformBuffer(terrain);
 
         glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
     }

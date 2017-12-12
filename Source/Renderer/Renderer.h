@@ -37,6 +37,7 @@ private:
     void updateSceneUniformBuffer() const;
     void updateCameraUniformBuffer(const Camera* camera) const;
     void updatePerDrawUniformBuffer(const StaticMesh* draw) const;
+	void updateTerrainUniformBuffer(const Terrain* terrain) const;
 
     // Methods for each render pass
     void executeForwardPass() const;
