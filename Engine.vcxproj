@@ -110,6 +110,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\ForwardPass.shader" />
+    <None Include="Resources\Shaders\Includes\Lighting.inc.shader" />
+    <None Include="Resources\Shaders\Includes\UniformBuffers.inc.shader" />
     <None Include="Resources\Shaders\SkyboxPass.shader" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
