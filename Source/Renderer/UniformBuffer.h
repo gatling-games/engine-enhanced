@@ -25,7 +25,7 @@ struct SceneUniformData
     Vector4 toLightDirection;
     Color skyTopColor;
     Color skyHorizonColor;
-    Vector4 sunParams; // x = size, y = falloff
+    Vector4 sunParams; // x = falloff, y = size
     Vector4 time; // x = time, y = 1/time
 };
 

@@ -56,7 +56,7 @@ void Renderer::updateSceneUniformBuffer() const
     data.toLightDirection = Vector4(Vector3(1.0f, 1.0f, 1.0f).normalized());
     data.skyTopColor = Color(0.23f, 0.66f, 0.86f);
     data.skyHorizonColor = Color(0.5f, 0.55f, 0.84f);
-    data.sunParams = Vector4(16.0f, 256.0f, 0.0f, 0.0f); // x = size, y = falloff
+    data.sunParams = Vector4(4.0f, 512.0f, 0.0f, 0.0f); // x = falloff, y = size
 
     // Send time to shader for cloud texture scrolling
     const float time = Clock::instance()->time();
