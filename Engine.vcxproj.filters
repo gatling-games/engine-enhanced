@@ -19,6 +19,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{f27819fb-5fdf-4945-a12b-5fbc0c1f1b7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{5311c9d6-26a7-494c-8dd7-94cadc4f110a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -134,7 +137,7 @@
     </ClInclude>
     <ClInclude Include="Source\Utils\ImGuiExtensions.h">
       <Filter>Utils</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="Source\Scene\Freecam.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -244,9 +247,17 @@
     </ClCompile>
     <ClCompile Include="Source\Utils\ImGuiExtensions.cpp">
       <Filter>Utils</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="Source\Scene\Freecam.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\SkyboxPass.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\ForwardPass.shader">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

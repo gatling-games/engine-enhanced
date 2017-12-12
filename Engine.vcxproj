@@ -108,6 +108,10 @@
       <Project>{e1fb8fa3-337a-4f39-971f-8948575cb35f}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Shaders\ForwardPass.shader" />
+    <None Include="Resources\Shaders\SkyboxPass.shader" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{9A420477-E72C-45DE-8C56-669B2760829A}</ProjectGuid>
