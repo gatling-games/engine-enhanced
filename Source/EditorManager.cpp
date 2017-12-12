@@ -5,6 +5,9 @@
 
 #include <GLFW\glfw3.h>
 
+#include <filesystem>
+namespace fs = std::experimental::filesystem::v1;
+
 EditorManager::EditorManager(GLFWwindow* window, bool setupGLFWCallbacks)
     : glfwWindow_(window),
     mainWindow_()
@@ -28,6 +31,14 @@ EditorManager::EditorManager(GLFWwindow* window, bool setupGLFWCallbacks)
         // Set to 1.0 scaling at 110DPI (dont go below 1.0)
         // Aka 2.0 scaling on a 15" macbook pro retina
         ImGui::GetIO().FontGlobalScale = (dpi < 110.0f ? 1.0f : dpi / 110.0f);
+    }
+    
+    // Pick a nicer font for the window, if avaliable use segoeui semibold
+    const std::string customFontPath = "C:/Windows/Fonts/seguisb.ttf";
+    if (fs::exists(customFontPath))
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        io.Fonts->AddFontFromFileTTF(customFontPath.c_str(), 16.0f);
     }
 
     // Remove ImGui component rounding styles
