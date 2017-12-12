@@ -144,6 +144,9 @@
     <ClInclude Include="Source\Serialization\PropertyTable.h">
       <Filter>Serialization</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Serialization\SerializedGameObject.h">
+      <Filter>Serialization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -255,6 +258,9 @@
       <Filter>Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\PropertyTable.cpp">
+      <Filter>Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\SerializedGameObject.cpp">
       <Filter>Serialization</Filter>
     </ClCompile>
   </ItemGroup>

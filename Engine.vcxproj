@@ -52,6 +52,7 @@
     <ClInclude Include="Source\Serialization\BitReader.h" />
     <ClInclude Include="Source\Serialization\BitWriter.h" />
     <ClInclude Include="Source\Serialization\PropertyTable.h" />
+    <ClInclude Include="Source\Serialization\SerializedGameObject.h" />
     <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Source\Utils\ImGuiExtensions.h" />
     <ClInclude Include="Source\Utils\Singleton.h" />
@@ -96,6 +97,7 @@
     <ClCompile Include="Source\Serialization\BitReader.cpp" />
     <ClCompile Include="Source\Serialization\BitWriter.cpp" />
     <ClCompile Include="Source\Serialization\PropertyTable.cpp" />
+    <ClCompile Include="Source\Serialization\SerializedGameObject.cpp" />
     <ClCompile Include="Source\Utils\Clock.cpp" />
     <ClCompile Include="Source\Utils\ImGuiExtensions.cpp" />
   </ItemGroup>
