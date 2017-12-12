@@ -131,5 +131,29 @@ namespace EngineTests
             Assert::AreEqual(-231238, testStruct.intValue2); // != default
             Assert::AreEqual(std::string("Hello World"), testStruct.stringValue); // default
         }
+
+        TEST_METHOD(TestDeserializeUsesPropertyCount)
+        {
+            // Create a stringstream with property data for 2 properties
+            std::stringstream stream("IntValue1 109123126\nIntValue2 -231238\n");
+
+            // Create a property table and tell it to use *one* value from the stream
+            PropertyTable table(stream, 1);
+
+            // Create a new test struct and deserialize from the table.
+            TestStruct testStruct;
+            testStruct.serialize(table);
+
+            // Only the first value should be set. The others should be defaults.
+            Assert::AreEqual(109123126, testStruct.intValue1); // != default
+            Assert::AreEqual(578, testStruct.intValue2); // default
+            Assert::AreEqual(std::string("Hello World"), testStruct.stringValue); // default
+
+            // The stream should have been read up to the end of the first property.
+            // Therefore the next value should be "IntValue2"
+            std::string nextStreamValue;
+            stream >> nextStreamValue;
+            Assert::AreEqual(std::string("IntValue2"), nextStreamValue);
+        }
     };
 }

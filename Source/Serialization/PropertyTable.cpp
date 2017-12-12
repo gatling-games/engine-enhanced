@@ -1,7 +1,6 @@
 #include "PropertyTable.h"
 
 #include <iostream>
-#include <sstream>
 
 PropertyTable::PropertyTable()
     : mode_(PropertyTableMode::Writing),
@@ -11,28 +10,34 @@ PropertyTable::PropertyTable()
 }
 
 PropertyTable::PropertyTable(const std::string &serializedData)
+    : PropertyTable(std::stringstream(serializedData), INT_MAX)
+{
+
+}
+    
+PropertyTable::PropertyTable(std::stringstream &serializedData, int propertyCount)
     : mode_(PropertyTableMode::Reading),
     properties_()
 {
-    // Create a stringstream from the serialized data to read from.
-    std::stringstream stream(serializedData);
-
     // Read the properties data into the table.
-    while (stream)
+    // Ensure that no more than propertyCount properties are read
+    while (serializedData && propertyCount > 0)
     {
         // Each line starts with the property name
         SerializedProperty property;
-        stream >> property.name;
+        serializedData >> property.name;
 
         // Skip the space after the name
-        stream.get();
+        serializedData.get();
 
         // The rest of the name is the value
-        std::getline(stream, property.value);
+        std::getline(serializedData, property.value);
 
         // Place each property into the properties list
-        if(!stream.fail())
+        if (!serializedData.fail())
             properties_.push_back(property);
+
+        propertyCount--;
     }
 }
 

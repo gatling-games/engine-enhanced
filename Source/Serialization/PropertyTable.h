@@ -36,6 +36,7 @@ class PropertyTable
 public:
     PropertyTable();
     PropertyTable(const std::string &serializedData);
+    PropertyTable(std::stringstream &serializedData, int propertyCount);
 
     // Information about the table
     PropertyTableMode mode() const { return mode_; }
