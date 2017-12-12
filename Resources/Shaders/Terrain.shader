@@ -20,8 +20,10 @@ layout(std140) uniform terrain_data
 {
     //XY is offset, ZW is scale
     uniform vec4 _TerrainCoordinateOffsetScale;
-    //XY
+    //XYZW, w is normal scale
     uniform vec4 _TerrainSize;
+
+	uniform vec4 _TextureScale;
 };
 
 // Per-draw uniform buffer.
@@ -59,7 +61,7 @@ void main()
 	h.w = texture(_heightmap, texcoord + heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
 	worldNormal.z = h.x - h.w;
 	worldNormal.x = h.y - h.z;
-	worldNormal.y = 1.0;
+	worldNormal.y = _TerrainSize.w;
 	worldNormal = normalize(worldNormal);  
 }
 
@@ -86,10 +88,7 @@ vec3 LambertLight(vec4 surface, vec3 worldNormal)
 void main()
 {
     // Use the main texture for the surface color
-    vec4 col = texture(_Texture, texcoord);
-    //fragColor = sin(col.r*30) > 0.8 ? vec4(1.0) : vec4(0.0);
-    //return;
-
+    vec4 col = texture(_Texture, texcoord*_TextureScale.xy);
 	// Compute lambert direct light and flat ambient light
     vec3 directLight = LambertLight(col, worldNormal);
     vec3 ambientLight = col.rgb * _AmbientColor.rgb;

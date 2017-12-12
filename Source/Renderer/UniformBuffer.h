@@ -39,6 +39,7 @@ struct TerrainUniformData
 {
     Vector4 terrainCoordinateOffsetScale;
     Vector4 terrainSize;
+	Vector4 textureScale;
 };
 
 // Plain old uniform data for converting object local coordinates to world space

@@ -5,6 +5,7 @@
 #include "Renderer/Mesh.h"
 #include "Renderer/Texture.h"
 #include "Math/Vector2.h"
+#include "Math/Vector3.h"
 
 struct TerrainLayer
 {
@@ -27,13 +28,18 @@ public:
     Mesh* mesh() const { return mesh_; }
     Texture* heightmap() const { return heightmap_; }
     Texture* texture() const { return texture_; }
-	Vector2 terrainDimensions() const { return dimensions_;; }
-	float scale() const { return terrainScale_; }
+
+	Vector2 textureWrapping() const { return textureWrap_; }
+	Vector3 terrainDimensions() const { return dimensions_; }
+	float normalScale() const { return normalScale_; }
 
 private:
     Mesh* mesh_;
     Texture* heightmap_;
     Texture* texture_;
-    Vector2 dimensions_;
-	float terrainScale_;
+
+	Vector2 textureWrap_;
+    Vector3 dimensions_;
+	float normalScale_;
+	
 };

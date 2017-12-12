@@ -83,11 +83,13 @@ void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw) const
 void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 {
 	TerrainUniformData data;
-	Vector2 dimens = terrain->gameObject()->terrain()->terrainDimensions();
-	float scale = terrain->gameObject()->terrain()->scale();
-	data.terrainSize = Vector4(dimens.x,scale,dimens.y,1.0f);
+	Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
+	float normalScale = terrain->gameObject()->terrain()->normalScale();
+	data.terrainSize = Vector4(dimens.x,dimens.y,dimens.z,normalScale);
 
 	data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+	Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
+	data.textureScale = Vector4(texScale.x, texScale.y, 1.0f, 1.0f);
 	terrainUniformBuffer_.update(data);
 }
 
