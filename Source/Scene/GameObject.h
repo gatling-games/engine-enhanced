@@ -79,13 +79,16 @@ public:
         return newObject;
     }
 
+    // Adds a component to the gameobject by its type name.
+    Component* createComponent(const std::string &typeName);
+
     // Shortcut methods for finding components
     Transform* transform() const;
     Camera* camera() const;
     StaticMesh* staticMesh() const;
 
     // Gets a list of all components attached to the gameobject
-    const std::vector<Component*> componentList() { return components_; }
+    const std::vector<Component*> componentList() const { return components_; }
 
 private:
     const std::string name_;

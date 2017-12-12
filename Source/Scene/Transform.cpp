@@ -27,6 +27,17 @@ void Transform::drawProperties()
     recomputeMatrices();
 }
 
+void Transform::serialize(PropertyTable &table)
+{
+    table.serialize<Point3>("Position", position_, Point3::origin());
+    table.serialize<Quaternion>("Rotation", rotation_, Quaternion::identity());
+    table.serialize<Vector3>("Scale", scale_, Vector3::one());
+
+    // The matrices may be changed by the above editing
+    // Recompute them every time the properties editor is shown.
+    recomputeMatrices();
+}
+
 Point3 Transform::positionWorld() const
 {
     // There is no gamneobject parenting yet

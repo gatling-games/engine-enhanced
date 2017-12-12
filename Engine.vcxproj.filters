@@ -24,6 +24,8 @@
     </Filter>
     <Filter Include="Shaders\Includes">
       <UniqueIdentifier>{4fda8847-5bfd-4238-8df2-b78ca48621ad}</UniqueIdentifier>
+    <Filter Include="Serialization">
+      <UniqueIdentifier>{b18a182e-0f5d-4fe0-b4e8-5f9f260f20dd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -65,12 +67,6 @@
       <Filter>Importers</Filter>
     </ClInclude>
     <ClInclude Include="Source\InputManager.h" />
-    <ClInclude Include="Source\Utils\BitWriter.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Utils\BitReader.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Utils\Clock.h">
       <Filter>Utils</Filter>
     </ClInclude>
@@ -144,6 +140,18 @@
     <ClInclude Include="Source\Scene\Freecam.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Serialization\BitReader.h">
+      <Filter>Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Serialization\BitWriter.h">
+      <Filter>Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Serialization\PropertyTable.h">
+      <Filter>Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Serialization\SerializedGameObject.h">
+      <Filter>Serialization</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -184,12 +192,6 @@
     </ClCompile>
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\InputManager.cpp" />
-    <ClCompile Include="Source\Utils\BitWriter.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Utils\BitReader.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Utils\Clock.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
@@ -253,6 +255,18 @@
     </ClCompile>
     <ClCompile Include="Source\Scene\Freecam.cpp">
       <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\BitWriter.cpp">
+      <Filter>Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\BitReader.cpp">
+      <Filter>Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\PropertyTable.cpp">
+      <Filter>Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\SerializedGameObject.cpp">
+      <Filter>Serialization</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -84,6 +84,16 @@ Quaternion Quaternion::euler(const Vector3 &euler)
     return Quaternion::euler(euler.x, euler.y, euler.z);
 }
 
+bool operator == (const Quaternion &a, const Quaternion &b)
+{
+    return fabs(a.x - b.x) < 0.001f && fabs(a.y - b.y) < 0.001f && fabs(a.z - b.z) < 0.001f && fabs(a.w-b.w) < 0.001f;
+}
+
+bool operator != (const Quaternion &a, const Quaternion &b)
+{
+    return fabs(a.x - b.x) > 0.001f || fabs(a.y - b.y) > 0.001f || fabs(a.z - b.z) > 0.001f || fabs(a.w - b.w) > 0.001f;
+}
+
 Quaternion operator * (const Quaternion &a, const Quaternion &b)
 {
     float x = (a.x * b.w) + (a.w * b.x) + (a.y * b.z) - (a.z * b.y);

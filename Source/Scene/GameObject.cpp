@@ -4,6 +4,7 @@
 
 #include "Scene/Component.h"
 #include "Scene/Transform.h"
+#include "Scene/Freecam.h"
 
 GameObject::GameObject(const std::string &name)
     : name_(name)
@@ -29,6 +30,24 @@ void GameObject::update(float deltaTime)
     {
         components_[i]->update(deltaTime);
     }
+}
+
+Component* GameObject::createComponent(const std::string &typeName)
+{
+    if (typeName == "Transform")
+        return createComponent<Transform>();
+    
+    if (typeName == "Camera")
+        return createComponent<Camera>();
+
+    if (typeName == "StaticMesh")
+        return createComponent<StaticMesh>();
+
+    if (typeName == "Freecam")
+        return createComponent<Freecam>();
+
+    const std::string errorMessage = "CreateComponent() type " + typeName + " not defined";
+    throw std::exception(errorMessage.c_str());
 }
 
 Transform* GameObject::transform() const

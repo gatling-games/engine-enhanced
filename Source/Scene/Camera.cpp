@@ -19,6 +19,13 @@ void Camera::drawProperties()
     ImGui::DragFloat("Horiz FOV", &horizontalFOV_, 1.0f, 1.0f, 180.0f);
 }
 
+void Camera::serialize(PropertyTable &table)
+{
+    table.serialize("Near Plane", nearPlaneDistance_, 0.1f);
+    table.serialize("Far Plane", farPlaneDistance_, 1000.0f);
+    table.serialize("Horiz FOV", horizontalFOV_, 60.0f);
+}
+
 float Camera::getNearPlaneDistance() const
 {
     return nearPlaneDistance_;

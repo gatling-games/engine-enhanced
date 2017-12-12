@@ -14,6 +14,10 @@ public:
     // Draws the camera properties fold out
     void drawProperties() override;
 
+    // Override of Component::serialize().
+    // Handles component serialization
+    void serialize(PropertyTable &table) override;
+
     float getNearPlaneDistance() const;
     void setNearPlaneDistance(const float &distance);
 

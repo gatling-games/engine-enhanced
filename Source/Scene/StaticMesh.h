@@ -15,12 +15,16 @@ public:
     // Draws the properties fold out
     void drawProperties() override;
 
-    Mesh* mesh() const { return mesh_; }
-    Shader* shader() const { return shader_; }
-    Texture* texture() const { return texture_; }
+    // Override of Component::serialize().
+    // Handles component serialization
+    void serialize(PropertyTable &table) override;
+
+    ResourcePPtr<Mesh> mesh() const { return mesh_; }
+    ResourcePPtr<Shader> shader() const { return shader_; }
+    ResourcePPtr<Texture> texture() const { return texture_; }
 
 private:
-    Mesh* mesh_;
-    Shader* shader_;
-    Texture* texture_;
+    ResourcePPtr<Mesh> mesh_;
+    ResourcePPtr<Shader> shader_;
+    ResourcePPtr<Texture> texture_;
 };

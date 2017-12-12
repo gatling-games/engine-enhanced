@@ -97,7 +97,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tests\Math\RectTests.cpp" />
-    <ClCompile Include="Tests\Utils\BitReaderTests.cpp" />
     <ClCompile Include="Tests\Math\Matrix4x4Tests.cpp" />
     <ClCompile Include="Tests\Math\ColorTests.cpp" />
     <ClCompile Include="Tests\Math\Point2Tests.cpp" />
@@ -106,7 +105,9 @@
     <ClCompile Include="Tests\Math\Vector2Tests.cpp" />
     <ClCompile Include="Tests\Math\Vector3Tests.cpp" />
     <ClCompile Include="Tests\Math\Vector4Tests.cpp" />
-    <ClCompile Include="Tests\Utils\BitWriterTests.cpp" />
+    <ClCompile Include="Tests\Serialization\BitReaderTests.cpp" />
+    <ClCompile Include="Tests\Serialization\BitWriterTests.cpp" />
+    <ClCompile Include="Tests\Serialization\PropertyTableTests.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
