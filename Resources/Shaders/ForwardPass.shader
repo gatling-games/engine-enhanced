@@ -4,6 +4,8 @@ layout(std140) uniform scene_data
     uniform vec4 _AmbientColor;
     uniform vec4 _LightColor;
     uniform vec4 _LightDirection;
+    uniform vec4 _SkyTopColor;
+    uniform vec4 _HorizonColor;
 };
 
 // Camera uniform buffer
