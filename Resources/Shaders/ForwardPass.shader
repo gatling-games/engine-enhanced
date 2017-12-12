@@ -1,30 +1,8 @@
-// Scene uniform buffer
-layout(std140) uniform scene_data
-{
-    uniform vec4 _AmbientColor;
-    uniform vec4 _LightColor;
-    uniform vec4 _LightDirection;
-    uniform vec4 _SkyTopColor;
-    uniform vec4 _HorizonColor;
-};
 
-// Camera uniform buffer
-layout(std140) uniform camera_data
-{
-    uniform vec4 _ScreenResolution;
-    uniform vec4 _CameraPosition;
-    uniform mat4x4 _ViewProjectionMatrix;
-    uniform mat4x4 _ClipToWorld;
-};
-
-// Per-draw uniform buffer.
-layout(std140) uniform per_draw_data
-{
-    uniform mat4x4 _LocalToWorld;
-};
+#include "UniformBuffers.inc.shader"
+#include "Lighting.inc.shader"
 
 #ifdef VERTEX_SHADER
-
 
 // Vertex attributes
 layout(location = 0) in vec4 _position;
@@ -62,23 +40,15 @@ in vec2 texcoord;
 // Final colour
 out vec4 fragColor;
 
-vec3 LambertLight(vec4 surface, vec3 worldNormal)
-{
-    return max(0.0, dot(worldNormal, _LightDirection.xyz)) * _LightColor.rgb * surface.rgb;
-}
-
 void main()
 {
-    // Use the main texture for the surface color
-    vec4 col = texture(_MainTexture, texcoord);
-    
-	// Compute lambert direct light and flat ambient light
-    vec3 directLight = LambertLight(col, worldNormal);
-    vec3 ambientLight = col.rgb * _AmbientColor.rgb;
-    vec3 finalColor = directLight + ambientLight;
-	
+    // Gather surface properties
+    SurfaceProperties surface;
+    surface.diffuseColor = texture(_MainTexture, texcoord).rgb;
+    surface.worldNormal = worldNormal;
+
 	// Output the final color
-    fragColor = vec4(finalColor.rgb, 1.0);
+    fragColor = ComputeLighting(surface);
 }
 
 #endif // FRAGMENT_SHADER

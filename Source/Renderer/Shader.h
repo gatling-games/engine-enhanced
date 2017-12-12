@@ -21,6 +21,25 @@ enum ShaderFeature
 
 typedef unsigned int ShaderFeatureList;
 
+// Handles a .inc.shader resource
+// It is simply glsl source code that can be #include'd into a shader variant.
+class ShaderInclude : public Resource
+{
+public:
+    ShaderInclude(ResourceID resourceID);
+
+    // Gets the source code for the include.
+    const std::string originalSource() const { return originalSource_; }
+
+    // Resource loading and unloading
+    void load(std::ifstream &file) override;
+    void unload() override;
+
+private:
+    std::string originalSource_;
+    bool previouslyLoaded_;
+};
+
 class ShaderVariant
 {
 public:
@@ -49,7 +68,11 @@ private:
     std::string createFeatureDefines() const;
 
     // Handles preprocessing for a shader source code string.
-    // This performs eg. version header adding and #defines
+    // This function does the following:
+    //     - adds version header
+    //     - Adds shader stage #define
+    //     - Adds #define for enabled features
+    //     - Resolves #include statements
     std::string preprocessSource(GLenum shaderStage, const std::string &originalSource) const;
 
     bool compileShader(GLenum type, const char* shader, GLuint &id);
@@ -72,6 +95,12 @@ public:
     void load(std::ifstream& file) override;
     void unload() override;
 
+    // Unloads all shader variants.
+    // They will be recreated when needed
+    void unloadAllVariants();
+
+    // Finds or created a variant with the given feature list
+    // and binds it as the active gl program.
     void bindVariant(ShaderFeatureList features);
 
 private:
