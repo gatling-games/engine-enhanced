@@ -1,11 +1,47 @@
 #include "Shader.h"
 
 #include <Gl/gl3w.h>
-#include "ResourceManager.h"
+
 #include <assert.h>
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <regex>
+
+#include "ResourceManager.h"
+
+ShaderInclude::ShaderInclude(ResourceID resourceID)
+    : Resource(resourceID),
+    previouslyLoaded_(false)
+{
+    
+}
+
+void ShaderInclude::load(std::ifstream &file)
+{
+    // Load in source file to variable for later use in variants.
+    std::stringstream fileStringStream;
+    fileStringStream << file.rdbuf();
+    originalSource_ = fileStringStream.str();
+
+    // If the include was previously loaded, this reload may have affected
+    // shader variants that are currently loaded.
+    // Remove all loaded shader variants. They will then be re-created on
+    // demand, ensuring that they use up-to-date includes.
+    if(previouslyLoaded_)
+    {
+        for(Shader* shader : ResourceManager::instance()->loadedResourcesOfType<Shader>())
+        {
+            shader->unloadAllVariants();
+        }
+    }
+}
+
+void ShaderInclude::unload()
+{
+    // Mark the shader as previously loaded.
+    previouslyLoaded_ = true;
+}
 
 ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &originalSource)
     : features_(features)
@@ -142,9 +178,30 @@ std::string ShaderVariant::preprocessSource(GLenum shaderStage, const std::strin
     {
         finalSource += "#define FRAGMENT_SHADER 1 \n";
     }
+
+    // Add feature-specific defines next in the file.
     finalSource += createFeatureDefines();
+
     // Finally, include the actual shader source code.
     finalSource += originalSource;
+
+    // We need to resolve #include'd files in the source code.
+    // To do this, search the source file for #include statements and keep
+    // resolving them until there are no resolves left to do.
+    const std::regex includeRegex("#include \"[0-9a-zA-Z\.-_]+\"");
+    std::smatch includeMatch;
+    while(std::regex_search(finalSource, includeMatch, includeRegex))
+    {
+        // Extract the name of the include file from the include directive
+        const std::string includeName = includeMatch.str().substr(10, includeMatch.str().size() - 11);
+        const std::string includePath = "Resources/Shaders/Includes/" + includeName;
+
+        // Load the shader include at that path
+        const ResourcePPtr<ShaderInclude> includeResource = ResourceManager::instance()->load<ShaderInclude>(includePath);
+
+        // Replace the include directive with the actual source code
+        finalSource.replace(includeMatch.position(), includeName.length() + 11, includeResource->originalSource());
+    }
 
     // Done. Return the preprocessed source code.
     return finalSource;
@@ -253,6 +310,11 @@ void Shader::load(std::ifstream& file)
 }
 
 void Shader::unload()
+{
+    unloadAllVariants();
+}
+
+void Shader::unloadAllVariants()
 {
     //Unloads all shader variants calls their destructor
     loadedVariants_.clear();
