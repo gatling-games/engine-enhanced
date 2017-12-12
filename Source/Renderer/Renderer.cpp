@@ -15,10 +15,12 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     : targetFramebuffer_(targetFramebuffer),
     sceneUniformBuffer_(UniformBufferType::SceneBuffer),
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
-    perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer)
+    perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
+    terrainUniformBuffer_(UniformBufferType::TerrainBuffer)
 {
     // Load the shaders required for each render pass
     forwardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader");
+    terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
 }
 
 void Renderer::renderFrame(const Camera* camera) const
@@ -94,7 +96,7 @@ void Renderer::executeForwardPass() const
     // Ensure the forward shader is being used (enable all features.
     forwardShader_->bindVariant(~0);
 
-    // Draw every mesh in the scene with the forward shaders
+    // Draw every static mesh component in the scene with the forward shaders
     auto staticMeshes = SceneManager::instance()->staticMeshes();
     for (unsigned int i = 0; i < staticMeshes.size(); ++i)
     {
@@ -110,5 +112,20 @@ void Renderer::executeForwardPass() const
 
         // Draw the mesh
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+    }
+
+    //Draw terrain
+    terrainShader_->bindVariant(~0);
+    auto terrains = SceneManager::instance()->terrains();
+    for (unsigned int i =0; i < terrains.size(); ++i)
+    {
+        //Get the terrain element
+        auto terrain = terrains[i];
+
+        //Set mesh and heightmap
+        terrain->mesh()->bind();
+        terrain->heightmap()->bind(0);
+
+        glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
     }
 }

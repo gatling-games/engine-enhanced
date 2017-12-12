@@ -5,6 +5,7 @@
 #include "Scene/Transform.h"
 #include "Scene/Camera.h"
 #include "Scene/StaticMesh.h"
+#include "Scene/Terrain.h"
 
 #include "Utils/Clock.h"
 #include "Scene/Freecam.h"
@@ -27,6 +28,11 @@ SceneManager::SceneManager()
     GameObject* mesh2GO = createGameObject("Cube 2");
     mesh2GO->createComponent<Transform>()->setPositionLocal(Point3(-4.0f, 0.0f, 0.0f));
     mesh2GO->createComponent<StaticMesh>();
+
+    // Create a terain
+    GameObject* terrainGO = createGameObject("Terrain");
+    terrainGO->createComponent<Transform>()->setPositionLocal(Point3(0.0f, 0.0f, 0.0f));
+    terrainGO->createComponent<Terrain>();
 }
 
 void SceneManager::drawDebugMenu()
@@ -82,6 +88,24 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
     for (unsigned int i = 0; i < gameObjects_.size(); ++i)
     {
         StaticMesh* mesh = gameObjects_[i]->findComponent<StaticMesh>();
+        if (mesh != nullptr)
+        {
+            meshes.push_back(mesh);
+        }
+    }
+
+    return meshes;
+}
+
+const std::vector<Terrain*> SceneManager::terrains() const
+{
+    // Make a vector to store the meshes
+    std::vector<Terrain*> meshes;
+
+    // Check every game object for a StaticMesh component
+    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    {
+        Terrain* mesh = gameObjects_[i]->findComponent<Terrain>();
         if (mesh != nullptr)
         {
             meshes.push_back(mesh);

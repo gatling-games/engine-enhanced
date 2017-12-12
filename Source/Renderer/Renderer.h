@@ -27,9 +27,11 @@ private:
     UniformBuffer<SceneUniformData> sceneUniformBuffer_;
     UniformBuffer<CameraUniformData> cameraUniformBuffer_;
     UniformBuffer<PerDrawUniformData> perDrawUniformBuffer_;
+    UniformBuffer<TerrainUniformData> terrainUniformBuffer_;
 
     // Shaders used for each render pass
     ResourcePPtr<Shader> forwardShader_;
+    ResourcePPtr<Shader> terrainShader_;
 
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;

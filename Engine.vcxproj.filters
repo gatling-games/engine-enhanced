@@ -134,8 +134,11 @@
     </ClInclude>
     <ClInclude Include="Source\Utils\ImGuiExtensions.h">
       <Filter>Utils</Filter>
-	</ClInclude>
+    </ClInclude>
     <ClInclude Include="Source\Scene\Freecam.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Terrain.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
@@ -244,8 +247,11 @@
     </ClCompile>
     <ClCompile Include="Source\Utils\ImGuiExtensions.cpp">
       <Filter>Utils</Filter>
-	</ClCompile>
+    </ClCompile>
     <ClCompile Include="Source\Scene\Freecam.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Terrain.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>

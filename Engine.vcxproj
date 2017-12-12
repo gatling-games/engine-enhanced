@@ -37,6 +37,7 @@
     <ClInclude Include="Source\Scene\Freecam.h" />
     <ClInclude Include="Source\Scene\GameObject.h" />
     <ClInclude Include="Source\Scene\StaticMesh.h" />
+    <ClInclude Include="Source\Scene\Terrain.h" />
     <ClInclude Include="Source\Scene\Transform.h" />
     <ClInclude Include="Source\Utils\BitReader.h" />
     <ClInclude Include="Source\Utils\BitWriter.h" />
@@ -80,6 +81,7 @@
     <ClCompile Include="Source\Scene\Freecam.cpp" />
     <ClCompile Include="Source\Scene\GameObject.cpp" />
     <ClCompile Include="Source\Scene\StaticMesh.cpp" />
+    <ClCompile Include="Source\Scene\Terrain.cpp" />
     <ClCompile Include="Source\Scene\Transform.cpp" />
     <ClCompile Include="Source\Utils\BitReader.cpp" />
     <ClCompile Include="Source\Utils\BitWriter.cpp" />

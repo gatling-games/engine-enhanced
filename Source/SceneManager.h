@@ -10,6 +10,7 @@
 #include "Scene/Transform.h"
 #include "Scene/Camera.h"
 #include "Scene/StaticMesh.h"
+#include "Scene/Terrain.h"
 
 class SceneManager : public ApplicationModule, public Singleton<SceneManager>
 {
@@ -34,6 +35,7 @@ public:
 
     // Gets a list of all static mesh components in the scene
     const std::vector<StaticMesh*> staticMeshes() const;
+    const std::vector<Terrain*> terrains() const;
 
 private:
     // For now, store objects in a vector of pointers
