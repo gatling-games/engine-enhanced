@@ -36,6 +36,7 @@
     <ClInclude Include="Source\Scene\Component.h" />
     <ClInclude Include="Source\Scene\Freecam.h" />
     <ClInclude Include="Source\Scene\GameObject.h" />
+    <ClInclude Include="Source\Scene\Helicopter.h" />
     <ClInclude Include="Source\Scene\StaticMesh.h" />
     <ClInclude Include="Source\Scene\Transform.h" />
     <ClInclude Include="Source\Math\Color.h" />
@@ -81,6 +82,7 @@
     <ClCompile Include="Source\Scene\Component.cpp" />
     <ClCompile Include="Source\Scene\Freecam.cpp" />
     <ClCompile Include="Source\Scene\GameObject.cpp" />
+    <ClCompile Include="Source\Scene\Helicopter.cpp" />
     <ClCompile Include="Source\Scene\StaticMesh.cpp" />
     <ClCompile Include="Source\Scene\Transform.cpp" />
     <ClCompile Include="Source\Math\Color.cpp" />

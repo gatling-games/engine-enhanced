@@ -151,6 +151,8 @@
     </ClInclude>
     <ClInclude Include="Source\Serialization\SerializedGameObject.h">
       <Filter>Serialization</Filter>
+    <ClInclude Include="Source\Scene\Helicopter.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -282,5 +284,8 @@
     <None Include="Resources\Shaders\Includes\Lighting.inc.shader">
       <Filter>Shaders\Includes</Filter>
     </None>
+    <ClCompile Include="Source\Scene\Helicopter.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

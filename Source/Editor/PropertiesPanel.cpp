@@ -7,6 +7,7 @@
 #include "Scene/Component.h"
 #include "Scene/Camera.h"
 #include "Scene/StaticMesh.h"
+#include "Scene/Helicopter.h"
 
 PropertiesPanel::PropertiesPanel()
     : currentGameObject_(nullptr)
@@ -86,6 +87,7 @@ void PropertiesPanel::drawAddComponentSection()
     {
         if (ImGui::Selectable("Camera")) currentGameObject_->createComponent<Camera>();
         if (ImGui::Selectable("Static Mesh")) currentGameObject_->createComponent<StaticMesh>();
+        if (ImGui::Selectable("Helicopter")) currentGameObject_->createComponent<Helicopter>();
 
         ImGui::EndPopup();
     }
