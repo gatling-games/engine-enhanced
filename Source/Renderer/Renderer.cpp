@@ -141,6 +141,9 @@ void Renderer::executeForwardPass() const
         terrain->mesh()->bind();
         terrain->heightmap()->bind(0);
 		terrain->texture()->bind(1);
+		//THIS IS A HACK REMOVE LATER
+		ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(2);
+		ResourceManager::instance()->load<Texture>("Resources/Textures/test.png")->bind(3);
 
 		updateTerrainUniformBuffer(terrain);
 
