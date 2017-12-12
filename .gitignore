@@ -1,3 +1,4 @@
+
 # Ignore the imgui config file placed in the project root
 imgui.ini
 
@@ -53,7 +54,6 @@ artifacts/
 *_i.h
 *.ilk
 *.meta
-*.obj
 *.pch
 *.pdb
 *.pgc
