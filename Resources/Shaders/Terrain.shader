@@ -9,6 +9,7 @@ layout (binding = 0) uniform sampler2D _heightmap;
 layout (location = 0) in vec4 _position;
 
 // Interpolated values to fragment shader
+out vec3 worldPosition;
 out vec3 worldNormal;
 out vec2 texcoord;
 out float height;
@@ -16,10 +17,14 @@ out float height;
 void main()
 {
 	//Treat the X and Z of the terrain position as the tex coords
-	texcoord = _position.xz*_TerrainCoordinateOffsetScale.zw+_TerrainCoordinateOffsetScale.xy;
-    height = texture(_heightmap, _position.xz).r * _TerrainSize.y;
+	texcoord = _position.xz * _TerrainCoordinateOffsetScale.zw + _TerrainCoordinateOffsetScale.xy;
+
+    // Compute the world position of the terrain.
+    // Use the x and z and take the y from the heightmap
+    worldPosition = vec3(_position.x, texture(_heightmap, _position.xz).r, _position.z) * _TerrainSize.xyz;
+
     // Project the vertex position to clip space
-    gl_Position = _ViewProjectionMatrix * vec4(_position.x*_TerrainSize.x, height, _position.z*_TerrainSize.z, 1);
+    gl_Position = _ViewProjectionMatrix * vec4(worldPosition, 1.0);
     
 	ivec2 heightmapRes = textureSize(_heightmap, 0);
 	vec2 heightmapTexelSize = 1.0 / heightmapRes;
@@ -47,6 +52,7 @@ layout (binding = 2) uniform sampler2D _SnowTex;
 layout (binding = 3) uniform sampler2D _RockTex;
 
 // Interpolated values from vertex shader
+in vec3 worldPosition;
 in vec3 worldNormal;
 in vec2 texcoord;
 in float height;
@@ -72,6 +78,7 @@ void main()
     // Gather surface properties
     SurfaceProperties surface;
     surface.diffuseColor = combinedDiffuse.rgb;
+    surface.worldPosition = worldPosition;
     surface.worldNormal = worldNormal;
 
     // Output the final lit color

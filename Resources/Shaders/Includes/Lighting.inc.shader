@@ -7,6 +7,7 @@
 struct SurfaceProperties
 {
     vec3 diffuseColor;
+    vec3 worldPosition;
     vec3 worldNormal;
 };
 
@@ -19,8 +20,17 @@ vec4 ComputeLighting(SurfaceProperties surface)
     // Use flat ambient lighting
     vec3 ambientLight = surface.diffuseColor * _AmbientColor.rgb;
 
-    // For now, just use lambert + ambient
-    return vec4(directLight + ambientLight, 1.0);
+    // Get the combined lighting
+    vec3 light = directLight + ambientLight;
+
+    // Add fog
+    float viewDist = length(surface.worldPosition - _CameraPosition.xyz);
+    float fogDensity = 0.0115 * viewDist;
+    fogDensity = 1.0 - exp2(-fogDensity * fogDensity);
+
+    // Apply fog to the fragColor
+    vec3 fogColor = vec3(0.5, 0.5, 0.5);
+    return vec4(mix(light, fogColor, fogDensity), 1.0);
 }
 
 #endif // LIGHTING_INCLUDED
