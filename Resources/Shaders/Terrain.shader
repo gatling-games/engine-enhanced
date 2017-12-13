@@ -12,7 +12,6 @@ layout (location = 0) in vec4 _position;
 out vec4 worldPosition;
 out vec3 worldNormal;
 out vec2 texcoord;
-out float height;
 
 void main()
 {
@@ -56,7 +55,6 @@ layout (binding = 3) uniform sampler2D _RockTex;
 in vec4 worldPosition;
 in vec3 worldNormal;
 in vec2 texcoord;
-in float height;
 
 // Final colour
 out vec4 fragColor;
@@ -71,7 +69,7 @@ void main()
     // Work out interpolation factors for the rock and snow layers
     // Based on altitude and slope (ak world y)
 	float rockLerp = clamp((1.0 - worldNormal.y) * 10.0 - 8.0,0.0,1.0);
-	float snowLerp = clamp(height * 2.0 - 50,0.0,1.0);
+	float snowLerp = clamp(worldPosition.y * 2.0 - 50,0.0,1.0);
 
     // Blend the rock and snow textures into the base texture
     vec4 combinedDiffuse = mix(mix(baseDiffuse, rockDiffuse, rockLerp), snowDiffuse, snowLerp);
