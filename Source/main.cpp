@@ -33,15 +33,19 @@ void windowFocusCallback(GLFWwindow* window, int focused)
 void glErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
     const char* message, const void* userParam)
 {
+    // Ignore callbacks with a severity of "notification"
+    // from the gl spec: "Anything that isn't an error or performance issue."
+    if (severity == GL_DEBUG_SEVERITY_NOTIFICATION)
+    {
+        return;
+    }
+
 #ifdef NDEBUG
     // Release mode - dont throw exceptions, just print an error.
     printf("GLError: %s\n", message);
 #else
     // Debug mode - throw an exception.
-    if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
-    {
-        throw std::exception(("GLError: " + std::string(message)).c_str());
-    }
+    throw std::exception(("GLError: " + std::string(message)).c_str());
 #endif
 }
 
