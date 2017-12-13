@@ -8,7 +8,7 @@ StaticMesh::StaticMesh(GameObject* gameObject)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/choppa.obj");
     shader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader");
-    texture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/test.png");
+    texture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/default.tga");
 }
 
 void StaticMesh::drawProperties()
@@ -21,5 +21,5 @@ void StaticMesh::serialize(PropertyTable &table)
 {
    table.serialize("Mesh", mesh_, ResourceManager::instance()->load<Mesh>("Resources/Meshes/cube.obj"));
    table.serialize("Shader", shader_, ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader"));
-   table.serialize("Texture", texture_, ResourceManager::instance()->load<Texture>("Resources/Textures/test.png"));
+   table.serialize("Texture", texture_, ResourceManager::instance()->load<Texture>("Resources/Textures/default.tga"));
 }
