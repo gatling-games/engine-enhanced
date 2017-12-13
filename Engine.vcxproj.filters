@@ -295,5 +295,8 @@
     <ClCompile Include="Source\Scene\Terrain.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <None Include="Resources\Shaders\Terrain.shader">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
