@@ -9,7 +9,7 @@ layout (binding = 0) uniform sampler2D _heightmap;
 layout (location = 0) in vec4 _position;
 
 // Interpolated values to fragment shader
-out vec3 worldPosition;
+out vec4 worldPosition;
 out vec3 worldNormal;
 out vec2 texcoord;
 out float height;
@@ -21,10 +21,11 @@ void main()
 
     // Compute the world position of the terrain.
     // Use the x and z and take the y from the heightmap
-    worldPosition = vec3(_position.x, texture(_heightmap, _position.xz).r, _position.z) * _TerrainSize.xyz;
+    worldPosition = vec4(_position.x, texture(_heightmap, _position.xz).r, _position.z, 1.0);
+    worldPosition.xyz *= _TerrainSize.xyz;
 
     // Project the vertex position to clip space
-    gl_Position = _ViewProjectionMatrix * vec4(worldPosition, 1.0);
+    gl_Position = _ViewProjectionMatrix * worldPosition;
     
 	ivec2 heightmapRes = textureSize(_heightmap, 0);
 	vec2 heightmapTexelSize = 1.0 / heightmapRes;
@@ -52,7 +53,7 @@ layout (binding = 2) uniform sampler2D _SnowTex;
 layout (binding = 3) uniform sampler2D _RockTex;
 
 // Interpolated values from vertex shader
-in vec3 worldPosition;
+in vec4 worldPosition;
 in vec3 worldNormal;
 in vec2 texcoord;
 in float height;

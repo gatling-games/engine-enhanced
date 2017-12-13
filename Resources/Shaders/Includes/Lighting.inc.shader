@@ -7,7 +7,7 @@
 struct SurfaceProperties
 {
     vec3 diffuseColor;
-    vec3 worldPosition;
+    vec4 worldPosition;
     vec3 worldNormal;
 };
 
@@ -24,7 +24,7 @@ vec4 ComputeLighting(SurfaceProperties surface)
     vec3 light = directLight + ambientLight;
 
     // Add fog
-    float viewDist = length(surface.worldPosition - _CameraPosition.xyz);
+    float viewDist = length(surface.worldPosition.xyz - _CameraPosition.xyz);
     float fogDensity = 0.0115 * viewDist;
     fogDensity = 1.0 - exp2(-fogDensity * fogDensity);
 

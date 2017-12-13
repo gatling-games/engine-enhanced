@@ -49,7 +49,7 @@ void main()
     // Gather surface properties
     SurfaceProperties surface;
     surface.diffuseColor = texture(_MainTexture, texcoord).rgb;
-    surface.worldPosition = worldPosition.xyz;
+    surface.worldPosition = worldPosition;
     surface.worldNormal = worldNormal;
 
 	// Output the final color
