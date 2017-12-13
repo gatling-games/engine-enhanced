@@ -24,6 +24,7 @@
     </Filter>
     <Filter Include="Shaders\Includes">
       <UniqueIdentifier>{4fda8847-5bfd-4238-8df2-b78ca48621ad}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Serialization">
       <UniqueIdentifier>{b18a182e-0f5d-4fe0-b4e8-5f9f260f20dd}</UniqueIdentifier>
     </Filter>
