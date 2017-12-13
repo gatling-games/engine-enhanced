@@ -28,4 +28,13 @@ layout(std140) uniform per_draw_data
     uniform mat4x4 _LocalToWorld;
 };
 
+//Terrain uniform buffer
+layout(std140) uniform terrain_data
+{
+    uniform vec4 _TerrainCoordinateOffsetScale; // XY is offset, ZW is scale
+    uniform vec4 _TerrainSize; // XYZW, w is normal scale
+    uniform vec4 _TextureScale; // XY
+};
+
+
 #endif // UNIFORM_BUFFERS_INCLUDED

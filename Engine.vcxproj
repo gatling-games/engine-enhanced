@@ -121,6 +121,7 @@
     <None Include="Resources\Shaders\Includes\Lighting.inc.shader" />
     <None Include="Resources\Shaders\Includes\UniformBuffers.inc.shader" />
     <None Include="Resources\Shaders\SkyboxPass.shader" />
+    <None Include="Resources\Shaders\Terrain.shader" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

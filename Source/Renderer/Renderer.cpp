@@ -79,6 +79,7 @@ void Renderer::updateCameraUniformBuffer(const Camera* camera) const
     // Gather the new contents of the camera buffer
     CameraUniformData data;
     data.worldToClip = camera->getWorldToCameraMatrix(aspect);
+    data.cameraPosition = Vector4(camera->gameObject()->transform()->positionWorld());
 
     // Update the uniform buffer.
     cameraUniformBuffer_.update(data);

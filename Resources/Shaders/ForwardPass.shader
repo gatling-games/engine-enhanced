@@ -11,13 +11,16 @@ layout(location = 2) in vec4 _tangent;
 layout(location = 3) in vec2 _texcoord;
 
 // Interpolated values to fragment shader
+out vec4 worldPosition;
 out vec3 worldNormal;
 out vec2 texcoord;
 
 void main()
 {
+    worldPosition = _LocalToWorld * _position;
+
     // Project the vertex position to clip space
-    gl_Position = _ViewProjectionMatrix * (_LocalToWorld * _position);
+    gl_Position = _ViewProjectionMatrix * worldPosition;
     
     // Get the normal in world space
     worldNormal = normalize(mat3(_LocalToWorld) * _normal);
@@ -34,6 +37,7 @@ void main()
 uniform sampler2D _MainTexture;
 
 // Interpolated values from vertex shader
+in vec4 worldPosition;
 in vec3 worldNormal;
 in vec2 texcoord;
 
@@ -45,6 +49,7 @@ void main()
     // Gather surface properties
     SurfaceProperties surface;
     surface.diffuseColor = texture(_MainTexture, texcoord).rgb;
+    surface.worldPosition = worldPosition;
     surface.worldNormal = worldNormal;
 
 	// Output the final color
