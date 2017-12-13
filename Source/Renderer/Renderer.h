@@ -29,9 +29,11 @@ private:
     UniformBuffer<SceneUniformData> sceneUniformBuffer_;
     UniformBuffer<CameraUniformData> cameraUniformBuffer_;
     UniformBuffer<PerDrawUniformData> perDrawUniformBuffer_;
+    UniformBuffer<TerrainUniformData> terrainUniformBuffer_;
 
     // Shader used for forward pass
     ResourcePPtr<Shader> forwardShader_;
+    ResourcePPtr<Shader> terrainShader_;
 
     // Resources used for skybox shader pass
     ResourcePPtr<Shader> skyboxShader_;
@@ -42,6 +44,7 @@ private:
     void updateSceneUniformBuffer() const;
     void updateCameraUniformBuffer(const Camera* camera) const;
     void updatePerDrawUniformBuffer(const StaticMesh* draw) const;
+	void updateTerrainUniformBuffer(const Terrain* terrain) const;
 
     // Methods for each render pass
     void executeForwardPass() const;

@@ -66,7 +66,7 @@ int main(int argc, const char* argv[])
     // Create a window and its OpenGL context - exit with failure if window not initialised
     int windowWidth = 1920;
     int windowHeight = 1080;
-    GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "hello gaem", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "Gatling Engine - Cardboard Copters", NULL, NULL);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     gl3wInit();

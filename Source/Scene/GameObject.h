@@ -10,6 +10,7 @@ class BitReader;
 class Transform;
 class Camera;
 class StaticMesh;
+class Terrain;
 
 // Identify gameobjects with a unique 32 bit ID
 typedef uint32_t GameObjectID;
@@ -86,6 +87,7 @@ public:
     Transform* transform() const;
     Camera* camera() const;
     StaticMesh* staticMesh() const;
+	Terrain* terrain() const;
 
     // Gets a list of all components attached to the gameobject
     const std::vector<Component*> componentList() const { return components_; }

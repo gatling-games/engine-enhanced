@@ -96,6 +96,7 @@ void Clock::drawDebugMenu()
     {
         setPaused(!paused());
     }
+	ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
 }
 
 // Return current time stamp using WINAPI

@@ -5,6 +5,8 @@
 #include "Scene/Transform.h"
 #include "Scene/Camera.h"
 #include "Scene/StaticMesh.h"
+#include "Scene/Terrain.h"
+#include "Scene/Helicopter.h"
 
 #include "Utils/Clock.h"
 #include "Scene/Freecam.h"
@@ -14,19 +16,22 @@ SceneManager::SceneManager()
 {
     // Create a camera in the scene
     GameObject* cameraGO = createGameObject("Camera");
-    cameraGO->createComponent<Transform>()->setPositionLocal(Point3(0.5f, 2.0f, -10.0f));
+    cameraGO->createComponent<Transform>()->setPositionLocal(Point3(64.0f, 16.0f, -55.0f));
+	cameraGO->findComponent<Transform>()->setRotationLocal(Quaternion(0.056f, 0.822f, -0.083f, 0.56f));
     cameraGO->createComponent<Camera>();
     cameraGO->createComponent<Freecam>();
 
-    // Create a cube mesh infront of the camera
-    GameObject* mesh1GO = createGameObject("Cube 1");
-    mesh1GO->createComponent<Transform>()->setRotationLocal(Quaternion::euler(0.0f, 30.0f, 0.0f));
-    mesh1GO->createComponent<StaticMesh>();
+    // Create a terain
+    GameObject* terrainGO = createGameObject("Terrain");
+    terrainGO->createComponent<Transform>()->setPositionLocal(Point3(0.0f, 0.0f, 0.0f));
+    terrainGO->createComponent<Terrain>();
 
-    // Create a second cube infront of the camera
-    GameObject* mesh2GO = createGameObject("Cube 2");
-    mesh2GO->createComponent<Transform>()->setPositionLocal(Point3(-4.0f, 0.0f, 0.0f));
-    mesh2GO->createComponent<StaticMesh>();
+	//Create helicopter gameobject
+	GameObject* heliGO = createGameObject("Helicopter");
+	heliGO->createComponent<Transform>()->setPositionLocal(Point3(74.0f, 13.0f, -60.0f));
+	heliGO->findComponent<Transform>()->setScaleLocal(Point3(100.0f, 100.0f, 100.0f));
+	heliGO->createComponent<StaticMesh>();
+	heliGO->createComponent<Helicopter>();
 }
 
 void SceneManager::drawDebugMenu()
@@ -82,6 +87,24 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
     for (unsigned int i = 0; i < gameObjects_.size(); ++i)
     {
         StaticMesh* mesh = gameObjects_[i]->findComponent<StaticMesh>();
+        if (mesh != nullptr)
+        {
+            meshes.push_back(mesh);
+        }
+    }
+
+    return meshes;
+}
+
+const std::vector<Terrain*> SceneManager::terrains() const
+{
+    // Make a vector to store the meshes
+    std::vector<Terrain*> meshes;
+
+    // Check every game object for a StaticMesh component
+    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    {
+        Terrain* mesh = gameObjects_[i]->findComponent<Terrain>();
         if (mesh != nullptr)
         {
             meshes.push_back(mesh);

@@ -14,6 +14,8 @@ Application::Application(GLFWwindow* window, int width, int height)
 {
     // Create core classes
     clock_ = new Clock();
+	//Set time paused on startup for debug purposes
+	clock_->setPaused(true);
 
     // Create engine modules
     inputManager_ = new InputManager(window);

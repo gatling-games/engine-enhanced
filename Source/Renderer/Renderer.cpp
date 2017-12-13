@@ -16,7 +16,8 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     : targetFramebuffer_(targetFramebuffer),
     sceneUniformBuffer_(UniformBufferType::SceneBuffer),
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
-    perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer)
+    perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
+    terrainUniformBuffer_(UniformBufferType::TerrainBuffer)
 {
     // Load the shaders required for each render pass
     forwardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader");
@@ -25,6 +26,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
     skyboxMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/skybox.obj");
     skyboxCloudThicknessTexture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/cloud_thickness.psd");
+    terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
 }
 
 void Renderer::renderFrame(const Camera* camera) const
@@ -33,6 +35,7 @@ void Renderer::renderFrame(const Camera* camera) const
     sceneUniformBuffer_.use();
     cameraUniformBuffer_.use();
     perDrawUniformBuffer_.use();
+	terrainUniformBuffer_.use();
 
     // Ensure the contents of the uniform buffers is up to date
     // The per-draw buffer is handled separately
@@ -91,6 +94,19 @@ void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw) const
     perDrawUniformBuffer_.update(data);
 }
 
+void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
+{
+	TerrainUniformData data;
+	Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
+	float normalScale = terrain->gameObject()->terrain()->normalScale();
+	data.terrainSize = Vector4(dimens.x,dimens.y,dimens.z,normalScale);
+
+	data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+	Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
+	data.textureScale = Vector4(texScale.x, texScale.y, 1.0f, 1.0f);
+	terrainUniformBuffer_.update(data);
+}
+
 void Renderer::executeForwardPass() const
 {
     // The forward pass renders into the target framebuffer
@@ -107,7 +123,7 @@ void Renderer::executeForwardPass() const
     // Ensure the forward shader is being used (enable all features.
     forwardShader_->bindVariant(~0);
 
-    // Draw every mesh in the scene with the forward shaders
+    // Draw every static mesh component in the scene with the forward shaders
     auto staticMeshes = SceneManager::instance()->staticMeshes();
     for (unsigned int i = 0; i < staticMeshes.size(); ++i)
     {
@@ -152,4 +168,26 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
     // Draw skybox mesh
     glDrawElements(GL_TRIANGLES, skyboxMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+
+
+    //Draw terrain
+    terrainShader_->bindVariant(~0);
+    auto terrains = SceneManager::instance()->terrains();
+    for (unsigned int i =0; i < terrains.size(); ++i)
+    {
+        //Get the terrain element
+        auto terrain = terrains[i];
+
+        //Set mesh and heightmap
+        terrain->mesh()->bind();
+        terrain->heightmap()->bind(0);
+		terrain->texture()->bind(1);
+		//THIS IS A HACK REMOVE LATER
+		ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(2);
+		ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock.png")->bind(3);
+
+		updateTerrainUniformBuffer(terrain);
+
+        glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+    }
 }

@@ -5,6 +5,7 @@
 #include "Scene/Component.h"
 #include "Scene/Transform.h"
 #include "Scene/Freecam.h"
+#include "Scene/Terrain.h"
 
 GameObject::GameObject(const std::string &name)
     : name_(name)
@@ -63,4 +64,9 @@ Camera* GameObject::camera() const
 StaticMesh* GameObject::staticMesh() const
 {
     return findComponent<StaticMesh>();
+}
+
+Terrain* GameObject::terrain() const
+{
+	return findComponent<Terrain>();
 }

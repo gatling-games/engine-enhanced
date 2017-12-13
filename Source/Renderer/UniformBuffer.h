@@ -14,7 +14,8 @@ enum class UniformBufferType
     CameraBuffer = 1,
     ShadowsBuffer = 2,
     PerDrawBuffer = 3,
-    PerMaterialBuffer = 4
+    PerMaterialBuffer = 4,
+    TerrainBuffer = 5
 };
 
 // Plain old uniform data for scene
@@ -36,6 +37,13 @@ struct CameraUniformData
     Vector4 cameraPosition;
     Matrix4x4 worldToClip;
     Matrix4x4 clipToWorld;
+};
+
+struct TerrainUniformData
+{
+    Vector4 terrainCoordinateOffsetScale;
+    Vector4 terrainSize;
+	Vector4 textureScale;
 };
 
 // Plain old uniform data for converting object local coordinates to world space

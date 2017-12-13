@@ -98,6 +98,7 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     setUniformBufferBinding("shadows_data", UniformBufferType::ShadowsBuffer);
     setUniformBufferBinding("per_draw_data", UniformBufferType::PerDrawBuffer);
     setUniformBufferBinding("per_material_data", UniformBufferType::PerMaterialBuffer);
+    setUniformBufferBinding("terrain_data", UniformBufferType::TerrainBuffer);
 
     // Set texture locations
     setTextureLocation("_MainTexture", 0);
