@@ -12,8 +12,6 @@ struct SurfaceProperties
 
 vec4 ComputeLighting(SurfaceProperties surface)
 {
-    surface.diffuseColor.rgb = surface.diffuseColor.gbr;
-
     // Use lambertian direct lighting
     float ndotl = max(dot(surface.worldNormal, _LightDirection.xyz), 0.0);
     vec3 directLight = ndotl * surface.diffuseColor * _LightColor.rgb;
