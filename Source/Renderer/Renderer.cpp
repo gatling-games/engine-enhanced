@@ -24,7 +24,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     terrainUniformBuffer_(UniformBufferType::TerrainBuffer)
 {
     // Load the shaders required for each render pass
-    forwardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader");
+    standardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Standard.shader");
 
     // Load skybox shader and mesh
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
@@ -173,10 +173,10 @@ void Renderer::executeDeferredGBufferPass() const
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    // Ensure the forward shader is being used (enable all features.
-    forwardShader_->bindVariant(~0);
+    // Ensure the standard shader is being used (enable all features.
+    standardShader_->bindVariant(~0);
 
-    // Draw every static mesh component in the scene with the forward shaders
+    // Draw every static mesh component in the scene with the standard shaders
     auto staticMeshes = SceneManager::instance()->staticMeshes();
     for (unsigned int i = 0; i < staticMeshes.size(); ++i)
     {

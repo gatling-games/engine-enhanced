@@ -117,7 +117,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Shaders\ForwardPass.shader" />
+    <None Include="Resources\Shaders\Standard.shader" />
     <None Include="Resources\Shaders\Includes\DeferredGBufferPass.inc.shader" />
     <None Include="Resources\Shaders\Includes\Deferred.inc.shader" />
     <None Include="Resources\Shaders\Includes\UniformBuffers.inc.shader" />

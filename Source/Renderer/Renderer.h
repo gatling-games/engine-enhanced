@@ -39,8 +39,8 @@ private:
     UniformBuffer<PerDrawUniformData> perDrawUniformBuffer_;
     UniformBuffer<TerrainUniformData> terrainUniformBuffer_;
 
-    // Shader used for forward pass
-    ResourcePPtr<Shader> forwardShader_;
+    // Shaders used for gbuffer pass
+    ResourcePPtr<Shader> standardShader_;
     ResourcePPtr<Shader> terrainShader_;
 
     // Resources used for skybox shader pass

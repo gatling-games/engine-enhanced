@@ -280,9 +280,6 @@
     <None Include="Resources\Shaders\SkyboxPass.shader">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Resources\Shaders\ForwardPass.shader">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Resources\Shaders\Includes\UniformBuffers.inc.shader">
       <Filter>Shaders\Includes</Filter>
     </None>
@@ -300,6 +297,9 @@
     </None>
     <None Include="Resources\Shaders\Includes\DeferredGBufferPass.inc.shader">
       <Filter>Shaders\Includes</Filter>
+    </None>
+    <None Include="Resources\Shaders\Standard.shader">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
