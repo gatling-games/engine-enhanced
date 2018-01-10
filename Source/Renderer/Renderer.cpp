@@ -152,15 +152,15 @@ void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw) const
 
 void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 {
-	TerrainUniformData data;
-	Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
-	float normalScale = terrain->gameObject()->terrain()->normalScale();
-	data.terrainSize = Vector4(dimens.x,dimens.y,dimens.z,normalScale);
+    TerrainUniformData data;
+    Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
+    float normalScale = terrain->gameObject()->terrain()->normalScale();
+    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, normalScale);
 
-	data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-	Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
-	data.textureScale = Vector4(texScale.x, texScale.y, 1.0f, 1.0f);
-	terrainUniformBuffer_.update(data);
+    data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+    Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
+    data.textureScale = Vector4(texScale.x, texScale.y, 1.0f, 1.0f);
+    terrainUniformBuffer_.update(data);
 }
 
 void Renderer::executeDeferredGBufferPass() const
@@ -193,6 +193,27 @@ void Renderer::executeDeferredGBufferPass() const
         // Draw the mesh
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
     }
+
+    //Draw terrain
+    terrainShader_->bindVariant(~0);
+    auto terrains = SceneManager::instance()->terrains();
+    for (unsigned int i = 0; i < terrains.size(); ++i)
+    {
+        //Get the terrain element
+        auto terrain = terrains[i];
+
+        //Set mesh and heightmap
+        terrain->mesh()->bind();
+        terrain->heightmap()->bind(0);
+        terrain->texture()->bind(1);
+        //THIS IS A HACK REMOVE LATER
+        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(2);
+        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock.png")->bind(3);
+
+        updateTerrainUniformBuffer(terrain);
+
+        glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+    }
 }
 
 void Renderer::executeSkyboxPass(const Camera* camera) const
@@ -213,7 +234,7 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
     // Compute position of skydome -
     // ensure the skybox is centered on the camera
     const Matrix4x4 translationMatrix = Matrix4x4::translation(camera->gameObject()->transform()->positionWorld());
-    
+
     // Set the local to world matrix in per draw data
     PerDrawUniformData data;
     data.localToWorld = translationMatrix * scaleMatrix;
@@ -221,26 +242,4 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
     // Draw skybox mesh
     glDrawElements(GL_TRIANGLES, skyboxMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
-
-
-    //Draw terrain
-    terrainShader_->bindVariant(~0);
-    auto terrains = SceneManager::instance()->terrains();
-    for (unsigned int i =0; i < terrains.size(); ++i)
-    {
-        //Get the terrain element
-        auto terrain = terrains[i];
-
-        //Set mesh and heightmap
-        terrain->mesh()->bind();
-        terrain->heightmap()->bind(0);
-		terrain->texture()->bind(1);
-		//THIS IS A HACK REMOVE LATER
-		ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(2);
-		ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock.png")->bind(3);
-
-		updateTerrainUniformBuffer(terrain);
-
-        glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
-    }
 }
