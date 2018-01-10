@@ -5,25 +5,33 @@
 #include "Renderer/UniformBuffer.h"
 
 #include "Scene/Camera.h"
-#include "Renderer/Shader.h"
 #include "Renderer/Mesh.h"
 
 class Renderer
 {
+private:
+    const static int GBUFFER_RENDER_TARGETS = 3;
+
 public:
     // Creates a renderer that draws directly to the back buffer
     Renderer();
 
     // Creates a renderer that draws to the specified framebuffer.
-    Renderer(const Framebuffer* targetFramebuffer);
+    explicit Renderer(const Framebuffer* targetFramebuffer);
+
+    ~Renderer();
 
     // Renders a new frame from the point of view
     // of the specified camera.
-    void renderFrame(const Camera* camera) const;
+    void renderFrame(const Camera* camera);
 
 private:
     // The framebuffer being rendered to
     const Framebuffer* targetFramebuffer_;
+
+    // The current GBuffer objects
+    Texture* gbufferTextures_[GBUFFER_RENDER_TARGETS];
+    Framebuffer gbufferFramebuffer_;
 
     // Uniform buffers used in different render stages
     UniformBuffer<SceneUniformData> sceneUniformBuffer_;
@@ -40,6 +48,10 @@ private:
     ResourcePPtr<Mesh> skyboxMesh_;
     ResourcePPtr<Texture> skyboxCloudThicknessTexture_;
 
+    // GBuffer management
+    void createGBuffer();
+    void destroyGBuffer();
+
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;
     void updateCameraUniformBuffer(const Camera* camera) const;
@@ -47,6 +59,6 @@ private:
 	void updateTerrainUniformBuffer(const Terrain* terrain) const;
 
     // Methods for each render pass
-    void executeForwardPass() const;
+    void executeDeferredGBufferPass() const;
     void executeSkyboxPass(const Camera* camera) const;
 };

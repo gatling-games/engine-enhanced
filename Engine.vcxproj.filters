@@ -286,9 +286,6 @@
     <None Include="Resources\Shaders\Includes\UniformBuffers.inc.shader">
       <Filter>Shaders\Includes</Filter>
     </None>
-    <None Include="Resources\Shaders\Includes\Lighting.inc.shader">
-      <Filter>Shaders\Includes</Filter>
-    </None>
     <ClCompile Include="Source\Scene\Helicopter.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -297,6 +294,12 @@
     </ClCompile>
     <None Include="Resources\Shaders\Terrain.shader">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\Includes\Deferred.inc.shader">
+      <Filter>Shaders\Includes</Filter>
+    </None>
+    <None Include="Resources\Shaders\Includes\DeferredGBufferPass.inc.shader">
+      <Filter>Shaders\Includes</Filter>
     </None>
   </ItemGroup>
 </Project>

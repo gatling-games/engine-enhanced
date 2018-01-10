@@ -2,6 +2,8 @@
 
 #include <GL/gl3w.h>
 
+#include <assert.h>
+
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "Utils/Clock.h"
@@ -14,6 +16,8 @@ Renderer::Renderer()
 
 Renderer::Renderer(const Framebuffer* targetFramebuffer)
     : targetFramebuffer_(targetFramebuffer),
+    gbufferTextures_(),
+    gbufferFramebuffer_(),
     sceneUniformBuffer_(UniformBufferType::SceneBuffer),
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
     perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
@@ -29,22 +33,73 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
 }
 
-void Renderer::renderFrame(const Camera* camera) const
+Renderer::~Renderer()
+{
+    destroyGBuffer();
+}
+
+void Renderer::renderFrame(const Camera* camera)
 {
     // Ensure the correct uniform buffers are bound
     sceneUniformBuffer_.use();
     cameraUniformBuffer_.use();
     perDrawUniformBuffer_.use();
-	terrainUniformBuffer_.use();
+    terrainUniformBuffer_.use();
 
     // Ensure the contents of the uniform buffers is up to date
     // The per-draw buffer is handled separately
     updateSceneUniformBuffer();
     updateCameraUniformBuffer(camera);
 
-    // Execute each render pass in turn.
-    executeForwardPass();
+    // Ensure the gbuffer exists and is ok
+    createGBuffer();
+
+    // Execute the deferred stages
+    gbufferFramebuffer_.use();
+    executeDeferredGBufferPass();
+
+    // Execute the final forward stages
+    targetFramebuffer_->use();
     executeSkyboxPass(camera);
+}
+
+void Renderer::createGBuffer()
+{
+    // If there is already an ok gbuffer, we dont need to do anything
+    // Check with the first texture - if it is ok, the whole thing is ok.
+    if (gbufferTextures_[0] != nullptr
+        && gbufferTextures_[0]->width() == targetFramebuffer_->width()
+        && gbufferTextures_[0]->height() == targetFramebuffer_->height())
+    {
+        // GBuffer already exists and is the correct resolution.
+        return;
+    }
+
+    // First destroy any existing gbuffer textures
+    destroyGBuffer();
+
+    // Create the textures    
+    gbufferTextures_[0] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
+    gbufferTextures_[1] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
+    gbufferTextures_[2] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
+    assert(GBUFFER_RENDER_TARGETS == 3); // should be one higher than the last index
+
+    // Set up the framebuffer
+    // Use the target framebuffer's depth texture and the gbuffer textures
+    gbufferFramebuffer_.attachDepthTextureFromFramebuffer(targetFramebuffer_);
+    gbufferFramebuffer_.attachColorTexturesMRT(GBUFFER_RENDER_TARGETS, (const Texture**)gbufferTextures_);
+}
+
+void Renderer::destroyGBuffer()
+{
+    if (gbufferTextures_[0] != nullptr)
+    {
+        for (int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
+        {
+            delete gbufferTextures_[i];
+            gbufferTextures_[i] = nullptr;
+        }
+    }
 }
 
 void Renderer::updateSceneUniformBuffer() const
@@ -108,11 +163,8 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 	terrainUniformBuffer_.update(data);
 }
 
-void Renderer::executeForwardPass() const
+void Renderer::executeDeferredGBufferPass() const
 {
-    // The forward pass renders into the target framebuffer
-    targetFramebuffer_->use();
-
     // First, clear the depth buffer - don't need to clear color buffer as skybox will cover background
     glClear(GL_DEPTH_BUFFER_BIT);
 
