@@ -7,12 +7,15 @@ class Texture;
 class Framebuffer
 {
 public:
+    const static int MAX_COLOR_ATTACHMENTS = 16;
+
+public:
     Framebuffer();
     ~Framebuffer();
 
 private:
     // Constructor for internal use.
-    Framebuffer(GLuint id);
+    explicit Framebuffer(GLuint id);
 
 public:
     // Gets a reference to the main backbuffer (aka framebuffer 0).
@@ -33,8 +36,16 @@ public:
     // Sets the depth texture used by the framebuffer.
     void attachDepthTexture(const Texture* depthTexture);
 
+    // Sets the depth texture used by the framebuffer to the
+    // texture used by another framebuffer.
+    void attachDepthTextureFromFramebuffer(const Framebuffer* other);
+
     // Sets the color texture used by the framebuffer.
     void attachColorTexture(const Texture* colorTexture);
+
+    // Sets multiple color textures for use by the framebuffer.
+    // Count can be up to Framebuffer::MAX_COLOR_ATTACHMENTS
+    void attachColorTexturesMRT(int count, const Texture** colorTextures);
 
     // Sets this framebuffer as the active framebuffer.
     void use() const;
