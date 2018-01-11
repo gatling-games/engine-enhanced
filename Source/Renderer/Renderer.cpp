@@ -81,7 +81,7 @@ void Renderer::createGBuffer()
     // Create the textures    
     gbufferTextures_[0] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
     gbufferTextures_[1] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
-    gbufferTextures_[2] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
+    gbufferTextures_[2] = new Texture(TextureFormat::RGBA1010102, targetFramebuffer_->width(), targetFramebuffer_->height());
     assert(GBUFFER_RENDER_TARGETS == 3); // should be one higher than the last index
 
     // Set up the framebuffer
