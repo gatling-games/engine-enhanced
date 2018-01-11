@@ -23,14 +23,17 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
     terrainUniformBuffer_(UniformBufferType::TerrainBuffer)
 {
+    fullScreenMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/full_screen_mesh.mesh");
+
     // Load the shaders required for each render pass
     standardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Standard.shader");
+    terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
+    deferredLightingShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Lighting.shader");
 
     // Load skybox shader and mesh
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
     skyboxMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/skybox.obj");
     skyboxCloudThicknessTexture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/cloud_thickness.psd");
-    terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
 }
 
 Renderer::~Renderer()
@@ -54,12 +57,15 @@ void Renderer::renderFrame(const Camera* camera)
     // Ensure the gbuffer exists and is ok
     createGBuffer();
 
-    // Execute the deferred stages
+    // Render each opaque object into the gbuffer textures
     gbufferFramebuffer_.use();
     executeDeferredGBufferPass();
 
-    // Execute the final forward stages
+    // Compute lighting into final render target
     targetFramebuffer_->use();
+    executeDeferredLightingPass();
+
+    // Finally render the skybox
     executeSkyboxPass(camera);
 }
 
@@ -83,6 +89,13 @@ void Renderer::createGBuffer()
     gbufferTextures_[1] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
     gbufferTextures_[2] = new Texture(TextureFormat::RGBA1010102, targetFramebuffer_->width(), targetFramebuffer_->height());
     assert(GBUFFER_RENDER_TARGETS == 3); // should be one higher than the last index
+
+    // Bind the gbuffer textures for sampling in deferred passes
+    for(int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
+    {
+        // Start with gbuffer0 in slot 15, gbuffer1 in slot 14, etc.
+        gbufferTextures_[i]->bind(15 - i);
+    }
 
     // Set up the framebuffer
     // Use the target framebuffer's depth texture and the gbuffer textures
@@ -163,6 +176,18 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     terrainUniformBuffer_.update(data);
 }
 
+void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const
+{
+    // Full screen passes don't use depth testing
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(false);
+
+    // Draw the full screen mesh
+    fullScreenMesh_->bind();
+    shader->bindVariant(shaderFeatures);
+    glDrawElements(GL_TRIANGLES, fullScreenMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+}
+
 void Renderer::executeDeferredGBufferPass() const
 {
     // Ensure that depth testing and depth write are on
@@ -215,8 +240,17 @@ void Renderer::executeDeferredGBufferPass() const
     }
 }
 
+void Renderer::executeDeferredLightingPass() const
+{
+    executeFullScreen(deferredLightingShader_, ~0);
+}
+
 void Renderer::executeSkyboxPass(const Camera* camera) const
 {
+    // Ensure that depth testing is turned on, but dont write depth
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(false);
+
     // Ensure skybox shader is being used
     skyboxShader_->bindVariant(~0);
 

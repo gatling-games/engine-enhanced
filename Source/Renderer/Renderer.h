@@ -33,6 +33,9 @@ private:
     Texture* gbufferTextures_[GBUFFER_RENDER_TARGETS];
     Framebuffer gbufferFramebuffer_;
 
+    // A full screen triangle used for screen space passes
+    ResourcePPtr<Mesh> fullScreenMesh_;
+
     // Uniform buffers used in different render stages
     UniformBuffer<SceneUniformData> sceneUniformBuffer_;
     UniformBuffer<CameraUniformData> cameraUniformBuffer_;
@@ -42,6 +45,9 @@ private:
     // Shaders used for gbuffer pass
     ResourcePPtr<Shader> standardShader_;
     ResourcePPtr<Shader> terrainShader_;
+
+    // Shaders used for deferred passes
+    ResourcePPtr<Shader> deferredLightingShader_;
 
     // Resources used for skybox shader pass
     ResourcePPtr<Shader> skyboxShader_;
@@ -58,7 +64,11 @@ private:
     void updatePerDrawUniformBuffer(const StaticMesh* draw) const;
 	void updateTerrainUniformBuffer(const Terrain* terrain) const;
 
+    // Renders a full screen pass using the specifed shader
+    void executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const;
+
     // Methods for each render pass
     void executeDeferredGBufferPass() const;
+    void executeDeferredLightingPass() const;
     void executeSkyboxPass(const Camera* camera) const;
 };

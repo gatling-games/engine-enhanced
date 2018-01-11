@@ -295,11 +295,17 @@
     <None Include="Resources\Shaders\Includes\Deferred.inc.shader">
       <Filter>Shaders\Includes</Filter>
     </None>
-    <None Include="Resources\Shaders\Includes\DeferredGBufferPass.inc.shader">
-      <Filter>Shaders\Includes</Filter>
-    </None>
     <None Include="Resources\Shaders\Standard.shader">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\Deferred-Lighting.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\Includes\DeferredGBuffer.inc.shader">
+      <Filter>Shaders\Includes</Filter>
+    </None>
+    <None Include="Resources\Shaders\Includes\Common.inc.shader">
+      <Filter>Shaders\Includes</Filter>
     </None>
   </ItemGroup>
 </Project>

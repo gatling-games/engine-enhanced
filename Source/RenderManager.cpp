@@ -6,6 +6,9 @@
 RenderManager::RenderManager()
 {
     renderers_.push_back(createRenderer());
+
+    // Set default opengl settings
+    glEnable(GL_CULL_FACE);
 }
 
 RenderManager::~RenderManager()

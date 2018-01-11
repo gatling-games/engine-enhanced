@@ -117,8 +117,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\Deferred-Lighting.shader" />
+    <None Include="Resources\Shaders\Includes\Common.inc.shader" />
+    <None Include="Resources\Shaders\Includes\DeferredGBuffer.inc.shader" />
     <None Include="Resources\Shaders\Standard.shader" />
-    <None Include="Resources\Shaders\Includes\DeferredGBufferPass.inc.shader" />
     <None Include="Resources\Shaders\Includes\Deferred.inc.shader" />
     <None Include="Resources\Shaders\Includes\UniformBuffers.inc.shader" />
     <None Include="Resources\Shaders\SkyboxPass.shader" />

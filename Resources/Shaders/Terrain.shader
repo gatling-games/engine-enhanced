@@ -1,6 +1,8 @@
 
 #include "UniformBuffers.inc.shader"
-#include "DeferredGBufferPass.inc.shader"
+
+#define USE_GBUFFER_WRITE
+#include "Deferred.inc.shader"
 
 #ifdef VERTEX_SHADER
 
@@ -77,7 +79,7 @@ void main()
     SurfaceProperties surface;
     surface.diffuseColor = combinedDiffuse.rgb;
     surface.worldNormal = worldNormal;
-    outputToGBuffer(surface);
+    writeToGBuffer(surface);
 }
 
 #endif // FRAGMENT_SHADER
