@@ -165,13 +165,12 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 
 void Renderer::executeDeferredGBufferPass() const
 {
+    // Ensure that depth testing and depth write are on
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(true);
+
     // First, clear the depth buffer - don't need to clear color buffer as skybox will cover background
     glClear(GL_DEPTH_BUFFER_BIT);
-
-    // Ensure that depth testing and backface culling
-    // are turned on for this pass
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
 
     // Ensure the standard shader is being used (enable all features.
     standardShader_->bindVariant(~0);
