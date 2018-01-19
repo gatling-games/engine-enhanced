@@ -15,12 +15,12 @@ GameObject::GameObject(const std::string &name)
     createComponent<Transform>();
 }
 
-void GameObject::serialize(BitWriter& writer) const
+void GameObject::serialize(BitWriter&) const
 {
     
 }
 
-void GameObject::deserialize(BitReader& reader)
+void GameObject::deserialize(BitReader&)
 {
     
 }
