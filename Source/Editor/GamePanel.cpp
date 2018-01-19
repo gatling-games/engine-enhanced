@@ -72,7 +72,7 @@ void GamePanel::draw()
     renderer_->renderFrame(SceneManager::instance()->mainCamera());
 
     // Draw the texture
-    ImGui::Image(reinterpret_cast<ImTextureID>(colorBuffer_->glid()), ImGui::GetContentRegionAvail(), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+    ImGui::Image((ImTextureID)(uint64_t)colorBuffer_->glid(), ImGui::GetContentRegionAvail(), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
 }
 
 void GamePanel::createFramebuffer(int width, int height)
