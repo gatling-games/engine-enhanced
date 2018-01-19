@@ -104,7 +104,9 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 
 	data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 	Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
-	data.textureScale = Vector4(texScale.x, texScale.y, 1.0f, 1.0f);
+
+	//Invert Texture scale
+	data.textureScale = Vector4(dimens.x/texScale.x, dimens.z/texScale.y, 1.0f, 1.0f);
 	terrainUniformBuffer_.update(data);
 }
 
