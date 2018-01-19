@@ -84,7 +84,7 @@ int main(int argc, const char* argv[])
     glfwSetWindowFocusCallback(window, &windowFocusCallback);
 
     // Create the main application class.
-    application = new Application(window, windowWidth, windowHeight);
+    application = new Application(window);
     application->resize(windowWidth, windowHeight);
 
     // Run game loop while window not closed
