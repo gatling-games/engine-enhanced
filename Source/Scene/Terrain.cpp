@@ -5,8 +5,8 @@
 
 Terrain::Terrain(GameObject* gameObject)
 	: Component(gameObject),
-	textureWrap_(Vector2(128.0f,128.0f)),
-	dimensions_(Vector3(256.0f, 30.0f, 256.0f)),
+	textureWrap_(Vector2(10.0f,10.0f)),
+	dimensions_(Vector3(256.0f, 50.0f, 256.0f)),
 	normalScale_(0.15f)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");

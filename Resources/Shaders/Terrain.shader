@@ -20,7 +20,7 @@ void main()
 
     // Compute the world position of the terrain.
     // Use the x and z and take the y from the heightmap
-    worldPosition = vec4(_position.x, texture(_heightmap, _position.xz).r, _position.z, 1.0);
+    worldPosition = vec4(_position.x, texture(_heightmap, _position.xz*0.25).r, _position.z, 1.0);
     worldPosition.xyz *= _TerrainSize.xyz;
 
     // Project the vertex position to clip space
@@ -31,13 +31,13 @@ void main()
 
     // Get the normal in world space
 	vec4 h;
-	h.x = texture(_heightmap, _position.xz + heightmapTexelSize * vec2(0.0, -1.0)).r * _TerrainSize.y;
-	h.y = texture(_heightmap, _position.xz + heightmapTexelSize * vec2(-1.0, 0.0)).r * _TerrainSize.y;
-	h.z = texture(_heightmap, _position.xz + heightmapTexelSize * vec2(1.0, 0.0)).r * _TerrainSize.y;
-	h.w = texture(_heightmap, _position.xz + heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
+	h.x = texture(_heightmap, _position.xz*0.25 + heightmapTexelSize * vec2(0.0, -1.0)).r * _TerrainSize.y;
+	h.y = texture(_heightmap, _position.xz*0.25 + heightmapTexelSize * vec2(-1.0, 0.0)).r * _TerrainSize.y;
+	h.z = texture(_heightmap, _position.xz*0.25 + heightmapTexelSize * vec2(1.0, 0.0)).r * _TerrainSize.y;
+	h.w = texture(_heightmap, _position.xz*0.25 + heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
 	worldNormal.z = h.w - h.x;
 	worldNormal.x = h.z - h.y;
-	worldNormal.y = _TerrainSize.w;
+	worldNormal.y = 1.0;
 	worldNormal = normalize(worldNormal);  
 }
 
@@ -46,8 +46,8 @@ void main()
 #ifdef FRAGMENT_SHADER
 
 // Texture inputs
-layout (binding=0) uniform sampler2D _HeightmapTexture;
-layout (binding=1) uniform sampler2D _Texture;
+layout (binding = 0) uniform sampler2D _HeightmapTexture;
+layout (binding = 1) uniform sampler2D _Texture;
 layout (binding = 2) uniform sampler2D _SnowTex;
 layout (binding = 3) uniform sampler2D _RockTex;
 
