@@ -13,19 +13,38 @@ layout(location = 2) in vec4 _tangent;
 layout(location = 3) in vec2 _texcoord;
 
 // Interpolated values to fragment shader
-out vec3 worldNormal;
 out vec2 texcoord;
+
+// Tangent to world space matrix used for normal mapping
+#ifdef NORMAL_MAP_ON
+out vec3 tangentToWorld[3];
+#else
+out vec3 worldNormal;
+#endif
 
 void main()
 {
-    // Project the vertex position to clip space
-    gl_Position = _ViewProjectionMatrix * (_LocalToWorld * _position);
-    
-    // Get the normal in world space
-    worldNormal = normalize(mat3(_LocalToWorld) * _normal);
-	
-    // Texcoord does not need to be modified.
-    texcoord = _texcoord;
+	// Project the vertex position to clip space
+	gl_Position = _ViewProjectionMatrix * (_LocalToWorld * _position);
+
+#ifdef NORMAL_MAP_ON
+	// Get the normal, tangent and bitangent in world space
+	vec3 worldNormal = normalize(mat3(_LocalToWorld) * _normal);
+	vec3 worldTangent = normalize(mat3(_LocalToWorld) * _tangent.xyz);
+	vec3 worldBitangent = cross(worldNormal, worldTangent);
+
+	// Construct a (worldtangent, worldnormal, worldbitangent) basis
+	// Used in the fragment shader to change the tangent space normal to world space.
+	tangentToWorld[0] = vec3(worldTangent.x, worldBitangent.x, worldNormal.x);
+	tangentToWorld[1] = vec3(worldTangent.y, worldBitangent.y, worldNormal.y);
+	tangentToWorld[2] = vec3(worldTangent.z, worldBitangent.z, worldNormal.z);
+#else
+	// No normal mapping. Send the world space normal directly to the fragment shader.
+	worldNormal = normalize(mat3(_LocalToWorld) * _normal);
+#endif
+
+	// Texcoord does not need to be modified.
+	texcoord = _texcoord;
 }
 
 #endif // VERTEX_SHADER
@@ -33,19 +52,35 @@ void main()
 #ifdef FRAGMENT_SHADER
 
 // Texture inputs
-uniform sampler2D _MainTexture;
+layout(binding = 0) uniform sampler2D _MainTexture;
+layout(binding = 1) uniform sampler2D _NormalMap;
 
 // Interpolated values from vertex shader
-in vec3 worldNormal;
 in vec2 texcoord;
+
+// Tangent to world space matrix used for normal mapping
+#ifdef NORMAL_MAP_ON
+in vec3 tangentToWorld[3];
+#else
+in vec3 worldNormal;
+#endif
 
 void main()
 {
-    // Output surface properties to the gbuffer
-    SurfaceProperties surface;
-    surface.diffuseColor = texture(_MainTexture, texcoord).rgb;
-    surface.worldNormal = worldNormal;
-    writeToGBuffer(surface);
+	// Sample the normal map and convert to world space
+#ifdef NORMAL_MAP_ON
+	vec3 tangentNormal = unpackDXT5nm(texture(_NormalMap, texcoord));
+	vec3 worldNormal;
+	worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
+	worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
+	worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
+#endif
+
+	// Output surface properties to the gbuffer
+	SurfaceProperties surface;
+	surface.diffuseColor = texture(_MainTexture, texcoord).rgb;
+	surface.worldNormal = worldNormal;
+	writeToGBuffer(surface);
 }
 
 #endif // FRAGMENT_SHADER
