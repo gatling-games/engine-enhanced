@@ -20,6 +20,7 @@ enum ShaderFeature
 };
 
 typedef unsigned int ShaderFeatureList;
+const ShaderFeatureList ALL_SHADER_FEATURES = ~0u;
 
 // Handles a .inc.shader resource
 // It is simply glsl source code that can be #include'd into a shader variant.

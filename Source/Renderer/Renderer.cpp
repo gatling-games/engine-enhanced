@@ -116,9 +116,6 @@ void Renderer::destroyGBuffer()
 
 void Renderer::updateSceneUniformBuffer() const
 {
-    // Get the scene we are rendering
-    const SceneManager* scene = SceneManager::instance();
-
     // Gather the new contents of the scene buffer
     SceneUniformData data;
     data.ambientLightColor = Color(0.6f, 0.6f, 0.6f);
@@ -197,7 +194,7 @@ void Renderer::executeDeferredGBufferPass() const
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Ensure the standard shader is being used (enable all features.
-    standardShader_->bindVariant(~0);
+    standardShader_->bindVariant(ALL_SHADER_FEATURES);
 
     // Draw every static mesh component in the scene with the standard shaders
     auto staticMeshes = SceneManager::instance()->staticMeshes();
@@ -218,7 +215,7 @@ void Renderer::executeDeferredGBufferPass() const
     }
 
     //Draw terrain
-    terrainShader_->bindVariant(~0);
+    terrainShader_->bindVariant(ALL_SHADER_FEATURES);
     auto terrains = SceneManager::instance()->terrains();
     for (unsigned int i = 0; i < terrains.size(); ++i)
     {
@@ -241,7 +238,7 @@ void Renderer::executeDeferredGBufferPass() const
 
 void Renderer::executeDeferredLightingPass() const
 {
-    executeFullScreen(deferredLightingShader_, ~0);
+    executeFullScreen(deferredLightingShader_, ALL_SHADER_FEATURES);
 }
 
 void Renderer::executeSkyboxPass(const Camera* camera) const
@@ -251,7 +248,7 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
     glDepthMask(false);
 
     // Ensure skybox shader is being used
-    skyboxShader_->bindVariant(~0);
+    skyboxShader_->bindVariant(ALL_SHADER_FEATURES);
 
     // Ensure skybox mesh is being used
     skyboxMesh_->bind();
