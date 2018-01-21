@@ -189,7 +189,7 @@ std::string ShaderVariant::preprocessSource(GLenum shaderStage, const std::strin
     // We need to resolve #include'd files in the source code.
     // To do this, search the source file for #include statements and keep
     // resolving them until there are no resolves left to do.
-    const std::regex includeRegex("#include \"[0-9a-zA-Z\.\-_]+\"");
+    const std::regex includeRegex(R"(#include "[0-9a-zA-Z\.\-_]+")");
     std::smatch includeMatch;
     while(std::regex_search(finalSource, includeMatch, includeRegex))
     {
