@@ -4,24 +4,22 @@
 #include "Common.inc.shader"
 
 // GBuffer Layout
-// RT0: Albedo (RGB), Occlusion (A)
-// RT1: Specular (RGB), Gloss (A)
-// RT2: Normals (XYZ, 10 bits), Unused (A, 2 bits)
+// RT0: Albedo (RGB), Gloss (A)
+// RT1: Normals (XYZ, 10 bits), Unused (A, 2 bits)
 
 // Stores surface properties into the gbuffer format
-void packGBuffer(SurfaceProperties surface, out vec4 gbuffer0, out vec4 gbuffer1, out vec4 gbuffer2)
+void packGBuffer(SurfaceProperties surface, out vec4 gbuffer0, out vec4 gbuffer1)
 {
-    gbuffer0 = vec4(surface.diffuseColor, 0.0);
-    gbuffer1 = vec4(0.0, 0.0, 0.0, 0.2);
-    gbuffer2 = vec4(surface.worldNormal * 0.5 + 0.5, 0.0);
+    gbuffer0 = vec4(surface.diffuseColor, 0.2);
+    gbuffer1 = vec4(surface.worldNormal * 0.5 + 0.5, 0.0);
 }
 
 // Retrieves surface properties from the gbuffer format
-SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1, vec4 gbuffer2)
+SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1)
 {
     SurfaceProperties surface;
     surface.diffuseColor = gbuffer0.rgb;
-    surface.worldNormal = gbuffer2.xyz * 2.0 - 1.0;
+    surface.worldNormal = gbuffer1.xyz * 2.0 - 1.0;
     return surface;
 }
 
@@ -32,12 +30,11 @@ SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1, vec4 gbuffer2)
 
     layout(location = 0) out vec4 gbuffer0;
     layout(location = 1) out vec4 gbuffer1;
-    layout(location = 2) out vec4 gbuffer2;
 
     // Packs and writes the specified surface properties to the gbuffer.
     void writeToGBuffer(SurfaceProperties surface)
     {
-        packGBuffer(surface, gbuffer0, gbuffer1, gbuffer2);
+        packGBuffer(surface, gbuffer0, gbuffer1);
     }
 
 #endif
@@ -49,7 +46,6 @@ SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1, vec4 gbuffer2)
 
     layout(binding = 15) uniform sampler2D _GBuffer0;
     layout(binding = 14) uniform sampler2D _GBuffer1;
-    layout(binding = 13) uniform sampler2D _GBuffer2;
 
     // Reads and unpacks the gbuffer for the current pixel.
     // Only avaliable in a fragment shader with USE_GBUFFER_READ defined.
@@ -59,10 +55,9 @@ SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1, vec4 gbuffer2)
         ivec2 coord = ivec2(gl_FragCoord.xy);
         vec4 gbuffer0 = texelFetch(_GBuffer0, coord, 0);
         vec4 gbuffer1 = texelFetch(_GBuffer1, coord, 0);
-        vec4 gbuffer2 = texelFetch(_GBuffer2, coord, 0);
 
         // Unpack surface properties from the gbuffer
-        return unpackGBuffer(gbuffer0, gbuffer1, gbuffer2);
+        return unpackGBuffer(gbuffer0, gbuffer1);
     }
 
 #endif

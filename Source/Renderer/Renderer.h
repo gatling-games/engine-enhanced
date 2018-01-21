@@ -10,7 +10,7 @@
 class Renderer
 {
 private:
-    const static int GBUFFER_RENDER_TARGETS = 3;
+    const static int GBUFFER_RENDER_TARGETS = 2;
 
 public:
     // Creates a renderer that draws directly to the back buffer
