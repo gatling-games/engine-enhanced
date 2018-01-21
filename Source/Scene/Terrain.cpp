@@ -12,13 +12,14 @@ Terrain::Terrain(GameObject* gameObject)
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
     heightmap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/heightmap.png");
     texture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_grass.png");
-
+	normalMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_grass_normal.png");
 }
 
 void Terrain::drawProperties()
 {
     ImGui::ResourceSelect<Texture>("Heightmap", "Select Heightmap", heightmap_);
 	ImGui::ResourceSelect<Texture>("Texture", "Select Texture", texture_);
+	ImGui::ResourceSelect<Texture>("Normal Map", "Select Normal Map", normalMap_);
 	ImGui::DragFloat2("Texture Wrapping", &textureWrap_.x, 0.1f, 1.0f, 1024.0f);
 	ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
 	ImGui::DragFloat("Normal Scale", &normalScale_, 0.01f, 0.01f, 0.2f);

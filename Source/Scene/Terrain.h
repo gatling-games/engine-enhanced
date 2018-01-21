@@ -28,6 +28,7 @@ public:
     Mesh* mesh() const { return mesh_; }
     Texture* heightmap() const { return heightmap_; }
     Texture* texture() const { return texture_; }
+	Texture* normalMap() const { return normalMap_; }
 
 	Vector2 textureWrapping() const { return textureWrap_; }
 	Vector3 terrainDimensions() const { return dimensions_; }
@@ -37,6 +38,7 @@ private:
     Mesh* mesh_;
     Texture* heightmap_;
     Texture* texture_;
+	Texture* normalMap_;
 
 	Vector2 textureWrap_;
     Vector3 dimensions_;
