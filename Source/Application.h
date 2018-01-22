@@ -21,7 +21,7 @@ public:
 class Application
 {
 public:
-    Application(GLFWwindow* window, int width, int height);
+    Application(GLFWwindow* window);
     ~Application();
 
     // Called when the window is resized.

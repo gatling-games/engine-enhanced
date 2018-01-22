@@ -10,7 +10,7 @@
 #include "SceneManager.h"
 #include "RenderManager.h"
 
-Application::Application(GLFWwindow* window, int width, int height)
+Application::Application(GLFWwindow* window)
 {
     // Create core classes
     clock_ = new Clock();

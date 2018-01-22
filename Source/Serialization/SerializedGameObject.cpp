@@ -99,7 +99,7 @@ GameObject* SerializedGameObject::clone() const
         Component* newComponent = gameObject->createComponent(componentInfo.type);
 
         // Deserialize the component's properties from the property table.
-        PropertyTable& properties = (PropertyTable)componentInfo.properties;
+        PropertyTable& properties = componentInfo.properties;
         newComponent->serialize(properties);
     }
 
