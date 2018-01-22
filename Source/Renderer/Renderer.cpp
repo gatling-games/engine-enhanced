@@ -4,6 +4,7 @@
 
 #include <assert.h>
 
+#include "RenderManager.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "Utils/Clock.h"
@@ -29,6 +30,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     standardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Standard.shader");
     terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
     deferredLightingShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Lighting.shader");
+	deferredDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Debug.shader");
 
     // Load skybox shader and mesh
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
@@ -64,6 +66,12 @@ void Renderer::renderFrame(const Camera* camera)
     // Compute lighting into final render target
     targetFramebuffer_->use();
     executeDeferredLightingPass();
+
+    // Show any debugging modes
+    if (RenderManager::instance()->debugMode() != RenderDebugMode::None)
+    {
+        executeDeferredDebugPass();
+    }
 
     // Finally render the skybox
     executeSkyboxPass(camera);
@@ -243,6 +251,12 @@ void Renderer::executeDeferredGBufferPass() const
 void Renderer::executeDeferredLightingPass() const
 {
     executeFullScreen(deferredLightingShader_, ALL_SHADER_FEATURES);
+}
+
+void Renderer::executeDeferredDebugPass() const
+{
+    RenderDebugMode mode = RenderManager::instance()->debugMode();
+    executeFullScreen(deferredDebugShader_, (ShaderFeatureList)mode);
 }
 
 void Renderer::executeSkyboxPass(const Camera* camera) const

@@ -6,6 +6,8 @@
 #include "Renderer/Framebuffer.h"
 #include "Renderer/Renderer.h"
 
+#include "RenderManager.h"
+
 class GamePanel : public EditorPanel
 {
 public:
@@ -27,4 +29,7 @@ private:
 
     // Draws a toggle in the view menu for globally toggling a shader feature
     void drawFeatureToggle(ShaderFeature feature, const char* label) const;
+
+    // Draws a toggle for picking the current debugging mode
+    void drawDebugModeToggle(RenderDebugMode mode, const char* label) const;
 };

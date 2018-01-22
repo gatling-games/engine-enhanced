@@ -4,7 +4,8 @@
 #include "imgui.h"
 
 RenderManager::RenderManager()
-    : allowedShaderFeatures_(~0u)
+    : allowedShaderFeatures_(~0u),
+    debugMode_(RenderDebugMode::None)
 {
     // Set default opengl settings
     glEnable(GL_CULL_FACE);

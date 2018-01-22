@@ -117,6 +117,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\Deferred-Debug.shader" />
     <None Include="Resources\Shaders\Deferred-Lighting.shader" />
     <None Include="Resources\Shaders\Includes\Common.inc.shader" />
     <None Include="Resources\Shaders\Includes\DeferredGBuffer.inc.shader" />

@@ -48,6 +48,7 @@ private:
 
     // Shaders used for deferred passes
     ResourcePPtr<Shader> deferredLightingShader_;
+    ResourcePPtr<Shader> deferredDebugShader_;
 
     // Resources used for skybox shader pass
     ResourcePPtr<Shader> skyboxShader_;
@@ -62,7 +63,7 @@ private:
     void updateSceneUniformBuffer() const;
     void updateCameraUniformBuffer(const Camera* camera) const;
     void updatePerDrawUniformBuffer(const StaticMesh* draw) const;
-	void updateTerrainUniformBuffer(const Terrain* terrain) const;
+    void updateTerrainUniformBuffer(const Terrain* terrain) const;
 
     // Renders a full screen pass using the specifed shader
     void executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const;
@@ -70,5 +71,6 @@ private:
     // Methods for each render pass
     void executeDeferredGBufferPass() const;
     void executeDeferredLightingPass() const;
+    void executeDeferredDebugPass() const;
     void executeSkyboxPass(const Camera* camera) const;
 };

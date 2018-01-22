@@ -307,5 +307,8 @@
     <None Include="Resources\Shaders\Includes\Common.inc.shader">
       <Filter>Shaders\Includes</Filter>
     </None>
+    <None Include="Resources\Shaders\Deferred-Debug.shader">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

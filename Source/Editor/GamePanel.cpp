@@ -2,7 +2,6 @@
 
 #include <imgui.h>
 
-#include "RenderManager.h"
 #include "SceneManager.h"
 #include "Scene/Camera.h"
 
@@ -29,14 +28,29 @@ GamePanel::~GamePanel()
 
 void GamePanel::drawMenu(const std::string menuName)
 {
-    // Draw the render feature toggles
     if (menuName == "View")
     {
-        drawFeatureToggle(SF_Texture, "Textures");
-        drawFeatureToggle(SF_NormalMap, "Normal Maps");
-        drawFeatureToggle(SF_Specular, "Specular Highlights");
-        drawFeatureToggle(SF_Cutout, "Alpha Cutout");
-        drawFeatureToggle(SF_Fog, "Fog");
+        // Draw the render feature toggles
+        if (ImGui::BeginMenu("Render Features"))
+        {
+            drawFeatureToggle(SF_Texture, "Textures");
+            drawFeatureToggle(SF_NormalMap, "Normal Maps");
+            drawFeatureToggle(SF_Specular, "Specular Highlights");
+            drawFeatureToggle(SF_Cutout, "Alpha Cutout");
+            drawFeatureToggle(SF_Fog, "Fog");
+            ImGui::EndMenu();
+        }
+
+        // Draw the render debug mode toggles
+        if (ImGui::BeginMenu("Debug Mode"))
+        {
+            drawDebugModeToggle(RenderDebugMode::None, "None");
+            drawDebugModeToggle(RenderDebugMode::Albedo, "Albedo");
+            drawDebugModeToggle(RenderDebugMode::Gloss, "Gloss");
+            drawDebugModeToggle(RenderDebugMode::Normals, "Normals");
+            drawDebugModeToggle(RenderDebugMode::Occlusion, "Occlusion");
+            ImGui::EndMenu();
+        }
     }
 }
 
@@ -91,5 +105,14 @@ void GamePanel::drawFeatureToggle(ShaderFeature feature, const char* label) cons
     if (ImGui::MenuItem(label, (const char*)0, selected))
     {
         RenderManager::instance()->globallyToggleFeature(feature);
+    }
+}
+
+void GamePanel::drawDebugModeToggle(RenderDebugMode mode, const char* label) const
+{
+    bool on = RenderManager::instance()->debugMode() == mode;
+    if (ImGui::MenuItem(label, (const char*)0, on))
+    {
+        RenderManager::instance()->setDebugMode(on ? RenderDebugMode::None : mode);
     }
 }
