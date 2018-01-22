@@ -68,12 +68,16 @@ in vec3 worldNormal;
 void main()
 {
     SurfaceProperties surface;
+    surface.occlusion = 1.0;
 
     // Sample the albedo texture for the diffuse color
 #ifdef TEXTURE_ON
-    surface.diffuseColor = texture(_MainTexture, texcoord).rgb;
+    vec4 diffuseGloss = texture(_MainTexture, texcoord);
+    surface.diffuseColor = diffuseGloss.rgb;
+    surface.gloss = diffuseGloss.a;
 #else
     surface.diffuseColor = vec3(0.75);
+    surface.gloss = 0.2;
 #endif
 
 	// Sample the normal map and convert to world space

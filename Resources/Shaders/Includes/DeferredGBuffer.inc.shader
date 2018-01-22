@@ -10,7 +10,7 @@
 // Stores surface properties into the gbuffer format
 void packGBuffer(SurfaceProperties surface, out vec4 gbuffer0, out vec4 gbuffer1)
 {
-    gbuffer0 = vec4(surface.diffuseColor, 0.2);
+    gbuffer0 = vec4(surface.diffuseColor, surface.gloss);
     gbuffer1 = vec4(surface.worldNormal * 0.5 + 0.5, 0.0);
 }
 
@@ -19,6 +19,8 @@ SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1)
 {
     SurfaceProperties surface;
     surface.diffuseColor = gbuffer0.rgb;
+    surface.occlusion = 1.0;
+    surface.gloss = gbuffer0.a;
     surface.worldNormal = gbuffer1.xyz * 2.0 - 1.0;
     return surface;
 }

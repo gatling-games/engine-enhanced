@@ -85,6 +85,7 @@ in vec3 tangentToWorld[3];
 void main()
 {
     SurfaceProperties surface;
+    surface.occlusion = 1.0;
 
     // Work out interpolation factors for the rock and snow layers
     // Based on altitude and slope (ak world y)
@@ -98,9 +99,12 @@ void main()
     vec4 snowDiffuse = texture(_SnowTex, texcoord*_TextureScale.xy);
 
     // Blend the rock and snow textures into the base texture
-    surface.diffuseColor = mix(mix(baseDiffuse, rockDiffuse, rockLerp), snowDiffuse, snowLerp).rgb;
+    vec4 diffuseGloss = mix(mix(baseDiffuse, rockDiffuse, rockLerp), snowDiffuse, snowLerp);
+    surface.diffuseColor = diffuseGloss.rgb;
+    surface.gloss = diffuseGloss.a;
 #else
     surface.diffuseColor = vec3(0.75);
+    surface.gloss = 0.2;
 #endif
 
 #ifdef NORMAL_MAP_ON
