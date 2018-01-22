@@ -13,6 +13,7 @@ enum class TextureFormat
 	RGBA_DXT5, // RGBA, block compressed 8 bits per pixel
 	RGB8, // RGB, 24 bits per pixel
 	RGBA8, // RGBA, 32 bits per pixel
+    RGBA1010102, // RGBA, 10 bits for rgb, 2 bits for a
 	R8, // Single channel, 8 bits per pixel
 	RFloat, // Single channel, 32 bit floating point
 	Depth, // Depth texture, 24 bits per pixel

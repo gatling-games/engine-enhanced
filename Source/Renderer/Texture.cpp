@@ -41,6 +41,7 @@ TextureFormatData formatsTable[] = {
     {   "RGBA_DXT5",     4, 4, 16,    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,   true        }, // RGBA_DXT5
     {   "RGB8",          1, 1, 3,     GL_RGB8,                            false       }, // RGB8
     {   "RGBA8",         1, 1, 4,     GL_RGBA8,                           false       }, // RGBA8
+    {   "RGBA1010102",   1, 1, 4,     GL_RGB10_A2,                        false       }, // RGBA1010102
     {   "R8",            1, 1, 1,     GL_R8,                              false       }, // R8
     {   "R32F",          1, 1, 4,     GL_R32F,                            false       }, // RFloat
     {   "Depth 16",      1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // Depth

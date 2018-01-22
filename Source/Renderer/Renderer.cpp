@@ -2,6 +2,9 @@
 
 #include <GL/gl3w.h>
 
+#include <assert.h>
+
+#include "RenderManager.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "Utils/Clock.h"
@@ -14,44 +17,113 @@ Renderer::Renderer()
 
 Renderer::Renderer(const Framebuffer* targetFramebuffer)
     : targetFramebuffer_(targetFramebuffer),
+    gbufferTextures_(),
+    gbufferFramebuffer_(),
     sceneUniformBuffer_(UniformBufferType::SceneBuffer),
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
     perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
     terrainUniformBuffer_(UniformBufferType::TerrainBuffer)
 {
+    fullScreenMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/full_screen_mesh.mesh");
+
     // Load the shaders required for each render pass
-    forwardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader");
+    standardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Standard.shader");
+    terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
+    deferredLightingShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Lighting.shader");
+    deferredDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Debug.shader");
 
     // Load skybox shader and mesh
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
     skyboxMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/skybox.obj");
     skyboxCloudThicknessTexture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/cloud_thickness.psd");
-    terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
 }
 
-void Renderer::renderFrame(const Camera* camera) const
+Renderer::~Renderer()
+{
+    destroyGBuffer();
+}
+
+void Renderer::renderFrame(const Camera* camera)
 {
     // Ensure the correct uniform buffers are bound
     sceneUniformBuffer_.use();
     cameraUniformBuffer_.use();
     perDrawUniformBuffer_.use();
-	terrainUniformBuffer_.use();
+    terrainUniformBuffer_.use();
 
     // Ensure the contents of the uniform buffers is up to date
     // The per-draw buffer is handled separately
     updateSceneUniformBuffer();
     updateCameraUniformBuffer(camera);
 
-    // Execute each render pass in turn.
-    executeForwardPass();
+    // Ensure the gbuffer exists and is ok
+    createGBuffer();
+
+    // Render each opaque object into the gbuffer textures
+    gbufferFramebuffer_.use();
+    executeDeferredGBufferPass();
+
+    // Compute lighting into final render target
+    targetFramebuffer_->use();
+    executeDeferredLightingPass();
+
+    // Show any debugging modes
+    if (RenderManager::instance()->debugMode() != RenderDebugMode::None)
+    {
+        executeDeferredDebugPass();
+    }
+
+    // Finally render the skybox
     executeSkyboxPass(camera);
+}
+
+void Renderer::createGBuffer()
+{
+    // If there is already an ok gbuffer, we dont need to do anything
+    // Check with the first texture - if it is ok, the whole thing is ok.
+    if (gbufferTextures_[0] != nullptr
+        && gbufferTextures_[0]->width() == targetFramebuffer_->width()
+        && gbufferTextures_[0]->height() == targetFramebuffer_->height())
+    {
+        // GBuffer already exists and is the correct resolution.
+        return;
+    }
+
+    // First destroy any existing gbuffer textures
+    destroyGBuffer();
+
+    // Create the textures    
+    gbufferTextures_[0] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
+    gbufferTextures_[1] = new Texture(TextureFormat::RGBA1010102, targetFramebuffer_->width(), targetFramebuffer_->height());
+    assert(GBUFFER_RENDER_TARGETS == 2); // should be one higher than the last index
+
+    // Bind the gbuffer textures for sampling in deferred passes
+    for(int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
+    {
+        // Start with gbuffer0 in slot 15, gbuffer1 in slot 14, etc.
+        gbufferTextures_[i]->bind(15 - i);
+    }
+
+    // Set up the framebuffer
+    // Use the target framebuffer's depth texture and the gbuffer textures
+    gbufferFramebuffer_.attachDepthTextureFromFramebuffer(targetFramebuffer_);
+    gbufferFramebuffer_.attachColorTexturesMRT(GBUFFER_RENDER_TARGETS, (const Texture**)gbufferTextures_);
+}
+
+void Renderer::destroyGBuffer()
+{
+    if (gbufferTextures_[0] != nullptr)
+    {
+        for (int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
+        {
+            delete gbufferTextures_[i];
+            gbufferTextures_[i] = nullptr;
+        }
+    }
 }
 
 void Renderer::updateSceneUniformBuffer() const
 {
-    // Get the scene we are rendering
-    const SceneManager* scene = SceneManager::instance();
-
     // Gather the new contents of the scene buffer
     SceneUniformData data;
     data.ambientLightColor = Color(0.6f, 0.6f, 0.6f);
@@ -97,43 +169,52 @@ void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw) const
 
 void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 {
-	TerrainUniformData data;
-	Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
-	float normalScale = terrain->gameObject()->terrain()->normalScale();
-	data.terrainSize = Vector4(dimens.x,dimens.y,dimens.z,normalScale);
+    TerrainUniformData data;
+    Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
+    float normalScale = terrain->gameObject()->terrain()->normalScale();
+    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, normalScale);
 
-	data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-	Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
-	data.textureScale = Vector4(texScale.x, texScale.y, 1.0f, 1.0f);
-	terrainUniformBuffer_.update(data);
+    data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+    Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
+    data.textureScale = Vector4(texScale.x, texScale.y, 1.0f, 1.0f);
+    terrainUniformBuffer_.update(data);
 }
 
-void Renderer::executeForwardPass() const
+void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const
 {
-    // The forward pass renders into the target framebuffer
-    targetFramebuffer_->use();
+    // Full screen passes don't use depth testing
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(false);
+
+    // Draw the full screen mesh
+    fullScreenMesh_->bind();
+    shader->bindVariant(shaderFeatures);
+    glDrawElements(GL_TRIANGLES, fullScreenMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+}
+
+void Renderer::executeDeferredGBufferPass() const
+{
+    // Ensure that depth testing and depth write are on
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(true);
 
     // First, clear the depth buffer - don't need to clear color buffer as skybox will cover background
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    // Ensure that depth testing and backface culling
-    // are turned on for this pass
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+    // Ensure the standard shader is being used (enable all features.
+    standardShader_->bindVariant(ALL_SHADER_FEATURES);
 
-    // Ensure the forward shader is being used (enable all features.
-    forwardShader_->bindVariant(~0);
-
-    // Draw every static mesh component in the scene with the forward shaders
+    // Draw every static mesh component in the scene with the standard shaders
     auto staticMeshes = SceneManager::instance()->staticMeshes();
     for (unsigned int i = 0; i < staticMeshes.size(); ++i)
     {
         // Get the static mesh to draw
         auto staticMesh = staticMeshes[i];
 
-        // Set the correct mesh and texture
+        // Set the correct mesh and textures
         staticMesh->mesh()->bind();
         staticMesh->texture()->bind(0);
+	staticMesh->normalMap()->bind(1);
 
         // Update the per draw uniform buffer
         updatePerDrawUniformBuffer(staticMesh);
@@ -141,12 +222,51 @@ void Renderer::executeForwardPass() const
         // Draw the mesh
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
     }
+
+    //Draw terrain
+    terrainShader_->bindVariant(ALL_SHADER_FEATURES);
+    auto terrains = SceneManager::instance()->terrains();
+    for (unsigned int i = 0; i < terrains.size(); ++i)
+    {
+        //Get the terrain element
+        auto terrain = terrains[i];
+
+        //Set mesh and heightmap
+        terrain->mesh()->bind();
+        terrain->heightmap()->bind(0);
+        terrain->texture()->bind(1);
+        terrain->normalMap()->bind(4);
+        //THIS IS A HACK REMOVE LATER
+        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(2);
+        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock.png")->bind(3);
+	ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow_normals.png")->bind(5);
+	ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock_normals.tga")->bind(6);
+
+        updateTerrainUniformBuffer(terrain);
+
+        glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+    }
+}
+
+void Renderer::executeDeferredLightingPass() const
+{
+    executeFullScreen(deferredLightingShader_, ALL_SHADER_FEATURES);
+}
+
+void Renderer::executeDeferredDebugPass() const
+{
+    RenderDebugMode mode = RenderManager::instance()->debugMode();
+    executeFullScreen(deferredDebugShader_, (ShaderFeatureList)mode);
 }
 
 void Renderer::executeSkyboxPass(const Camera* camera) const
 {
+    // Ensure that depth testing is turned on, but dont write depth
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(false);
+
     // Ensure skybox shader is being used
-    skyboxShader_->bindVariant(~0);
+    skyboxShader_->bindVariant(ALL_SHADER_FEATURES);
 
     // Ensure skybox mesh is being used
     skyboxMesh_->bind();
@@ -161,7 +281,7 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
     // Compute position of skydome -
     // ensure the skybox is centered on the camera
     const Matrix4x4 translationMatrix = Matrix4x4::translation(camera->gameObject()->transform()->positionWorld());
-    
+
     // Set the local to world matrix in per draw data
     PerDrawUniformData data;
     data.localToWorld = translationMatrix * scaleMatrix;
@@ -169,26 +289,4 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
     // Draw skybox mesh
     glDrawElements(GL_TRIANGLES, skyboxMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
-
-
-    //Draw terrain
-    terrainShader_->bindVariant(~0);
-    auto terrains = SceneManager::instance()->terrains();
-    for (unsigned int i =0; i < terrains.size(); ++i)
-    {
-        //Get the terrain element
-        auto terrain = terrains[i];
-
-        //Set mesh and heightmap
-        terrain->mesh()->bind();
-        terrain->heightmap()->bind(0);
-		terrain->texture()->bind(1);
-		//THIS IS A HACK REMOVE LATER
-		ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(2);
-		ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock.png")->bind(3);
-
-		updateTerrainUniformBuffer(terrain);
-
-        glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
-    }
 }

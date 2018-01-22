@@ -9,6 +9,7 @@
 #include <regex>
 
 #include "ResourceManager.h"
+#include "RenderManager.h"
 
 ShaderInclude::ShaderInclude(ResourceID resourceID)
     : Resource(resourceID),
@@ -159,6 +160,10 @@ std::string ShaderVariant::createFeatureDefines() const
     if (hasFeature(SF_Specular)) defines += "#define SPECULAR_ON \n";
     if (hasFeature(SF_Cutout)) defines += "#define ALPHA_TEST_ON \n";
     if (hasFeature(SF_Fog)) defines += "#define FOG_ON \n";
+    if (hasFeature(SF_DebugGBufferAlbedo)) defines += "#define DEBUG_GBUFFER_ALBEDO \n";
+    if (hasFeature(SF_DebugGBufferOcclusion)) defines += "#define DEBUG_GBUFFER_OCCLUSION \n";
+    if (hasFeature(SF_DebugGBufferNormals)) defines += "#define DEBUG_GBUFFER_NORMALS \n";
+    if (hasFeature(SF_DebugGBufferGloss)) defines += "#define DEBUG_GBUFFER_GLOSS \n";
 
     return defines;
 }
@@ -189,7 +194,7 @@ std::string ShaderVariant::preprocessSource(GLenum shaderStage, const std::strin
     // We need to resolve #include'd files in the source code.
     // To do this, search the source file for #include statements and keep
     // resolving them until there are no resolves left to do.
-    const std::regex includeRegex("#include \"[0-9a-zA-Z\.-_]+\"");
+    const std::regex includeRegex(R"(#include "[0-9a-zA-Z\.\-_]+")");
     std::smatch includeMatch;
     while(std::regex_search(finalSource, includeMatch, includeRegex))
     {
@@ -323,6 +328,9 @@ void Shader::unloadAllVariants()
 
 void Shader::bindVariant(ShaderFeatureList features)
 {
+    // Ensure only globally enabled features are used
+    features = RenderManager::instance()->filterFeatureList(features);
+
     //Loop through all variants to see if it already exists.
     for (int variant = 0; variant < loadedVariants_.size(); ++variant)
     {

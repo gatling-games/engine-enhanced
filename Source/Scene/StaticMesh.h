@@ -22,9 +22,11 @@ public:
     ResourcePPtr<Mesh> mesh() const { return mesh_; }
     ResourcePPtr<Shader> shader() const { return shader_; }
     ResourcePPtr<Texture> texture() const { return texture_; }
+	ResourcePPtr<Texture> normalMap() const { return normalMap_; }
 
 private:
     ResourcePPtr<Mesh> mesh_;
     ResourcePPtr<Shader> shader_;
     ResourcePPtr<Texture> texture_;
+	ResourcePPtr<Texture> normalMap_;
 };

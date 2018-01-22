@@ -58,6 +58,15 @@ bool TextureImporter::importFile(const std::string &sourceFile, const std::strin
 	settings.m_mipmap_params.m_mode = cCRNMipModeGenerateMips;
     settings.m_mipmap_params.m_scale_mode = cCRNSMNearestPow2;
 
+	// Detect normal map textures from their file name.
+	// The filename ends in _normals, _normal, or _n
+	if(sourceFile.find("_normals.") != std::string::npos
+		|| sourceFile.find("_normal.") != std::string::npos
+		|| sourceFile.find("_n.") != std::string::npos)
+	{
+		settings.m_texture_type = crnlib::cTextureTypeNormalMap;
+	}
+
 	// Perform the texture conversion process
 	// This creates a .crn file at outputFile path, which can be read at runtime.
 	crnlib::texture_conversion::convert_stats stats;

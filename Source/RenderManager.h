@@ -1,23 +1,49 @@
 #pragma once
 
-#include <vector>
-
 #include "Application.h"
-#include "Renderer/Renderer.h"
 
-class RenderManager : public ApplicationModule
+#include "Renderer/Shader.h"
+#include "Utils/Singleton.h"
+
+enum class RenderDebugMode
+{
+    None = 0,
+    Albedo = SF_DebugGBufferAlbedo,
+    Occlusion = SF_DebugGBufferOcclusion,
+    Gloss = SF_DebugGBufferGloss,
+    Normals = SF_DebugGBufferNormals
+};
+
+class RenderManager : public ApplicationModule, public Singleton<RenderManager>
 {
 public:
     RenderManager();
-    ~RenderManager();
 
     std::string name() const override { return "Render Manager"; }
-    void drawDebugMenu() override;
+                                                                                                                                                                                                                                    
+    // Enables and disables shader features globally.
+    // Shader features will not be used unless enabled globally.
+    bool isFeatureGloballyEnabled(ShaderFeature feature) const;
+    void globallyEnableFeature(ShaderFeature feature);
+    void globallyDisableFeature(ShaderFeature feature);
+    void globallyToggleFeature(ShaderFeature feature);
 
-    Renderer* createRenderer();
+    // Filters a shader feature list to include only ones that
+    // are globally enabled.
+    ShaderFeatureList filterFeatureList(ShaderFeatureList list) const;
 
+    // Gets or sets the current debugging mode
+    RenderDebugMode debugMode() const { return debugMode_; }
+    void setDebugMode(RenderDebugMode mode) { debugMode_ = mode; }
+
+    // Called each frame to perform per-frame rendering tasks.
     void render();
 
 private:
-    std::vector<Renderer*> renderers_;
+    // Globally enabled shader features.
+    // Features that are not globally enabled cannot be used.
+    ShaderFeatureList allowedShaderFeatures_;
+    
+    // The current deferred debugging mode.
+    RenderDebugMode debugMode_;
 };

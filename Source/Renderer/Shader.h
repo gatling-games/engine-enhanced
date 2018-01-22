@@ -17,9 +17,16 @@ enum ShaderFeature
     SF_Cutout = 8,
 
     SF_Fog = 16,
+
+    // GBuffer debugging modes
+    SF_DebugGBufferAlbedo = 256,
+    SF_DebugGBufferOcclusion = 512,
+    SF_DebugGBufferNormals = 1024,
+    SF_DebugGBufferGloss = 2048
 };
 
 typedef unsigned int ShaderFeatureList;
+const ShaderFeatureList ALL_SHADER_FEATURES = ~0u;
 
 // Handles a .inc.shader resource
 // It is simply glsl source code that can be #include'd into a shader variant.
