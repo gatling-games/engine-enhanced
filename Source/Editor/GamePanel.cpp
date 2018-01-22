@@ -2,6 +2,7 @@
 
 #include <imgui.h>
 
+#include "RenderManager.h"
 #include "SceneManager.h"
 #include "Scene/Camera.h"
 
@@ -23,6 +24,19 @@ GamePanel::~GamePanel()
         delete depthBuffer_;
         delete colorBuffer_;
         delete renderer_;
+    }
+}
+
+void GamePanel::drawMenu(const std::string menuName)
+{
+    // Draw the render feature toggles
+    if (menuName == "View")
+    {
+        drawFeatureToggle(SF_Texture, "Textures");
+        drawFeatureToggle(SF_NormalMap, "Normal Maps");
+        drawFeatureToggle(SF_Specular, "Specular Highlights");
+        drawFeatureToggle(SF_Cutout, "Alpha Cutout");
+        drawFeatureToggle(SF_Fog, "Fog");
     }
 }
 
@@ -69,4 +83,13 @@ void GamePanel::createFramebuffer(int width, int height)
 
     // Then create a renderer for the framebuffer.
     renderer_ = new Renderer(frameBuffer_);
+}
+
+void GamePanel::drawFeatureToggle(ShaderFeature feature, const char* label) const
+{
+    bool selected = RenderManager::instance()->isFeatureGloballyEnabled(feature);
+    if (ImGui::MenuItem(label, (const char*)0, selected))
+    {
+        RenderManager::instance()->globallyToggleFeature(feature);
+    }
 }

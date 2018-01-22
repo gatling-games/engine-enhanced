@@ -67,19 +67,24 @@ in vec3 worldNormal;
 
 void main()
 {
+    SurfaceProperties surface;
+
+    // Sample the albedo texture for the diffuse color
+#ifdef TEXTURE_ON
+    surface.diffuseColor = texture(_MainTexture, texcoord).rgb;
+#else
+    surface.diffuseColor = vec3(0.75);
+#endif
+
 	// Sample the normal map and convert to world space
 #ifdef NORMAL_MAP_ON
 	vec3 tangentNormal = unpackDXT5nm(texture(_NormalMap, texcoord));
-	vec3 worldNormal;
-	worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
-	worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
-	worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
+    surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
+    surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
+    surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
 #endif
 
 	// Output surface properties to the gbuffer
-	SurfaceProperties surface;
-	surface.diffuseColor = texture(_MainTexture, texcoord).rgb;
-	surface.worldNormal = worldNormal;
 	writeToGBuffer(surface);
 }
 

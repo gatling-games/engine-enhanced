@@ -4,31 +4,42 @@
 #include "imgui.h"
 
 RenderManager::RenderManager()
+    : allowedShaderFeatures_(~0u)
 {
-    renderers_.push_back(createRenderer());
-
     // Set default opengl settings
     glEnable(GL_CULL_FACE);
 }
 
-RenderManager::~RenderManager()
+bool RenderManager::isFeatureGloballyEnabled(ShaderFeature feature) const
 {
-    for (int renderIndex = 0; renderIndex < renderers_.size(); renderIndex++)
+    return (feature & allowedShaderFeatures_) != 0;
+}
+
+void RenderManager::globallyEnableFeature(ShaderFeature feature)
+{
+    allowedShaderFeatures_ |= feature;
+}
+
+void RenderManager::globallyDisableFeature(ShaderFeature feature)
+{
+    allowedShaderFeatures_ &= ~feature;
+}
+
+void RenderManager::globallyToggleFeature(ShaderFeature feature)
+{
+    if (isFeatureGloballyEnabled(feature))
     {
-        delete renderers_[renderIndex];
+        globallyDisableFeature(feature);
+    }
+    else
+    {
+        globallyEnableFeature(feature);
     }
 }
 
-
-void RenderManager::drawDebugMenu()
+ShaderFeatureList RenderManager::filterFeatureList(ShaderFeatureList list) const
 {
-}
-
-Renderer* RenderManager::createRenderer()
-{
-    Renderer* renderer = new Renderer;
-
-    return renderer;
+    return list & allowedShaderFeatures_;
 }
 
 void RenderManager::render()

@@ -24,38 +24,38 @@ out vec3 tangentToWorld[3];
 
 void main()
 {
-	//Treat the X and Z of the terrain position as the tex coords
-	texcoord = _position.xz * _TerrainCoordinateOffsetScale.zw + _TerrainCoordinateOffsetScale.xy;
+    //Treat the X and Z of the terrain position as the tex coords
+    texcoord = _position.xz * _TerrainCoordinateOffsetScale.zw + _TerrainCoordinateOffsetScale.xy;
 
-	// Compute the world position of the terrain.
-	// Use the x and z and take the y from the heightmap
-	worldPosition = vec4(_position.x, texture(_HeightmapTexture, _position.xz).r, _position.z, 1.0);
-	worldPosition.xyz *= _TerrainSize.xyz;
+    // Compute the world position of the terrain.
+    // Use the x and z and take the y from the heightmap
+    worldPosition = vec4(_position.x, texture(_HeightmapTexture, _position.xz * 0.25).r, _position.z, 1.0);
+    worldPosition.xyz *= _TerrainSize.xyz;
 
-	// Project the vertex position to clip space
-	gl_Position = _ViewProjectionMatrix * worldPosition;
+    // Project the vertex position to clip space
+    gl_Position = _ViewProjectionMatrix * worldPosition;
 
-	ivec2 heightmapRes = textureSize(_HeightmapTexture, 0);
-	vec2 heightmapTexelSize = 1.0 / heightmapRes;
+    ivec2 heightmapRes = textureSize(_HeightmapTexture, 0);
+    vec2 heightmapTexelSize = 1.0 / heightmapRes;
 
-	// Get the normal in world space
-	vec4 h;
-	h.x = texture(_HeightmapTexture, _position.xz + heightmapTexelSize * vec2(0.0, -1.0)).r * _TerrainSize.y;
-	h.y = texture(_HeightmapTexture, _position.xz + heightmapTexelSize * vec2(-1.0, 0.0)).r * _TerrainSize.y;
-	h.z = texture(_HeightmapTexture, _position.xz + heightmapTexelSize * vec2(1.0, 0.0)).r * _TerrainSize.y;
-	h.w = texture(_HeightmapTexture, _position.xz + heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
-	worldNormal.z = h.w - h.x;
-	worldNormal.x = h.z - h.y;
-	worldNormal.y = 1.0;
-	worldNormal = normalize(worldNormal);
+    // Get the normal in world space
+    vec4 h;
+    h.x = texture(_HeightmapTexture, _position.xz * 0.25 + heightmapTexelSize * vec2(0.0, -1.0)).r * _TerrainSize.y;
+    h.y = texture(_HeightmapTexture, _position.xz * 0.25 + heightmapTexelSize * vec2(-1.0, 0.0)).r * _TerrainSize.y;
+    h.z = texture(_HeightmapTexture, _position.xz * 0.25 + heightmapTexelSize * vec2(1.0, 0.0)).r * _TerrainSize.y;
+    h.w = texture(_HeightmapTexture, _position.xz * 0.25 + heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
+    worldNormal.z = h.w - h.x;
+    worldNormal.x = h.z - h.y;
+    worldNormal.y = 2.0;
+    worldNormal = normalize(worldNormal);
 
-	// Compute the tangent and bitangent to make a tangent to world space matrix
+    // Compute the tangent and bitangent to make a tangent to world space matrix
 #ifdef NORMAL_MAP_ON
-	vec3 worldTangent = vec3(1.0, 0.0, 0.0);
-	vec3 worldBitangent = cross(worldNormal, worldTangent);
-	tangentToWorld[0] = vec3(worldTangent.x, worldBitangent.x, worldNormal.x);
-	tangentToWorld[1] = vec3(worldTangent.y, worldBitangent.y, worldNormal.y);
-	tangentToWorld[2] = vec3(worldTangent.z, worldBitangent.z, worldNormal.z);
+    vec3 worldTangent = cross(worldNormal, vec3(1.0, 0.0, 0.0));
+    vec3 worldBitangent = cross(worldNormal, worldTangent);
+    tangentToWorld[0] = vec3(worldTangent.x, worldBitangent.x, worldNormal.x);
+    tangentToWorld[1] = vec3(worldTangent.y, worldBitangent.y, worldNormal.y);
+    tangentToWorld[2] = vec3(worldTangent.z, worldBitangent.z, worldNormal.z);
 #endif
 }
 
@@ -84,40 +84,42 @@ in vec3 tangentToWorld[3];
 
 void main()
 {
-	// Sample the diffuse textures for each texture layer
-	vec4 baseDiffuse = texture(_Texture, texcoord*_TextureScale.xy);
-	vec4 rockDiffuse = texture(_RockTex, texcoord*_TextureScale.xy);
-	vec4 snowDiffuse = texture(_SnowTex, texcoord*_TextureScale.xy);
+    SurfaceProperties surface;
 
-	// Work out interpolation factors for the rock and snow layers
-	// Based on altitude and slope (ak world y)
-	float rockLerp = clamp((1.0 - worldNormal.y) * 2.0 - 0.5, 0.0, 1.0);
-	float snowLerp = clamp(worldPosition.y * 2.0 - 50, 0.0, 1.0);
+    // Work out interpolation factors for the rock and snow layers
+    // Based on altitude and slope (ak world y)
+    float rockLerp = clamp((1.0 - worldNormal.y) * 3.0 - 0.5, 0.0, 1.0);
+    float snowLerp = clamp(worldPosition.y * 2.0 - 50, 0.0, 1.0);
 
-	// Blend the rock and snow textures into the base texture
-	vec4 combinedDiffuse = mix(mix(baseDiffuse, rockDiffuse, rockLerp), snowDiffuse, snowLerp);
+#ifdef TEXTURE_ON
+    // Sample the diffuse textures for each texture layer
+    vec4 baseDiffuse = texture(_Texture, texcoord*_TextureScale.xy);
+    vec4 rockDiffuse = texture(_RockTex, texcoord*_TextureScale.xy);
+    vec4 snowDiffuse = texture(_SnowTex, texcoord*_TextureScale.xy);
 
-#ifdef NORMAL_MAP_ON
-	// Sample the normal map textures for each texture layer
-	vec3 baseNormals = unpackDXT5nm(texture(_NormalMap, texcoord * _TextureScale.xy));
-	vec3 rockNormals = unpackDXT5nm(texture(_RockNormalMap, texcoord * _TextureScale.xy));
-	vec3 snowNormals = unpackDXT5nm(texture(_SnowNormalMap, texcoord * _TextureScale.xy));
-	vec3 tangentNormal = mix(mix(baseNormals, rockNormals, rockLerp), snowNormals, snowLerp);
-
-	// Convert the normal to world space
-	vec3 combinedWorldNormal;
-	combinedWorldNormal.x = dot(tangentNormal, tangentToWorld[0]);
-	combinedWorldNormal.y = dot(tangentNormal, tangentToWorld[1]);
-	combinedWorldNormal.z = dot(tangentNormal, tangentToWorld[2]);
+    // Blend the rock and snow textures into the base texture
+    surface.diffuseColor = mix(mix(baseDiffuse, rockDiffuse, rockLerp), snowDiffuse, snowLerp).rgb;
 #else
-	vec3 combinedWorldNormal = worldNormal;
+    surface.diffuseColor = vec3(0.75);
 #endif
 
-	// Output surface properties to the gbuffer
-	SurfaceProperties surface;
-	surface.diffuseColor = combinedDiffuse.rgb;
-	surface.worldNormal = combinedWorldNormal;
-	writeToGBuffer(surface);
+#ifdef NORMAL_MAP_ON
+    // Sample the normal map textures for each texture layer
+    vec3 baseNormals = unpackDXT5nm(texture(_NormalMap, texcoord * _TextureScale.xy));
+    vec3 rockNormals = unpackDXT5nm(texture(_RockNormalMap, texcoord * _TextureScale.xy));
+    vec3 snowNormals = unpackDXT5nm(texture(_SnowNormalMap, texcoord * _TextureScale.xy));
+    vec3 tangentNormal = mix(mix(baseNormals, rockNormals, rockLerp), snowNormals, snowLerp);
+
+    // Convert the normal to world space
+    surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
+    surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
+    surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
+#else
+    surface.worldNormal = worldNormal;
+#endif
+
+    // Output surface properties to the gbuffer
+    writeToGBuffer(surface);
 }
 
 #endif // FRAGMENT_SHADER

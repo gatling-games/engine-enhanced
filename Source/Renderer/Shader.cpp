@@ -9,6 +9,7 @@
 #include <regex>
 
 #include "ResourceManager.h"
+#include "RenderManager.h"
 
 ShaderInclude::ShaderInclude(ResourceID resourceID)
     : Resource(resourceID),
@@ -323,6 +324,9 @@ void Shader::unloadAllVariants()
 
 void Shader::bindVariant(ShaderFeatureList features)
 {
+    // Ensure only globally enabled features are used
+    features = RenderManager::instance()->filterFeatureList(features);
+
     //Loop through all variants to see if it already exists.
     for (int variant = 0; variant < loadedVariants_.size(); ++variant)
     {
