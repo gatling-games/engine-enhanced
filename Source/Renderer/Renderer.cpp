@@ -30,7 +30,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     standardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Standard.shader");
     terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
     deferredLightingShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Lighting.shader");
-	deferredDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Debug.shader");
+    deferredDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Debug.shader");
 
     // Load skybox shader and mesh
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
@@ -214,7 +214,7 @@ void Renderer::executeDeferredGBufferPass() const
         // Set the correct mesh and textures
         staticMesh->mesh()->bind();
         staticMesh->texture()->bind(0);
-		staticMesh->normalMap()->bind(1);
+	staticMesh->normalMap()->bind(1);
 
         // Update the per draw uniform buffer
         updatePerDrawUniformBuffer(staticMesh);
@@ -235,12 +235,12 @@ void Renderer::executeDeferredGBufferPass() const
         terrain->mesh()->bind();
         terrain->heightmap()->bind(0);
         terrain->texture()->bind(1);
-		terrain->normalMap()->bind(4);
+        terrain->normalMap()->bind(4);
         //THIS IS A HACK REMOVE LATER
         ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(2);
         ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock.png")->bind(3);
-		ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow_normals.png")->bind(5);
-		ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock_normals.tga")->bind(6);
+	ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow_normals.png")->bind(5);
+	ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock_normals.tga")->bind(6);
 
         updateTerrainUniformBuffer(terrain);
 
