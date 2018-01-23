@@ -6,7 +6,7 @@
 StaticMesh::StaticMesh(GameObject* gameObject)
     : Component(gameObject)
 {
-    mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/choppa.obj");
+    mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/copter2.obj");
     shader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/ForwardPass.shader");
     texture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/default.tga");
 	normalMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/default_normals.tga");
