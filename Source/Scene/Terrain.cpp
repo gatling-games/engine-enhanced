@@ -5,7 +5,7 @@
 
 Terrain::Terrain(GameObject* gameObject)
 	: Component(gameObject),
-	textureWrap_(Vector2(128.0f,128.0f)),
+	textureWrap_(Vector2(10.0f,10.0f)),
 	dimensions_(Vector3(256.0f, 30.0f, 256.0f)),
 	normalScale_(0.15f)
 {
@@ -20,7 +20,7 @@ void Terrain::drawProperties()
     ImGui::ResourceSelect<Texture>("Heightmap", "Select Heightmap", heightmap_);
 	ImGui::ResourceSelect<Texture>("Texture", "Select Texture", texture_);
 	ImGui::ResourceSelect<Texture>("Normal Map", "Select Normal Map", normalMap_);
-	ImGui::DragFloat2("Texture Wrapping", &textureWrap_.x, 0.1f, 1.0f, 1024.0f);
+	ImGui::DragFloat2("Texture Repeat", &textureWrap_.x, 0.1f, 1.0f, 1024.0f);
 	ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
 	ImGui::DragFloat("Normal Scale", &normalScale_, 0.01f, 0.01f, 0.2f);
 }

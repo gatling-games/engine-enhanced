@@ -174,10 +174,12 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     float normalScale = terrain->gameObject()->terrain()->normalScale();
     data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, normalScale);
 
-    data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-    Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
-    data.textureScale = Vector4(texScale.x, texScale.y, 1.0f, 1.0f);
-    terrainUniformBuffer_.update(data);
+	data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+	Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
+
+	//Invert Texture scale
+	data.textureScale = Vector4(dimens.x/texScale.x, dimens.z/texScale.y, 1.0f, 1.0f);
+	terrainUniformBuffer_.update(data);
 }
 
 void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const
