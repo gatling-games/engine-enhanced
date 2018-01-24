@@ -232,6 +232,12 @@ void ResourceManager::updateResourcesList()
             resourceImportedPaths_.push_back(importedPath);
         }
     }
+
+    // Ensure all resources are loaded
+    for (ResourceID id : resourceIDs_)
+    {
+        load(id);
+    }
 }
 
 void ResourceManager::reloadResourceIfLoaded(ResourceID id)
