@@ -10,8 +10,7 @@ namespace ImGui
     void ResourceSelectModal(const char* modalName, T* &resource)
     {
         // Get the source path of the currently selected resource
-        const ResourceID resourceID = (resource == nullptr) ? 0 : resource->id();
-        const std::string resourcePath = (resource == nullptr) ? "none" : ResourceManager::instance()->resourceIDToPath(resourceID);
+        const std::string resourcePath = (resource == nullptr) ? "none" : resource->resourcePath();
 
         if (ImGui::BeginPopupModal(modalName))
         {
@@ -43,12 +42,9 @@ namespace ImGui
         // Push an extra ID so that multiple ResourceSelect()s work.
         ImGui::PushID(label);
 
-        // Get the resource ID and source path
-        const ResourceID resourceID = (resource == nullptr) ? 0 : resource->id();
-        const std::string resourcePath = (resource == nullptr) ? "none" : ResourceManager::instance()->resourceIDToPath(resourceID);
-
         // Show the resource name in a read-only text box
-        ImGui::InputText("", (char*)resourcePath.c_str(), resourcePath.length(), ImGuiInputTextFlags_ReadOnly);
+        const std::string resourceName = (resource == nullptr) ? "none" : resource->resourceName();
+        ImGui::InputText("", (char*)resourceName.c_str(), resourceName.length(), ImGuiInputTextFlags_ReadOnly);
 
         // Then draw a button that opens the file selection modal
         ImGui::SameLine();

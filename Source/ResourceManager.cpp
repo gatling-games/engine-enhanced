@@ -12,6 +12,16 @@
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
 
+std::string Resource::resourceName() const
+{
+    return fs::path(resourcePath()).filename().string();
+}
+
+std::string Resource::resourcePath() const
+{
+    return ResourceManager::instance()->resourceIDToPath(id_);
+}
+
 ResourceManager::ResourceManager(const std::string sourceDirectory, const std::string importedDirectory)
     : sourceDirectory_(sourceDirectory),
     importedDirectory_(importedDirectory),
@@ -95,7 +105,7 @@ bool ResourceManager::resourceLoaded(ResourceID id) const
     // Check if the resource is in the list of loaded resources
     for (unsigned int i = 0; i < loadedResources_.size(); ++i)
     {
-        if (loadedResources_[i]->id() == id)
+        if (loadedResources_[i]->resourceID() == id)
         {
             return true;
         }
@@ -256,7 +266,7 @@ void ResourceManager::reloadResourceIfLoaded(ResourceID id)
     // Check if the resource is in the list of loaded resources.
     for (unsigned int i = 0; i < loadedResources_.size(); ++i)
     {
-        if (loadedResources_[i]->id() == id)
+        if (loadedResources_[i]->resourceID() == id)
         {
             // If the resource is found, first unload it.
             loadedResources_[i]->unload();

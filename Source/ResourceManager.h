@@ -40,7 +40,13 @@ public:
     Resource& operator=(Resource&&) = delete;
 
     // The unique resource id.
-    ResourceID id() const { return id_; }
+    ResourceID resourceID() const { return id_; }
+
+    // The name of the resource file.
+    std::string resourceName() const;
+
+    // The path to the resource file, from the resources directory root.
+    std::string resourcePath() const;
 
     // Loading and unloading the processed binary resource file.
     virtual void load(std::ifstream &file) = 0;
@@ -111,7 +117,7 @@ public:
         // Check all loaded resources for a match.
         for (unsigned int i = 0; i < loadedResources_.size(); ++i)
         {
-            if (loadedResources_[i]->id() == id)
+            if (loadedResources_[i]->resourceID() == id)
             {
                 return (T*)loadedResources_[i];
             }

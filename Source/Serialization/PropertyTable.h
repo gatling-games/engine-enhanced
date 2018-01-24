@@ -136,7 +136,7 @@ public:
 
             // If the resource is nullptr use 0 for the value. Otherwise, use the source path.
             findOrCreateProperty(name)->value = (value == nullptr) ? "0"
-                : ResourceManager::instance()->resourceIDToPath(value->id());
+                : ResourceManager::instance()->resourceIDToPath(value->resourceID());
         }
     }
 
