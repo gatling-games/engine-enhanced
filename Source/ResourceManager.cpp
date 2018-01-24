@@ -9,8 +9,8 @@
 #include "Importers/TextureImporter.h"
 #include "Importers/ShaderImporter.h"
 
-#include <filesystem>
-namespace fs = std::experimental::filesystem::v1;
+#include "Renderer/Shader.h"
+#include "Renderer/Texture.h"
 
 std::string Resource::resourceName() const
 {
@@ -25,16 +25,23 @@ std::string Resource::resourcePath() const
 ResourceManager::ResourceManager(const std::string sourceDirectory, const std::string importedDirectory)
     : sourceDirectory_(sourceDirectory),
     importedDirectory_(importedDirectory),
-    importers_(),
     resourceIDs_(),
     resourceSourcePaths_(),
     resourceImportedPaths_(),
     loadedResources_()
 {
-    // Create the importer instances
-    importers_.push_back(new MeshImporter());
-    importers_.push_back(new TextureImporter());
-    importers_.push_back(new ShaderImporter());
+    // Register each supported resource type, file extension, and importer
+    registerResourceType<Mesh, MeshImporter>(".obj");
+    registerResourceType<Mesh, MeshImporter>(".mesh");
+    registerResourceType<ShaderInclude, ShaderImporter>(".inc.shader");
+    registerResourceType<Shader, ShaderImporter>(".shader");
+    registerResourceType<Texture, TextureImporter>(".psd");
+    registerResourceType<Texture, TextureImporter>(".png");
+    registerResourceType<Texture, TextureImporter>(".dds");
+    registerResourceType<Texture, TextureImporter>(".tga");
+    registerResourceType<Texture, TextureImporter>(".bmp");
+    registerResourceType<Texture, TextureImporter>(".jpg");
+    registerResourceType<Texture, TextureImporter>(".jpeg");
 
     // Grow the loaded resources vector, so there is space for all
     // resources without shifting them about later.
@@ -47,9 +54,9 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
 ResourceManager::~ResourceManager()
 {
     // Delete all importers
-    for (unsigned int i = 0; i < importers_.size(); ++i)
+    for (unsigned int i = 0; i < typeRegister_.size(); ++i)
     {
-        delete importers_[i];
+        delete typeRegister_[i].importer;
     }
 
     // Unload all loaded resources
@@ -58,61 +65,6 @@ ResourceManager::~ResourceManager()
         loadedResources_[i]->unload();
         delete loadedResources_[i];
     }
-}
-
-void ResourceManager::drawDebugMenu()
-{
-    if (ImGui::Button("Import changed"))
-    {
-        importChangedResources();
-    }
-
-    if (ImGui::Button("Import all"))
-    {
-        importAllResources();
-    }
-
-    if (ImGui::Button("Clean Deleted Resources"))
-    {
-        removeDeletedResources();
-    }
-
-    for (unsigned int i = 0; i < resourceSourcePaths_.size(); ++i)
-    {
-        ImGui::Text("%llu", resourceIDs_[i]);
-        ImGui::Text(resourceSourcePaths_[i].c_str());
-        ImGui::Text(resourceImportedPaths_[i].c_str());
-    }
-}
-
-bool ResourceManager::resourceExists(ResourceID id) const
-{
-    // Check if the resource is in the list of all ids
-    for (unsigned int i = 0; i < resourceIDs_.size(); ++i)
-    {
-        if (resourceIDs_[i] == id)
-        {
-            return true;
-        }
-    }
-
-    // Id not found
-    return false;
-}
-
-bool ResourceManager::resourceLoaded(ResourceID id) const
-{
-    // Check if the resource is in the list of loaded resources
-    for (unsigned int i = 0; i < loadedResources_.size(); ++i)
-    {
-        if (loadedResources_[i]->resourceID() == id)
-        {
-            return true;
-        }
-    }
-
-    // Not found
-    return false;
 }
 
 ResourceID ResourceManager::pathToResourceID(const std::string &sourcePath) const
@@ -134,7 +86,31 @@ std::string ResourceManager::resourceIDToPath(ResourceID id) const
 
     // Id not found
     printf("Could not find path for resource %llu \n", id);
-    return "";
+    throw;
+}
+
+Resource* ResourceManager::load(ResourceID id)
+{
+    // Check all loaded resources for a match.
+    for (Resource* loadedResource : loadedResources_)
+    {
+        if (loadedResource->resourceID() == id)
+        {
+            return loadedResource;
+        }
+    }
+
+    // No existing result. 
+    // Create a new resource using the correct instantiation function.
+    const std::string sourcePath = resourceIDToPath(id);
+    Resource* newResource = getInstantiationFunc(sourcePath)(id);
+    loadedResources_.push_back(newResource);
+
+    // Open the imported file
+    const std::string importedPath = importedResourcePath(sourcePath);
+    std::ifstream importedFileStream(importedPath, std::iostream::binary);
+    newResource->load(importedFileStream);
+    return newResource;
 }
 
 void ResourceManager::importResource(ResourceID id)
@@ -274,6 +250,7 @@ void ResourceManager::reloadResourceIfLoaded(ResourceID id)
             // Finally, load the resource again.
             std::ifstream importedFile(importedPath, std::ifstream::binary);
             loadedResources_[i]->load(importedFile);
+            return;
         }
     }
 }
@@ -290,18 +267,30 @@ std::string ResourceManager::importedResourcePath(const std::string &sourcePath)
 
 ResourceImporter* ResourceManager::getImporter(const std::string &sourcePath) const
 {
-    // Get the file extension of the source file.
-    const std::string extension = fs::path(sourcePath).extension().string();
-
-    // Look for an importer that can handle it.
-    for (unsigned int i = 0; i < importers_.size(); ++i)
+    // Look for a resource type matching the file extension
+    for (const ResourceType& type : typeRegister_)
     {
-        if (importers_[i]->canHandleFileType(extension))
+        if (type.fileExtension == sourcePath.substr(sourcePath.length() - type.fileExtension.length()))
         {
-            return importers_[i];
+            return type.importer;
         }
     }
 
     // No importer found.
-    return nullptr;
+    throw;
+}
+
+ResourceInstantiationFunc ResourceManager::getInstantiationFunc(const std::string& sourcePath) const
+{
+    // Look for a resource type matching the file extension
+    for (const ResourceType& type : typeRegister_)
+    {
+        if (type.fileExtension == sourcePath.substr(sourcePath.length() - type.fileExtension.length()))
+        {
+            return type.instantiationFunction;
+        }
+    }
+
+    // No function found.
+    throw;
 }

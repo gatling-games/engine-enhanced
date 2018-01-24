@@ -14,12 +14,6 @@
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
 
-bool MeshImporter::canHandleFileType(const std::string& fileExtension) const
-{
-    // Support .obj files and .mesh only.
-    return (fileExtension == ".obj" || fileExtension == ".mesh");
-}
-
 bool MeshImporter::importFile(const std::string& sourceFile, const std::string& outputFile) const
 {
     // Determine the file extension that we are importing.

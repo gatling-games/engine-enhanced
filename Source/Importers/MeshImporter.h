@@ -11,13 +11,9 @@
 
 #include "Renderer/Mesh.h"
 
-
-
 class MeshImporter : public ResourceImporter
 {
 public:
-	bool canHandleFileType(const std::string &fileExtension) const;
-
     // Imports a source file and saves the binary mesh to the specified output file.
     // Returns true if successful.
 	bool importFile(const std::string &sourceFile, const std::string &outputFile) const override;

@@ -5,27 +5,6 @@
 #include <crunch/crnlib/crn_texture_conversion.h>
 #include <crunch/crnlib/crn_console.h>
 
-bool TextureImporter::canHandleFileType(const std::string& fileExtension) const
-{
-	// Support the following file extensions.
-	// We are using crnlib, so support all the formats crnlib supports.
-	const int numTypes = 9;
-	const std::string supportedTypes[numTypes] = { ".dds", ".ktx", ".crn",
-		".tga", ".bmp", ".png", ".jpg", ".jpeg", ".psd" };
-
-	// Check if the extension is supported.
-	for (int i = 0; i < numTypes; ++i)
-	{
-		if (supportedTypes[i] == fileExtension)
-		{
-			return true;
-		}
-	}
-
-	// Not supported.
-	return false;
-}
-
 bool TextureImporter::importFile(const std::string &sourceFile, const std::string &outputFile) const
 {
 	// Read the texture file.
