@@ -9,19 +9,14 @@ namespace ImGui
     template<typename T>
     void ResourceSelectModal(const char* modalName, T* &resource)
     {
-        // Get the source path of the currently selected resource
-        const std::string resourcePath = (resource == nullptr) ? "none" : resource->resourcePath();
-
         if (ImGui::BeginPopupModal(modalName))
         {
-            // Draw a button for each source file in the resource manager
-            const std::vector<std::string>* sourceFiles = ResourceManager::instance()->allSourceFiles();
-            for (unsigned int i = 0; i < sourceFiles->size(); ++i)
+            // Draw a button for each resource of the correct type
+            for(T* other : ResourceManager::instance()->loadedResourcesOfType<T>())
             {
-                const std::string sourceFilePath = sourceFiles->at(i);
-                if (ImGui::Selectable(sourceFilePath.c_str(), sourceFilePath == resourcePath))
+                if (ImGui::Selectable(other->resourcePath().c_str(), resource == other))
                 {
-                    resource = ResourceManager::instance()->load<T>(sourceFilePath);
+                    resource = other;
                     ImGui::CloseCurrentPopup();
                 }
             }
