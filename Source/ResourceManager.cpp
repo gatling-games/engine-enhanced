@@ -178,17 +178,14 @@ void ResourceManager::importChangedResources()
     // Loop through every resource in the resources list
     for (unsigned int i = 0; i < resourceIDs_.size(); ++i)
     {
-        // Skip files that have already been imported and are up to date.
-        std::string sourcePath = resourceSourcePaths_[i];
-        std::string outputPath = resourceImportedPaths_[i];
-        if (exists(fs::path(outputPath)) && last_write_time(fs::path(outputPath)) > last_write_time(fs::path(sourcePath)))
-        {
-            // Already up to date
-            continue;
-        }
+        const std::string& sourcePath = resourceSourcePaths_[i];
+        const std::string& outputPath = resourceImportedPaths_[i];
 
-        // Import the resource file.
-        importResource(resourceIDs_[i]);
+        // Import resources that are not yet imported, or are out of date
+        if (!exists(fs::path(outputPath)) || last_write_time(fs::path(outputPath)) < last_write_time(fs::path(sourcePath)))
+        {
+            importResource(resourceIDs_[i]);
+        }
     }
 
     // Finally, remove unneeded files from the imported folder
