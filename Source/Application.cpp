@@ -63,6 +63,7 @@ void Application::frameStart()
     clock_->frameStart();
     inputManager_->frameStart(clock_);
     sceneManager_->frameStart();
+    resourceManager_->update();
 }
 
 void Application::drawFrame()

@@ -6,6 +6,9 @@
 #include <vector>
 #include <fstream>
 #include <functional>
+#include <mutex>
+#include <queue>
+#include <thread>
 
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
@@ -80,7 +83,7 @@ struct ResourceType
 
     // The importer used for the resource
     ResourceImporter* importer;
-    
+
     // A function that instantiates a new instance of the resource.
     ResourceInstantiationFunc instantiationFunction;
 };
@@ -136,9 +139,9 @@ public:
     {
         // Attempt to convert every resource to an instance of T.
         std::vector<T*> results;
-        for(Resource* resource : loadedResources_)
+        for (Resource* resource : loadedResources_)
         {
-            if(dynamic_cast<T*>(resource) != nullptr)
+            if (dynamic_cast<T*>(resource) != nullptr)
             {
                 results.push_back(dynamic_cast<T*>(resource));
             }
@@ -147,9 +150,15 @@ public:
         return results;
     }
 
+    // Called frequently on the main thread to finish resource loading jobs
+    void update();
+
 private:
     std::string sourceDirectory_;
     std::string importedDirectory_;
+
+    // A mutex used when accessing the list of resources and import queue.
+    std::mutex resourceListsMutex_;
 
     // A list of all registered resource types.
     std::vector<ResourceType> typeRegister_;
@@ -163,6 +172,15 @@ private:
     // A list of *currently loaded* resources
     std::vector<Resource*> loadedResources_;
 
+    // A queue of resources waiting to be imported or reimported.
+    std::queue<ResourceID> importQueue_;
+
+    // A queue of resources waiting to be loaded or reloaded
+    std::queue<ResourceID> loadQueue_;
+
+    // A thread running background resource imports
+    std::thread importThread_;
+
     // Registers a resource importer for handling a particular resource type.
     template<typename ResourceT, typename ImporterT>
     void registerResourceType(const std::string &fileExtension)
@@ -175,8 +193,17 @@ private:
         typeRegister_.push_back(data);
     }
 
-    // Updates the list of all resources in the project.
-    void updateResourcesList();
+    // Executes the steps of the resource loading process
+    void executeFilesystemScan();
+    void executeResourceImport(ResourceID id);
+    void executeResourceLoad(ResourceID id);
+
+    // Executes queued import/load steps
+    void emptyImportQueue();
+    void emptyLoadQueue();
+
+    // Repeatedly clears the import queue on a background thread.
+    void runImportThread();
 
     // Unloads and reloads the resource with the given id, if it is currently loaded.
     // Used for hot-reloading of resources when the change at runtime.
