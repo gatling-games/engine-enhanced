@@ -103,7 +103,7 @@ void main()
     surface.diffuseColor = diffuseGloss.rgb;
     surface.gloss = diffuseGloss.a;
 #else
-    surface.diffuseColor = vec3(0.75);
+    surface.diffuseColor = vec3(1.0);
     surface.gloss = 0.2;
 #endif
 
