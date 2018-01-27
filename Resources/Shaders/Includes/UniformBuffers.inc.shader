@@ -16,7 +16,7 @@ layout(std140) uniform scene_data
 // Camera uniform buffer
 layout(std140) uniform camera_data
 {
-    uniform vec4 _ScreenResolution;
+    uniform vec4 _ScreenResolution; // xyzw = width, height, 1/width, 1/height
     uniform vec4 _CameraPosition;
     uniform mat4x4 _ViewProjectionMatrix;
     uniform mat4x4 _ClipToWorld;

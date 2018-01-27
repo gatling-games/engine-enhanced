@@ -27,7 +27,11 @@ public:
     float getHorizontalFOV() const;
     void setHorizontalFOV(const float &FOV);
 
+    // Gets the combined world -> clip space transformation matrix
     Matrix4x4 getWorldToCameraMatrix(float aspectRatio) const;
+
+    // Gets the inverse of the world -> clip space matrix
+    Matrix4x4 getCameraToWorldMatrix(float aspectRatio) const;
 
 private:
     float nearPlaneDistance_;
