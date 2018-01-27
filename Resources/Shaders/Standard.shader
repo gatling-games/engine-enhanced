@@ -86,6 +86,8 @@ void main()
     surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
     surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
     surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
+#else
+    surface.worldNormal = worldNormal;
 #endif
 
 	// Output surface properties to the gbuffer
