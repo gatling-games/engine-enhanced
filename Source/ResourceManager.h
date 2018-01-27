@@ -1,10 +1,17 @@
 #pragma once
 
+#include <assert.h>
 #include <cstdint>
 #include <string>
-#include <unordered_map>
 #include <vector>
 #include <fstream>
+#include <functional>
+#include <mutex>
+#include <queue>
+#include <thread>
+
+#include <filesystem>
+namespace fs = std::experimental::filesystem::v1;
 
 #include "Application.h"
 #include "Utils/Singleton.h"
@@ -40,7 +47,13 @@ public:
     Resource& operator=(Resource&&) = delete;
 
     // The unique resource id.
-    ResourceID id() const { return id_; }
+    ResourceID resourceID() const { return id_; }
+
+    // The name of the resource file.
+    std::string resourceName() const;
+
+    // The path to the resource file, from the resources directory root.
+    std::string resourcePath() const;
 
     // Loading and unloading the processed binary resource file.
     virtual void load(std::ifstream &file) = 0;
@@ -53,8 +66,26 @@ private:
 class ResourceImporter
 {
 public:
-    virtual bool canHandleFileType(const std::string &fileExtension) const = 0;
+    virtual ~ResourceImporter() { }
     virtual bool importFile(const std::string &sourceFile, const std::string &outputFile) const = 0;
+};
+
+// A function used for instantiating a resource of a particular type.
+typedef std::function<Resource*(ResourceID)> ResourceInstantiationFunc;
+
+// A struct storing information for a registered resource type.
+// It allows resources to be routed to the correct importer and lets
+// resources be instantiated at runtime.
+struct ResourceType
+{
+    // The file extension used by source files.
+    std::string fileExtension;
+
+    // The importer used for the resource
+    ResourceImporter* importer;
+
+    // A function that instantiates a new instance of the resource.
+    ResourceInstantiationFunc instantiationFunction;
 };
 
 class ResourceManager : public ApplicationModule, public Singleton<ResourceManager>
@@ -65,26 +96,30 @@ public:
 
     // ApplicationModule overrides
     std::string name() const override { return "Resource Manager"; }
-    void drawDebugMenu() override;
-
-    // Path to directories for resource source files and imported binary files
-    std::string sourceDirecory() const { return sourceDirectory_; }
-    std::string importedDirectory() const { return importedDirectory_; }
 
     // Gets a list of all resource source files in the project.
     const std::vector<std::string>* allSourceFiles() const { return &resourceSourcePaths_; }
 
-    // Checks if a specified resource exists in the system.
-    bool resourceExists(ResourceID id) const;
-
-    // Checks if a specified resource is currently loaded.
-    bool resourceLoaded(ResourceID id) const;
-
-    // Converts a resource source path into the corresponding resource ID.
+    // Functions for converting to and from resource ids
     ResourceID pathToResourceID(const std::string &sourcePath) const;
-   
-    // Converts a resource id into the corresponding source path.
     std::string resourceIDToPath(ResourceID id) const;
+
+    // Loads the resource with the given id
+    Resource* load(ResourceID id);
+
+    // Loads a resource of the given type and the given ID.
+    template<typename T>
+    ResourcePPtr<T> load(ResourceID id)
+    {
+        return dynamic_cast<ResourcePPtr<T>>(load(id));
+    }
+
+    // The path should be relative to the Resources folder (eg Textures/wood_diffuse.png)
+    template<typename T>
+    ResourcePPtr<T> load(const std::string &sourcePath)
+    {
+        return load<T>(pathToResourceID(sourcePath));
+    }
 
     // (Re)imports the specified resource.
     void importResource(ResourceID id);
@@ -98,70 +133,35 @@ public:
     // Removes imported versions of source files that have been deleted.
     void removeDeletedResources();
 
-    // Loads the resource of type T with the given ID.
-    template<typename T>
-    ResourcePPtr<T> load(ResourceID id)
-    {
-        // Skip not-saved resources
-        if(id == Resource::NOT_SAVED_RESOURCE)
-        {
-            return nullptr;
-        }
-
-        // Check all loaded resources for a match.
-        for (unsigned int i = 0; i < loadedResources_.size(); ++i)
-        {
-            if (loadedResources_[i]->id() == id)
-            {
-                return (T*)loadedResources_[i];
-            }
-        }
-
-        // No existing result. Create a new resource.
-        T* r = new T(id);
-        loadedResources_.push_back(r);
-
-        // Load the compiled resource file.
-        const std::string resourcePath = importedResourcePath(id);
-        std::ifstream resourceFile(resourcePath, std::ifstream::binary);
-        r->load(resourceFile);
-        resourceFile.close();
-        return r;
-    }
-
-    // Loads the resource of type T with the given path
-    // The path should be relative to the Resources folder (eg Textures/wood_diffuse.png)
-    template<typename T>
-    ResourcePPtr<T> load(const std::string &sourcePath)
-    {
-        return load<T>(pathToResourceID(sourcePath));
-    }
-
     // Returns a list of all the resources of type T that are currently loaded.
     template<typename T>
     std::vector<T*> loadedResourcesOfType() const
     {
-        std::vector<T*> results;
-
         // Attempt to convert every resource to an instance of T.
-        for(unsigned int i = 0; i < loadedResources_.size(); ++i)
+        std::vector<T*> results;
+        for (Resource* resource : loadedResources_)
         {
-            T* resourceAsT = dynamic_cast<T*>(loadedResources_[i]);
-            if(resourceAsT != nullptr)
+            if (dynamic_cast<T*>(resource) != nullptr)
             {
-                results.push_back(resourceAsT);
+                results.push_back(dynamic_cast<T*>(resource));
             }
         }
 
         return results;
     }
 
+    // Called frequently on the main thread to finish resource loading jobs
+    void update();
+
 private:
     std::string sourceDirectory_;
     std::string importedDirectory_;
 
-    // A list of all resource importers
-    std::vector<ResourceImporter*> importers_;
+    // A mutex used when accessing the list of resources and import queue.
+    std::mutex resourceListsMutex_;
+
+    // A list of all registered resource types.
+    std::vector<ResourceType> typeRegister_;
 
     // Lists of resource ids, source paths and imported paths
     // The same location in each list refers to the same resource
@@ -172,8 +172,38 @@ private:
     // A list of *currently loaded* resources
     std::vector<Resource*> loadedResources_;
 
-    // Updates the list of all resources in the project.
-    void updateResourcesList();
+    // A queue of resources waiting to be imported or reimported.
+    std::queue<ResourceID> importQueue_;
+
+    // A queue of resources waiting to be loaded or reloaded
+    std::queue<ResourceID> loadQueue_;
+
+    // A thread running background resource imports
+    std::thread importThread_;
+
+    // Registers a resource importer for handling a particular resource type.
+    template<typename ResourceT, typename ImporterT>
+    void registerResourceType(const std::string &fileExtension)
+    {
+        // Gather the importer info and add to the list
+        ResourceType data;
+        data.fileExtension = fileExtension;
+        data.importer = new ImporterT();
+        data.instantiationFunction = [](ResourceID id) { return new ResourceT(id); };
+        typeRegister_.push_back(data);
+    }
+
+    // Executes the steps of the resource loading process
+    void executeFilesystemScan();
+    void executeResourceImport(ResourceID id);
+    void executeResourceLoad(ResourceID id);
+
+    // Executes queued import/load steps
+    void emptyImportQueue();
+    void emptyLoadQueue();
+
+    // Repeatedly clears the import queue on a background thread.
+    void runImportThread();
 
     // Unloads and reloads the resource with the given id, if it is currently loaded.
     // Used for hot-reloading of resources when the change at runtime.
@@ -185,4 +215,7 @@ private:
 
     // Finds the correct importer for a resource.
     ResourceImporter* getImporter(const std::string &sourcePath) const;
+
+    // Finds the correct instantiation func for a resource at the given path.
+    ResourceInstantiationFunc getInstantiationFunc(const std::string &sourcePath) const;
 };

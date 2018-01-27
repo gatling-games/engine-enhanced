@@ -5,27 +5,6 @@
 #include <crunch/crnlib/crn_texture_conversion.h>
 #include <crunch/crnlib/crn_console.h>
 
-bool TextureImporter::canHandleFileType(const std::string& fileExtension) const
-{
-	// Support the following file extensions.
-	// We are using crnlib, so support all the formats crnlib supports.
-	const int numTypes = 9;
-	const std::string supportedTypes[numTypes] = { ".dds", ".ktx", ".crn",
-		".tga", ".bmp", ".png", ".jpg", ".jpeg", ".psd" };
-
-	// Check if the extension is supported.
-	for (int i = 0; i < numTypes; ++i)
-	{
-		if (supportedTypes[i] == fileExtension)
-		{
-			return true;
-		}
-	}
-
-	// Not supported.
-	return false;
-}
-
 bool TextureImporter::importFile(const std::string &sourceFile, const std::string &outputFile) const
 {
 	// Read the texture file.
@@ -57,15 +36,6 @@ bool TextureImporter::importFile(const std::string &sourceFile, const std::strin
 	settings.m_comp_params.m_num_helper_threads = 7;
 	settings.m_mipmap_params.m_mode = cCRNMipModeGenerateMips;
     settings.m_mipmap_params.m_scale_mode = cCRNSMNearestPow2;
-
-	// Detect normal map textures from their file name.
-	// The filename ends in _normals, _normal, or _n
-	if(sourceFile.find("_normals.") != std::string::npos
-		|| sourceFile.find("_normal.") != std::string::npos
-		|| sourceFile.find("_n.") != std::string::npos)
-	{
-		settings.m_texture_type = crnlib::cTextureTypeNormalMap;
-	}
 
 	// Perform the texture conversion process
 	// This creates a .crn file at outputFile path, which can be read at runtime.
