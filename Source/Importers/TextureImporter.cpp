@@ -19,6 +19,7 @@ bool TextureImporter::importFile(const std::string &sourceFile, const std::strin
 	// Texture usage determines conversion settings
 	const crnlib::texture_type textureType = sourceTexture.determine_texture_type();
 	const bool isNormalMap = textureType == crnlib::cTextureTypeNormalMap;
+    const bool sRGB = sourceFile.find("_albedo.") != std::string::npos;
 
 	// Dont display the crunch console output.
 	// For large numbers of files it is too verbose.
@@ -36,6 +37,7 @@ bool TextureImporter::importFile(const std::string &sourceFile, const std::strin
 	settings.m_comp_params.m_num_helper_threads = 7;
 	settings.m_mipmap_params.m_mode = cCRNMipModeGenerateMips;
     settings.m_mipmap_params.m_scale_mode = cCRNSMNearestPow2;
+    settings.m_mipmap_params.m_gamma_filtering = sRGB;
 
 	// Perform the texture conversion process
 	// This creates a .crn file at outputFile path, which can be read at runtime.
