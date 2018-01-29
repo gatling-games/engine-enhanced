@@ -56,7 +56,7 @@ TextureFormatData formatsTable[] = {
     {   "RGBA1010102",   1, 1, 4,     GL_RGB10_A2,                        false       }, // RGBA1010102
     {   "R8",            1, 1, 1,     GL_R8,                              false       }, // R8
     {   "R32F",          1, 1, 4,     GL_R32F,                            false       }, // RFloat
-    {   "Depth 24",      1, 1, 2,     GL_DEPTH_COMPONENT24,               false       }, // Depth
+    {   "Depth 24",      1, 1, 2,     GL_DEPTH32F_STENCIL8,               false       }, // Depth
     {   "ShadowMap",     1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // ShadowMap
 };
 
