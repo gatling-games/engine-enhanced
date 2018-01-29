@@ -1,6 +1,8 @@
 #ifndef COMMON_SHADER_CODE_INCLUDED
 #define COMMON_SHADER_CODE_INCLUDED 1
 
+#define M_PI 3.14159265359
+
 // The properties that describe a surface and the way it is lit.
 struct SurfaceProperties
 {
