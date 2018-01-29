@@ -133,9 +133,9 @@ void Renderer::updateSceneUniformBuffer() const
 {
     // Gather the new contents of the scene buffer
     SceneUniformData data;
-    data.ambientLightColor = Color(0.6f, 0.6f, 0.6f);
+    data.ambientLightColor = Color(0.0f, 0.0f, 0.0f);
     data.lightColor = Color(1.0f, 1.0f, 1.0f);
-    data.toLightDirection = Vector4(Vector3(1.0f, 1.0f, 1.0f).normalized());
+    data.toLightDirection = Vector4(Vector3(65.3f, 155.6f, -113.1f).normalized());
     data.skyTopColor = Color(0.23f, 0.66f, 0.86f);
     data.skyHorizonColor = Color(0.5f, 0.55f, 0.84f);
     data.sunParams = Vector4(4.0f, 512.0f, 0.0f, 0.0f); // x = falloff, y = size
@@ -180,7 +180,8 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 {
     TerrainUniformData data;
     Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
-    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, 1.0f);
+    float normalScale = terrain->gameObject()->terrain()->normalScale();
+    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, normalScale);
 
 	data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
 	Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();

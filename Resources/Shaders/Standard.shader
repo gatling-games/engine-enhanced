@@ -76,7 +76,7 @@ void main()
     surface.diffuseColor = diffuseGloss.rgb;
     surface.gloss = diffuseGloss.a;
 #else
-    surface.diffuseColor = vec3(0.75);
+    surface.diffuseColor = vec3(1.0);
     surface.gloss = 0.2;
 #endif
 
@@ -86,6 +86,8 @@ void main()
     surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
     surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
     surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
+#else
+    surface.worldNormal = worldNormal;
 #endif
 
 	// Output surface properties to the gbuffer

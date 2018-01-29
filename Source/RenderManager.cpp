@@ -9,6 +9,9 @@ RenderManager::RenderManager()
 {
     // Set default opengl settings
     glEnable(GL_CULL_FACE);
+
+    // Ensure linear space rendering is used
+    glEnable(GL_FRAMEBUFFER_SRGB);
 }
 
 bool RenderManager::isFeatureGloballyEnabled(ShaderFeature feature) const

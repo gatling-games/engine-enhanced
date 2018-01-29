@@ -1,6 +1,7 @@
 #ifndef DEFERRED_GBUFFER_INCLUDED
 #define DEFERRED_GBUFFER_INCLUDED 1
 
+#include "UniformBuffers.inc.shader"
 #include "Common.inc.shader"
 
 // GBuffer Layout
@@ -46,8 +47,25 @@ SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1)
 // To use from a fragment shader, define USE_GBUFFER_READ
 #if defined(FRAGMENT_SHADER) && defined(USE_GBUFFER_READ)
 
-    layout(binding = 15) uniform sampler2D _GBuffer0;
-    layout(binding = 14) uniform sampler2D _GBuffer1;
+    layout(binding = 15) uniform sampler2D _CameraDepthTexture;
+    layout(binding = 14) uniform sampler2D _GBuffer0;
+    layout(binding = 13) uniform sampler2D _GBuffer1;
+
+    // Samples the gbuffer depth texture and reconstructs the world position.
+    vec3 readGBufferWorldPos()
+    {
+        vec2 texcoord = vec2(gl_FragCoord.xy) * _ScreenResolution.zw;
+
+        // Sample the camera depth texture
+        float depth = texture(_CameraDepthTexture, texcoord).r;
+
+        // Construct the clip position of the pixel fragment
+        vec4 clipPos = vec4(texcoord, depth, 1.0);
+
+        // Convert the clip pos to world space
+        vec4 worldPos = _ClipToWorld * clipPos;
+        return worldPos.xyz / worldPos.w;
+    }
 
     // Reads and unpacks the gbuffer for the current pixel.
     // Only avaliable in a fragment shader with USE_GBUFFER_READ defined.

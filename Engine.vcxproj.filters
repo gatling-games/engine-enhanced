@@ -310,5 +310,8 @@
     <None Include="Resources\Shaders\Deferred-Debug.shader">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\Includes\PhysicallyBasedShading.inc.shader">
+      <Filter>Shaders\Includes</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -10,9 +10,13 @@
 enum class TextureFormat
 {
 	RGB_DXT1, // RGB, block compressed 4 bits per pixel
+    RGB_DXT1_SRGB, // RGB, block compressed 4 bits per pixel, srgb->linear rgb
 	RGBA_DXT5, // RGBA, block compressed 8 bits per pixel
+    RGBA_DXT5_SRGB, // RGBA, block compressed 8 bits per pixel, srgb->linear rgb, linear alpha
 	RGB8, // RGB, 24 bits per pixel
+    RGB8_SRGB, // RGB, 24 bits per pixel, srgb->linear rgb
 	RGBA8, // RGBA, 32 bits per pixel
+    RGBA8_SRGB, // RGBA, 32 bits per pixel, srgb->linear rgb, linear alpha
     RGBA1010102, // RGBA, 10 bits for rgb, 2 bits for a
 	R8, // Single channel, 8 bits per pixel
 	RFloat, // Single channel, 32 bit floating point

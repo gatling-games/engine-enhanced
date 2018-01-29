@@ -5,6 +5,14 @@
 #include <memory>
 #include <cassert>
 
+// Ensure that srgb dxt parameters have been defined
+#ifndef GL_COMPRESSED_SRGB_S3TC_DXT1_EXT
+#define GL_COMPRESSED_SRGB_S3TC_DXT1_EXT 0x8C4C
+#endif
+#ifndef GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT
+#define GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT 0x8C4F
+#endif
+
 // Ensure that the anisotropic filtering gl extension
 // parameters have been defined.
 #ifndef GL_EXT_texture_filter_anisotropic
@@ -37,14 +45,18 @@ struct TextureFormatData
 // See https://www.khronos.org/opengl/wiki/Image_Format
 TextureFormatData formatsTable[] = {
     //  name            block size,  gl internal format,                 compressed 
-    {   "RGB_DXT1",      4, 4, 8,     GL_COMPRESSED_RGB_S3TC_DXT1_EXT,    true        }, // RGB_DXT1s
+    {   "RGB_DXT1",      4, 4, 8,     GL_COMPRESSED_RGB_S3TC_DXT1_EXT,    true        }, // RGB_DXT1
+    {   "RGB_DXT1_SRGB", 4, 4, 8,     GL_COMPRESSED_SRGB_S3TC_DXT1_EXT,   true        }, // RGB_DXT1_SRGB
     {   "RGBA_DXT5",     4, 4, 16,    GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,   true        }, // RGBA_DXT5
+    {   "RGBA_DXT5_SRGB",4, 4, 16,    GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT, true    }, // RGBA_DXT5_SRGB
     {   "RGB8",          1, 1, 3,     GL_RGB8,                            false       }, // RGB8
+    {   "RGB8_SRGB",     1, 1, 3,     GL_SRGB8,                           false       }, // RGB8_SRGB
     {   "RGBA8",         1, 1, 4,     GL_RGBA8,                           false       }, // RGBA8
+    {   "RGBA8_SRGB",    1, 1, 4,     GL_SRGB8_ALPHA8,                    false       }, // RGBA8_SRGB
     {   "RGBA1010102",   1, 1, 4,     GL_RGB10_A2,                        false       }, // RGBA1010102
     {   "R8",            1, 1, 1,     GL_R8,                              false       }, // R8
     {   "R32F",          1, 1, 4,     GL_R32F,                            false       }, // RFloat
-    {   "Depth 16",      1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // Depth
+    {   "Depth 24",      1, 1, 2,     GL_DEPTH32F_STENCIL8,               false       }, // Depth
     {   "ShadowMap",     1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // ShadowMap
 };
 
@@ -102,7 +114,7 @@ void Texture::load(std::ifstream& file)
     typedef uint8_t BYTE;
 
     // From MSDN DDS file format docs
-    struct DDS_PIXELFORMAT 
+    struct DDS_PIXELFORMAT
     {
         DWORD dwSize;
         DWORD dwFlags;
@@ -115,7 +127,7 @@ void Texture::load(std::ifstream& file)
     };
 
     // From MSDN DDS file format docs
-    struct DDS_HEADER 
+    struct DDS_HEADER
     {
         DWORD           dwSize;
         DWORD           dwFlags;
@@ -134,7 +146,7 @@ void Texture::load(std::ifstream& file)
     };
 
     // First, delete any texture that was created earlier.
-    if(created_)
+    if (created_)
     {
         destroyGLTexture();
     }
@@ -144,7 +156,7 @@ void Texture::load(std::ifstream& file)
     uint32_t magicNumber;
     file.read((char*)&magicNumber, sizeof(uint32_t));
     assert(file.good());
-    if(magicNumber != 0x20534444)
+    if (magicNumber != 0x20534444)
     {
         printf("Failed to load texture \n");
         printf("DDS magic number 0x%x incorrect \n", magicNumber);
@@ -166,17 +178,21 @@ void Texture::load(std::ifstream& file)
         return;
     }
 
+    // Determine whether to use srgb formats.
+    // For now, use this only for albedo textures.
+    const bool srgb = resourceName().find("_albedo.") != std::string::npos;
+
     // Find out which type of DXT compression the file uses.
     const uint32_t DDS_DXT1_HEADER = 0x31545844;
     const uint32_t DDS_DXT5_HEADER = 0x35545844;
     TextureFormat format;
     if (header.ddspf.dwFourCC == DDS_DXT1_HEADER)
     {
-        format = TextureFormat::RGB_DXT1;
+        format = srgb ? TextureFormat::RGB_DXT1_SRGB : TextureFormat::RGB_DXT1;
     }
     else if (header.ddspf.dwFourCC == DDS_DXT5_HEADER)
     {
-        format = TextureFormat::RGBA_DXT5;
+        format = srgb ? TextureFormat::RGBA_DXT5_SRGB : TextureFormat::RGBA_DXT5;
     }
     else
     {
@@ -323,7 +339,7 @@ void Texture::createGLTexture(TextureFormat format, int width, int height, int m
 
     // Create the actual texture
     glCreateTextures(GL_TEXTURE_2D, 1, &glid_);
-    
+
     // Assign texture storage for the correct format, resolution and mip count.
     glTextureStorage2D(glid_, levels_, formatData->glInternalFormat, width_, height_);
 
@@ -343,7 +359,7 @@ void Texture::destroyGLTexture()
 void Texture::applySettings() const
 {
     // Skip applying settings if no texture exists.
-    if(created_ == false)
+    if (created_ == false)
     {
         return;
     }

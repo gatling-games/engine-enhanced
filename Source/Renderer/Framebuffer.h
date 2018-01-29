@@ -25,6 +25,9 @@ public:
     Framebuffer(const Framebuffer&) = delete;
     Framebuffer& operator=(const Framebuffer) = delete;
 
+    // Gets the internal opengl id.
+    GLuint glid() const { return id_; }
+
     // The resolution of the framebuffer
     int width() const { return width_; }
     int height() const { return height_; }

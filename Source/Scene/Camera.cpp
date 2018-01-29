@@ -64,3 +64,12 @@ Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio) const
 
     return projection * worldToLocal;
 }
+
+Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio) const
+{
+    const Transform* transform = gameObject()->findComponent<Transform>();
+    const Matrix4x4 localToWorld = transform->localToWorld();
+    const Matrix4x4 inverseProjection = Matrix4x4::perspectiveInverse(horizontalFOV_, aspectRatio, nearPlaneDistance_, farPlaneDistance_);
+
+    return localToWorld * inverseProjection;
+}

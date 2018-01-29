@@ -61,6 +61,9 @@ int main(int argc, const char* argv[])
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
+    // We use linear space rendering, so ensure the backbuffer is srgb
+    glfwWindowHint(GLFW_SRGB_CAPABLE, GLFW_TRUE);
 
 #ifndef NDEBUG
     // Create an opengl debug context when *not* in release mode.

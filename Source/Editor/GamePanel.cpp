@@ -89,7 +89,7 @@ void GamePanel::createFramebuffer(int width, int height)
     // Create new framebuffer and textures with new panel dimensions
     frameBuffer_ = new Framebuffer();
     depthBuffer_ = new Texture(TextureFormat::Depth, width, height);
-    colorBuffer_ = new Texture(TextureFormat::RGB8, width, height);
+    colorBuffer_ = new Texture(TextureFormat::RGB8_SRGB, width, height);
 
     // Attach new textures to new framebuffer
     frameBuffer_->attachDepthTexture(depthBuffer_);
