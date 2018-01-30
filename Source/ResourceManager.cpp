@@ -253,7 +253,7 @@ void ResourceManager::executeResourceImport(ResourceID id)
     }
 
     // Trigger the importer
-    if (importer->importFile(sourcePath, outputPath))
+    if (!importer->importFile(sourcePath, outputPath))
     {
         printf("Failed to import resource \n");
         return;
