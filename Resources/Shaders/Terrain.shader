@@ -66,9 +66,9 @@ void main()
 // Texture inputs
 layout(binding = 0) uniform sampler2D _HeightmapTexture;
 layout(binding = 1) uniform sampler2D _Texture;
-layout(binding = 2) uniform sampler2D _SnowTex;
+layout(binding = 2) uniform sampler2D _NormalMap;
 layout(binding = 3) uniform sampler2D _RockTex;
-layout(binding = 4) uniform sampler2D _NormalMap;
+layout(binding = 4) uniform sampler2D _SnowTex;
 layout(binding = 5) uniform sampler2D _SnowNormalMap;
 layout(binding = 6) uniform sampler2D _RockNormalMap;
 
