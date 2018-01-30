@@ -236,12 +236,12 @@ void Renderer::executeDeferredGBufferPass() const
         terrain->mesh()->bind();
         terrain->heightmap()->bind(0);
         terrain->texture()->bind(1);
-        terrain->normalMap()->bind(4);
+        terrain->normalMap()->bind(2);
         //THIS IS A HACK REMOVE LATER
-        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(2);
         ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock.png")->bind(3);
-	ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow_normals.png")->bind(5);
-	ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock_normals.tga")->bind(6);
+        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(4);
+        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow_normals.png")->bind(5);
+        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock_normals.tga")->bind(6);
 
         updateTerrainUniformBuffer(terrain);
 
