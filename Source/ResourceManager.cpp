@@ -61,7 +61,7 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     // Ensure all resources are loaded
     for (ResourceID id : resourceIDs_)
     {
-        loadQueue_.emplace(id);
+        executeResourceLoad(id);
     }
     emptyLoadQueue();
 
@@ -118,6 +118,16 @@ Resource* ResourceManager::load(ResourceID id)
         {
             return loadedResource;
         }
+    }
+
+    // No resource with the requested ID exists.
+    // Check the list of resource ids to see if there is a matching resource
+    // that just hasnt been loaded yet.
+    if(std::find(resourceIDs_.begin(), resourceIDs_.end(), id) != resourceIDs_.end())
+    {
+        // Load the resource and then try again
+        executeResourceLoad(id);
+        return load(id);
     }
 
     // No resource exists.
