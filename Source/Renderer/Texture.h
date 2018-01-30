@@ -4,6 +4,9 @@
 
 #include "ResourceManager.h"
 
+// GL bindless textures are stored as a gluint64 handle
+typedef GLuint64 BindlessTextureHandle;
+
 // The avaliable texture formats for a texture resource.
 // For more details on each format, view the TextureFormatData 
 // struct and formatsTable[] in Tetxture.cpp.
@@ -67,6 +70,10 @@ public:
     // Gets the internal opengl ID of the texture
     GLuint glid() const { return glid_; }
 
+    // Gets the bindless handle of the texture.
+    // This can be placed in uniform buffers to sample the texture.
+    BindlessTextureHandle bindlessHandle() const { return handle_; }
+
     // Basic settings
     TextureFormat format() const { return format_; }
     TextureWrapMode wrapMode() const { return wrapMode_; }
@@ -95,6 +102,7 @@ protected:
     int height_;
     int levels_;
     GLuint glid_;
+    GLuint64 handle_;
     bool created_;
 
     // Determines the size of a mip level for a texture.

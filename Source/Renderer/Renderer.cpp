@@ -166,13 +166,15 @@ void Renderer::updateCameraUniformBuffer(const Camera* camera) const
     cameraUniformBuffer_.update(data);
 }
 
-void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw) const
+void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw, const Texture* albedoTexture, const Texture* normalMapTexture) const
 {
     // Gather the new contents of the per-draw buffer
     PerDrawUniformData data;
     data.localToWorld = draw->gameObject()->transform()->localToWorld();
     data.colorSmoothness = draw->material()->color();
     data.colorSmoothness.a = draw->material()->smoothness();
+    data.albedoTexture = (albedoTexture == nullptr) ? 0 : albedoTexture->bindlessHandle();
+    data.normalMapTexture = (normalMapTexture == nullptr) ? 0 : normalMapTexture->bindlessHandle();
 
     // Update the uniform buffer.
     perDrawUniformBuffer_.update(data);
@@ -225,15 +227,12 @@ void Renderer::executeDeferredGBufferPass() const
         // Use the correct standard shader variant
         standardShader_->bindVariant(staticMesh->material()->supportedFeatures());
 
-        // Set the correct mesh and textures
+        // Set the correct mesh
+        // Textures are bound via bindless texture handles
         staticMesh->mesh()->bind();
-        if (staticMesh->material()->albedoTexture() != nullptr)
-            staticMesh->material()->albedoTexture()->bind(0);
-        if (staticMesh->material()->normalMapTexture() != nullptr)
-            staticMesh->material()->normalMapTexture()->bind(1);
-
+        
         // Update the per draw uniform buffer
-        updatePerDrawUniformBuffer(staticMesh);
+        updatePerDrawUniformBuffer(staticMesh, staticMesh->material()->albedoTexture(), staticMesh->material()->normalMapTexture());
 
         // Draw the mesh
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
