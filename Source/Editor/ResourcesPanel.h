@@ -18,6 +18,7 @@ private:
     // Store the values to display in a tree structure
     struct TreeNode
     {
+        Resource* resource;
         std::string name;
         std::string sourcePath;
         std::vector<TreeNode> childNodes;
@@ -35,7 +36,7 @@ private:
     void resourceSelected(const std::string &sourcePath);
     
     // Adds the specified source path to the tree.
-    void addToTree(const std::string &sourcePath);
+    void addToTree(Resource* resource);
 
     // Returns the parent node for the specified source path.
     TreeNode* getParentNode(const std::string &sourcePath);

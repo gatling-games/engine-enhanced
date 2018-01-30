@@ -1,8 +1,9 @@
 #include "ResourcesPanel.h"
 
 #include <imgui.h>
-#include <stack>
-#include "Renderer\Shader.h"
+
+#include "EditableObject.h"
+#include "PropertiesPanel.h"
 #include "ResourceManager.h"
 
 #include <filesystem>
@@ -26,10 +27,9 @@ void ResourcesPanel::updateTree()
     resourceTreeRoot_.childNodes.clear();
 
     // (Re)add every source file to the tree
-    auto resourceList = ResourceManager::instance()->allSourceFiles();
-    for (unsigned int i = 0; i < resourceList->size(); ++i)
+    for (Resource* resource : ResourceManager::instance()->loadedResourcesOfType<Resource>())
     {
-        addToTree(resourceList->at(i));
+        addToTree(resource);
     }
 }
 
@@ -40,8 +40,16 @@ void ResourcesPanel::drawNodes(const std::vector<TreeNode> &nodes)
         // Draw a bullet for nodes with no children
         if (node->childNodes.empty())
         {
+            // Determine the tree flags, based on selection state.
+            ImGuiTreeNodeFlags nodeFlags = (ImGuiTreeNodeFlags)0;
+            if (node->resource != nullptr && 
+                PropertiesPanel::instance()->current() == dynamic_cast<IEditableObject*>(node->resource))
+            {
+                nodeFlags |= ImGuiTreeNodeFlags_Selected;
+            }
+
             ImGui::Bullet();
-            if (ImGui::Selectable(node->name.c_str()))
+            if (ImGui::Selectable(node->name.c_str(), nodeFlags))
             {
                 resourceSelected(node->sourcePath);
             }
@@ -60,18 +68,27 @@ void ResourcesPanel::drawNodes(const std::vector<TreeNode> &nodes)
 
 void ResourcesPanel::resourceSelected(const std::string &sourcePath)
 {
-    printf("Resource %s selected \n", sourcePath.c_str());
+    // Load the resource
+    Resource* resource = ResourceManager::instance()->load<Resource>(sourcePath);
+
+    // If the resource can be edited, display it.
+    IEditableObject* ieo = dynamic_cast<IEditableObject*>(resource);
+    if(ieo != nullptr)
+    {
+        PropertiesPanel::instance()->inspect(ieo);
+    }
 }
 
-void ResourcesPanel::addToTree(const std::string &sourcePath)
+void ResourcesPanel::addToTree(Resource* resource)
 {
     // Create the node for this value.
     TreeNode node;
-    node.name = fs::path(sourcePath).filename().string();
-    node.sourcePath = sourcePath;
+    node.resource = resource;
+    node.name = resource->resourceName();
+    node.sourcePath = resource->resourcePath();
 
     // Add it to the correct place in the tree.
-    getParentNode(sourcePath)->childNodes.push_back(node);
+    getParentNode(node.sourcePath)->childNodes.push_back(node);
 }
 
 ResourcesPanel::TreeNode* ResourcesPanel::getParentNode(const std::string & sourcePath)
