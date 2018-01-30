@@ -73,11 +73,11 @@ void main()
     // Sample the albedo texture for the diffuse color
 #ifdef TEXTURE_ON
     vec4 diffuseGloss = texture(_MainTexture, texcoord);
-    surface.diffuseColor = diffuseGloss.rgb;
+    surface.diffuseColor = diffuseGloss.rgb * _Color.rgb;
     surface.gloss = diffuseGloss.a;
 #else
-    surface.diffuseColor = vec3(1.0);
-    surface.gloss = 0.2;
+    surface.diffuseColor = _Color.rgb;
+    surface.gloss = _Color.a;
 #endif
 
 	// Sample the normal map and convert to world space

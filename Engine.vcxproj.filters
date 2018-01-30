@@ -156,11 +156,20 @@
     <ClInclude Include="Source\Scene\Terrain.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Renderer\Material.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Serialization\SerializedObject.h">
+      <Filter>Serialization</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Editor\PropertiesPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\EditableObject.h">
       <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Importers\MaterialImporter.h">
+      <Filter>Importers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -277,6 +286,12 @@
     </ClCompile>
     <ClCompile Include="Source\Serialization\SerializedGameObject.cpp">
       <Filter>Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Renderer\Material.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Importers\MaterialImporter.cpp">
+      <Filter>Importers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -50,6 +50,7 @@ struct TerrainUniformData
 struct PerDrawUniformData
 {
     Matrix4x4 localToWorld;
+    Color colorSmoothness;
 };
 
 struct PerMaterialUniformData

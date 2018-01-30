@@ -26,6 +26,7 @@ layout(std140) uniform camera_data
 layout(std140) uniform per_draw_data
 {
     uniform mat4x4 _LocalToWorld;
+    uniform vec4 _Color; // rgb = color, a = smoothness
 };
 
 //Terrain uniform buffer

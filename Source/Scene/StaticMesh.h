@@ -2,9 +2,8 @@
 
 #include "Scene/Component.h"
 
-#include "Renderer/Shader.h"
 #include "Renderer/Mesh.h"
-#include "Renderer/Texture.h"
+#include "Renderer/Material.h"
 
 class StaticMesh : public Component
 {
@@ -19,12 +18,10 @@ public:
     // Handles component serialization
     void serialize(PropertyTable &table) override;
 
-    ResourcePPtr<Mesh> mesh() const { return mesh_; }
-    ResourcePPtr<Texture> texture() const { return texture_; }
-	ResourcePPtr<Texture> normalMap() const { return normalMap_; }
+    Material* material() const { return material_; }
+    Mesh* mesh() const { return mesh_; }
 
 private:
-    ResourcePPtr<Mesh> mesh_;
-    ResourcePPtr<Texture> texture_;
-	ResourcePPtr<Texture> normalMap_;
+    Material* material_;
+    Mesh* mesh_;
 };

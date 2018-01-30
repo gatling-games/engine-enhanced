@@ -12,6 +12,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditableObject.h" />
+    <ClInclude Include="Source\Importers\MaterialImporter.h" />
+    <ClInclude Include="Source\Renderer\Material.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\EditorManager.h" />
@@ -56,11 +58,14 @@
     <ClInclude Include="Source\Serialization\BitWriter.h" />
     <ClInclude Include="Source\Serialization\PropertyTable.h" />
     <ClInclude Include="Source\Serialization\SerializedGameObject.h" />
+    <ClInclude Include="Source\Serialization\SerializedObject.h" />
     <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Source\Utils\ImGuiExtensions.h" />
     <ClInclude Include="Source\Utils\Singleton.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Importers\MaterialImporter.cpp" />
+    <ClCompile Include="Source\Renderer\Material.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\EditorManager.cpp" />
