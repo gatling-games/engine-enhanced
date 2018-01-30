@@ -33,6 +33,11 @@ Vector4::Vector4(const Vector3 &p)
 
 }
 
+Vector4 Vector4::zero()
+{
+	return Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
 float Vector4::minComponent() const
 {
     return std::min(std::min(x, y), std::min(z, w));
@@ -53,6 +58,20 @@ float Vector4::magnitude() const
     return sqrtf(sqrMagnitude());
 }
 
+Vector4 Vector4::normalized() const
+{
+	return *this / magnitude();
+}
+
+Vector4& Vector4::operator += (Vector4 vector)
+{
+	x += vector.x;
+	y += vector.y;
+	z += vector.z;
+	w += vector.w;
+	return *this;
+}
+
 Point3 Vector4::asPoint() const
 {
     assert(w > 0.00000001f || w < -0.00000001f);
@@ -63,6 +82,26 @@ Vector3 Vector4::asVector() const
 {
     assert(w < 0.0000001f && w > -0.0000001f);
     return Vector3(x, y, z);
+}
+
+Vector4 operator * (const Vector4 &v, float scalar)
+{
+	return Vector4(v.x * scalar, v.y * scalar, v.z * scalar, v.w * scalar);
+}
+
+Vector4 operator * (float scalar, const Vector4 &v)
+{
+	return Vector4(v.x * scalar, v.y * scalar, v.z * scalar, v.w * scalar);
+}
+
+Vector4 operator / (const Vector4 &v, float scalar)
+{
+	return Vector4(v.x / scalar, v.y / scalar, v.z / scalar, v.w / scalar);
+}
+
+Vector4 operator / (float scalar, const Vector4 &v)
+{
+	return Vector4(scalar / v.x, scalar / v.y, scalar / v.z, scalar / v.w);
 }
 
 std::ostream& operator << (std::ostream &os, const Vector4 &vec)

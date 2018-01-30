@@ -163,6 +163,9 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
         }
     }
 
+	// Calculate tangents here
+	
+
     // Create vectors to hold finalised vertex data using size
     std::vector<MeshElementIndex> vertexIndices;
     std::vector<Point3> positionAttributes;
@@ -220,6 +223,9 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
     {
         std::swap(vertexIndices[i * 3], vertexIndices[i * 3 + 2]);
     }
+
+	// Obj files don't have tangtents - must be generated
+	preProcessTangents(positionAttributes, tangentAttributes, vertexIndices);
 
     // Output the obj data as a binary file
     writeBinaryMesh(outputFile, positionAttributes, normalAttributes, tangentAttributes, texCoordAttributes, vertexIndices);
@@ -288,17 +294,49 @@ bool MeshImporter::importDotMeshFile(const std::string &sourceFile, const std::s
     return true;
 }
 
+// Calculate tangents for imported .obj files
+void MeshImporter::preProcessTangents(std::vector<Point3> &positionAttributes,
+	std::vector<Vector4> &tangentAttributes,
+	std::vector<MeshElementIndex> &elementIndices) const
+{
+	// Initialise tangent array
+	tangentAttributes.resize(positionAttributes.size());
+	for (unsigned int i = 0; i < positionAttributes.size(); i++)
+	{
+		tangentAttributes[i] = Vector4::zero();
+	}
+
+	// Loop through each triangle
+	for (int i = 0; i < elementIndices.size(); i += 3)
+	{
+		// Calculate tangent on triangle
+		Vector4 tangent;
+		tangent = Vector4(positionAttributes[elementIndices[i + 1]] - positionAttributes[elementIndices[i]]);
+
+		// Add tangent to per-vertex tangent array
+		tangentAttributes[elementIndices[i]] += tangent;
+		tangentAttributes[elementIndices[i + 1]] += tangent;
+		tangentAttributes[elementIndices[i + 2]] += tangent;
+	}
+
+	// Normalise all tangents
+	for (int i = 0; i < positionAttributes.size(); i++)
+	{
+		tangentAttributes[i] = -1 * tangentAttributes[i].normalized();
+	}
+}
+
 void MeshImporter::writeBinaryMesh(const std::string &outputFile,
     const std::vector<Point3> &positionAttributes,
     const std::vector<Vector3> &normalAttributes,
     const std::vector<Vector4> &tangentAttributes,
     const std::vector<Point2> &texcoordAttributes,
-    const std::vector<MeshElementIndex> &elementIndexes) const
+    const std::vector<MeshElementIndex> &elementIndices) const
 {
     // Populate mesh settings object with appropriate data
     MeshSettings settings;
     settings.vertexCount = (int)positionAttributes.size();
-    settings.elementsCount = (int)elementIndexes.size();
+    settings.elementsCount = (int)elementIndices.size();
     settings.hasNormals = (normalAttributes.size() == positionAttributes.size());
     settings.hasTangents = (tangentAttributes.size() == positionAttributes.size());
     settings.hasTexcoords = (texcoordAttributes.size() == positionAttributes.size());
@@ -310,6 +348,6 @@ void MeshImporter::writeBinaryMesh(const std::string &outputFile,
     if (settings.hasNormals) outputStream.write((const char*)&normalAttributes[0], sizeof(Vector3) * normalAttributes.size());
     if (settings.hasTangents) outputStream.write((const char*)&tangentAttributes[0], sizeof(Vector4) * tangentAttributes.size());
     if (settings.hasTexcoords)outputStream.write((const char*)&texcoordAttributes[0], sizeof(Point2) * texcoordAttributes.size());
-    outputStream.write((const char*)&elementIndexes[0], sizeof(MeshElementIndex) * elementIndexes.size());
+    outputStream.write((const char*)&elementIndices[0], sizeof(MeshElementIndex) * elementIndices.size());
     outputStream.close();
 }
