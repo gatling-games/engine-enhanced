@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "Editor/EditableObject.h"
+
 class Component;
 class BitWriter;
 class BitReader;
@@ -17,7 +19,7 @@ typedef uint32_t GameObjectID;
 
 // Class for a game object
 // Most of the actual work is deferred to the scene manager.
-class GameObject
+class GameObject : public IEditableObject
 {
     friend class SceneManager;
 
@@ -29,6 +31,11 @@ private:
 public:
     // Getters for basic gameobject properties
     const std::string& name() const { return name_; }
+
+    // Draws the gameobject editor panel
+    void drawEditor() override;
+    void drawComponentsSection();
+    void drawAddComponentSection();
 
     // Serialization methods.
     // Used for networking and saving objects to disk.

@@ -1,8 +1,13 @@
 #include "GameObject.h"
 
+#include <imgui.h>
+
 #include "SceneManager.h"
 
 #include "Scene/Component.h"
+#include "Scene/Camera.h"
+#include "Scene/StaticMesh.h"
+#include "Scene/Helicopter.h"
 #include "Scene/Transform.h"
 #include "Scene/Freecam.h"
 #include "Scene/Terrain.h"
@@ -13,6 +18,57 @@ GameObject::GameObject(const std::string &name)
     // Give every GameObject instance a transform component
     // This ensures that gameobject can be parented inside each other.
     createComponent<Transform>();
+}
+
+void GameObject::drawEditor()
+{
+    // Draw the gameobject header
+    if (ImGui::CollapsingHeader("GameObject", 0, false, true))
+    {
+        ImGui::InputText("Name", (char*)name_.c_str(), 32);
+    }
+
+    // Draw each component's section in turn
+    drawComponentsSection();
+
+    // Place an add component button under the components list
+    drawAddComponentSection();
+}
+
+void GameObject::drawComponentsSection()
+{
+    // Draw each component's section in turn
+    for (Component* component : components_)
+    {
+        // Place a space before the component
+        ImGui::Spacing();
+
+        // Put the component controls inside a drop down
+        if (ImGui::CollapsingHeader(component->name().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            component->drawProperties();
+        }
+    }
+}
+
+void GameObject::drawAddComponentSection()
+{
+    // Display a big add component button
+    ImGui::Spacing();
+    if (ImGui::Button("Add Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    {
+        ImGui::OpenPopup("Add Component");
+    }
+
+    // Draw the add component popup, when selected
+    if (ImGui::BeginPopupContextItem("Add Component"))
+    {
+        if (ImGui::Selectable("Camera")) createComponent<Camera>();
+        if (ImGui::Selectable("Static Mesh")) createComponent<StaticMesh>();
+        if (ImGui::Selectable("Helicopter")) createComponent<Helicopter>();
+
+        ImGui::EndPopup();
+    }
 }
 
 void GameObject::serialize(BitWriter&) const

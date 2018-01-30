@@ -1,9 +1,7 @@
 #pragma once
 
+#include "Editor/EditableObject.h"
 #include "Editor/EditorPanel.h"
-
-#include "Scene/GameObject.h"
-
 #include "Utils/Singleton.h"
 
 class PropertiesPanel : public EditorPanel, public Singleton<PropertiesPanel>
@@ -15,16 +13,12 @@ public:
     virtual std::string name() const { return "Properties Panel"; }
     virtual void draw();
 
-    // The game object being inspected
-    GameObject* current() const { return currentGameObject_; }
+    // The object being inspected
+    IEditableObject* current() const { return currentObject_; }
 
-    // Changes the gameobject being inspected
-    void inspect(GameObject* gameObject);
+    // Changes the object being inspected
+    void inspect(IEditableObject* object);
 
 private:
-    GameObject* currentGameObject_;
-
-    void drawGameObjectSection();
-    void drawComponentsSection();
-    void drawAddComponentSection();
+    IEditableObject* currentObject_;
 };

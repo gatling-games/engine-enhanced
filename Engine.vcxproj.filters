@@ -96,9 +96,6 @@
     <ClInclude Include="Source\Editor\ResourcesPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Editor\PropertiesPanel.h">
-      <Filter>Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Source\EditorManager.h" />
     <ClInclude Include="Source\Renderer\Framebuffer.h">
       <Filter>Renderer</Filter>
@@ -158,6 +155,12 @@
     </ClInclude>
     <ClInclude Include="Source\Scene\Terrain.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\PropertiesPanel.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\EditableObject.h">
+      <Filter>Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
