@@ -25,7 +25,9 @@ private:
     // Imports a file in the .mesh file format
     bool importDotMeshFile(const std::string &sourceFile, const std::string &outputFile) const;
 
-    //objVertex 
+	void preProcessTangents(std::vector<Point3> &positionAttributes,
+		std::vector<Vector4> &tangentAttributes,
+		std::vector<MeshElementIndex> &elementIndices) const;
 
     // Writes the mesh attributes to an output file.
     void writeBinaryMesh(const std::string &outputFile,
