@@ -5,10 +5,14 @@
 #include <fstream>
 #include <fstream>
 
+#include "Serialization/SerializedObject.h"
+
+#include "Importers/MaterialImporter.h"
 #include "Importers/MeshImporter.h"
 #include "Importers/TextureImporter.h"
 #include "Importers/ShaderImporter.h"
 
+#include "Renderer/Material.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
 
@@ -42,6 +46,7 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     registerResourceType<Texture, TextureImporter>(".bmp");
     registerResourceType<Texture, TextureImporter>(".jpg");
     registerResourceType<Texture, TextureImporter>(".jpeg");
+    registerResourceType<Material, MaterialImporter>(".material");
 
     // Grow the loaded resources vector, so there is space for all
     // resources without shifting them about later.
@@ -276,7 +281,21 @@ void ResourceManager::executeResourceLoad(ResourceID id)
     // Open the imported file and run load
     const std::string importedPath = importedResourcePath(id);
     std::ifstream importedFileStream(importedPath, std::iostream::binary);
-    resource->load(importedFileStream);
+
+    // Some resources implement SerializedObject and need to be given the file as a propertytable.
+    ISerializedObject* iso = dynamic_cast<ISerializedObject*>(resource);
+    if (iso != nullptr)
+    {
+        std::stringstream stringstream;
+        stringstream << importedFileStream.rdbuf();
+        PropertyTable properties(stringstream, 99999);
+        iso->serialize(properties);
+    }
+    else
+    {
+        // Non-serializableobject resources are just given the file stream.
+        resource->load(importedFileStream);
+    }
 }
 
 void ResourceManager::emptyImportQueue()

@@ -56,8 +56,8 @@ public:
     std::string resourcePath() const;
 
     // Loading and unloading the processed binary resource file.
-    virtual void load(std::ifstream &file) = 0;
-    virtual void unload() = 0;
+    virtual void load(std::ifstream &) { };
+    virtual void unload() { };
 
 private:
     ResourceID id_;
