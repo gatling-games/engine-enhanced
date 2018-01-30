@@ -109,7 +109,7 @@ std::string ResourceManager::resourceIDToPath(ResourceID id) const
 
 Resource* ResourceManager::load(ResourceID id)
 {
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
 
     // Check the list of resources for a match.
     for (Resource* loadedResource : loadedResources_)
@@ -126,7 +126,7 @@ Resource* ResourceManager::load(ResourceID id)
 
 void ResourceManager::importResource(ResourceID id)
 {
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
     importQueue_.emplace(id);
 }
 
@@ -243,7 +243,7 @@ void ResourceManager::executeResourceImport(ResourceID id)
     }
 
     // Finally, enqueue the resource to be loaded or reloaded.
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
     loadQueue_.emplace(id);
 
     printf("Resource import finished \n");
@@ -324,7 +324,7 @@ void ResourceManager::emptyImportQueue()
 
 void ResourceManager::emptyLoadQueue()
 {
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
 
     while (!loadQueue_.empty())
     {
@@ -344,7 +344,7 @@ void ResourceManager::runImportThread()
 
 void ResourceManager::reloadResourceIfLoaded(ResourceID id)
 {
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
     loadQueue_.emplace(id);
 }
 

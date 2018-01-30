@@ -158,7 +158,7 @@ private:
     std::string importedDirectory_;
 
     // A mutex used when accessing the list of resources and import queue.
-    std::mutex resourceListsMutex_;
+    std::recursive_mutex resourceListsMutex_;
 
     // A list of all registered resource types.
     std::vector<ResourceType> typeRegister_;
