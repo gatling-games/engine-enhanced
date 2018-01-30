@@ -247,6 +247,12 @@ void Texture::load(std::ifstream& file)
     // The texture is now loaded. We just need to check that all texture 
     // sampling setting are applied correctly to the texture.
     applySettings();
+
+    // Settings are now applied. Make the texture resident in memory.
+    PFNGLGETTEXTUREHANDLEARBPROC gettexturehandle = (PFNGLGETTEXTUREHANDLEARBPROC)gl3wGetProcAddress("glGetTextureHandleARB");
+    handle_ = gettexturehandle(glid_);
+    PFNGLMAKETEXTUREHANDLERESIDENTARBPROC makeresident = (PFNGLMAKETEXTUREHANDLERESIDENTARBPROC)gl3wGetProcAddress("glMakeTextureHandleResidentARB");
+    makeresident(handle_);
 }
 
 void Texture::unload()

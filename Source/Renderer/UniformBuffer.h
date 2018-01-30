@@ -7,6 +7,9 @@
 #include "Math/Matrix4x4.h"
 #include "Math/Color.h"
 
+// For bindlesstexturehandle
+#include "Renderer/Texture.h"
+
 // Enum for specifying buffer type to UniformBuffer constructor
 enum class UniformBufferType
 {
@@ -50,6 +53,9 @@ struct TerrainUniformData
 struct PerDrawUniformData
 {
     Matrix4x4 localToWorld;
+    Color colorSmoothness;
+    BindlessTextureHandle albedoTexture;
+    BindlessTextureHandle normalMapTexture;
 };
 
 struct PerMaterialUniformData

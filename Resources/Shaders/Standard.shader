@@ -51,10 +51,6 @@ void main()
 
 #ifdef FRAGMENT_SHADER
 
-// Texture inputs
-layout(binding = 0) uniform sampler2D _MainTexture;
-layout(binding = 1) uniform sampler2D _NormalMap;
-
 // Interpolated values from vertex shader
 in vec2 texcoord;
 
@@ -72,17 +68,17 @@ void main()
 
     // Sample the albedo texture for the diffuse color
 #ifdef TEXTURE_ON
-    vec4 diffuseGloss = texture(_MainTexture, texcoord);
-    surface.diffuseColor = diffuseGloss.rgb;
+    vec4 diffuseGloss = texture(_AlbedoTexture, texcoord);
+    surface.diffuseColor = diffuseGloss.rgb * _Color.rgb;
     surface.gloss = diffuseGloss.a;
 #else
-    surface.diffuseColor = vec3(1.0);
-    surface.gloss = 0.2;
+    surface.diffuseColor = _Color.rgb;
+    surface.gloss = _Color.a;
 #endif
 
 	// Sample the normal map and convert to world space
 #ifdef NORMAL_MAP_ON
-	vec3 tangentNormal = unpackDXT5nm(texture(_NormalMap, texcoord));
+	vec3 tangentNormal = unpackDXT5nm(texture(_NormalMapTexture, texcoord));
     surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
     surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
     surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);

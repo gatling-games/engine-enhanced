@@ -3,6 +3,7 @@
 #include <imgui.h>
 
 #include "ResourceManager.h"
+#include "Editor/PropertiesPanel.h"
 
 namespace ImGui
 {
@@ -12,7 +13,7 @@ namespace ImGui
         if (ImGui::BeginPopupModal(modalName))
         {
             // Draw a button for each resource of the correct type
-            for(T* other : ResourceManager::instance()->loadedResourcesOfType<T>())
+            for (T* other : ResourceManager::instance()->loadedResourcesOfType<T>())
             {
                 if (ImGui::Selectable(other->resourcePath().c_str(), resource == other))
                 {
@@ -40,6 +41,18 @@ namespace ImGui
         // Show the resource name in a read-only text box
         const std::string resourceName = (resource == nullptr) ? "none" : resource->resourceName();
         ImGui::InputText("", (char*)resourceName.c_str(), resourceName.length(), ImGuiInputTextFlags_ReadOnly);
+
+        // If the input text was selected, show the resource
+        if (resource != nullptr && ImGui::IsItemClicked())
+        {
+            IEditableObject* ieo = dynamic_cast<IEditableObject*>(resource);
+            if (ieo != nullptr)
+            {
+                PropertiesPanel::instance()->inspect(ieo);
+                ImGui::PopID();
+                return;
+            }
+        }
 
         // Then draw a button that opens the file selection modal
         ImGui::SameLine();

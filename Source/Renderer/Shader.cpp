@@ -173,6 +173,7 @@ std::string ShaderVariant::preprocessSource(GLenum shaderStage, const std::strin
     // Construct the processed shader string from start to finish.
     // First, start with the version define
     std::string finalSource = "#version 450 \n";
+    finalSource += "#extension ARB_bindless_texture:require \n";
 
     // Next, add a stage-specific define
     assert(shaderStage == GL_VERTEX_SHADER || shaderStage == GL_FRAGMENT_SHADER);

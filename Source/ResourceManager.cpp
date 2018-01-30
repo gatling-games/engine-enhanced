@@ -5,10 +5,14 @@
 #include <fstream>
 #include <fstream>
 
+#include "Serialization/SerializedObject.h"
+
+#include "Importers/MaterialImporter.h"
 #include "Importers/MeshImporter.h"
 #include "Importers/TextureImporter.h"
 #include "Importers/ShaderImporter.h"
 
+#include "Renderer/Material.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
 
@@ -42,6 +46,7 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     registerResourceType<Texture, TextureImporter>(".bmp");
     registerResourceType<Texture, TextureImporter>(".jpg");
     registerResourceType<Texture, TextureImporter>(".jpeg");
+    registerResourceType<Material, MaterialImporter>(".material");
 
     // Grow the loaded resources vector, so there is space for all
     // resources without shifting them about later.
@@ -56,7 +61,7 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     // Ensure all resources are loaded
     for (ResourceID id : resourceIDs_)
     {
-        loadQueue_.emplace(id);
+        executeResourceLoad(id);
     }
     emptyLoadQueue();
 
@@ -104,7 +109,7 @@ std::string ResourceManager::resourceIDToPath(ResourceID id) const
 
 Resource* ResourceManager::load(ResourceID id)
 {
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
 
     // Check the list of resources for a match.
     for (Resource* loadedResource : loadedResources_)
@@ -115,13 +120,23 @@ Resource* ResourceManager::load(ResourceID id)
         }
     }
 
+    // No resource with the requested ID exists.
+    // Check the list of resource ids to see if there is a matching resource
+    // that just hasnt been loaded yet.
+    if(std::find(resourceIDs_.begin(), resourceIDs_.end(), id) != resourceIDs_.end())
+    {
+        // Load the resource and then try again
+        executeResourceLoad(id);
+        return load(id);
+    }
+
     // No resource exists.
     return nullptr;
 }
 
 void ResourceManager::importResource(ResourceID id)
 {
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
     importQueue_.emplace(id);
 }
 
@@ -238,7 +253,7 @@ void ResourceManager::executeResourceImport(ResourceID id)
     }
 
     // Finally, enqueue the resource to be loaded or reloaded.
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
     loadQueue_.emplace(id);
 
     printf("Resource import finished \n");
@@ -276,7 +291,21 @@ void ResourceManager::executeResourceLoad(ResourceID id)
     // Open the imported file and run load
     const std::string importedPath = importedResourcePath(id);
     std::ifstream importedFileStream(importedPath, std::iostream::binary);
-    resource->load(importedFileStream);
+
+    // Some resources implement SerializedObject and need to be given the file as a propertytable.
+    ISerializedObject* iso = dynamic_cast<ISerializedObject*>(resource);
+    if (iso != nullptr)
+    {
+        std::stringstream stringstream;
+        stringstream << importedFileStream.rdbuf();
+        PropertyTable properties(stringstream, 99999);
+        iso->serialize(properties);
+    }
+    else
+    {
+        // Non-serializableobject resources are just given the file stream.
+        resource->load(importedFileStream);
+    }
 }
 
 void ResourceManager::emptyImportQueue()
@@ -305,7 +334,7 @@ void ResourceManager::emptyImportQueue()
 
 void ResourceManager::emptyLoadQueue()
 {
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
 
     while (!loadQueue_.empty())
     {
@@ -325,7 +354,7 @@ void ResourceManager::runImportThread()
 
 void ResourceManager::reloadResourceIfLoaded(ResourceID id)
 {
-    std::lock_guard<std::mutex> gate(resourceListsMutex_);
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
     loadQueue_.emplace(id);
 }
 

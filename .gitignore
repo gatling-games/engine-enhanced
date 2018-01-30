@@ -1,4 +1,7 @@
 
+# cpp files are copied to the enc_temp_folder for some reason?
+enc_temp_folder/
+
 # Ignore the imgui config file placed in the project root
 imgui.ini
 

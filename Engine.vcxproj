@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Editor\EditableObject.h" />
+    <ClInclude Include="Source\Importers\MaterialImporter.h" />
+    <ClInclude Include="Source\Renderer\Material.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\EditorManager.h" />
@@ -55,11 +58,14 @@
     <ClInclude Include="Source\Serialization\BitWriter.h" />
     <ClInclude Include="Source\Serialization\PropertyTable.h" />
     <ClInclude Include="Source\Serialization\SerializedGameObject.h" />
+    <ClInclude Include="Source\Serialization\SerializedObject.h" />
     <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Source\Utils\ImGuiExtensions.h" />
     <ClInclude Include="Source\Utils\Singleton.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Importers\MaterialImporter.cpp" />
+    <ClCompile Include="Source\Renderer\Material.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\EditorManager.cpp" />
@@ -177,7 +183,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);NOMINMAX</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);NOMINMAX;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>Source/;Vendor/;Vendor/imgui/;Vendor/gl3w/%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -192,7 +198,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);NOMINMAX</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);NOMINMAX;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalIncludeDirectories>Source/;Vendor/;Vendor/imgui/;Vendor/gl3w/%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>

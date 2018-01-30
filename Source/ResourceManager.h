@@ -56,8 +56,8 @@ public:
     std::string resourcePath() const;
 
     // Loading and unloading the processed binary resource file.
-    virtual void load(std::ifstream &file) = 0;
-    virtual void unload() = 0;
+    virtual void load(std::ifstream &) { };
+    virtual void unload() { };
 
 private:
     ResourceID id_;
@@ -158,7 +158,7 @@ private:
     std::string importedDirectory_;
 
     // A mutex used when accessing the list of resources and import queue.
-    std::mutex resourceListsMutex_;
+    std::recursive_mutex resourceListsMutex_;
 
     // A list of all registered resource types.
     std::vector<ResourceType> typeRegister_;

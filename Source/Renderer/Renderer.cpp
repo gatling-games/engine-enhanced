@@ -98,7 +98,7 @@ void Renderer::createGBuffer()
     assert(GBUFFER_RENDER_TARGETS == 2); // should be one higher than the last index
 
     // Bind the gbuffer textures for sampling in deferred passes
-    for(int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
+    for (int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
     {
         // Slot 15 is reserved for the depth texture.
         // Start with gbuffer0 in slot 14, gbuffer1 in slot 13, etc.
@@ -166,11 +166,15 @@ void Renderer::updateCameraUniformBuffer(const Camera* camera) const
     cameraUniformBuffer_.update(data);
 }
 
-void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw) const
+void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw, const Texture* albedoTexture, const Texture* normalMapTexture) const
 {
     // Gather the new contents of the per-draw buffer
     PerDrawUniformData data;
     data.localToWorld = draw->gameObject()->transform()->localToWorld();
+    data.colorSmoothness = draw->material()->color();
+    data.colorSmoothness.a = draw->material()->smoothness();
+    data.albedoTexture = (albedoTexture == nullptr) ? 0 : albedoTexture->bindlessHandle();
+    data.normalMapTexture = (normalMapTexture == nullptr) ? 0 : normalMapTexture->bindlessHandle();
 
     // Update the uniform buffer.
     perDrawUniformBuffer_.update(data);
@@ -182,12 +186,12 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
     data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, 1.0f);
 
-	data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
-	Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
+    data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+    Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
 
-	//Invert Texture scale
-	data.textureScale = Vector4(dimens.x/texScale.x, dimens.z/texScale.y, 1.0f, 1.0f);
-	terrainUniformBuffer_.update(data);
+    //Invert Texture scale
+    data.textureScale = Vector4(dimens.x / texScale.x, dimens.z / texScale.y, 1.0f, 1.0f);
+    terrainUniformBuffer_.update(data);
 }
 
 void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const
@@ -211,23 +215,24 @@ void Renderer::executeDeferredGBufferPass() const
     // First, clear the depth buffer - don't need to clear color buffer as skybox will cover background
     glClear(GL_DEPTH_BUFFER_BIT);
 
-    // Ensure the standard shader is being used (enable all features.
-    standardShader_->bindVariant(ALL_SHADER_FEATURES);
-
     // Draw every static mesh component in the scene with the standard shaders
-    auto staticMeshes = SceneManager::instance()->staticMeshes();
-    for (unsigned int i = 0; i < staticMeshes.size(); ++i)
+    for (StaticMesh* staticMesh : SceneManager::instance()->staticMeshes())
     {
-        // Get the static mesh to draw
-        auto staticMesh = staticMeshes[i];
+        // Skip instances with no material
+        if(staticMesh->material() == nullptr)
+        {
+            continue;
+        }
 
-        // Set the correct mesh and textures
+        // Use the correct standard shader variant
+        standardShader_->bindVariant(staticMesh->material()->supportedFeatures());
+
+        // Set the correct mesh
+        // Textures are bound via bindless texture handles
         staticMesh->mesh()->bind();
-        staticMesh->texture()->bind(0);
-	staticMesh->normalMap()->bind(1);
-
+        
         // Update the per draw uniform buffer
-        updatePerDrawUniformBuffer(staticMesh);
+        updatePerDrawUniformBuffer(staticMesh, staticMesh->material()->albedoTexture(), staticMesh->material()->normalMapTexture());
 
         // Draw the mesh
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
@@ -249,8 +254,8 @@ void Renderer::executeDeferredGBufferPass() const
         //THIS IS A HACK REMOVE LATER
         ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(2);
         ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock.png")->bind(3);
-	ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow_normals.png")->bind(5);
-	ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock_normals.tga")->bind(6);
+        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow_normals.png")->bind(5);
+        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock_normals.tga")->bind(6);
 
         updateTerrainUniformBuffer(terrain);
 
