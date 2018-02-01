@@ -21,7 +21,7 @@ void windowSizeCallback(GLFWwindow* window, int newWidth, int newHeight)
 // Triggered when the window gains or loses focus
 void windowFocusCallback(GLFWwindow* window, int focused)
 {
-    if (focused)
+    if (focused && application != nullptr)
     {
         // Notify the application class when it regains focus
         application->windowFocused();
