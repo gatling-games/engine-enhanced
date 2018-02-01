@@ -21,6 +21,9 @@ public:
     // Handles component serialization
     void serialize(PropertyTable &table) override;
 
+	// Return parent transform
+	Transform* parentTransform() const { return parent_; };
+
     // Transform position / rotation / scale in local space
     Point3 positionLocal() const { return position_; }
     Quaternion rotationLocal() const { return rotation_; }
@@ -44,6 +47,12 @@ public:
     Vector3 up() const;
     Vector3 down() const;
 
+	// Changes parent transform for manipulating transform hierarchy
+	void setParentTransform(Transform* parent, bool keepWorldPosition = true);
+
+	// Detach parent transform from object
+	void detachParentTransform();
+
     // Directly sets the transformation TRS values
     void setPositionLocal(const Point3 &pos);
     void setRotationLocal(const Quaternion &rot);
@@ -60,6 +69,9 @@ private:
     Point3 position_;
     Quaternion rotation_;
     Vector3 scale_;
+
+	// Parent transform
+	Transform* parent_;
 
     // Cached transformation matrices
     Matrix4x4 worldToLocal_;

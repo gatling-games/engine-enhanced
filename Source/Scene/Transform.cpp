@@ -8,7 +8,8 @@ Transform::Transform(GameObject* gameObject)
     rotation_(Quaternion::identity()),
     scale_(Vector3::one()),
     localToWorld_(Matrix4x4::identity()),
-    worldToLocal_(Matrix4x4::identity())
+    worldToLocal_(Matrix4x4::identity()),
+	parent_(nullptr)
 {
 
 }
@@ -40,23 +41,44 @@ void Transform::serialize(PropertyTable &table)
 
 Point3 Transform::positionWorld() const
 {
-    // There is no gamneobject parenting yet
-    // world space = local space for objects with no parent
-    return positionLocal();
+    // Return local position + parent object world position.
+    // World space = local space for objects with no parent
+	if (parentTransform() != nullptr)
+	{
+		return parent_->positionWorld() + positionLocal();
+	}
+	else
+	{
+		return positionLocal();
+	}
 }
 
 Quaternion Transform::rotationWorld() const
 {
-    // There is no gamneobject parenting yet
-    // world space = local space for objects with no parent
-    return rotationLocal();
+	// Return local rotation * parent object world rotation.
+	// World space = local space for objects with no parent
+	if (parentTransform() != nullptr)
+	{
+		return parent_->rotationWorld() * rotationLocal();
+	}
+	else
+	{
+		return rotationLocal();
+	}
 }
 
 Vector3 Transform::scaleWorld() const
 {
-    // There is no gamneobject parenting yet
-    // world space = local space for objects with no parent
-    return scaleLocal();
+	// Return local scale * parent object world scale.
+	// World space = local space for objects with no parent
+	if (parentTransform() != nullptr)
+	{
+		return parent_->scaleWorld() * scaleLocal();
+	}
+	else
+	{
+		return scaleLocal();
+	}
 }
 
 Vector3 Transform::left() const
@@ -87,6 +109,16 @@ Vector3 Transform::up() const
 Vector3 Transform::down() const
 {
     return rotationWorld() * Vector3::down();
+}
+
+void Transform::setParentTransform(Transform* parent, bool keepWorldPosition)
+{
+	parent_ = parent;
+}
+
+void Transform::detachParentTransform()
+{
+	parent_ = nullptr;
 }
 
 void Transform::setPositionLocal(const Point3& pos)
@@ -124,6 +156,14 @@ void Transform::rotateLocal(float angle, const Vector3& axis)
 
 void Transform::recomputeMatrices()
 {
+	// Compute new localToWorld/worldToLocal matrices
     localToWorld_ = Matrix4x4::trs(position_, rotation_, scale_);
-    worldToLocal_ = Matrix4x4::trsInverse(position_, rotation_, scale_);
+	worldToLocal_ = Matrix4x4::trsInverse(position_, rotation_, scale_);
+
+	// If object has a parent, apply trs from parent
+	if (parent_ != nullptr)
+	{
+		localToWorld_ = parent_->localToWorld() * localToWorld();
+		worldToLocal_ = worldToLocal() * parent_->worldToLocal();
+	}	
 }
