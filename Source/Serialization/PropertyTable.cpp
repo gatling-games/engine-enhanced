@@ -32,7 +32,7 @@ PropertyTable::PropertyTable(std::stringstream &serializedData, int propertyCoun
 
         // The rest of the name is the value
         std::getline(serializedData, property.value);
-        if(property.value[property.value.length() - 1] == '\r')
+        if(!property.value.empty() && property.value[property.value.length() - 1] == '\r')
         {
             // Prevent getline from including line endins (\r).
             property.value = property.value.substr(0, property.value.length() - 1);
