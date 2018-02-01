@@ -43,4 +43,3 @@ void Terrain::drawProperties()
         ImGui::TreePop();
     }
 }
-

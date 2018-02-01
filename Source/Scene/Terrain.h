@@ -6,6 +6,7 @@
 #include "Renderer/Texture.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
+#include "Math/Vector4.h"
 
 struct TerrainLayer
 {
@@ -36,6 +37,8 @@ public:
 
     Vector2 textureWrapping() const { return textureWrap_; }
     Vector3 terrainDimensions() const { return dimensions_; }
+
+    TerrainLayer* terrainLayers() { return terrainLayers_; }
 
 private:
     Mesh* mesh_;
