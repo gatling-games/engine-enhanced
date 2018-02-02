@@ -184,14 +184,33 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 {
     TerrainUniformData data;
     Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
-    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, 1.0f);
+    int layerCount = terrain->gameObject()->terrain()->layerCount();
+
+    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, float(layerCount)); //layercount stored in extra param
 
     data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
     Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
 
     //Invert Texture scale
     data.textureScale = Vector4(dimens.x / texScale.x, dimens.z / texScale.y, 1.0f, 1.0f);
+
+
+    //Set layer textures to bindless handles, also layer attributes
+    Texture* heightmap = terrain->gameObject()->terrain()->heightmap();
+    data.terrainHeightmap = (heightmap == nullptr) ? 0 : heightmap->bindlessHandle();
+
+    TerrainLayer* layers = terrain->gameObject()->terrain()->terrainLayers();
+    for (int layer = 0; layer < layerCount; ++layer)
+    {
+        data.terrainTextures[layer*2] = (layers[layer].texture == nullptr) ? 0 : layers[layer].texture->bindlessHandle();
+        data.terrainNormalMapTextures[layer*2] = (layers[layer].normalMap == nullptr) ? 0 : layers[layer].normalMap->bindlessHandle();
+        data.slopeAltitudeData[layer] = Vector4(layers[layer].minHeight, layers[layer].maxHeight, layers[layer].minAngle, layers[layer].maxAngle);
+    }
+
+    //Update Uniform Buffer
     terrainUniformBuffer_.update(data);
+
+
 }
 
 void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const
@@ -248,15 +267,6 @@ void Renderer::executeDeferredGBufferPass() const
 
         //Set mesh and heightmap
         terrain->mesh()->bind();
-        terrain->heightmap()->bind(0);
-        terrain->texture()->bind(1);
-        terrain->normalMap()->bind(2);
-        //THIS IS A HACK REMOVE LATER
-        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock.png")->bind(3);
-        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow.psd")->bind(4);
-        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_snow_normals.png")->bind(5);
-        ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_rock_normals.tga")->bind(6);
-
         updateTerrainUniformBuffer(terrain);
 
         glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);

@@ -1,5 +1,6 @@
 #ifndef UNIFORM_BUFFERS_INCLUDED
 #define UNIFORM_BUFFERS_INCLUDED
+#define MAX_TERRAIN_LAYERS 32
 
 // Scene uniform buffer
 layout(std140) uniform scene_data
@@ -35,11 +36,12 @@ layout(std140) uniform per_draw_data
 layout(std140) uniform terrain_data
 {
     uniform vec4 _TerrainCoordinateOffsetScale; // XY is offset, ZW is scale
-    uniform vec4 _TerrainSize; // XYZW, w just defaults
+    uniform vec4 _TerrainSize; // XYZW, W is layercount(int)
     uniform vec4 _TextureScale; // XY
-    uniform vec4 _SlopeAltitudeData[32] //XY is min max slope height, ZW is min max altitude
-    sampler2D terrainTextures;
-    sampler2DArray terrainNormalMapTextres;
+    uniform vec4 _SlopeAltitudeData[MAX_TERRAIN_LAYERS]; //XY is min max slope height, ZW is min max altitude
+    sampler2D _TerrainHeightmap;
+    sampler2D _TerrainTextures[MAX_TERRAIN_LAYERS];
+    sampler2D _TerrainNormalMapTextures[MAX_TERRAIN_LAYERS];
 };
 
 

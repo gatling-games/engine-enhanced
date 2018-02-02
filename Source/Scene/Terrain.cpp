@@ -12,15 +12,13 @@ Terrain::Terrain(GameObject* gameObject)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
     heightMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/heightmap.png");
-    baseTexture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_grass.png");
-    normalMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_grass_normal.png");
+    terrainLayers_[0].texture = ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_grass.png");
+    terrainLayers_[0].normalMap = ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_grass_normal.png");
 }
 
 void Terrain::drawProperties()
 {
     ImGui::ResourceSelect<Texture>("Heightmap", "Select Heightmap", heightMap_);
-    ImGui::ResourceSelect<Texture>("Base Texture", "Select Base Texture", baseTexture_);
-    ImGui::ResourceSelect<Texture>("Normal Map", "Select Normal Map", normalMap_);
     ImGui::DragFloat2("Texture Repeat", &textureWrap_.x, 0.1f, 1.0f, 1024.0f);
     ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
     if(ImGui::TreeNode("Terrain Layers"))

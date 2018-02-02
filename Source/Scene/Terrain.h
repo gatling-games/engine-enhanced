@@ -6,7 +6,6 @@
 #include "Renderer/Texture.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
-#include "Math/Vector4.h"
 
 struct TerrainLayer
 {
@@ -23,7 +22,10 @@ struct TerrainLayer
 
 class Terrain : public Component
 {
+    
 public:
+    const static int MAX_LAYERS = 32;
+
     explicit Terrain(GameObject* gameObject);
     ~Terrain() override { }
 
@@ -39,6 +41,7 @@ public:
     Vector3 terrainDimensions() const { return dimensions_; }
 
     TerrainLayer* terrainLayers() { return terrainLayers_; }
+    int layerCount() const { return layerCount_; }
 
 private:
     Mesh* mesh_;
@@ -49,7 +52,7 @@ private:
     Vector2 textureWrap_;
     Vector3 dimensions_;
 
-    TerrainLayer terrainLayers_[32];
+    TerrainLayer terrainLayers_[MAX_LAYERS];
     int layerCount_;
     
 };

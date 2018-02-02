@@ -1,4 +1,3 @@
-
 #include "UniformBuffers.inc.shader"
 
 #define USE_GBUFFER_WRITE
@@ -8,9 +7,6 @@
 
 // Vertex attributes
 layout(location = 0) in vec4 _position;
-
-// Heightmap texture
-layout(binding = 0) uniform sampler2D _HeightmapTexture;
 
 // Interpolated values to fragment shader
 out vec4 worldPosition;
@@ -29,21 +25,21 @@ void main()
 
     // Compute the world position of the terrain.
     // Use the x and z and take the y from the heightmap
-    worldPosition = vec4(_position.x, texture(_HeightmapTexture, _position.xz).r, _position.z, 1.0);
+    worldPosition = vec4(_position.x, texture(_TerrainHeightmap, _position.xz).r, _position.z, 1.0);
     worldPosition.xyz *= _TerrainSize.xyz;
 
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * worldPosition;
 
-    ivec2 heightmapRes = textureSize(_HeightmapTexture, 0);
+    ivec2 heightmapRes = textureSize(_TerrainHeightmap, 0);
     vec2 heightmapTexelSize = 1.0 / heightmapRes;
 
     // Get the normal in world space
     vec4 h;
-    h.x = texture(_HeightmapTexture, _position.xz+ heightmapTexelSize * vec2(0.0, -1.0)).r * _TerrainSize.y;
-    h.y = texture(_HeightmapTexture, _position.xz+ heightmapTexelSize * vec2(-1.0, 0.0)).r * _TerrainSize.y;
-    h.z = texture(_HeightmapTexture, _position.xz+ heightmapTexelSize * vec2(1.0, 0.0)).r * _TerrainSize.y;
-    h.w = texture(_HeightmapTexture, _position.xz+ heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
+    h.x = texture(_TerrainHeightmap, _position.xz+ heightmapTexelSize * vec2(0.0, -1.0)).r * _TerrainSize.y;
+    h.y = texture(_TerrainHeightmap, _position.xz+ heightmapTexelSize * vec2(-1.0, 0.0)).r * _TerrainSize.y;
+    h.z = texture(_TerrainHeightmap, _position.xz+ heightmapTexelSize * vec2(1.0, 0.0)).r * _TerrainSize.y;
+    h.w = texture(_TerrainHeightmap, _position.xz+ heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
     worldNormal.z = h.w - h.x;
     worldNormal.x = h.z - h.y;
     worldNormal.y = 2.0;
@@ -63,15 +59,6 @@ void main()
 
 #ifdef FRAGMENT_SHADER
 
-// Texture inputs
-layout(binding = 0) uniform sampler2D _HeightmapTexture;
-layout(binding = 1) uniform sampler2D _Texture;
-layout(binding = 2) uniform sampler2D _NormalMap;
-layout(binding = 3) uniform sampler2D _RockTex;
-layout(binding = 4) uniform sampler2D _SnowTex;
-layout(binding = 5) uniform sampler2D _SnowNormalMap;
-layout(binding = 6) uniform sampler2D _RockNormalMap;
-
 // Interpolated values from vertex shader
 in vec4 worldPosition;
 in vec3 worldNormal;
@@ -89,19 +76,19 @@ void main()
 
     // Work out interpolation factors for the rock and snow layers
     // Based on altitude and slope (ak world y)
-    float rockLerp = clamp((1.0 - worldNormal.y) * 3.0 - 0.5, 0.0, 1.0);
-    float snowLerp = clamp(worldPosition.y * 2.0 - 50, 0.0, 1.0);
+    //float rockLerp = clamp((1.0 - worldNormal.y) * 3.0 - 0.5, 0.0, 1.0);
+    //float snowLerp = clamp(worldPosition.y * 2.0 - 50, 0.0, 1.0);
 
 #ifdef TEXTURE_ON
     // Sample the diffuse textures for each texture layer
-    vec4 baseDiffuse = texture(_Texture, texcoord*_TextureScale.xy);
-    vec4 rockDiffuse = texture(_RockTex, texcoord*_TextureScale.xy);
-    vec4 snowDiffuse = texture(_SnowTex, texcoord*_TextureScale.xy);
+    vec4 baseDiffuse = texture(_TerrainTextures[0], texcoord * _TextureScale.xy);
+    //vec4 rockDiffuse = texture(_RockTex, texcoord*_TextureScale.xy);
+    //vec4 snowDiffuse = texture(_SnowTex, texcoord*_TextureScale.xy);
 
     // Blend the rock and snow textures into the base texture
-    vec4 diffuseGloss = mix(mix(baseDiffuse, rockDiffuse, rockLerp), snowDiffuse, snowLerp);
-    surface.diffuseColor = diffuseGloss.rgb;
-    surface.gloss = diffuseGloss.a;
+    //vec4 diffuseGloss = mix(mix(baseDiffuse, rockDiffuse, rockLerp), snowDiffuse, snowLerp);
+    surface.diffuseColor = baseDiffuse.rgb;
+    surface.gloss = baseDiffuse.a;
 #else
     surface.diffuseColor = vec3(1.0);
     surface.gloss = 0.2;
@@ -109,10 +96,10 @@ void main()
 
 #ifdef NORMAL_MAP_ON
     // Sample the normal map textures for each texture layer
-    vec3 baseNormals = unpackDXT5nm(texture(_NormalMap, texcoord * _TextureScale.xy));
-    vec3 rockNormals = unpackDXT5nm(texture(_RockNormalMap, texcoord * _TextureScale.xy));
-    vec3 snowNormals = unpackDXT5nm(texture(_SnowNormalMap, texcoord * _TextureScale.xy));
-    vec3 tangentNormal = mix(mix(baseNormals, rockNormals, rockLerp), snowNormals, snowLerp);
+    vec3 tangentNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[0], texcoord * _TextureScale.xy));
+    //vec3 rockNormals = unpackDXT5nm(texture(_RockNormalMap, texcoord * _TextureScale.xy));
+    //vec3 snowNormals = unpackDXT5nm(texture(_SnowNormalMap, texcoord * _TextureScale.xy));
+    //vec3 tangentNormal = mix(mix(baseNormals, rockNormals, rockLerp), snowNormals, snowLerp);
 
     // Convert the normal to world space
     surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);

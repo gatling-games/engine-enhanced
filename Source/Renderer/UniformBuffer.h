@@ -9,6 +9,7 @@
 
 // For bindlesstexturehandle
 #include "Renderer/Texture.h"
+#include "Scene/Terrain.h"
 
 // Enum for specifying buffer type to UniformBuffer constructor
 enum class UniformBufferType
@@ -42,14 +43,17 @@ struct CameraUniformData
     Matrix4x4 clipToWorld;
 };
 
+
 struct TerrainUniformData
 {
     Vector4 terrainCoordinateOffsetScale;
     Vector4 terrainSize;
 	Vector4 textureScale;
-	Vector4 slopeAltitudeData[32];
-    BindlessTextureHandle terrainTextures;
-    BindlessTextureHandle terrainNormalMapTextures;
+	Vector4 slopeAltitudeData[Terrain::MAX_LAYERS];
+    BindlessTextureHandle terrainHeightmap;
+    uint16_t padding;
+    BindlessTextureHandle terrainTextures[Terrain::MAX_LAYERS*2];
+    BindlessTextureHandle terrainNormalMapTextures[Terrain::MAX_LAYERS*2];
 };
 
 // Plain old uniform data for converting object local coordinates to world space
