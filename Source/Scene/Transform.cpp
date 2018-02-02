@@ -114,18 +114,19 @@ Vector3 Transform::down() const
 void Transform::setParentTransform(Transform* parent, bool keepWorldPosition)
 {
     parent_ = parent;
+    parent_->addChild(this);
     recomputeMatrices();
 }
 
 void Transform::detachParentTransform()
 {
+    parent_->removeChild(this);
     parent_ = nullptr;
     recomputeMatrices();
 }
 
 void Transform::onTransformChanged()
 {
-    // Recompute matrices and loop through children, recomputing their matrices
     recomputeMatrices();
 }
 
@@ -173,5 +174,31 @@ void Transform::recomputeMatrices()
     {
         localToWorld_ = parent_->localToWorld() * localToWorld();
         worldToLocal_ = worldToLocal() * parent_->worldToLocal();
+    }
+
+    // Recompute matrices for all children
+    for (int i = 0; i < children_.size(); i++)
+    {
+        children_[i]->recomputeMatrices();
+    }
+}
+
+void Transform::addChild(Transform* child)
+{
+    children_.push_back(child);
+}
+
+void Transform::removeChild(Transform* child)
+{
+    for (int i = 0; i < children_.size(); i++)
+    {
+        if (children_[i] == child)
+        {
+            // Swap & pop child element scheduled for removal
+            Transform* temp = children_[i];
+            children_[i] = children_.back();
+            children_.back() = temp;
+            children_.pop_back();
+        }
     }
 }

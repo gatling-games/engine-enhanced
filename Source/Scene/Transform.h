@@ -76,8 +76,15 @@ private:
 	// Parent transform
 	Transform* parent_;
 
+    // Child transforms
+    std::vector<Transform*> children_;
+
     // Cached transformation matrices
     Matrix4x4 worldToLocal_;
     Matrix4x4 localToWorld_;
     void recomputeMatrices();
+
+    // For adding and removal of child transforms
+    void addChild(Transform* child);
+    void removeChild(Transform* child);
 };
