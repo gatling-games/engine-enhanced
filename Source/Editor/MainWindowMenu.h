@@ -7,6 +7,7 @@
 #include "Utils/Singleton.h"
 
 typedef std::function<void()> MenuItemCallback;
+typedef std::function<bool()> MenuItemCheckedCallback;
 
 class MainWindowMenu : public Singleton<MainWindowMenu>
 {
@@ -14,6 +15,7 @@ class MainWindowMenu : public Singleton<MainWindowMenu>
     {
         std::string text;
         std::vector<MenuItemCallback> callbacks;
+        std::vector<MenuItemCheckedCallback> checkedCallbacks;
         std::vector<MenuItem> children;
 
         MenuItem(const std::string &text)
@@ -31,6 +33,11 @@ public:
     // The callback function will be triggered whenever the menu item is clicked.
     void addMenuItem(const std::string& path, MenuItemCallback callback);
 
+    // Adds a new menu item
+    // This overload includes a second function, used to determine if the menu item
+    // is currently checked or unchecked.
+    void addMenuItem(const std::string& path, MenuItemCallback callback, MenuItemCheckedCallback checkedCallback);
+
     // Draws the menu using imgui
     void draw() const;
 
@@ -44,6 +51,9 @@ private:
     // Recursively draws a menu item and its children.
     // Menu callbacks will be triggered if an item is clicked.
     void drawItem(const MenuItem &item) const;
+
+    // Calls a menu item's checked callback to determine if it is currently checked.
+    bool isItemChecked(const MenuItem &item) const;
 
     // Triggers callbacks when a menu item is pressed.
     void itemPressed(const MenuItem &item) const;

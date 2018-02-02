@@ -18,6 +18,15 @@ void MainWindowMenu::addMenuItem(const std::string& path, MenuItemCallback callb
     findOrCreateMenuItem(path)->callbacks.push_back(callback);
 }
 
+// Adds a new menu item
+// This overload includes a second function, used to determine if the menu item
+// is currently checked or unchecked.
+void MainWindowMenu::addMenuItem(const std::string& path, MenuItemCallback callback, MenuItemCheckedCallback checkedCallback)
+{
+    findOrCreateMenuItem(path)->callbacks.push_back(callback);
+    findOrCreateMenuItem(path)->checkedCallbacks.push_back(checkedCallback);
+}
+
 void MainWindowMenu::draw() const
 {
     ImGui::BeginMainMenuBar();
@@ -40,24 +49,28 @@ MainWindowMenu::MenuItem* MainWindowMenu::findOrCreateMenuItem(const std::string
         parentNode = findOrCreateMenuItem(fs::path(path).parent_path().string());
     }
 
+    // Determine the text that should appear on the menu item
+    const std::string text = fs::path(path).filename().string();
+
     // Look for an existing node
     for (MenuItem &child : parentNode->children)
     {
-        if (child.text == path)
+        if (child.text == text)
         {
             return &child;
         }
     }
 
     // No existing node. Create a new one
-    parentNode->children.push_back(MenuItem(fs::path(path).filename().string()));
+    parentNode->children.push_back(MenuItem(text));
     return &parentNode->children.back();
 }
 
 void MainWindowMenu::drawItem(const MainWindowMenu::MenuItem &item) const
 {
     // If the item has no children, draw a simple menu item.
-    if (item.children.empty() && ImGui::MenuItem(item.text.c_str()))
+    bool checked = isItemChecked(item);
+    if (item.children.empty() && ImGui::MenuItem(item.text.c_str(), (const char*)0, checked))
     {
         itemPressed(item);
     }
@@ -72,6 +85,22 @@ void MainWindowMenu::drawItem(const MainWindowMenu::MenuItem &item) const
 
         ImGui::EndMenu();
     }
+}
+
+bool MainWindowMenu::isItemChecked(const MainWindowMenu::MenuItem &item) const
+{
+    // Check if any checked callback is true
+    for (const MenuItemCheckedCallback &callback : item.checkedCallbacks)
+    {
+        if (callback())
+        {
+            // The callback indicated the item is checked.
+            return true;
+        }
+    }
+
+    // Either no checked callback returned true, or there are no callbacks
+    return false;
 }
 
 void MainWindowMenu::itemPressed(const MainWindowMenu::MenuItem &item) const

@@ -4,6 +4,9 @@
 #include <imgui_internal.h>
 #include <functional>
 
+#include "RenderManager.h"
+#include "MainWindowMenu.h"
+
 // Panel placement config
 const float MainWindow::GamePanelWidth = 0.55f;
 const float MainWindow::ScenePanelWidth = 0.18f;
@@ -21,7 +24,7 @@ MainWindow::MainWindow()
     resourcesPanel_(),
     propertiesPanel_()
 {
-
+    MainWindowMenu::instance()->addMenuItem("Tools/Toggle ImGui test", [&] { drawImGuiTestWindow_ = !drawImGuiTestWindow_; });
 }
 
 void MainWindow::resize(int width, int height)
@@ -33,7 +36,7 @@ void MainWindow::resize(int width, int height)
 void MainWindow::repaint()
 {
     // Draw the top file/edit menu
-    drawMainMenu();
+    mainMenu_.draw();
 
     // If the user has selected the test window, display that instead.
     if (drawImGuiTestWindow_)
@@ -49,45 +52,6 @@ void MainWindow::repaint()
     drawPanel(scenePanel_, scenePanelRect());
     drawPanel(resourcesPanel_, resourcesPanelRect());
     drawPanel(propertiesPanel_, propertiesPanelRect());
-}
-
-void MainWindow::drawMainMenu()
-{
-    if (ImGui::BeginMainMenuBar())
-    {
-        drawMenu("File");
-        drawMenu("Edit");
-        drawMenu("View");
-        drawMenu("Game");
-        drawMenu("Scene");
-        drawMenu("Resources");
-        drawMenu("Tools");
-
-        ImGui::EndMainMenuBar();
-    }
-}
-
-void MainWindow::drawMenu(const std::string &menuName)
-{
-    if (ImGui::BeginMenu(menuName.c_str()))
-    {
-        // Ensure the Tools menu includes an imgui test windw toggle
-        if (menuName == "Tools" && ImGui::MenuItem("Toggle ImGui Test"))
-        {
-            drawImGuiTestWindow_ = !drawImGuiTestWindow_;
-        }
-
-        // Let each panel draw into the menu
-        gamePanel_.drawMenu(menuName);
-        debugPanel_.drawMenu(menuName);
-        outputPanel_.drawMenu(menuName);
-        scenePanel_.drawMenu(menuName);
-        resourcesPanel_.drawMenu(menuName);
-        propertiesPanel_.drawMenu(menuName);
-
-        // Finally, close the menu
-        ImGui::EndMenu();
-    }
 }
 
 Rect MainWindow::fullRect() const

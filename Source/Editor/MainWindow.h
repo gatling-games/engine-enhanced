@@ -2,6 +2,7 @@
 
 #include "Math/Rect.h"
 
+#include "MainWindowMenu.h"
 #include "EditorPanel.h"
 #include "GamePanel.h"
 #include "OutputPanel.h"
@@ -45,6 +46,9 @@ private:
     // Toggles between drawing the window and the imgui test window.
     bool drawImGuiTestWindow_;
 
+    // The menu at the top of the window.
+    MainWindowMenu mainMenu_;
+
     // Panels in the window
     GamePanel gamePanel_;
     OutputPanel outputPanel_;
@@ -52,13 +56,6 @@ private:
     ScenePanel scenePanel_;
     ResourcesPanel resourcesPanel_;
     PropertiesPanel propertiesPanel_;
-
-    // Draws the menu at the top of the window.
-    void drawMainMenu();
-
-    // Draws a menu dropdown in the main menu.
-    // Gives a chance for each panel to draw into the menu.
-    void drawMenu(const std::string &name);
 
     // Regions for each editor panel.
     Rect fullRect() const;

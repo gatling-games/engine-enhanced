@@ -1,6 +1,9 @@
 #include "SceneManager.h"
 #include "imgui.h"
 
+#include "Editor/MainWindowMenu.h"
+#include "Editor/PropertiesPanel.h"
+
 #include "Scene/GameObject.h"
 #include "Scene/Transform.h"
 #include "Scene/Camera.h"
@@ -32,6 +35,12 @@ SceneManager::SceneManager()
 	heliGO->findComponent<Transform>()->setScaleLocal(Point3(100.0f, 100.0f, 100.0f));
 	heliGO->createComponent<StaticMesh>();
 	heliGO->createComponent<Helicopter>();
+
+    // Register menu items for creating new gameobjects
+    addCreateGameObjectMenuItem<Transform>("Blank GameObject");
+    addCreateGameObjectMenuItem<Camera>("Camera");
+    addCreateGameObjectMenuItem<StaticMesh>("Static Mesh");
+    addCreateGameObjectMenuItem<Terrain>("Terrain");
 }
 
 void SceneManager::drawDebugMenu()
@@ -112,4 +121,14 @@ const std::vector<Terrain*> SceneManager::terrains() const
     }
 
     return meshes;
+}
+
+
+template<typename T>
+void SceneManager::addCreateGameObjectMenuItem(const std::string &gameObjectName)
+{
+    MainWindowMenu::instance()->addMenuItem(
+        "Scene/New GameObject/" + gameObjectName,
+        [=] { PropertiesPanel::instance()->inspect(createGameObject(gameObjectName)->createComponent<T>()->gameObject()); }
+    );
 }

@@ -46,4 +46,10 @@ private:
     
     // The current deferred debugging mode.
     RenderDebugMode debugMode_;
+
+    // Adds a menu item for toggling a global shader feature.
+    void addShaderFeatureMenuItem(ShaderFeature feature, const std::string &name);
+
+    // Adds a menu item for switching to a debugging mode.
+    void addDebugModeMenuItem(RenderDebugMode mode, const std::string &name);
 };

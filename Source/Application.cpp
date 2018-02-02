@@ -20,8 +20,8 @@ Application::Application(GLFWwindow* window)
     // Create engine modules
     inputManager_ = new InputManager(window);
     resourceManager_ = new ResourceManager("Resources/", "Build/Resources");
-    sceneManager_ = new SceneManager();
     editorManager_ = new EditorManager(window, true);
+    sceneManager_ = new SceneManager();
     renderManager_ = new RenderManager();
 
     // Register engine module debug menus

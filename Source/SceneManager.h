@@ -41,4 +41,8 @@ private:
     // For now, store objects in a vector of pointers
     // This should be replaced with a more cache-friendly structure
     std::vector<GameObject*> gameObjects_;
+
+    // Adds a menu item for creating a new gameobject with the given component
+    template<typename T>
+    void addCreateGameObjectMenuItem(const std::string &gameObjectName);
 };
