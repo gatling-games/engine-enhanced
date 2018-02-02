@@ -72,9 +72,6 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application.h" />
-    <ClInclude Include="Source\Editor\EditorMainWindow.h">
-      <Filter>Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Editor\EditorPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
@@ -171,6 +168,9 @@
     <ClInclude Include="Source\Importers\MaterialImporter.h">
       <Filter>Importers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Editor\MainWindow.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -215,9 +215,6 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\Editor\EditorMainWindow.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Math\Rect.cpp">
       <Filter>Math</Filter>
     </ClCompile>
@@ -292,6 +289,9 @@
     </ClCompile>
     <ClCompile Include="Source\Importers\MaterialImporter.cpp">
       <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\MainWindow.cpp">
+      <Filter>Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

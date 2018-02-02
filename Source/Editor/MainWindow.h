@@ -1,9 +1,6 @@
 #pragma once
 
-#include <imgui.h>
-#include <vector>
-
-#include "Math\Rect.h"
+#include "Math/Rect.h"
 
 #include "EditorPanel.h"
 #include "GamePanel.h"
@@ -13,7 +10,7 @@
 #include "ResourcesPanel.h"
 #include "PropertiesPanel.h"
 
-class EditorMainWindow
+class MainWindow
 {
 private:
     static const float GamePanelWidth;
@@ -24,7 +21,7 @@ private:
     static const float OutputPanelMaxHeight;
 
 public:
-    EditorMainWindow();
+    MainWindow();
 
     // Pointers to each editor panel
     GamePanel* gamePanel() { return &gamePanel_; }

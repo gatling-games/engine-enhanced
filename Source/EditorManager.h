@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Application.h"
-#include "Editor/EditorMainWindow.h"
+#include "Editor/MainWindow.h"
 #include "Utils/Singleton.h"
 
 class EditorManager : public ApplicationModule, public Singleton<EditorManager>
@@ -25,5 +25,5 @@ public:
 
 private:
     GLFWwindow* glfwWindow_;
-    EditorMainWindow mainWindow_;
+    MainWindow mainWindow_;
 };
