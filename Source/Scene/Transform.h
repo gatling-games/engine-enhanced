@@ -53,6 +53,9 @@ public:
 	// Detach parent transform from object
 	void detachParentTransform();
 
+    // Callback when transform is changed for child notification
+    void onTransformChanged();
+
     // Directly sets the transformation TRS values
     void setPositionLocal(const Point3 &pos);
     void setRotationLocal(const Quaternion &rot);

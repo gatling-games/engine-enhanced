@@ -114,11 +114,19 @@ Vector3 Transform::down() const
 void Transform::setParentTransform(Transform* parent, bool keepWorldPosition)
 {
     parent_ = parent;
+    recomputeMatrices();
 }
 
 void Transform::detachParentTransform()
 {
     parent_ = nullptr;
+    recomputeMatrices();
+}
+
+void Transform::onTransformChanged()
+{
+    // Recompute matrices and loop through children, recomputing their matrices
+    recomputeMatrices();
 }
 
 void Transform::setPositionLocal(const Point3& pos)
