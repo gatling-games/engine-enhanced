@@ -29,14 +29,14 @@ void Terrain::drawProperties()
         }
         for (int layer = 0; layer < layerCount_; layer++)
         {
-			ImGui::PushID(layer);
+            ImGui::PushID(layer);
             ImGui::InputText("", (char*)&terrainLayers_[layer].name, sizeof(terrainLayers_[layer].name));
-			ImGui::DragFloat2("Height Span", &terrainLayers_[layer].minMaxHeight.x, 0.1f, 0.0f, 100.0f);
-			ImGui::DragFloat2("Angle Span", &terrainLayers_[layer].minMaxAngle.x, 0.1f, 0.0f, 90.0f);
-			ImGui::ResourceSelect<Texture>("Texture", "Select Layer Texture",terrainLayers_[layer].texture);
-			ImGui::ResourceSelect<Texture>("Normal Map", "Select Layer Normal Map", terrainLayers_[layer].normalMap);
-			ImGui::Spacing();
-			ImGui::PopID();
+            ImGui::DragFloat2("Angle Span", &terrainLayers_[layer].minMaxAngle.x, 0.1f, 0.0f, 90.0f);
+            ImGui::DragFloat2("Height Span", &terrainLayers_[layer].minMaxHeight.x, 0.1f, 0.0f, 100.0f);
+            ImGui::ResourceSelect<Texture>("Texture", "Select Layer Texture",terrainLayers_[layer].texture);
+            ImGui::ResourceSelect<Texture>("Normal Map", "Select Layer Normal Map", terrainLayers_[layer].normalMap);
+            ImGui::Spacing();
+            ImGui::PopID();
         }
         ImGui::TreePop();
     }

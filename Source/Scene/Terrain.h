@@ -10,12 +10,8 @@
 struct TerrainLayer
 {
     char name[16] = "Layer";
-	Vector2 minMaxHeight = Vector2(0.0f, 10.0f);
-    float minHeight = 0.0f;
-    float maxHeight = 10.0f;
+	Vector2 minMaxHeight = Vector2(0.0f, 100.0f);
 	Vector2 minMaxAngle = Vector2(0.0f, 90.0f);
-    float minAngle = 0.0f;
-    float maxAngle = 90.0f;
     Texture* texture = nullptr;
     Texture* normalMap = nullptr;
 };

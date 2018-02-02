@@ -74,37 +74,45 @@ void main()
     SurfaceProperties surface;
     surface.occlusion = 1.0;
 
-    // Work out interpolation factors for the rock and snow layers
-    // Based on altitude and slope (ak world y)
-    //float rockLerp = clamp((1.0 - worldNormal.y) * 3.0 - 0.5, 0.0, 1.0);
-    //float snowLerp = clamp(worldPosition.y * 2.0 - 50, 0.0, 1.0);
-
 #ifdef TEXTURE_ON
-    // Sample the diffuse textures for each texture layer
-    vec4 baseDiffuse = texture(_TerrainTextures[0], texcoord * _TextureScale.xy);
-    //vec4 rockDiffuse = texture(_RockTex, texcoord*_TextureScale.xy);
-    //vec4 snowDiffuse = texture(_SnowTex, texcoord*_TextureScale.xy);
 
-    // Blend the rock and snow textures into the base texture
-    //vec4 diffuseGloss = mix(mix(baseDiffuse, rockDiffuse, rockLerp), snowDiffuse, snowLerp);
-    surface.diffuseColor = baseDiffuse.rgb;
-    surface.gloss = baseDiffuse.a;
+    // Sample and blend albedo textures for each texture layer
+    float layerLerp;
+    vec4 baseAlbedo = texture(_TerrainTextures[0], texcoord * _TextureScale.xy);
+    for (int i = 1; i < _TerrainSize.w; ++i)
+    {
+        vec4 temp = baseAlbedo;
+        layerLerp = clamp(worldPosition.y * 2.0 - _SlopeAltitudeData[i].z, 0.0, 1.0);
+        vec4 layerAlbedo = texture(_TerrainTextures[i], texcoord * _TextureScale.xy);
+        baseAlbedo = mix(baseAlbedo, layerAlbedo, layerLerp);
+        layerLerp = clamp(-worldPosition.y / (1/2.0) + _SlopeAltitudeData[i].w, 0.0, 1.0);
+        baseAlbedo = mix(temp, baseAlbedo, layerLerp);
+    }
+
+    surface.diffuseColor = baseAlbedo.rgb;
+    surface.gloss = baseAlbedo.a;
 #else
     surface.diffuseColor = vec3(1.0);
     surface.gloss = 0.2;
 #endif
 
 #ifdef NORMAL_MAP_ON
-    // Sample the normal map textures for each texture layer
-    vec3 tangentNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[0], texcoord * _TextureScale.xy));
-    //vec3 rockNormals = unpackDXT5nm(texture(_RockNormalMap, texcoord * _TextureScale.xy));
-    //vec3 snowNormals = unpackDXT5nm(texture(_SnowNormalMap, texcoord * _TextureScale.xy));
-    //vec3 tangentNormal = mix(mix(baseNormals, rockNormals, rockLerp), snowNormals, snowLerp);
+    // Sample and blend the normal map textures for each texture layer
+    vec3 baseNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[0], texcoord * _TextureScale.xy));
+    for (int i = 1; i < _TerrainSize.w; ++i)
+    {
+        vec3 temp = baseNormal;
+        layerLerp = clamp(worldPosition.y * 2.0 - _SlopeAltitudeData[i].z, 0.0, 1.0);
+        vec3 layerNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[i], texcoord * _TextureScale.xy));
+        baseNormal = mix(baseNormal, layerNormal, layerLerp);
+        layerLerp = clamp(-worldPosition.y / (1 / 2.0) + _SlopeAltitudeData[i].w, 0.0, 1.0);
+        baseNormal = mix(temp, baseNormal, layerLerp);
+    }
 
     // Convert the normal to world space
-    surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
-    surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
-    surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
+    surface.worldNormal.x = dot(baseNormal, tangentToWorld[0]);
+    surface.worldNormal.y = dot(baseNormal, tangentToWorld[1]);
+    surface.worldNormal.z = dot(baseNormal, tangentToWorld[2]);
 #else
     surface.worldNormal = worldNormal;
 #endif

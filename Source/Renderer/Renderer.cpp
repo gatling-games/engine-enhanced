@@ -188,7 +188,7 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 
     data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, float(layerCount)); //layercount stored in extra param
 
-    data.terrainCoordinateOffsetScale = Vector4(0.0f, 0.0f, 1.0f, 1.0f);
+    data.terrainCoordinateOffsetScale = Vector4(1.0f, 0.0f, 1.0f, 1.0f);
     Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
 
     //Invert Texture scale
@@ -204,7 +204,7 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     {
         data.terrainTextures[layer*2] = (layers[layer].texture == nullptr) ? 0 : layers[layer].texture->bindlessHandle();
         data.terrainNormalMapTextures[layer*2] = (layers[layer].normalMap == nullptr) ? 0 : layers[layer].normalMap->bindlessHandle();
-        data.slopeAltitudeData[layer] = Vector4(layers[layer].minHeight, layers[layer].maxHeight, layers[layer].minAngle, layers[layer].maxAngle);
+        data.slopeAltitudeData[layer] = Vector4(layers[layer].minMaxAngle.x, layers[layer].minMaxAngle.y, layers[layer].minMaxHeight.x, layers[layer].minMaxHeight.y);
     }
 
     //Update Uniform Buffer
