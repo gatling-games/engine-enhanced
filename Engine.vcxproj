@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Editor\EditableObject.h" />
+    <ClInclude Include="Source\Editor\MainWindowMenu.h" />
     <ClInclude Include="Source\Importers\MaterialImporter.h" />
     <ClInclude Include="Source\Renderer\Material.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
@@ -64,6 +65,7 @@
     <ClInclude Include="Source\Utils\Singleton.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Editor\MainWindowMenu.cpp" />
     <ClCompile Include="Source\Importers\MaterialImporter.cpp" />
     <ClCompile Include="Source\Renderer\Material.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />

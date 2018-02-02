@@ -171,6 +171,9 @@
     <ClInclude Include="Source\Editor\MainWindow.h">
       <Filter>Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Editor\MainWindowMenu.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -291,6 +294,9 @@
       <Filter>Importers</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\MainWindow.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\MainWindowMenu.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
   </ItemGroup>
