@@ -18,9 +18,9 @@ Application::Application(GLFWwindow* window)
 	clock_->setPaused(true);
 
     // Create engine modules
+    editorManager_ = new EditorManager(window, true);
     inputManager_ = new InputManager(window);
     resourceManager_ = new ResourceManager("Resources/", "Build/Resources");
-    editorManager_ = new EditorManager(window, true);
     sceneManager_ = new SceneManager();
     renderManager_ = new RenderManager();
 
