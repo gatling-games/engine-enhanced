@@ -152,7 +152,6 @@ void MainWindow::drawPanel(EditorPanel &panel, const Rect &size)
     // Ensure the panel has borders and can't be moved
     // or collapsed by the user.
     ImGuiWindowFlags flags = 0;
-    flags |= ImGuiWindowFlags_ShowBorders;
     flags |= ImGuiWindowFlags_NoCollapse;
     flags |= ImGuiWindowFlags_NoMove;
     flags |= ImGuiWindowFlags_NoResize;
