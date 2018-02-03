@@ -5,14 +5,10 @@
 #include "Application.h"
 #include "Utils/Singleton.h"
 
-class Clock : public ApplicationModule, public Singleton<Clock>
+class Clock : public Singleton<Clock>
 {
 public:
     Clock();
-
-    // ApplicationModule callbacks
-    std::string name() const { return "Clock Manager"; }
-    void drawDebugMenu() override;
 
     // Return and set game pause state
     bool paused() const;

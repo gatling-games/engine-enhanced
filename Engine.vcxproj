@@ -18,7 +18,6 @@
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
     <ClInclude Include="Source\EditorManager.h" />
-    <ClInclude Include="Source\Editor\DebugPanel.h" />
     <ClInclude Include="Source\Editor\MainWindow.h" />
     <ClInclude Include="Source\Editor\EditorPanel.h" />
     <ClInclude Include="Source\Editor\GamePanel.h" />
@@ -71,7 +70,6 @@
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
     <ClCompile Include="Source\EditorManager.cpp" />
-    <ClCompile Include="Source\Editor\DebugPanel.cpp" />
     <ClCompile Include="Source\Editor\MainWindow.cpp" />
     <ClCompile Include="Source\Editor\GamePanel.cpp" />
     <ClCompile Include="Source\Editor\OutputPanel.cpp" />

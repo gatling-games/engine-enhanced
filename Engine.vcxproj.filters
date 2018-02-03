@@ -84,9 +84,6 @@
     <ClInclude Include="Source\Editor\OutputPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Editor\DebugPanel.h">
-      <Filter>Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Editor\ScenePanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
@@ -234,9 +231,6 @@
       <Filter>Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\ScenePanel.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Editor\DebugPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\EditorManager.cpp" />

@@ -62,16 +62,6 @@ void InputManager::frameStart(const Clock* clock)
     previousFrameJoystickAxes_ = joystickAxes_;
 }
 
-void InputManager::drawDebugMenu()
-{
-    ImGui::Text("Input Manager");
-
-    for (int i = 0; i < (int)pressedKeys_.size(); i++)
-    {
-        ImGui::Text("Key %i pressed", pressedKeys_[i]);
-    }
-}
-
 void InputManager::enableInput()
 {
     ignoringInput_ = false;

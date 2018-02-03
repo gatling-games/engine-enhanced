@@ -4,7 +4,6 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-#include "Application.h"
 #include "Utils/Singleton.h"
 #include "Math\Vector2.h"
 #include "Math\Vector3.h"
@@ -146,17 +145,13 @@ struct InputCmd
     // Add commands for shooting etc
 };
 
-class InputManager : public ApplicationModule, public Singleton<InputManager>
+class InputManager : public Singleton<InputManager>
 {
 public:
     explicit InputManager(GLFWwindow* window);
 
     // Called every frame
     void frameStart(const Clock* clock);
-
-    // ApplicationModule callbacks
-    std::string name() const { return "Input Manager"; }
-    void drawDebugMenu() override;
 
     // Allows all input to be enabled and disabled.
     // This should be used when the game is paused, or the game panel does not have focus.

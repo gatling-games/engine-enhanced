@@ -19,7 +19,6 @@ MainWindow::MainWindow()
     : drawImGuiTestWindow_(false),
     gamePanel_(),
     outputPanel_(),
-    debugPanel_(),
     scenePanel_(),
     resourcesPanel_(),
     propertiesPanel_()
@@ -48,7 +47,6 @@ void MainWindow::repaint()
     // Draw each editor panel in the correct location
     drawPanel(gamePanel_, gamePanelRect());
     drawPanel(outputPanel_, outputPanelRect());
-    drawPanel(debugPanel_, debugPanelRect());
     drawPanel(scenePanel_, scenePanelRect());
     drawPanel(resourcesPanel_, resourcesPanelRect());
     drawPanel(propertiesPanel_, propertiesPanelRect());
@@ -102,22 +100,9 @@ Rect MainWindow::outputPanelRect() const
     float minx = gamePanelRect().min().x;
     float miny = gamePanelRect().max().y;
 
-    // Match half of the game panel width, and fit against the window bottom
-    float width = gamePanelRect().width * 0.5f;
+    // Match the game panel width, and fit against the window bottom
+    float width = gamePanelRect().width;
     float height = fullRect().height - gamePanelRect().max().y;
-
-    return Rect(minx, miny, width, height).roundedToPixels();
-}
-
-Rect MainWindow::debugPanelRect() const
-{
-    // Position to the right of the output panel
-    float minx = outputPanelRect().max().x;
-    float miny = outputPanelRect().min().y;
-
-    // Fill the rest of the game panel width, and fit against the window bottom
-    float width = gamePanelRect().max().x - outputPanelRect().max().x;
-    float height = outputPanelRect().height;
 
     return Rect(minx, miny, width, height).roundedToPixels();
 }

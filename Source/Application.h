@@ -11,13 +11,6 @@ class ResourceManager;
 class SceneManager;
 class RenderManager;
 
-class ApplicationModule
-{
-public:
-    virtual std::string name() const = 0;
-    virtual void drawDebugMenu() { }
-};
-
 class Application
 {
 public:

@@ -3,7 +3,6 @@
 #include <memory>
 #include <vector>
 
-#include "Application.h"
 #include "Utils/Singleton.h"
 
 #include "Scene/GameObject.h"
@@ -12,14 +11,10 @@
 #include "Scene/StaticMesh.h"
 #include "Scene/Terrain.h"
 
-class SceneManager : public ApplicationModule, public Singleton<SceneManager>
+class SceneManager : public Singleton<SceneManager>
 {
 public:
     SceneManager();
-
-    // ApplicationModule overrides
-    std::string name() const override { return "Scene Manager"; }
-    void drawDebugMenu() override;
 
     // Called each frame.
     void frameStart();

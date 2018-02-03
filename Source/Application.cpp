@@ -27,12 +27,6 @@ Application::Application(const std::string &name, GLFWwindow* window)
     sceneManager_ = new SceneManager();
     renderManager_ = new RenderManager();
 
-    // Register engine module debug menus
-    editorManager_->addModuleToDebugPanel(clock_);
-    editorManager_->addModuleToDebugPanel(inputManager_);
-    editorManager_->addModuleToDebugPanel(resourceManager_);
-    editorManager_->addModuleToDebugPanel(sceneManager_);
-
     // Create a Quit menu item
     MainWindowMenu::instance()->addMenuItem("File/Exit", [&] { running_ = false; });
 }

@@ -43,16 +43,6 @@ SceneManager::SceneManager()
     addCreateGameObjectMenuItem<Terrain>("Terrain");
 }
 
-void SceneManager::drawDebugMenu()
-{
-    Point3 pos = gameObjects_[1]->transform()->positionLocal();
-    Vector3 scale = gameObjects_[1]->transform()->scaleLocal();
-    ImGui::DragFloat3("Cube Pos", (float*)&pos);
-    ImGui::DragFloat3("Cube Scale", (float*)&scale);
-    gameObjects_[1]->transform()->setPositionLocal(pos);
-    gameObjects_[1]->transform()->setScaleLocal(scale);
-}
-
 void SceneManager::frameStart()
 {
     const float deltaTime = Clock::instance()->deltaTime();

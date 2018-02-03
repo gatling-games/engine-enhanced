@@ -6,7 +6,6 @@
 #include "EditorPanel.h"
 #include "GamePanel.h"
 #include "OutputPanel.h"
-#include "DebugPanel.h"
 #include "ScenePanel.h"
 #include "ResourcesPanel.h"
 #include "PropertiesPanel.h"
@@ -27,7 +26,6 @@ public:
     // Pointers to each editor panel
     GamePanel* gamePanel() { return &gamePanel_; }
     OutputPanel* outputPanel() { return &outputPanel_; }
-    DebugPanel* debugPanel() { return &debugPanel_; }
     ScenePanel* scenePanel() { return &scenePanel_; }
     ResourcesPanel* resourcesPanel() { return &resourcesPanel_; }
     PropertiesPanel* propertiesPanel() { return &propertiesPanel_; }
@@ -52,7 +50,6 @@ private:
     // Panels in the window
     GamePanel gamePanel_;
     OutputPanel outputPanel_;
-    DebugPanel debugPanel_;
     ScenePanel scenePanel_;
     ResourcesPanel resourcesPanel_;
     PropertiesPanel propertiesPanel_;
@@ -62,7 +59,6 @@ private:
     Rect mainMenuRect() const;
     Rect gamePanelRect() const;
     Rect outputPanelRect() const;
-    Rect debugPanelRect() const;
     Rect scenePanelRect() const;
     Rect resourcesPanelRect() const;
     Rect propertiesPanelRect() const;

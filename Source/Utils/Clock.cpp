@@ -86,22 +86,6 @@ void Clock::frameStart()
     time_ += deltaTime_;
 }
 
-void Clock::drawDebugMenu()
-{
-    ImGui::Text("Time: %g", time_);
-    ImGui::Text("Real Time: %g", realTime_);
-    ImGui::Text("Delta Time: %g", deltaTime_);
-    ImGui::Text("Real Delta Time: %g", realDeltaTime_);
-
-    ImGui::SliderFloat("Time Scale", &timeScale_, 0.0f, 2.0f);
-
-    if(ImGui::Button(paused() ? "Unpause" : "Pause"))
-    {
-        setPaused(!paused());
-    }
-	ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
-}
-
 // Return current time stamp using WINAPI
 uint64_t Clock::getTimestamp() const
 {

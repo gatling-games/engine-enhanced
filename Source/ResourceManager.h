@@ -13,7 +13,6 @@
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
 
-#include "Application.h"
 #include "Utils/Singleton.h"
 
 // Resources are identified by a 64 bit hash of their path.
@@ -88,14 +87,11 @@ struct ResourceType
     ResourceInstantiationFunc instantiationFunction;
 };
 
-class ResourceManager : public ApplicationModule, public Singleton<ResourceManager>
+class ResourceManager : public Singleton<ResourceManager>
 {
 public:
     ResourceManager(const std::string sourceDirectory, const std::string importedDirectory);
     ~ResourceManager();
-
-    // ApplicationModule overrides
-    std::string name() const override { return "Resource Manager"; }
 
     // Gets a list of all resource source files in the project.
     const std::vector<std::string>* allSourceFiles() const { return &resourceSourcePaths_; }
