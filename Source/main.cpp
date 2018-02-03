@@ -91,7 +91,7 @@ int main(int argc, const char* argv[])
     application->resize(windowWidth, windowHeight);
 
     // Run game loop while window not closed
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window) && application->running())
     {
         // Poll for GLFW events
         glfwPollEvents();

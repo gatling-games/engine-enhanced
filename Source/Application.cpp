@@ -11,6 +11,7 @@
 #include "RenderManager.h"
 
 Application::Application(GLFWwindow* window)
+    : running_(true)
 {
     // Create core classes
     clock_ = new Clock();
@@ -29,6 +30,9 @@ Application::Application(GLFWwindow* window)
     editorManager_->addModuleToDebugPanel(inputManager_);
     editorManager_->addModuleToDebugPanel(resourceManager_);
     editorManager_->addModuleToDebugPanel(sceneManager_);
+
+    // Create a Quit menu item
+    MainWindowMenu::instance()->addMenuItem("File/Exit", [&] { running_ = false; });
 }
 
 Application::~Application()

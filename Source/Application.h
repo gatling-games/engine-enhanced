@@ -24,6 +24,8 @@ public:
     Application(GLFWwindow* window);
     ~Application();
 
+    bool running() const { return running_; }
+
     // Called when the window is resized.
     void resize(int newWidth, int newHeight);
 
@@ -41,4 +43,5 @@ private:
     ResourceManager* resourceManager_;
     SceneManager* sceneManager_;
     RenderManager* renderManager_;
+    bool running_;
 };
