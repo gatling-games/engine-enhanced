@@ -10,7 +10,13 @@ namespace fs = std::experimental::filesystem::v1;
 MainWindowMenu::MainWindowMenu()
     : menuRoot_("")
 {
-
+    // Create the default root menu items to ensure they are in the right order
+    findOrCreateMenuItem("File");
+    findOrCreateMenuItem("Edit");
+    findOrCreateMenuItem("View");
+    findOrCreateMenuItem("Game");
+    findOrCreateMenuItem("Resources");
+    findOrCreateMenuItem("Scene");
 }
 
 void MainWindowMenu::addMenuItem(const std::string& path, MenuItemCallback callback)
@@ -68,15 +74,18 @@ MainWindowMenu::MenuItem* MainWindowMenu::findOrCreateMenuItem(const std::string
 
 void MainWindowMenu::drawItem(const MainWindowMenu::MenuItem &item) const
 {
+    // Determine if this is a single menu item, or a full menu root.
+    bool isSingleItem = (item.children.empty() && !item.callbacks.empty());
+
     // If the item has no children, draw a simple menu item.
     bool checked = isItemChecked(item);
-    if (item.children.empty() && ImGui::MenuItem(item.text.c_str(), (const char*)0, checked))
+    if (isSingleItem && ImGui::MenuItem(item.text.c_str(), (const char*)0, checked))
     {
         itemPressed(item);
     }
 
     // If the item has children, draw a full menu.
-    if (!item.children.empty() && ImGui::BeginMenu(item.text.c_str()))
+    if (!isSingleItem && ImGui::BeginMenu(item.text.c_str()))
     {
         for (const MenuItem &child : item.children)
         {
