@@ -2,6 +2,7 @@
 
 #include <GL/gl3w.h>
 
+#include "Editor/EditableObject.h"
 #include "ResourceManager.h"
 
 // GL bindless textures are stored as a gluint64 handle
@@ -50,7 +51,7 @@ enum class TextureFilterMode
 // Stores a single texture resource.
 // Can be either a stored texture, managed by the resource
 // manager, or a texture created via new() at runtime.
-class Texture : public Resource
+class Texture : public Resource, public IEditableObject
 {
 public:
     // Create a texture with the given format and resolution.
@@ -66,6 +67,9 @@ public:
     // Handles resource loading and unloading
     void load(std::ifstream &file) override;
     void unload() override;
+
+    // Implements a custom editor
+    void drawEditor() override;
 
     // Gets the internal opengl ID of the texture
     GLuint glid() const { return glid_; }
