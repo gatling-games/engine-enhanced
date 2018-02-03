@@ -15,17 +15,16 @@ Application::Application(const std::string &name, GLFWwindow* window)
     window_(window),
     running_(true)
 {
-    // Create core classes
-    clock_ = new Clock();
-    //Set time paused on startup for debug purposes
-    clock_->setPaused(true);
-
     // Create engine modules
     editorManager_ = new EditorManager(window, true);
     inputManager_ = new InputManager(window);
     resourceManager_ = new ResourceManager("Resources/", "Build/Resources");
     sceneManager_ = new SceneManager();
     renderManager_ = new RenderManager();
+
+    // Create core classes
+    clock_ = new Clock();
+    clock_->setPaused(true);
 
     // Create a Quit menu item
     MainWindowMenu::instance()->addMenuItem("File/Exit", [&] { running_ = false; });
@@ -73,7 +72,8 @@ void Application::frameStart()
         const float deltaTime = clock_->realDeltaTime();
         const float frameRate = 1.0f / deltaTime;
         const float frameTime = deltaTime * 1000.0f;
-        const std::string titleWithFPS = name_ + " [" + std::to_string(frameRate).substr(0, 4) + "FPS] [" + std::to_string(frameTime).substr(0, 5) + "ms]";
+        std::string titleWithFPS = name_ + " [" + std::to_string(frameRate).substr(0, 4) + "FPS] [" + std::to_string(frameTime).substr(0, 5) + "ms]";
+        if (clock_->paused()) titleWithFPS += " [Paused]";
         glfwSetWindowTitle(window_, titleWithFPS.c_str());
     }
 }

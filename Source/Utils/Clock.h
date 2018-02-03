@@ -2,7 +2,6 @@
 
 #include <cstdint>
 
-#include "Application.h"
 #include "Utils/Singleton.h"
 
 class Clock : public Singleton<Clock>

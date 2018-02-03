@@ -1,7 +1,8 @@
 #include "Clock.h"
 
 #include <Windows.h>
-#include <imgui.h>
+
+#include "Editor/MainWindowMenu.h"
 
 Clock::Clock()
 {
@@ -17,6 +18,9 @@ Clock::Clock()
     // Get clock frequency and initial time stamp
     QueryPerformanceFrequency((LARGE_INTEGER*)&clockFrequency_);
     prevFrameTimestamp_ = getTimestamp();
+
+    // Add a play/pause menu item
+    MainWindowMenu::instance()->addMenuItem("Game/Toggle Pause", [&] { setPaused(!paused()); });
 }
 
 // Return game pause state

@@ -35,15 +35,15 @@ private:
     // The main window
     GLFWwindow* window_;
 
-    // The clock manager
-    Clock* clock_;
-
     // Module managers
     EditorManager* editorManager_;
     InputManager* inputManager_;
     ResourceManager* resourceManager_;
     SceneManager* sceneManager_;
     RenderManager* renderManager_;
+
+    // The clock manager
+    Clock* clock_;
 
     // True until quitting
     bool running_;
