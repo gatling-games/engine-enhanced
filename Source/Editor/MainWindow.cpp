@@ -178,6 +178,13 @@ void MainWindow::drawPanel(EditorPanel &panel, const Rect &size)
 
     // Draw the panel
     ImGui::Begin(panel.name().c_str(), 0, flags);
+
+    // Set focus for the panel if right clicking within it.
+    if (ImGui::IsMouseClicked(1) && ImGui::IsWindowHovered())
+    {
+        ImGui::SetWindowFocus();
+    }
+
     panel.draw();
     ImGui::End();
 }
