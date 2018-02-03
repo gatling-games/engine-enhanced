@@ -158,6 +158,12 @@ public:
     std::string name() const { return "Input Manager"; }
     void drawDebugMenu() override;
 
+    // Allows all input to be enabled and disabled.
+    // This should be used when the game is paused, or the game panel does not have focus.
+    void enableInput();
+    void disableInput();
+    void setInputEnabled(bool enabled);
+
     // Returns true if a key is currently down
     bool isKeyDown(InputKey key) const;
 
@@ -193,6 +199,9 @@ public:
 private:
     // Reference to GLFW window object
     GLFWwindow* window_;
+
+    // When true, the input manager ignores all button presses.
+    bool ignoringInput_;
 
     // Private function for converting between GLFW input codes and our own input codes
     InputKey convertGLFWKey(int key) const;

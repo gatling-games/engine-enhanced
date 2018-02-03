@@ -8,6 +8,7 @@
 #include "Utils\Clock.h"
 
 InputManager::InputManager(GLFWwindow* window)
+    : ignoringInput_(false)
 {
     // Set reference to window
     window_ = window;
@@ -35,8 +36,16 @@ void InputManager::frameStart(const Clock* clock)
     previouslyPressedKeys_ = pressedKeys_;
 
     // Poll keyboard and joystick inputs
-    pollKeyboard();
-    pollJoystick();
+    if(ignoringInput_)
+    {
+        pressedKeys_.clear();
+    }
+    else
+    {
+        pollKeyboard();
+        pollJoystick();
+    }
+
     pollMouse();
 
     // Create object holding input data to send to server
@@ -61,6 +70,21 @@ void InputManager::drawDebugMenu()
     {
         ImGui::Text("Key %i pressed", pressedKeys_[i]);
     }
+}
+
+void InputManager::enableInput()
+{
+    ignoringInput_ = false;
+}
+
+void InputManager::disableInput()
+{
+    ignoringInput_ = true;
+}
+
+void InputManager::setInputEnabled(bool enabled)
+{
+    ignoringInput_ = !enabled;
 }
 
 // Returns true if input key is found to be pressed, false if not
@@ -147,7 +171,7 @@ float InputManager::getAxis(InputKey positiveKey, InputKey negativeKey) const
 
 bool InputManager::mouseButtonDown(MouseButton button) const
 {
-    return glfwGetMouseButton(window_, (int)button);
+    return !ignoringInput_ && glfwGetMouseButton(window_, (int)button);
 }
 
 // Method which takes input GLFW key code and outputs in our own format

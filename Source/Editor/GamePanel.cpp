@@ -4,6 +4,7 @@
 
 #include "SceneManager.h"
 #include "Scene/Camera.h"
+#include "InputManager.h"
 
 GamePanel::GamePanel()
     : frameBuffer_(nullptr)
@@ -28,6 +29,9 @@ GamePanel::~GamePanel()
 
 void GamePanel::draw()
 {
+    // When using the game panel, disable input if focus is lost.=
+    InputManager::instance()->setInputEnabled(ImGui::IsWindowFocused());
+
     // Determine the size of the region we need to render for
     // and create / recreate the framebuffer when needed.
     const ImVec2 regionSize = ImGui::GetContentRegionAvail();
