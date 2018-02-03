@@ -8,6 +8,7 @@ Clock::Clock()
     // Initialise variables
     paused_ = false;
     timeScale_ = 1.0f;
+    frameCount_ = 0;
     time_ = 0.0f;
     deltaTime_ = 0.0f;
     realTime_ = 0.0f;
@@ -69,6 +70,8 @@ float Clock::realDeltaTime() const
 //On every frame start
 void Clock::frameStart()
 {
+    frameCount_++;
+
     // Get change in timestamp since last frame
     uint64_t timeStamp = getTimestamp();
     uint64_t deltaTimeStamp = timeStamp - prevFrameTimestamp_;

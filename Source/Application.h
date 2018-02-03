@@ -21,7 +21,7 @@ public:
 class Application
 {
 public:
-    Application(GLFWwindow* window);
+    Application(const std::string &name, GLFWwindow* window);
     ~Application();
 
     bool running() const { return running_; }
@@ -37,11 +37,21 @@ public:
     void drawFrame();
 
 private:
+    const std::string name_;
+
+    // The main window
+    GLFWwindow* window_;
+
+    // The clock manager
     Clock* clock_;
+
+    // Module managers
     EditorManager* editorManager_;
     InputManager* inputManager_;
     ResourceManager* resourceManager_;
     SceneManager* sceneManager_;
     RenderManager* renderManager_;
+
+    // True until quitting
     bool running_;
 };
