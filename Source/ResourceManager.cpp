@@ -5,6 +5,8 @@
 #include <fstream>
 #include <fstream>
 
+#include "Editor/MainWindowMenu.h"
+
 #include "Serialization/SerializedObject.h"
 
 #include "Importers/MaterialImporter.h"
@@ -67,6 +69,10 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
 
     // Start up the background thread
     importThread_ = std::thread(&ResourceManager::runImportThread, this);
+
+    // Create menu items for controlling the resource manager
+    MainWindowMenu::instance()->addMenuItem("Resources/Scan For Changes", [&] { executeFilesystemScan(); });
+    MainWindowMenu::instance()->addMenuItem("Resources/Reimport All", [&] { importAllResources(); });
 }
 
 ResourceManager::~ResourceManager()
