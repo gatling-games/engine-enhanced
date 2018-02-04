@@ -117,6 +117,10 @@ public:
         return load<T>(pathToResourceID(sourcePath));
     }
 
+    // Saves all resources whose source files have been modified.
+    // This affects all ISerializedObject-based resources
+    void saveAllSourceFiles();
+
     // (Re)imports the specified resource.
     void importResource(ResourceID id);
 

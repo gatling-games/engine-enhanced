@@ -72,6 +72,7 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     importThread_ = std::thread(&ResourceManager::runImportThread, this);
 
     // Create menu items for controlling the resource manager
+    MainWindowMenu::instance()->addMenuItem("File/Save All", [&] { saveAllSourceFiles(); });
     MainWindowMenu::instance()->addMenuItem("Resources/Scan For Changes", [&] { executeFilesystemScan(); });
     MainWindowMenu::instance()->addMenuItem("Resources/Reimport All", [&] { importAllResources(); });
 }
@@ -81,6 +82,9 @@ ResourceManager::~ResourceManager()
     // Close the import thread
     importThreadRunning_ = false;
     importThread_.join();
+
+    // Ensure all changes to source files are saved to disk.
+    saveAllSourceFiles();
 
     // Delete all importers
     for (unsigned int i = 0; i < typeRegister_.size(); ++i)
@@ -143,6 +147,31 @@ Resource* ResourceManager::load(ResourceID id)
 
     // No resource exists.
     return nullptr;
+}
+
+void ResourceManager::saveAllSourceFiles()
+{
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
+
+    // Test every loaded resource
+    for (Resource* resource : loadedResources_)
+    {
+        ISerializedObject* iso = dynamic_cast<ISerializedObject*>(resource);
+        if(iso != nullptr)
+        {
+            // Serialize the object to a propertytable
+            PropertyTable properties(PropertyTableMode::Writing);
+            iso->serialize(properties);
+
+            // Get the serialized string
+            const std::string serializedData = properties.toString();
+
+            // Write the string to the source file, overwriting old versions.
+            std::ofstream writeStream(resource->resourcePath());
+            writeStream << serializedData;
+            writeStream.close();
+        }
+    }
 }
 
 void ResourceManager::importResource(ResourceID id)
