@@ -130,8 +130,8 @@ Point3 operator / (float scalar, const Point3 &p)
 std::ostream& operator << (std::ostream &os, const Point3 &p)
 {
     os << p.x;
-    os << p.y;
-    os << p.z;
+    os << " " << p.y;
+    os << " " << p.z;
     return os;
 }
 

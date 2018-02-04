@@ -107,9 +107,9 @@ Vector4 operator / (float scalar, const Vector4 &v)
 std::ostream& operator << (std::ostream &os, const Vector4 &vec)
 {
     os << vec.x;
-    os << vec.y;
-    os << vec.z;
-    os << vec.w;
+    os << " " << vec.y;
+    os << " " << vec.z;
+    os << " " << vec.w;
     return os;
 }
 
