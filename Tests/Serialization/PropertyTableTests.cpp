@@ -56,7 +56,7 @@ namespace EngineTests
             // Manually make a property table with 2 existing properties:
             // IntVal = 3
             // StringVal = Hello
-            const std::string existingProperties = "{\nIntVal = 3\nStringVal = Hello\n}";
+            const std::string existingProperties = "{\n    IntVal = 3\n    StringVal = Hello\n}";
             PropertyTable table(PropertyTableMode::Reading);
             Assert::IsTrue(table.addPropertyData(existingProperties));
 
@@ -84,7 +84,7 @@ namespace EngineTests
             const std::string serialized = table.toString();
 
             // Check the data is correct.
-            const std::string expected = "{\nIntValue1 = 109123126\nIntValue2 = -231238\nStringValue = A long serialized string\n}";
+            const std::string expected = "{\n    IntValue1 = 109123126\n    IntValue2 = -231238\n    StringValue = A long serialized string\n}";
             Assert::AreEqual(3, table.propertiesCount());
             Assert::AreEqual(expected, serialized);
         }
@@ -107,7 +107,7 @@ namespace EngineTests
 
             // Check the data is correct.
             // The serialized data should only contain non-default values
-            const std::string expected = "{\nIntValue2 = -231238\n}";
+            const std::string expected = "{\n    IntValue2 = -231238\n}";
             Assert::AreEqual(1, table.propertiesCount());
             Assert::AreEqual(expected, serialized);
         }
@@ -132,7 +132,7 @@ namespace EngineTests
 
             // Check the data is correct.
             // The serialized data should only contain non-default values
-            const std::string expected = "{\nIntValue2 = -96\nSubData {\nIntValue2 = -231238\n}\n}";
+            const std::string expected = "{\n    IntValue2 = -96\n    SubData {\n        IntValue2 = -231238\n    }\n}";
             Assert::AreEqual(2, table.propertiesCount());
             Assert::AreEqual(expected, serialized);
         }
@@ -140,7 +140,7 @@ namespace EngineTests
         TEST_METHOD(TestDeserialize)
         {
             // Use test data with 3 properties
-            const std::string existingProperties = "{IntValue1 = 109123126\nIntValue2 = -231238\nStringValue = A long serialized string\n}";
+            const std::string existingProperties = "{    IntValue1 = 109123126\n    IntValue2 = -231238\n    StringValue = A long serialized string\n}";
 
             // Create a property table with the values already in it
             PropertyTable table(PropertyTableMode::Reading);
@@ -161,7 +161,7 @@ namespace EngineTests
         TEST_METHOD(TestDeserializeUsesDefaults)
         {
             // Use test data with 1 property
-            const std::string existingProperties = "{IntValue2 = -231238\n}";
+            const std::string existingProperties = "{    IntValue2 = -231238\n}";
 
             // Create a property table with the values already in it
             // Skip some values, so they will use the default values.
@@ -184,7 +184,7 @@ namespace EngineTests
         TEST_METHOD(TestDeserializeWithSubData)
         {
             // Use test data with 1 property and subdata
-            const std::string existingProperties = "{\nIntValue2 = -96\nSubData {\nIntValue2 = -231238\n}\n}";
+            const std::string existingProperties = "{\n    IntValue2 = -96\n    SubData {\n    IntValue2 = -231238\n    }\n}";
 
             // Create a property table with the values already in it
             // Skip some values, so they will use the default values.
