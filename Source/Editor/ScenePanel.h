@@ -9,7 +9,6 @@ class ScenePanel : public EditorPanel
 public:
     // EditorPanel overrides
     virtual std::string name() const { return "Scene Panel"; }
-    virtual void drawMenu(const std::string menuName) override;
     virtual void draw();
 
 private:

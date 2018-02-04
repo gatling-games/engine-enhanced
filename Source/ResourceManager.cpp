@@ -5,6 +5,8 @@
 #include <fstream>
 #include <fstream>
 
+#include "Editor/MainWindowMenu.h"
+
 #include "Serialization/SerializedObject.h"
 
 #include "Importers/MaterialImporter.h"
@@ -67,6 +69,10 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
 
     // Start up the background thread
     importThread_ = std::thread(&ResourceManager::runImportThread, this);
+
+    // Create menu items for controlling the resource manager
+    MainWindowMenu::instance()->addMenuItem("Resources/Scan For Changes", [&] { executeFilesystemScan(); });
+    MainWindowMenu::instance()->addMenuItem("Resources/Reimport All", [&] { importAllResources(); });
 }
 
 ResourceManager::~ResourceManager()
@@ -245,11 +251,18 @@ void ResourceManager::executeResourceImport(ResourceID id)
     // Make sure the output directory exists.
     create_directories(fs::path(outputPath).parent_path());
 
+    // Look for an importer
+    ResourceImporter* importer = getImporter(sourcePath);
+    if(importer == nullptr)
+    {
+        return;
+    }
+
     // Trigger the importer
-    if (!getImporter(sourcePath)->importFile(sourcePath, outputPath))
+    if (!importer->importFile(sourcePath, outputPath))
     {
         printf("Failed to import resource \n");
-        throw;
+        return;
     }
 
     // Finally, enqueue the resource to be loaded or reloaded.
@@ -278,6 +291,12 @@ void ResourceManager::executeResourceLoad(ResourceID id)
         // No resource exists.
         // Create a new resource using the correct instantiation function.
         const std::string sourcePath = resourceIDToPath(id);
+        auto instantiationFunc = getInstantiationFunc(sourcePath);
+        if(instantiationFunc == nullptr)
+        {
+            return;
+        }
+
         resource = getInstantiationFunc(sourcePath)(id);
         loadedResources_.push_back(resource);
     }
@@ -380,7 +399,8 @@ ResourceImporter* ResourceManager::getImporter(const std::string &sourcePath) co
     }
 
     // No importer found.
-    throw;
+    printf("No importer found for %s \n", sourcePath.c_str());
+    return nullptr;
 }
 
 ResourceInstantiationFunc ResourceManager::getInstantiationFunc(const std::string& sourcePath) const
@@ -395,5 +415,6 @@ ResourceInstantiationFunc ResourceManager::getInstantiationFunc(const std::strin
     }
 
     // No function found.
-    throw;
+    printf("No instantiation function found for %s \n", sourcePath.c_str());
+    return nullptr;
 }

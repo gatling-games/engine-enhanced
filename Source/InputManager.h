@@ -4,7 +4,6 @@
 #include <GLFW/glfw3.h>
 #include <vector>
 
-#include "Application.h"
 #include "Utils/Singleton.h"
 #include "Math\Vector2.h"
 #include "Math\Vector3.h"
@@ -146,7 +145,7 @@ struct InputCmd
     // Add commands for shooting etc
 };
 
-class InputManager : public ApplicationModule, public Singleton<InputManager>
+class InputManager : public Singleton<InputManager>
 {
 public:
     explicit InputManager(GLFWwindow* window);
@@ -154,9 +153,11 @@ public:
     // Called every frame
     void frameStart(const Clock* clock);
 
-    // ApplicationModule callbacks
-    std::string name() const { return "Input Manager"; }
-    void drawDebugMenu() override;
+    // Allows all input to be enabled and disabled.
+    // This should be used when the game is paused, or the game panel does not have focus.
+    void enableInput();
+    void disableInput();
+    void setInputEnabled(bool enabled);
 
     // Returns true if a key is currently down
     bool isKeyDown(InputKey key) const;
@@ -193,6 +194,9 @@ public:
 private:
     // Reference to GLFW window object
     GLFWwindow* window_;
+
+    // When true, the input manager ignores all button presses.
+    bool ignoringInput_;
 
     // Private function for converting between GLFW input codes and our own input codes
     InputKey convertGLFWKey(int key) const;

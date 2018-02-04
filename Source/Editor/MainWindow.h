@@ -1,19 +1,16 @@
 #pragma once
 
-#include <imgui.h>
-#include <vector>
+#include "Math/Rect.h"
 
-#include "Math\Rect.h"
-
+#include "MainWindowMenu.h"
 #include "EditorPanel.h"
 #include "GamePanel.h"
 #include "OutputPanel.h"
-#include "DebugPanel.h"
 #include "ScenePanel.h"
 #include "ResourcesPanel.h"
 #include "PropertiesPanel.h"
 
-class EditorMainWindow
+class MainWindow
 {
 private:
     static const float GamePanelWidth;
@@ -24,12 +21,11 @@ private:
     static const float OutputPanelMaxHeight;
 
 public:
-    EditorMainWindow();
+    MainWindow();
 
     // Pointers to each editor panel
     GamePanel* gamePanel() { return &gamePanel_; }
     OutputPanel* outputPanel() { return &outputPanel_; }
-    DebugPanel* debugPanel() { return &debugPanel_; }
     ScenePanel* scenePanel() { return &scenePanel_; }
     ResourcesPanel* resourcesPanel() { return &resourcesPanel_; }
     PropertiesPanel* propertiesPanel() { return &propertiesPanel_; }
@@ -48,27 +44,21 @@ private:
     // Toggles between drawing the window and the imgui test window.
     bool drawImGuiTestWindow_;
 
+    // The menu at the top of the window.
+    MainWindowMenu mainMenu_;
+
     // Panels in the window
     GamePanel gamePanel_;
     OutputPanel outputPanel_;
-    DebugPanel debugPanel_;
     ScenePanel scenePanel_;
     ResourcesPanel resourcesPanel_;
     PropertiesPanel propertiesPanel_;
-
-    // Draws the menu at the top of the window.
-    void drawMainMenu();
-
-    // Draws a menu dropdown in the main menu.
-    // Gives a chance for each panel to draw into the menu.
-    void drawMenu(const std::string &name);
 
     // Regions for each editor panel.
     Rect fullRect() const;
     Rect mainMenuRect() const;
     Rect gamePanelRect() const;
     Rect outputPanelRect() const;
-    Rect debugPanelRect() const;
     Rect scenePanelRect() const;
     Rect resourcesPanelRect() const;
     Rect propertiesPanelRect() const;

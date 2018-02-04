@@ -4,6 +4,7 @@
 
 #include "SceneManager.h"
 #include "Scene/Camera.h"
+#include "InputManager.h"
 
 GamePanel::GamePanel()
     : frameBuffer_(nullptr)
@@ -26,36 +27,11 @@ GamePanel::~GamePanel()
     }
 }
 
-void GamePanel::drawMenu(const std::string menuName)
-{
-    if (menuName == "View")
-    {
-        // Draw the render feature toggles
-        if (ImGui::BeginMenu("Render Features"))
-        {
-            drawFeatureToggle(SF_Texture, "Textures");
-            drawFeatureToggle(SF_NormalMap, "Normal Maps");
-            drawFeatureToggle(SF_Specular, "Specular Highlights");
-            drawFeatureToggle(SF_Cutout, "Alpha Cutout");
-            drawFeatureToggle(SF_Fog, "Fog");
-            ImGui::EndMenu();
-        }
-
-        // Draw the render debug mode toggles
-        if (ImGui::BeginMenu("Debug Mode"))
-        {
-            drawDebugModeToggle(RenderDebugMode::None, "None");
-            drawDebugModeToggle(RenderDebugMode::Albedo, "Albedo");
-            drawDebugModeToggle(RenderDebugMode::Gloss, "Gloss");
-            drawDebugModeToggle(RenderDebugMode::Normals, "Normals");
-            drawDebugModeToggle(RenderDebugMode::Occlusion, "Occlusion");
-            ImGui::EndMenu();
-        }
-    }
-}
-
 void GamePanel::draw()
 {
+    // When using the game panel, disable input if focus is lost.=
+    InputManager::instance()->setInputEnabled(ImGui::IsWindowFocused());
+
     // Determine the size of the region we need to render for
     // and create / recreate the framebuffer when needed.
     const ImVec2 regionSize = ImGui::GetContentRegionAvail();

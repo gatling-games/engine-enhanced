@@ -1,13 +1,15 @@
 #include "Clock.h"
 
 #include <Windows.h>
-#include <imgui.h>
+
+#include "Editor/MainWindowMenu.h"
 
 Clock::Clock()
 {
     // Initialise variables
     paused_ = false;
     timeScale_ = 1.0f;
+    frameCount_ = 0;
     time_ = 0.0f;
     deltaTime_ = 0.0f;
     realTime_ = 0.0f;
@@ -16,6 +18,9 @@ Clock::Clock()
     // Get clock frequency and initial time stamp
     QueryPerformanceFrequency((LARGE_INTEGER*)&clockFrequency_);
     prevFrameTimestamp_ = getTimestamp();
+
+    // Add a play/pause menu item
+    MainWindowMenu::instance()->addMenuItem("Game/Toggle Pause", [&] { setPaused(!paused()); });
 }
 
 // Return game pause state
@@ -69,6 +74,8 @@ float Clock::realDeltaTime() const
 //On every frame start
 void Clock::frameStart()
 {
+    frameCount_++;
+
     // Get change in timestamp since last frame
     uint64_t timeStamp = getTimestamp();
     uint64_t deltaTimeStamp = timeStamp - prevFrameTimestamp_;
@@ -81,22 +88,6 @@ void Clock::frameStart()
     // Update time values
     realTime_ += realDeltaTime_;
     time_ += deltaTime_;
-}
-
-void Clock::drawDebugMenu()
-{
-    ImGui::Text("Time: %g", time_);
-    ImGui::Text("Real Time: %g", realTime_);
-    ImGui::Text("Delta Time: %g", deltaTime_);
-    ImGui::Text("Real Delta Time: %g", realDeltaTime_);
-
-    ImGui::SliderFloat("Time Scale", &timeScale_, 0.0f, 2.0f);
-
-    if(ImGui::Button(paused() ? "Unpause" : "Pause"))
-    {
-        setPaused(!paused());
-    }
-	ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
 }
 
 // Return current time stamp using WINAPI

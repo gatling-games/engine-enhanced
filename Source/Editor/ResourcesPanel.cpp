@@ -12,11 +12,17 @@ namespace fs = std::experimental::filesystem::v1;
 ResourcesPanel::ResourcesPanel()
     : resourceTreeRoot_()
 {
-    updateTree();
+
 }
 
 void ResourcesPanel::draw()
 {
+    // Recreate the tree when needed
+    if (resourceTreeRoot_.childNodes.empty())
+    {
+        updateTree();
+    }
+
     // Draw the root nodes in the view
     drawNodes(resourceTreeRoot_.childNodes);
 }

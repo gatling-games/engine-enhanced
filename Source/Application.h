@@ -11,18 +11,13 @@ class ResourceManager;
 class SceneManager;
 class RenderManager;
 
-class ApplicationModule
-{
-public:
-    virtual std::string name() const = 0;
-    virtual void drawDebugMenu() { }
-};
-
 class Application
 {
 public:
-    Application(GLFWwindow* window);
+    Application(const std::string &name, GLFWwindow* window);
     ~Application();
+
+    bool running() const { return running_; }
 
     // Called when the window is resized.
     void resize(int newWidth, int newHeight);
@@ -35,10 +30,21 @@ public:
     void drawFrame();
 
 private:
-    Clock* clock_;
+    const std::string name_;
+
+    // The main window
+    GLFWwindow* window_;
+
+    // Module managers
     EditorManager* editorManager_;
     InputManager* inputManager_;
     ResourceManager* resourceManager_;
     SceneManager* sceneManager_;
     RenderManager* renderManager_;
+
+    // The clock manager
+    Clock* clock_;
+
+    // True until quitting
+    bool running_;
 };

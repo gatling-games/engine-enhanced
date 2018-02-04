@@ -100,7 +100,7 @@ public:
     const std::vector<Component*> componentList() const { return components_; }
 
 private:
-    const std::string name_;
+    std::string name_;
 
     // The components that currently exist on the GameObject
     std::vector<Component*> components_;

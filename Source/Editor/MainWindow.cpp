@@ -1,41 +1,41 @@
-#include "EditorMainWindow.h"
+#include "MainWindow.h"
 
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <functional>
 
-#include "Math\Vector3.h"
+#include "RenderManager.h"
+#include "MainWindowMenu.h"
 
 // Panel placement config
-const float EditorMainWindow::GamePanelWidth = 0.55f;
-const float EditorMainWindow::ScenePanelWidth = 0.18f;
-const float EditorMainWindow::PropertiesPanelWidth = 1.0f - GamePanelWidth - ScenePanelWidth;
-const float EditorMainWindow::ScenePanelHeight = 0.5f;
-const float EditorMainWindow::GamePanelAspect = 16.0f / 9.0f;
-const float EditorMainWindow::OutputPanelMaxHeight = 0.8f;
+const float MainWindow::GamePanelWidth = 0.55f;
+const float MainWindow::ScenePanelWidth = 0.18f;
+const float MainWindow::PropertiesPanelWidth = 1.0f - GamePanelWidth - ScenePanelWidth;
+const float MainWindow::ScenePanelHeight = 0.5f;
+const float MainWindow::GamePanelAspect = 16.0f / 9.0f;
+const float MainWindow::OutputPanelMaxHeight = 0.8f;
 
-EditorMainWindow::EditorMainWindow()
+MainWindow::MainWindow()
     : drawImGuiTestWindow_(false),
     gamePanel_(),
     outputPanel_(),
-    debugPanel_(),
     scenePanel_(),
     resourcesPanel_(),
     propertiesPanel_()
 {
-
+    MainWindowMenu::instance()->addMenuItem("Tools/Toggle ImGui test", [&] { drawImGuiTestWindow_ = !drawImGuiTestWindow_; });
 }
 
-void EditorMainWindow::resize(int width, int height)
+void MainWindow::resize(int width, int height)
 {
     windowWidth_ = width;
     windowHeight_ = height;
 }
 
-void EditorMainWindow::repaint()
+void MainWindow::repaint()
 {
     // Draw the top file/edit menu
-    drawMainMenu();
+    mainMenu_.draw();
 
     // If the user has selected the test window, display that instead.
     if (drawImGuiTestWindow_)
@@ -47,57 +47,17 @@ void EditorMainWindow::repaint()
     // Draw each editor panel in the correct location
     drawPanel(gamePanel_, gamePanelRect());
     drawPanel(outputPanel_, outputPanelRect());
-    drawPanel(debugPanel_, debugPanelRect());
     drawPanel(scenePanel_, scenePanelRect());
     drawPanel(resourcesPanel_, resourcesPanelRect());
     drawPanel(propertiesPanel_, propertiesPanelRect());
 }
 
-void EditorMainWindow::drawMainMenu()
-{
-    if (ImGui::BeginMainMenuBar())
-    {
-        drawMenu("File");
-        drawMenu("Edit");
-        drawMenu("View");
-        drawMenu("Game");
-        drawMenu("Scene");
-        drawMenu("Resources");
-        drawMenu("Tools");
-
-        ImGui::EndMainMenuBar();
-    }
-}
-
-void EditorMainWindow::drawMenu(const std::string &menuName)
-{
-    if (ImGui::BeginMenu(menuName.c_str()))
-    {
-        // Ensure the Tools menu includes an imgui test windw toggle
-        if (menuName == "Tools" && ImGui::MenuItem("Toggle ImGui Test"))
-        {
-            drawImGuiTestWindow_ = !drawImGuiTestWindow_;
-        }
-
-        // Let each panel draw into the menu
-        gamePanel_.drawMenu(menuName);
-        debugPanel_.drawMenu(menuName);
-        outputPanel_.drawMenu(menuName);
-        scenePanel_.drawMenu(menuName);
-        resourcesPanel_.drawMenu(menuName);
-        propertiesPanel_.drawMenu(menuName);
-
-        // Finally, close the menu
-        ImGui::EndMenu();
-    }
-}
-
-Rect EditorMainWindow::fullRect() const
+Rect MainWindow::fullRect() const
 {
     return Rect(0.0f, 0.0f, (float)windowWidth_, (float)windowHeight_);
 }
 
-Rect EditorMainWindow::mainMenuRect() const
+Rect MainWindow::mainMenuRect() const
 {
     // Determine the height of the main menu
     ImGuiContext* g = ImGui::GetCurrentContext();
@@ -106,7 +66,7 @@ Rect EditorMainWindow::mainMenuRect() const
     return Rect(0.0f, 0.0f, fullRect().width, mainMenuHeight).roundedToPixels();
 }
 
-Rect EditorMainWindow::gamePanelRect() const
+Rect MainWindow::gamePanelRect() const
 {
     // Position below the main menu
     float minx = 0.0f;
@@ -134,33 +94,20 @@ Rect EditorMainWindow::gamePanelRect() const
     return Rect(minx, miny, width, height).roundedToPixels();
 }
 
-Rect EditorMainWindow::outputPanelRect() const
+Rect MainWindow::outputPanelRect() const
 {
     // Position below the game panel
     float minx = gamePanelRect().min().x;
     float miny = gamePanelRect().max().y;
 
-    // Match half of the game panel width, and fit against the window bottom
-    float width = gamePanelRect().width * 0.5f;
+    // Match the game panel width, and fit against the window bottom
+    float width = gamePanelRect().width;
     float height = fullRect().height - gamePanelRect().max().y;
 
     return Rect(minx, miny, width, height).roundedToPixels();
 }
 
-Rect EditorMainWindow::debugPanelRect() const
-{
-    // Position to the right of the output panel
-    float minx = outputPanelRect().max().x;
-    float miny = outputPanelRect().min().y;
-
-    // Fill the rest of the game panel width, and fit against the window bottom
-    float width = gamePanelRect().max().x - outputPanelRect().max().x;
-    float height = outputPanelRect().height;
-
-    return Rect(minx, miny, width, height).roundedToPixels();
-}
-
-Rect EditorMainWindow::scenePanelRect() const
+Rect MainWindow::scenePanelRect() const
 {
     // Position to the right of the game panel and below the main window
     float minx = gamePanelRect().max().x;
@@ -174,7 +121,7 @@ Rect EditorMainWindow::scenePanelRect() const
     return Rect(minx, miny, width, height).roundedToPixels();
 }
 
-Rect EditorMainWindow::resourcesPanelRect() const
+Rect MainWindow::resourcesPanelRect() const
 {
     // Position below the scene panel
     float minx = scenePanelRect().min().x;
@@ -187,7 +134,7 @@ Rect EditorMainWindow::resourcesPanelRect() const
     return Rect(minx, miny, width, height).roundedToPixels();
 }
 
-Rect EditorMainWindow::propertiesPanelRect() const
+Rect MainWindow::propertiesPanelRect() const
 {
     // Position to the right of the scene panel and below the main menu
     float minx = scenePanelRect().max().x;
@@ -200,12 +147,11 @@ Rect EditorMainWindow::propertiesPanelRect() const
     return Rect(minx, miny, width, height).roundedToPixels();
 }
 
-void EditorMainWindow::drawPanel(EditorPanel &panel, const Rect &size)
+void MainWindow::drawPanel(EditorPanel &panel, const Rect &size)
 {
     // Ensure the panel has borders and can't be moved
     // or collapsed by the user.
     ImGuiWindowFlags flags = 0;
-    flags |= ImGuiWindowFlags_ShowBorders;
     flags |= ImGuiWindowFlags_NoCollapse;
     flags |= ImGuiWindowFlags_NoMove;
     flags |= ImGuiWindowFlags_NoResize;
@@ -216,6 +162,13 @@ void EditorMainWindow::drawPanel(EditorPanel &panel, const Rect &size)
 
     // Draw the panel
     ImGui::Begin(panel.name().c_str(), 0, flags);
+
+    // Set focus for the panel if right clicking within it.
+    if (ImGui::IsMouseClicked(1) && ImGui::IsWindowHovered())
+    {
+        ImGui::SetWindowFocus();
+    }
+
     panel.draw();
     ImGui::End();
 }

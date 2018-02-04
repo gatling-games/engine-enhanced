@@ -1,9 +1,10 @@
 #include "Texture.h"
 
 #include <algorithm>
-#include <string>
 #include <memory>
 #include <cassert>
+
+#include "imgui.h"
 
 // Ensure that srgb dxt parameters have been defined
 #ifndef GL_COMPRESSED_SRGB_S3TC_DXT1_EXT
@@ -258,6 +259,22 @@ void Texture::load(std::ifstream& file)
 void Texture::unload()
 {
     destroyGLTexture();
+}
+
+void Texture::drawEditor()
+{
+    int resolution[] = { width(), height() };
+    ImGui::InputInt2("Resolution", resolution, ImGuiInputTextFlags_ReadOnly);
+
+    const std::string levels = std::to_string(levels_);
+    ImGui::InputText("Levels", (char*)levels.c_str(), levels.length(), ImGuiInputTextFlags_ReadOnly);
+
+    const std::string& formatName = getFormatName(format());
+    ImGui::InputText("Format", (char*)formatName.c_str(), formatName.length(), ImGuiInputTextFlags_ReadOnly);
+
+    const float width = ImGui::GetContentRegionAvailWidth();
+    const float height = width * (resolution[0] / (float)resolution[1]);
+    ImGui::Image((ImTextureID)glid_, ImVec2(width, height));
 }
 
 bool Texture::hasMipmaps() const

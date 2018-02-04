@@ -2,21 +2,19 @@
 
 #include <cstdint>
 
-#include "Application.h"
 #include "Utils/Singleton.h"
 
-class Clock : public ApplicationModule, public Singleton<Clock>
+class Clock : public Singleton<Clock>
 {
 public:
     Clock();
 
-    // ApplicationModule callbacks
-    std::string name() const { return "Clock Manager"; }
-    void drawDebugMenu() override;
-
     // Return and set game pause state
     bool paused() const;
     void setPaused(bool paused);
+
+    // Gets the total number of processed frames since startup
+    uint64_t frameCount() const { return frameCount_; }
 
     // Return and set timescale
     float timeScale() const;
@@ -39,6 +37,9 @@ private:
 
     // Time scale value
     float timeScale_;
+
+    // The total number of processed frames
+    uint64_t frameCount_;
 
     // Game running time
     float time_;

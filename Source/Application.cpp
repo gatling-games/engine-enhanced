@@ -10,25 +10,24 @@
 #include "SceneManager.h"
 #include "RenderManager.h"
 
-Application::Application(GLFWwindow* window)
+Application::Application(const std::string &name, GLFWwindow* window)
+    : name_(name),
+    window_(window),
+    running_(true)
 {
-    // Create core classes
-    clock_ = new Clock();
-	//Set time paused on startup for debug purposes
-	clock_->setPaused(true);
-
     // Create engine modules
+    editorManager_ = new EditorManager(window, true);
     inputManager_ = new InputManager(window);
     resourceManager_ = new ResourceManager("Resources/", "Build/Resources");
     sceneManager_ = new SceneManager();
-    editorManager_ = new EditorManager(window, true);
     renderManager_ = new RenderManager();
 
-    // Register engine module debug menus
-    editorManager_->addModuleToDebugPanel(clock_);
-    editorManager_->addModuleToDebugPanel(inputManager_);
-    editorManager_->addModuleToDebugPanel(resourceManager_);
-    editorManager_->addModuleToDebugPanel(sceneManager_);
+    // Create core classes
+    clock_ = new Clock();
+    clock_->setPaused(true);
+
+    // Create a Quit menu item
+    MainWindowMenu::instance()->addMenuItem("File/Exit", [&] { running_ = false; });
 }
 
 Application::~Application()
@@ -60,10 +59,23 @@ void Application::windowFocused()
 
 void Application::frameStart()
 {
+    // Update each module manager
     clock_->frameStart();
     inputManager_->frameStart(clock_);
     sceneManager_->frameStart();
     resourceManager_->update();
+
+    // Put the FPS in the window title.
+    // Update every 20 frames (start at frame 1)
+    if (clock_->frameCount() % 20 == 1)
+    {
+        const float deltaTime = clock_->realDeltaTime();
+        const float frameRate = 1.0f / deltaTime;
+        const float frameTime = deltaTime * 1000.0f;
+        std::string titleWithFPS = name_ + " [" + std::to_string(frameRate).substr(0, 4) + "FPS] [" + std::to_string(frameTime).substr(0, 5) + "ms]";
+        if (clock_->paused()) titleWithFPS += " [Paused]";
+        glfwSetWindowTitle(window_, titleWithFPS.c_str());
+    }
 }
 
 void Application::drawFrame()
