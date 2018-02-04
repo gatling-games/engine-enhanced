@@ -202,8 +202,8 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     TerrainLayer* layers = terrain->gameObject()->terrain()->terrainLayers();
     for (int layer = 0; layer < layerCount; ++layer)
     {
-        data.terrainTextures[layer*2] = (layers[layer].texture == nullptr) ? 0 : layers[layer].texture->bindlessHandle();
-        data.terrainNormalMapTextures[layer*2] = (layers[layer].normalMap == nullptr) ? 0 : layers[layer].normalMap->bindlessHandle();
+        data.terrainTextures[layer*2] = (layers[layer].material->albedoTexture() == nullptr) ? 0 : layers[layer].material->albedoTexture()->bindlessHandle();
+        data.terrainNormalMapTextures[layer*2] = (layers[layer].material->normalMapTexture() == nullptr) ? 0 : layers[layer].material->normalMapTexture()->bindlessHandle();
         data.slopeAltitudeData[layer] = Vector4(layers[layer].minMaxAngle.x, layers[layer].minMaxAngle.y, layers[layer].minMaxHeight.x, layers[layer].minMaxHeight.y);
     }
 

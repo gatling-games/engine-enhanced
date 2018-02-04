@@ -2,7 +2,7 @@
 
 #include <imgui.h>
 #include "Utils/ImGuiExtensions.h"
-#include "imgui_internal.h"
+#include "Renderer/Material.h"
 
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
@@ -12,8 +12,7 @@ Terrain::Terrain(GameObject* gameObject)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
     heightMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/heightmap.png");
-    terrainLayers_[0].texture = ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_grass.png");
-    terrainLayers_[0].normalMap = ResourceManager::instance()->load<Texture>("Resources/Textures/terrain_grass_normal.png");
+    terrainLayers_[0].material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");
 }
 
 void Terrain::drawProperties()
@@ -33,8 +32,7 @@ void Terrain::drawProperties()
             ImGui::InputText("", (char*)&terrainLayers_[layer].name, sizeof(terrainLayers_[layer].name));
             ImGui::DragFloat2("Angle Span", &terrainLayers_[layer].minMaxAngle.x, 0.1f, 0.0f, 90.0f);
             ImGui::DragFloat2("Height Span", &terrainLayers_[layer].minMaxHeight.x, 0.1f, 0.0f, 100.0f);
-            ImGui::ResourceSelect<Texture>("Texture", "Select Layer Texture",terrainLayers_[layer].texture);
-            ImGui::ResourceSelect<Texture>("Normal Map", "Select Layer Normal Map", terrainLayers_[layer].normalMap);
+            ImGui::ResourceSelect<Material>("Material", "Select Layer Material",terrainLayers_[layer].material);
             ImGui::Spacing();
             ImGui::PopID();
         }

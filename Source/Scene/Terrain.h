@@ -1,19 +1,19 @@
 #pragma once
 
 #include "Scene/Component.h"
-
 #include "Renderer/Mesh.h"
 #include "Renderer/Texture.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
+
+class Material;
 
 struct TerrainLayer
 {
     char name[16] = "Layer";
 	Vector2 minMaxHeight = Vector2(0.0f, 100.0f);
 	Vector2 minMaxAngle = Vector2(0.0f, 90.0f);
-    Texture* texture = nullptr;
-    Texture* normalMap = nullptr;
+    Material* material;
 };
 
 class Terrain : public Component
@@ -30,8 +30,6 @@ public:
 
     Mesh* mesh() const { return mesh_; }
     Texture* heightmap() const { return heightMap_; }
-    Texture* texture() const { return baseTexture_; }
-    Texture* normalMap() const { return normalMap_; }
 
     Vector2 textureWrapping() const { return textureWrap_; }
     Vector3 terrainDimensions() const { return dimensions_; }
@@ -42,8 +40,6 @@ public:
 private:
     Mesh* mesh_;
     Texture* heightMap_;
-    Texture* baseTexture_;
-    Texture* normalMap_;
 
     Vector2 textureWrap_;
     Vector3 dimensions_;
