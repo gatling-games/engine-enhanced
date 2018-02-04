@@ -12,7 +12,6 @@ Terrain::Terrain(GameObject* gameObject)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
     heightMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/heightmap.png");
-    terrainLayers_[0].material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");
 }
 
 void Terrain::drawProperties()

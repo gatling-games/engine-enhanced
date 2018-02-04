@@ -82,11 +82,23 @@ void main()
     for (int i = 1; i < _TerrainSize.w; ++i)
     {
         vec4 temp = baseAlbedo;
-        layerLerp = clamp(worldPosition.y * 2.0 - _SlopeAltitudeData[i].z, 0.0, 1.0);
         vec4 layerAlbedo = texture(_TerrainTextures[i], texcoord * _TextureScale.xy);
+
+        //slopemin
+        layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_SlopeAltitudeData[i].x)), 0.0, 1.0);
         baseAlbedo = mix(baseAlbedo, layerAlbedo, layerLerp);
+        //slopemax
+        layerLerp = clamp((-1.0 + worldNormal.y) / (1 / 5.0) + sin(radians(_SlopeAltitudeData[i].y)), 0.0, 1.0);
+        baseAlbedo = mix(temp, baseAlbedo, layerLerp);
+
+        //altmin
+        layerLerp = clamp(worldPosition.y * 2.0 - _SlopeAltitudeData[i].z, 0.0, 1.0);
+        baseAlbedo = mix(temp, baseAlbedo, layerLerp);
+        //altmax
         layerLerp = clamp(-worldPosition.y / (1/2.0) + _SlopeAltitudeData[i].w, 0.0, 1.0);
         baseAlbedo = mix(temp, baseAlbedo, layerLerp);
+        
+        
     }
 
     surface.diffuseColor = baseAlbedo.rgb;
@@ -102,9 +114,18 @@ void main()
     for (int i = 1; i < _TerrainSize.w; ++i)
     {
         vec3 temp = baseNormal;
-        layerLerp = clamp(worldPosition.y * 2.0 - _SlopeAltitudeData[i].z, 0.0, 1.0);
         vec3 layerNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[i], texcoord * _TextureScale.xy));
+        //slopemin
+        layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_SlopeAltitudeData[i].x)), 0.0, 1.0);
         baseNormal = mix(baseNormal, layerNormal, layerLerp);
+        //slopemax
+        layerLerp = clamp((-1.0 + worldNormal.y) / (1 / 5.0) + sin(radians(_SlopeAltitudeData[i].y)), 0.0, 1.0);
+        baseNormal = mix(temp, baseNormal, layerLerp);
+
+        //altmin
+        layerLerp = clamp(worldPosition.y * 2.0 - _SlopeAltitudeData[i].z, 0.0, 1.0);
+        baseNormal = mix(temp, baseNormal, layerLerp);
+        //altmax
         layerLerp = clamp(-worldPosition.y / (1 / 2.0) + _SlopeAltitudeData[i].w, 0.0, 1.0);
         baseNormal = mix(temp, baseNormal, layerLerp);
     }

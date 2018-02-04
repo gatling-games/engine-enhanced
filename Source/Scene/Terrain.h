@@ -13,7 +13,7 @@ struct TerrainLayer
     char name[16] = "Layer";
 	Vector2 minMaxHeight = Vector2(0.0f, 100.0f);
 	Vector2 minMaxAngle = Vector2(0.0f, 90.0f);
-    Material* material;
+    Material* material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");;
 };
 
 class Terrain : public Component
