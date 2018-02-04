@@ -233,6 +233,7 @@ void ResourceManager::removeDeletedResources()
 
 void ResourceManager::update()
 {
+    saveAllSourceFiles();
     emptyLoadQueue();
 }
 
