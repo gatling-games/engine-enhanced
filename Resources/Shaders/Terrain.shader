@@ -74,37 +74,37 @@ void main()
     SurfaceProperties surface;
     surface.occlusion = 1.0;
 
-#ifdef TEXTURE_ON
-
     // Sample and blend albedo textures for each texture layer
     float layerLerp;
     vec4 baseAlbedo = texture(_TerrainTextures[0], texcoord * _TextureScale.xy);
+    vec3 baseColor = _TerrainColor[0].rgb;
     for (int i = 1; i < _TerrainSize.w; ++i)
     {
+        vec3 tempColor = baseColor;
         vec4 temp = baseAlbedo;
         vec4 layerAlbedo = texture(_TerrainTextures[i], texcoord * _TextureScale.xy);
-
         //slopemin
-        layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_SlopeAltitudeData[i].x)), 0.0, 1.0);
+        layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_TerrainSlopeAltitudeData[i].x)), 0.0, 1.0);
         baseAlbedo = mix(baseAlbedo, layerAlbedo, layerLerp);
+        baseColor = mix(baseColor.rgb, _TerrainColor[i].rgb, layerLerp);
         //slopemax
-        layerLerp = clamp((-1.0 + worldNormal.y) / (1 / 5.0) + sin(radians(_SlopeAltitudeData[i].y)), 0.0, 1.0);
+        layerLerp = clamp((-1.0 + worldNormal.y) / (1 / 5.0) + sin(radians(_TerrainSlopeAltitudeData[i].y)), 0.0, 1.0);
         baseAlbedo = mix(temp, baseAlbedo, layerLerp);
-
+        baseColor = mix(tempColor.rgb, baseColor.rgb, layerLerp);
         //altmin
-        layerLerp = clamp(worldPosition.y * 2.0 - _SlopeAltitudeData[i].z, 0.0, 1.0);
+        layerLerp = clamp(worldPosition.y * 2.0 - _TerrainSlopeAltitudeData[i].z, 0.0, 1.0);
         baseAlbedo = mix(temp, baseAlbedo, layerLerp);
+        baseColor = mix(tempColor.rgb, baseColor.rgb, layerLerp);
         //altmax
-        layerLerp = clamp(-worldPosition.y / (1/2.0) + _SlopeAltitudeData[i].w, 0.0, 1.0);
+        layerLerp = clamp(-worldPosition.y / (1/2.0) + _TerrainSlopeAltitudeData[i].w, 0.0, 1.0);
         baseAlbedo = mix(temp, baseAlbedo, layerLerp);
-        
-        
+        baseColor = mix(tempColor.rgb, baseColor.rgb, layerLerp);
     }
-
-    surface.diffuseColor = baseAlbedo.rgb;
+#ifdef TEXTURE_ON
+    surface.diffuseColor = baseAlbedo.rgb * baseColor.rgb;
     surface.gloss = baseAlbedo.a;
 #else
-    surface.diffuseColor = vec3(1.0);
+    surface.diffuseColor = baseColor.rgb;
     surface.gloss = 0.2;
 #endif
 
@@ -116,17 +116,17 @@ void main()
         vec3 temp = baseNormal;
         vec3 layerNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[i], texcoord * _TextureScale.xy));
         //slopemin
-        layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_SlopeAltitudeData[i].x)), 0.0, 1.0);
+        layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_TerrainSlopeAltitudeData[i].x)), 0.0, 1.0);
         baseNormal = mix(baseNormal, layerNormal, layerLerp);
         //slopemax
-        layerLerp = clamp((-1.0 + worldNormal.y) / (1 / 5.0) + sin(radians(_SlopeAltitudeData[i].y)), 0.0, 1.0);
+        layerLerp = clamp((-1.0 + worldNormal.y) / (1 / 5.0) + sin(radians(_TerrainSlopeAltitudeData[i].y)), 0.0, 1.0);
         baseNormal = mix(temp, baseNormal, layerLerp);
 
         //altmin
-        layerLerp = clamp(worldPosition.y * 2.0 - _SlopeAltitudeData[i].z, 0.0, 1.0);
+        layerLerp = clamp(worldPosition.y * 2.0 - _TerrainSlopeAltitudeData[i].z, 0.0, 1.0);
         baseNormal = mix(temp, baseNormal, layerLerp);
         //altmax
-        layerLerp = clamp(-worldPosition.y / (1 / 2.0) + _SlopeAltitudeData[i].w, 0.0, 1.0);
+        layerLerp = clamp(-worldPosition.y / (1 / 2.0) + _TerrainSlopeAltitudeData[i].w, 0.0, 1.0);
         baseNormal = mix(temp, baseNormal, layerLerp);
     }
 

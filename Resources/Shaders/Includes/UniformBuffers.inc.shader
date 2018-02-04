@@ -38,7 +38,8 @@ layout(std140) uniform terrain_data
     uniform vec4 _TerrainCoordinateOffsetScale; // XY is offset, ZW is scale
     uniform vec4 _TerrainSize; // XYZW, W is layercount(int)
     uniform vec4 _TextureScale; // XY
-    uniform vec4 _SlopeAltitudeData[MAX_TERRAIN_LAYERS]; //XY is min max slope height, ZW is min max altitude
+    uniform vec4 _TerrainColor[MAX_TERRAIN_LAYERS];
+    uniform vec4 _TerrainSlopeAltitudeData[MAX_TERRAIN_LAYERS]; //XY is min max slope height, ZW is min max altitude
     sampler2D _TerrainHeightmap;
     sampler2D _TerrainTextures[MAX_TERRAIN_LAYERS];
     sampler2D _TerrainNormalMapTextures[MAX_TERRAIN_LAYERS];
