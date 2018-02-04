@@ -68,6 +68,7 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     emptyLoadQueue();
 
     // Start up the background thread
+    importThreadRunning_ = true;
     importThread_ = std::thread(&ResourceManager::runImportThread, this);
 
     // Create menu items for controlling the resource manager
@@ -77,6 +78,10 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
 
 ResourceManager::~ResourceManager()
 {
+    // Close the import thread
+    importThreadRunning_ = false;
+    importThread_.join();
+
     // Delete all importers
     for (unsigned int i = 0; i < typeRegister_.size(); ++i)
     {
@@ -365,9 +370,9 @@ void ResourceManager::emptyLoadQueue()
 
 void ResourceManager::runImportThread()
 {
-    for (;;)
+    while(importThreadRunning_)
     {
-        Sleep(2500);
+        Sleep(500);
         emptyImportQueue();
     }
 }

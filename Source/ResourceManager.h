@@ -175,6 +175,7 @@ private:
     std::queue<ResourceID> loadQueue_;
 
     // A thread running background resource imports
+    bool importThreadRunning_;
     std::thread importThread_;
 
     // Registers a resource importer for handling a particular resource type.
