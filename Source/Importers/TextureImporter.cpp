@@ -16,10 +16,10 @@ bool TextureImporter::importFile(const std::string &sourceFile, const std::strin
 		return false;
 	}
 
-	// Texture usage determines conversion settings
-	const crnlib::texture_type textureType = sourceTexture.determine_texture_type();
-	const bool isNormalMap = textureType == crnlib::cTextureTypeNormalMap;
+	// Texture name determines conversion settings
+    const bool isNormalMap = sourceFile.find("_normals.") != std::string::npos;
     const bool sRGB = sourceFile.find("_albedo.") != std::string::npos;
+    const crnlib::texture_type type = isNormalMap ? crnlib::texture_type::cTextureTypeNormalMap : crnlib::texture_type::cTextureTypeRegularMap;
 
 	// Dont display the crunch console output.
 	// For large numbers of files it is too verbose.
@@ -27,12 +27,12 @@ bool TextureImporter::importFile(const std::string &sourceFile, const std::strin
 
 	// Configure crunch texture compression
 	crnlib::texture_conversion::convert_params settings;
-	settings.m_texture_type = textureType;
+	settings.m_texture_type = type;
 	settings.m_pInput_texture = &sourceTexture;
 	settings.m_dst_filename = outputFile.c_str();
 	settings.m_dst_file_type = crnlib::texture_file_types::cFormatDDS;
 	settings.m_comp_params.m_quality_level = cCRNMaxQualityLevel;
-	settings.m_comp_params.m_dxt_quality = cCRNDXTQualityUber;
+	settings.m_comp_params.m_dxt_quality = cCRNDXTQualityFast;
 	settings.m_comp_params.set_flag(cCRNCompFlagPerceptual, !isNormalMap);
 	settings.m_comp_params.m_num_helper_threads = 7;
 	settings.m_mipmap_params.m_mode = cCRNMipModeGenerateMips;

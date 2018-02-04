@@ -14,13 +14,11 @@ enum class RenderDebugMode
     Normals = SF_DebugGBufferNormals
 };
 
-class RenderManager : public ApplicationModule, public Singleton<RenderManager>
+class RenderManager : public Singleton<RenderManager>
 {
 public:
     RenderManager();
-
-    std::string name() const override { return "Render Manager"; }
-                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                   
     // Enables and disables shader features globally.
     // Shader features will not be used unless enabled globally.
     bool isFeatureGloballyEnabled(ShaderFeature feature) const;
@@ -46,4 +44,10 @@ private:
     
     // The current deferred debugging mode.
     RenderDebugMode debugMode_;
+
+    // Adds a menu item for toggling a global shader feature.
+    void addShaderFeatureMenuItem(ShaderFeature feature, const std::string &name);
+
+    // Adds a menu item for switching to a debugging mode.
+    void addDebugModeMenuItem(RenderDebugMode mode, const std::string &name);
 };

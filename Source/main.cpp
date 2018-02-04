@@ -21,7 +21,7 @@ void windowSizeCallback(GLFWwindow* window, int newWidth, int newHeight)
 // Triggered when the window gains or loses focus
 void windowFocusCallback(GLFWwindow* window, int focused)
 {
-    if (focused)
+    if (focused && application != nullptr)
     {
         // Notify the application class when it regains focus
         application->windowFocused();
@@ -73,7 +73,7 @@ int main(int argc, const char* argv[])
     // Create a window and its OpenGL context - exit with failure if window not initialised
     int windowWidth = 1920;
     int windowHeight = 1080;
-    GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "Gatling Engine - Cardboard Copters", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "", NULL, NULL);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
     gl3wInit();
@@ -87,11 +87,11 @@ int main(int argc, const char* argv[])
     glfwSetWindowFocusCallback(window, &windowFocusCallback);
 
     // Create the main application class.
-    application = new Application(window);
+    application = new Application("Cardboard Copters", window);
     application->resize(windowWidth, windowHeight);
 
     // Run game loop while window not closed
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(window) && application->running())
     {
         // Poll for GLFW events
         glfwPollEvents();

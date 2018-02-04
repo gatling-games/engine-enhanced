@@ -25,7 +25,10 @@ void GameObject::drawEditor()
     // Draw the gameobject header
     if (ImGui::CollapsingHeader("GameObject", 0, false, true))
     {
-        ImGui::InputText("Name", (char*)name_.c_str(), 32);
+        std::vector<char> nameBuffer(1024);
+        memcpy(&nameBuffer.front(), name_.c_str(), std::min(1024, (int)name_.length()));
+        ImGui::InputText("Name", &nameBuffer.front(), 1024);
+        name_ = &nameBuffer.front();
     }
 
     // Draw each component's section in turn

@@ -110,11 +110,6 @@ EditorManager::~EditorManager()
     ImGui_ImplGlfwGL3_Shutdown();
 }
 
-void EditorManager::addModuleToDebugPanel(ApplicationModule* module)
-{
-    mainWindow_.debugPanel()->addModule(module);
-}
-
 void EditorManager::resize(int width, int height)
 {
     mainWindow_.resize(width, height);

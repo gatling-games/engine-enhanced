@@ -16,7 +16,6 @@ public:
 
     // EditorPanel overrides
     std::string name() const override { return "Game Panel"; }
-    virtual void drawMenu(const std::string menuName) override;
     void draw() override;
 
 private:

@@ -8,28 +8,6 @@
 #include "SceneManager.h"
 #include "Scene/GameObject.h"
 
-void ScenePanel::drawMenu(const std::string menuName)
-{
-    // Draw the new gameobject menu
-    if (menuName == "Scene" && ImGui::BeginMenu("New GameObject"))
-    {
-        // Top Section - Blank Gameobject
-        if (ImGui::MenuItem("Blank GameObject"))
-            SceneManager::instance()->createGameObject("New GameObject");
-
-        ImGui::Separator();
-
-        // Second section - Rendering components
-        if (ImGui::MenuItem("Camera"))
-            SceneManager::instance()->createGameObject("New Camera")->createComponent<Camera>();
-
-        if (ImGui::MenuItem("Static Mesh"))
-            SceneManager::instance()->createGameObject("Static Mesh")->createComponent<StaticMesh>();
-
-        ImGui::EndMenu();
-    }
-}
-
 void ScenePanel::draw()
 {
     // Draw all of the game objects in the scene with no parent.

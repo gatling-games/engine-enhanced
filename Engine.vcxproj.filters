@@ -72,9 +72,6 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Source\Application.h" />
-    <ClInclude Include="Source\Editor\EditorMainWindow.h">
-      <Filter>Editor</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Editor\EditorPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
@@ -85,9 +82,6 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\OutputPanel.h">
-      <Filter>Editor</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Editor\DebugPanel.h">
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\ScenePanel.h">
@@ -171,6 +165,12 @@
     <ClInclude Include="Source\Importers\MaterialImporter.h">
       <Filter>Importers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Editor\MainWindow.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Editor\MainWindowMenu.h">
+      <Filter>Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -215,9 +215,6 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Source\Application.cpp" />
-    <ClCompile Include="Source\Editor\EditorMainWindow.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Math\Rect.cpp">
       <Filter>Math</Filter>
     </ClCompile>
@@ -234,9 +231,6 @@
       <Filter>Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\Editor\ScenePanel.cpp">
-      <Filter>Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Editor\DebugPanel.cpp">
       <Filter>Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\EditorManager.cpp" />
@@ -292,6 +286,12 @@
     </ClCompile>
     <ClCompile Include="Source\Importers\MaterialImporter.cpp">
       <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\MainWindow.cpp">
+      <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Editor\MainWindowMenu.cpp">
+      <Filter>Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

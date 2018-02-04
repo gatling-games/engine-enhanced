@@ -25,7 +25,7 @@ void Material::serialize(PropertyTable& table)
 
 void Material::drawEditor()
 {
-    ImGui::ColorPicker3("Color", &color_.r);
+    ImGui::ColorEdit3("Color", &color_.r);
     ImGui::ResourceSelect("Albedo", "Select Albedo Texture", albedoTexture_);
     ImGui::ResourceSelect("Normal Map", "Select Normal Map Texture", normalMapTexture_);
     ImGui::SliderFloat("Smoothness", &smoothness_, 0.0f, 1.0f);
