@@ -211,8 +211,9 @@ std::string PropertyTable::toString(int indentLevel) const
 
     // The stream ends with a }.
     // Indent it by indentLevel - 1 levels
+    stream << "\n";
     for (int i = 0; i < indentLevel - 1; ++i) stream << "    "; // 4 spaces
-    stream << "\n}";
+    stream << "}";
 
     return stream.str();
 }
