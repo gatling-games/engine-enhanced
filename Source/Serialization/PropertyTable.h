@@ -158,7 +158,7 @@ public:
     }
 
     // Converts the properties inside the table to the string-based property list format.
-    std::string toString() const;
+    std::string toString(int indentLevel = 1) const;
 
 private:
     PropertyTableMode mode_;

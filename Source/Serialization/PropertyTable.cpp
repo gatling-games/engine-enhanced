@@ -30,7 +30,7 @@ bool PropertyTable::addPropertyData(std::stringstream& serializedData)
     assert(properties_.empty());
 
     // The propertytable must begin with a {.
-    if(serializedData.get() != '{')
+    if (serializedData.get() != '{')
     {
         std::cerr << "ERROR - Property stream: Stream started without a { " << std::endl;
         return false;
@@ -130,11 +130,11 @@ const std::string PropertyTable::getProperty(const std::string &name, const std:
 
 void PropertyTable::serialize(const std::string& name, ISerializedObject& subobject)
 {
-    if(mode_ == PropertyTableMode::Reading)
+    if (mode_ == PropertyTableMode::Reading)
     {
         // Look for a property table with the correct name.
         const SerializedProperty* property = tryFindProperty(name);
-        if(property != nullptr && property->subTable.get() != nullptr)
+        if (property != nullptr && property->subTable.get() != nullptr)
         {
             subobject.serialize(*property->subTable);
         }
@@ -174,12 +174,19 @@ void PropertyTable::serialize(const std::string &name, std::string &value, const
     }
 }
 
-std::string PropertyTable::toString() const
+std::string PropertyTable::toString(int indentLevel) const
 {
     std::stringstream stream;
 
     // The stream must begin with a {.
     stream << "{";
+
+    // Each line in the table is indented by the specified amount
+    std::string indent = "";
+    for (int i = 0; i < indentLevel; ++i)
+    {
+        indent += "    "; // 4 spaces 
+    }
 
     // Write each property to the stream in the order they were created.
     // The property list only contains non-default values, so default
@@ -187,13 +194,13 @@ std::string PropertyTable::toString() const
     for (const SerializedProperty& property : properties_)
     {
         // Each property has its own line, starting with the name
-        stream << "\n" << property.name << " ";
+        stream << "\n" << indent << property.name << " ";
 
         // Each property is either a single value, or another property table.
-        if(property.subTable.get() != nullptr)
+        if (property.subTable.get() != nullptr)
         {
             // Serialize the entire subtable
-            stream << property.subTable->toString();
+            stream << property.subTable->toString(indentLevel + 1);
         }
         else
         {
@@ -203,6 +210,8 @@ std::string PropertyTable::toString() const
     }
 
     // The stream ends with a }.
+    // Indent it by indentLevel - 1 levels
+    for (int i = 0; i < indentLevel - 1; ++i) stream << "    "; // 4 spaces
     stream << "\n}";
 
     return stream.str();
