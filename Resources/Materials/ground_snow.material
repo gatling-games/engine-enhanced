@@ -1,4 +1,4 @@
 {
-albedo_texture = Resources/Textures/ground_snow_albedo.tga
-normal_map_texture = Resources/Textures/ground_snow_normals.tga
+albedo_texture = Resources\Textures\ground_snow_albedo.tga
+normal_map_texture = Resources\Textures\ground_snow_normals.tga
 }
