@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "SerializedObject.h"
+
 PropertyTable::PropertyTable(PropertyTableMode mode)
     : mode_(mode)
 {
@@ -124,6 +126,35 @@ const std::string PropertyTable::getProperty(const std::string &name, const std:
 
     // No property exists. Return the default value.
     return default;
+}
+
+void PropertyTable::serialize(const std::string& name, ISerializedObject& subobject)
+{
+    if(mode_ == PropertyTableMode::Reading)
+    {
+        // Look for a property table with the correct name.
+        const SerializedProperty* property = tryFindProperty(name);
+        if(property != nullptr && property->subTable.get() != nullptr)
+        {
+            subobject.serialize(*property->subTable);
+        }
+        else
+        {
+            // No property table found.
+            // Make an empty pt and the subobject will use defaults for everything
+            PropertyTable emptyPT(PropertyTableMode::Reading);
+            subobject.serialize(emptyPT);
+        }
+    }
+    else
+    {
+        // Create a new property table and write to it.
+        std::shared_ptr<PropertyTable> subtable(new PropertyTable(PropertyTableMode::Writing));
+        subobject.serialize(*subtable);
+
+        // Save the property table with the correct name
+        findOrCreateProperty(name)->subTable.swap(subtable);
+    }
 }
 
 void PropertyTable::serialize(const std::string &name, std::string &value, const std::string default)

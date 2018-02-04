@@ -8,6 +8,8 @@
 // Needed for serialize<ResourcePtr> method
 #include "ResourceManager.h"
 
+class ISerializedObject;
+
 // Stores a collection of named properties for a serialized object.
 
 // Properties can be written into a property table and read out again,
@@ -59,6 +61,9 @@ public:
     // If it exists, the value is returned, converted to a string.
     // If it does not exist, the default value is returned.
     const std::string getProperty(const std::string &name, const std::string &default) const;
+
+    // Serializes an entire subobject to or from the property table, depending on the current mode.
+    void serialize(const std::string &name, ISerializedObject &subobject);
 
     // Serializes a property to or from the property table, depending on the current mode.
     // In writing mode, the value is saved as a property with the given name. If
