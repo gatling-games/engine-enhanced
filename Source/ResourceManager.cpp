@@ -317,7 +317,8 @@ void ResourceManager::executeResourceLoad(ResourceID id)
     {
         std::stringstream stringstream;
         stringstream << importedFileStream.rdbuf();
-        PropertyTable properties(stringstream, 99999);
+        PropertyTable properties(PropertyTableMode::Reading);
+        properties.addPropertyData(stringstream);
         iso->serialize(properties);
     }
     else

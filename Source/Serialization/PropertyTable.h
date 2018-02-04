@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <memory.h>
 
 // Needed for serialize<ResourcePtr> method
 #include "ResourceManager.h"
@@ -25,23 +26,34 @@ enum class PropertyTableMode
     Writing,
 };
 
+class PropertyTable;
+
 struct SerializedProperty
 {
     std::string name;
+    
+    // If a single value, it is stored here.
     std::string value;
+
+    // If the property is another property table it is here.
+    std::shared_ptr<PropertyTable> subTable;
 };
 
 class PropertyTable
 {
 public:
-    PropertyTable();
-    PropertyTable(const std::string &serializedData);
-    PropertyTable(std::stringstream &serializedData, int propertyCount);
+    PropertyTable(PropertyTableMode mode);
+    ~PropertyTable();
 
     // Information about the table
     PropertyTableMode mode() const { return mode_; }
     int propertiesCount() const { return (int)properties_.size(); }
     bool isEmpty() const { return properties_.empty(); }
+
+    // Writes already-serialized data into the property table, ready for reading.
+    // Returns true if the data was read successfully.
+    bool addPropertyData(const std::string &serializedData);
+    bool addPropertyData(std::stringstream &serializedData);
 
     // Looks for the named property in the table.
     // If it exists, the value is returned, converted to a string.
@@ -141,7 +153,7 @@ public:
     }
 
     // Converts the properties inside the table to the string-based property list format.
-    const std::string toString() const;
+    std::string toString() const;
 
 private:
     PropertyTableMode mode_;

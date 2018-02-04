@@ -2,48 +2,115 @@
 
 #include <iostream>
 
-PropertyTable::PropertyTable()
-    : mode_(PropertyTableMode::Writing),
-    properties_()
+PropertyTable::PropertyTable(PropertyTableMode mode)
+    : mode_(mode)
 {
 
 }
 
-PropertyTable::PropertyTable(const std::string &serializedData)
-    : PropertyTable(std::stringstream(serializedData), INT_MAX)
+PropertyTable::~PropertyTable()
 {
 
 }
-    
-PropertyTable::PropertyTable(std::stringstream &serializedData, int propertyCount)
-    : mode_(PropertyTableMode::Reading),
-    properties_()
+
+bool PropertyTable::addPropertyData(const std::string& serializedData)
 {
-    // Read the properties data into the table.
-    // Ensure that no more than propertyCount properties are read
-    while (serializedData && propertyCount > 0)
+    assert(mode_ == PropertyTableMode::Reading);
+    assert(properties_.empty());
+
+    std::stringstream stream(serializedData);
+    return addPropertyData(stream);
+}
+
+bool PropertyTable::addPropertyData(std::stringstream& serializedData)
+{
+    assert(mode_ == PropertyTableMode::Reading);
+    assert(properties_.empty());
+
+    // The propertytable must begin with a {.
+    if(serializedData.get() != '{')
+    {
+        std::cerr << "ERROR - Property stream: Stream started without a { " << std::endl;
+        return false;
+    }
+
+    while (serializedData)
     {
         // Each line starts with the property name
         SerializedProperty property;
         serializedData >> property.name;
 
+        // If a } was encountered, instead of a property name, we are done.
+        if (property.name.compare("}") != std::string::npos)
+        {
+            // Leave the } for the parent propertytable to check
+            serializedData.unget();
+            return true;
+        }
+
         // Skip the space after the name
         serializedData.get();
 
-        // The rest of the name is the value
-        std::getline(serializedData, property.value);
-        if(!property.value.empty() && property.value[property.value.length() - 1] == '\r')
+        // The next symbol is either = or {
+        std::string propertyType;
+        serializedData >> propertyType;
+
+        // If it is an =, the line contains a single value.
+        if (propertyType == "=")
         {
-            // Prevent getline from including line endins (\r).
-            property.value = property.value.substr(0, property.value.length() - 1);
+            // Skip the space before the value
+            serializedData.get();
+
+            // The rest of the name is the value
+            std::getline(serializedData, property.value);
+            if (!property.value.empty() && property.value[property.value.length() - 1] == '\r')
+            {
+                // Prevent getline from including line endings (\r).
+                property.value = property.value.substr(0, property.value.length() - 1);
+            }
+        }
+        // Otherwise, the { indicates the value is itsself a property table.
+        else if (propertyType == "{")
+        {
+            // Leave the { in the stream for the child propertytable to check.
+            serializedData.unget();
+
+            // Create and read the property table.
+            // This wil advance the string stream to after the subtable's data.
+            property.subTable.reset(new PropertyTable(PropertyTableMode::Reading));
+            if (!property.subTable->addPropertyData(serializedData))
+            {
+                std::cerr << "ERROR - Property stream: Failed to read subtable. " << std::endl;
+                return false;
+            }
+
+            // The subtable should be followed by a }.
+            std::string nextValue;
+            serializedData >> nextValue;
+            if (nextValue != "}")
+            {
+                std::cerr << "ERROR - Property stream: Read " << nextValue << " when } expected. " << std::endl;
+                return false;
+            }
+        }
+        // If anythign else is found, it is an error.
+        else
+        {
+            std::cerr << "ERROR - Property stream: Read " << propertyType << " when = or { expected. " << std::endl;
+            return false;
         }
 
-        // Place each property into the properties list
+        // Place the property into the properties list
         if (!serializedData.fail())
+        {
             properties_.push_back(property);
-
-        propertyCount--;
+        }
     }
+
+    // Upon encountering a }, the loop above returns true.
+    // If we reach here, the stream is finished, but we never found a }.
+    std::cerr << "ERROR - Property stream: Reached end of stream without }. " << std::endl;
+    return false;
 }
 
 const std::string PropertyTable::getProperty(const std::string &name, const std::string &default) const
@@ -76,17 +143,36 @@ void PropertyTable::serialize(const std::string &name, std::string &value, const
     }
 }
 
-const std::string PropertyTable::toString() const
+std::string PropertyTable::toString() const
 {
     std::stringstream stream;
+
+    // The stream must begin with a {.
+    stream << "{";
 
     // Write each property to the stream in the order they were created.
     // The property list only contains non-default values, so default
     // values will not be written, as expected.
-    for (unsigned int i = 0; i < properties_.size(); ++i)
+    for (const SerializedProperty& property : properties_)
     {
-        stream << properties_[i].name << " " << properties_[i].value << std::endl;
+        // Each property has its own line, starting with the name
+        stream << "\n" << property.name << " ";
+
+        // Each property is either a single value, or another property table.
+        if(property.subTable.get() != nullptr)
+        {
+            // Serialize the entire subtable
+            stream << property.subTable->toString();
+        }
+        else
+        {
+            // Write an =, and then the value
+            stream << "= " << property.value;
+        }
     }
+
+    // The stream ends with a }.
+    stream << "\n}";
 
     return stream.str();
 }

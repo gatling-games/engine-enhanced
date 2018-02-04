@@ -14,10 +14,9 @@ SerializedGameObject::SerializedGameObject(const GameObject* gameObject)
     auto components = gameObject->componentList();
     for (unsigned int i = 0; i < components.size(); ++i)
     {
-        ComponentInfo ci;
+        ComponentInfo ci(PropertyTableMode::Writing);
         ci.id = std::to_string(i);
         ci.type = components[i]->name();
-        ci.properties = PropertyTable();
         components[i]->serialize(ci.properties);
 
         components_.push_back(ci);
@@ -56,7 +55,7 @@ SerializedGameObject::SerializedGameObject(const std::string &serializedData)
         if (command == "AddComponent")
         {
             // There is now a component type name and an id
-            ComponentInfo info;
+            ComponentInfo info(PropertyTableMode::Reading);
             stream >> info.type >> info.id;
 
             // Store in the list of components. Its properties will be listed later.
@@ -72,7 +71,8 @@ SerializedGameObject::SerializedGameObject(const std::string &serializedData)
             stream >> componentID >> propertyCount;
 
             // Read the next section in using a PropertyTable instance
-            PropertyTable properties(stream, propertyCount);
+            PropertyTable properties(PropertyTableMode::Reading);
+            properties.addPropertyData(serializedData);
 
             // Find the correct component in the list of components and store
             // the property table.

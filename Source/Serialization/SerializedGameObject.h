@@ -13,6 +13,12 @@ private:
         std::string type;
         std::string id;
         PropertyTable properties;
+
+        ComponentInfo(PropertyTableMode mode)
+            : properties(mode)
+        {
+            
+        }
     };
 
 public:
