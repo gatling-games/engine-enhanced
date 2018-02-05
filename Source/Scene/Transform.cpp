@@ -177,9 +177,9 @@ void Transform::recomputeMatrices()
     }
 
     // Recompute matrices for all children
-    for (int i = 0; i < children_.size(); i++)
+    for (Transform* child : children_)
     {
-        children_[i]->recomputeMatrices();
+        child->recomputeMatrices();
     }
 }
 

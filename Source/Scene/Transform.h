@@ -22,7 +22,10 @@ public:
     void serialize(PropertyTable &table) override;
 
 	// Return parent transform
-	Transform* parentTransform() const { return parent_; };
+	Transform* parentTransform() const { return parent_; }
+
+    // Return child transform vector
+    const std::vector<Transform*>& children() const { return children_; }
 
     // Transform position / rotation / scale in local space
     Point3 positionLocal() const { return position_; }
@@ -53,7 +56,7 @@ public:
 	// Detach parent transform from object
 	void detachParentTransform();
 
-    // Callback when transform is changed for child notification
+    // Callback when transform is changed for child notification and matrix recomputation
     void onTransformChanged();
 
     // Directly sets the transformation TRS values
@@ -85,6 +88,7 @@ private:
     void recomputeMatrices();
 
     // For adding and removal of child transforms
+    // Called when parent transforms are set by children
     void addChild(Transform* child);
     void removeChild(Transform* child);
 };
