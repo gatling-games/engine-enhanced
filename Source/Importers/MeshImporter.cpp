@@ -213,16 +213,6 @@ bool MeshImporter::importObjFile(const std::string& sourceFile, const std::strin
     {
         texCoordAttributes[i] = Point2(texCoordAttributes[i].x, 1.0f - texCoordAttributes[i].y);
     }
-    
-    // Flip the mesh on the x axis to match maya
-    for (unsigned int i = 0; i < positionAttributes.size(); ++i) positionAttributes[i].x *= -1.0f;
-    for (unsigned int i = 0; i < normalAttributes.size(); ++i) normalAttributes[i].x *= -1.0f;
-
-    // We also need to reverse the winding order as the mesh was flipped.
-    for (int i = 0; i < vertexIndices.size() / 3; ++i)
-    {
-        std::swap(vertexIndices[i * 3], vertexIndices[i * 3 + 2]);
-    }
 
 	// Obj files don't have tangtents - must be generated
 	preProcessTangents(positionAttributes, tangentAttributes, vertexIndices);
