@@ -7,7 +7,7 @@
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
     textureWrap_(Vector2(10.0f,10.0f)),
-    dimensions_(Vector3(256.0f, 30.0f, 256.0f)),
+    dimensions_(Vector3(1024.0f, 45.0f, 1024.0f)),
     layerCount_(1)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
