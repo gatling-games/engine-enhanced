@@ -20,35 +20,48 @@ out vec3 tangentToWorld[3];
 
 void main()
 {
-    //Treat the X and Z of the terrain position as the tex coords
-    texcoord = _position.xz * _TerrainCoordinateOffsetScale.zw + _TerrainCoordinateOffsetScale.xy;
+    ivec2 tileIndex = ivec2(gl_InstanceID % _TerrainTileCount.x, gl_InstanceID / _TerrainTileCount.x); //_TerrainTileCount
 
-    // Compute the world position of the terrain.
+    // Compute normalized position of the terrain. This ranges from 0,1 in XYZ
     // Use the x and z and take the y from the heightmap
-    worldPosition = vec4(_position.x, texture(_TerrainHeightmap, _position.xz).r, _position.z, 1.0);
-    worldPosition.xyz *= _TerrainSize.xyz;
+    vec3 normalizedPosition = _position.xyz;
+    normalizedPosition.xz += tileIndex;
+    normalizedPosition.xz /= _TerrainTileCount.xy;
+    normalizedPosition.y = texture(_TerrainHeightmap, normalizedPosition.xz).g;
+
+    worldPosition = vec4(normalizedPosition * _TerrainSize.xyz, 1.0);
 
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * worldPosition;
 
+    // Compute the Texture coordinates from world position
+    texcoord = normalizedPosition.xz * _TextureScale.xy;// *_TerrainTextureOffsetScale.zw + _TerrainTextureOffsetScale.xy;
+
+    // Compute the offset from the normalized position to get the adjacent heightmap pixels
     ivec2 heightmapRes = textureSize(_TerrainHeightmap, 0);
     vec2 heightmapTexelSize = 1.0 / heightmapRes;
 
-    // Get the normal in world space
-    vec4 h;
-    h.x = texture(_TerrainHeightmap, _position.xz+ heightmapTexelSize * vec2(0.0, -1.0)).r * _TerrainSize.y;
-    h.y = texture(_TerrainHeightmap, _position.xz+ heightmapTexelSize * vec2(-1.0, 0.0)).r * _TerrainSize.y;
-    h.z = texture(_TerrainHeightmap, _position.xz+ heightmapTexelSize * vec2(1.0, 0.0)).r * _TerrainSize.y;
-    h.w = texture(_TerrainHeightmap, _position.xz+ heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
-    worldNormal.z = h.w - h.x;
-    worldNormal.x = h.z - h.y;
-    worldNormal.y = 2.0;
-    worldNormal = normalize(worldNormal);
+    // Determine the gradient along x and z at the vertex position
+    float x1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(-1.0, 0.0)).g;
+    float x2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(1.0, 0.0)).g;
+    float z1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, -1.0)).g;
+    float z2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, 1.0)).g;
+    float dydx = x2 - x1;
+    float dydz = z2 - z1;
+    dydx *= _TerrainSize.y;
+    dydz *= _TerrainSize.y;
+    dydx /= (2.0 * heightmapTexelSize.x) * _TerrainSize.x;
+    dydz /= (2.0 * heightmapTexelSize.y) * _TerrainSize.z;
+
+    // Determine the tangents along the X and Z
+    vec3 worldTangent = normalize(vec3(1.0, dydx, 0.0));
+    vec3 worldBitangent = normalize(vec3(0.0, dydz, 1.0));
+    
+    // Cross product to get the world normal
+    worldNormal = cross(worldBitangent, worldTangent);
 
     // Compute the tangent and bitangent to make a tangent to world space matrix
 #ifdef NORMAL_MAP_ON
-    vec3 worldTangent = cross(worldNormal, vec3(1.0, 0.0, 0.0));
-    vec3 worldBitangent = cross(worldNormal, worldTangent);
     tangentToWorld[0] = vec3(worldTangent.x, worldBitangent.x, worldNormal.x);
     tangentToWorld[1] = vec3(worldTangent.y, worldBitangent.y, worldNormal.y);
     tangentToWorld[2] = vec3(worldTangent.z, worldBitangent.z, worldNormal.z);
@@ -76,32 +89,26 @@ void main()
 
     // Sample and blend albedo textures for each texture layer
     float layerLerp;
-    vec4 baseAlbedo = texture(_TerrainTextures[0], texcoord * _TextureScale.xy);
-    vec3 baseColor = _TerrainColor[0].rgb;
+    vec4 baseAlbedo = texture(_TerrainTextures[0], texcoord) * _TerrainColor[0];
     for (int i = 1; i < _TerrainSize.w; ++i)
     {
-        vec3 tempColor = baseColor;
         vec4 temp = baseAlbedo;
-        vec4 layerAlbedo = texture(_TerrainTextures[i], texcoord * _TextureScale.xy);
+        vec4 layerAlbedo = texture(_TerrainTextures[i], texcoord) * _TerrainColor[i];
         //slopemin
         layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_TerrainSlopeAltitudeData[i].x)), 0.0, 1.0);
         baseAlbedo = mix(baseAlbedo, layerAlbedo, layerLerp);
-        baseColor = mix(baseColor.rgb, _TerrainColor[i].rgb, layerLerp);
         //slopemax
         layerLerp = clamp((-1.0 + worldNormal.y) / (1 / 5.0) + sin(radians(_TerrainSlopeAltitudeData[i].y)), 0.0, 1.0);
         baseAlbedo = mix(temp, baseAlbedo, layerLerp);
-        baseColor = mix(tempColor.rgb, baseColor.rgb, layerLerp);
         //altmin
         layerLerp = clamp(worldPosition.y * 2.0 - _TerrainSlopeAltitudeData[i].z, 0.0, 1.0);
         baseAlbedo = mix(temp, baseAlbedo, layerLerp);
-        baseColor = mix(tempColor.rgb, baseColor.rgb, layerLerp);
         //altmax
         layerLerp = clamp(-worldPosition.y / (1/2.0) + _TerrainSlopeAltitudeData[i].w, 0.0, 1.0);
         baseAlbedo = mix(temp, baseAlbedo, layerLerp);
-        baseColor = mix(tempColor.rgb, baseColor.rgb, layerLerp);
     }
 #ifdef TEXTURE_ON
-    surface.diffuseColor = baseAlbedo.rgb * baseColor.rgb;
+    surface.diffuseColor = baseAlbedo.rgb;
     surface.gloss = baseAlbedo.a;
 #else
     surface.diffuseColor = baseColor.rgb;
@@ -110,11 +117,11 @@ void main()
 
 #ifdef NORMAL_MAP_ON
     // Sample and blend the normal map textures for each texture layer
-    vec3 baseNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[0], texcoord * _TextureScale.xy));
+    vec3 baseNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[0], texcoord));
     for (int i = 1; i < _TerrainSize.w; ++i)
     {
         vec3 temp = baseNormal;
-        vec3 layerNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[i], texcoord * _TextureScale.xy));
+        vec3 layerNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[i], texcoord));
         //slopemin
         layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_TerrainSlopeAltitudeData[i].x)), 0.0, 1.0);
         baseNormal = mix(baseNormal, layerNormal, layerLerp);

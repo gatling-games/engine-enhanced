@@ -185,15 +185,17 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     TerrainUniformData data;
     Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
     int layerCount = terrain->gameObject()->terrain()->layerCount();
-
-    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, float(layerCount)); //layercount stored in extra param
-
-    data.terrainCoordinateOffsetScale = Vector4(1.0f, 0.0f, 1.0f, 1.0f);
+    Vector2 tileSize = terrain->gameObject()->terrain()->tileCount();
+    data.terrainTileCount[0] = (int)tileSize.x;
+    data.terrainTileCount[1] = (int)tileSize.y;
+    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, float(layerCount)); //layercount stored in w
+    
+    data.terrainTextureOffsetScale = Vector4(1.0f, 0.0f, 1.0f, 1.0f);
     Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
+
 
     //Invert Texture scale
     data.textureScale = Vector4(dimens.x / texScale.x, dimens.z / texScale.y, 1.0f, 1.0f);
-
 
     //Set layer textures to bindless handles, also layer attributes
     Texture* heightmap = terrain->gameObject()->terrain()->heightmap();
@@ -204,8 +206,8 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     {
         data.terrainTextures[layer*2] = (layers[layer].material->albedoTexture() == nullptr) ? 0 : layers[layer].material->albedoTexture()->bindlessHandle();
         data.terrainNormalMapTextures[layer*2] = (layers[layer].material->normalMapTexture() == nullptr) ? 0 : layers[layer].material->normalMapTexture()->bindlessHandle();
-        data.slopeAltitudeData[layer] = Vector4(layers[layer].minMaxAngle.x, layers[layer].minMaxAngle.y, layers[layer].minMaxHeight.x, layers[layer].minMaxHeight.y);
-        data.color[layer] = Vector4(layers[layer].material->color().r, layers[layer].material->color().g, layers[layer].material->color().b, layers[layer].material->color().a);
+        data.terrainSlopeAltitudeData[layer] = Vector4(layers[layer].minMaxAngle.x, layers[layer].minMaxAngle.y, layers[layer].minMaxHeight.x, layers[layer].minMaxHeight.y);
+        data.terrainColor[layer] = Vector4(layers[layer].material->color().r, layers[layer].material->color().g, layers[layer].material->color().b, layers[layer].material->color().a);
     }
 
     //Update Uniform Buffer
@@ -270,7 +272,9 @@ void Renderer::executeDeferredGBufferPass() const
         terrain->mesh()->bind();
         updateTerrainUniformBuffer(terrain);
 
-        glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+        // Render all the terrain tiles in one instanced draw call
+        const int instanceCount = (int)(terrain->tileCount().x * terrain->tileCount().y);
+        glDrawElementsInstanced(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0, instanceCount);
     }
 }
 

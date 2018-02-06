@@ -46,11 +46,12 @@ struct CameraUniformData
 
 struct TerrainUniformData
 {
-    Vector4 terrainCoordinateOffsetScale;
+    int terrainTileCount[4];
+    Vector4 terrainTextureOffsetScale;
     Vector4 terrainSize;
     Vector4 textureScale;
-    Vector4 color[Terrain::MAX_LAYERS];
-    Vector4 slopeAltitudeData[Terrain::MAX_LAYERS];
+    Vector4 terrainColor[Terrain::MAX_LAYERS];
+    Vector4 terrainSlopeAltitudeData[Terrain::MAX_LAYERS];
     BindlessTextureHandle terrainHeightmap;
     uint16_t padding;
     BindlessTextureHandle terrainTextures[Terrain::MAX_LAYERS*2];

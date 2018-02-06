@@ -31,8 +31,15 @@ public:
     Mesh* mesh() const { return mesh_; }
     Texture* heightmap() const { return heightMap_; }
 
-    Vector2 textureWrapping() const { return textureWrap_; }
+    // Num of tiles in X and Y
+    Vector2 tileCount(); 
+
+    // Total size of the terrain, in m, in X,Y,Z
     Vector3 terrainDimensions() const { return dimensions_; }
+    
+    //Number of repetitions of each texture layer in X and Z
+    Vector2 textureWrapping() const { return textureWrap_; }
+
 
     TerrainLayer* terrainLayers() { return terrainLayers_; }
     int layerCount() const { return layerCount_; }
@@ -40,7 +47,6 @@ public:
 private:
     Mesh* mesh_;
     Texture* heightMap_;
-
     Vector2 textureWrap_;
     Vector3 dimensions_;
 
