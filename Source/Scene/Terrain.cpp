@@ -27,15 +27,17 @@ Vector2 Terrain::tileCount()
 void Terrain::drawProperties()
 {
     ImGui::ResourceSelect<Texture>("Heightmap", "Select Heightmap", heightMap_);
+    ImGui::ResourceSelect<Material>("Base Material", "Select Layer Material", terrainLayers_[0].material);
     ImGui::DragFloat2("Texture Repeat", &textureWrap_.x, 0.1f, 1.0f, 1024.0f);
     ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
+    
     if(ImGui::TreeNode("Terrain Layers"))
     {
         if(ImGui::Button("Add Layer"))
         {
             layerCount_ += 1;
         }
-        for (int layer = 0; layer < layerCount_; layer++)
+        for (int layer = 1; layer < layerCount_; layer++)
         {
             ImGui::PushID(layer);
             ImGui::InputText("", (char*)&terrainLayers_[layer].name, sizeof(terrainLayers_[layer].name));
