@@ -5,24 +5,25 @@
 #include "Scene/Transform.h"
 
 Camera::Camera(GameObject* gameObject)
-    : Component(gameObject)
+    : Component(gameObject),
+    nearPlaneDistance_(0.2f),
+    farPlaneDistance_(10000.0f),
+    horizontalFOV_(60.0f)
 {
-    nearPlaneDistance_ = 0.1f;
-    farPlaneDistance_ = 500.0f;
-    horizontalFOV_ = 60.0f;
+
 }
 
 void Camera::drawProperties()
 {
-    ImGui::DragFloat("Near Plane", &nearPlaneDistance_, 0.1f, 0.001f, 100.0f);
+    ImGui::DragFloat("Near Plane", &nearPlaneDistance_, 0.1f, 0.001f, 0.5f);
     ImGui::DragFloat("Far Plane", &farPlaneDistance_, 1.0f, 50.0f, 10000.0f);
     ImGui::DragFloat("Horiz FOV", &horizontalFOV_, 1.0f, 1.0f, 180.0f);
 }
 
 void Camera::serialize(PropertyTable &table)
 {
-    table.serialize("Near Plane", nearPlaneDistance_, 0.1f);
-    table.serialize("Far Plane", farPlaneDistance_, 1000.0f);
+    table.serialize("Near Plane", nearPlaneDistance_, 0.2f);
+    table.serialize("Far Plane", farPlaneDistance_, 10000.0f);
     table.serialize("Horiz FOV", horizontalFOV_, 60.0f);
 }
 
