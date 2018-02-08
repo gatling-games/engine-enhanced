@@ -7,11 +7,22 @@
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
     textureWrap_(Vector2(10.0f,10.0f)),
-    dimensions_(Vector3(1024.0f, 45.0f, 1024.0f)),
-    layerCount_(1)
+    dimensions_(Vector3(1024.0f, 80.0f, 1024.0f)),
+    layerCount_(3)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
     heightMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/heightmap.png");
+
+    // Set up the default layers
+    terrainLayers_[0].material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_rock_01.material");
+    terrainLayers_[1].material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");
+    terrainLayers_[1].slopeBorder = 0.6f;
+    terrainLayers_[1].slopeHardness = 0.3f;
+    terrainLayers_[2].material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_snow.material");
+    terrainLayers_[2].altitudeBorder = 35.0f;
+    terrainLayers_[2].altitudeTransition = 10.0f;
+    terrainLayers_[2].slopeBorder = 0.3f;
+    terrainLayers_[2].slopeHardness = 0.25f;
 }
 
 Vector2 Terrain::tileCount()
@@ -37,16 +48,27 @@ void Terrain::drawProperties()
         {
             layerCount_ += 1;
         }
+
         for (int layer = 1; layer < layerCount_; layer++)
         {
             ImGui::PushID(layer);
             ImGui::InputText("", (char*)&terrainLayers_[layer].name, sizeof(terrainLayers_[layer].name));
-            ImGui::DragFloat2("Angle Span", &terrainLayers_[layer].minMaxAngle.x, 0.1f, 0.0f, 90.0f);
-            ImGui::DragFloat2("Height Span", &terrainLayers_[layer].minMaxHeight.x, 0.1f, 0.0f, 100.0f);
+            ImGui::Spacing();
+
+            ImGui::DragFloat("Altitude", &terrainLayers_[layer].altitudeBorder, 0.1f, 0.0f, 300.0f);
+            ImGui::DragFloat("Transition", &terrainLayers_[layer].altitudeTransition, 0.1f, 0.0f, 20.0f);
+            ImGui::Spacing();
+
+            ImGui::DragFloat("Slope", &terrainLayers_[layer].slopeBorder, 0.01f, -1.0f, 1.0f);
+            ImGui::DragFloat("Hardness", &terrainLayers_[layer].slopeHardness, 0.01f, 0.001f, 1.0f);
+            ImGui::Spacing();
+
             ImGui::ResourceSelect<Material>("Material", "Select Layer Material",terrainLayers_[layer].material);
             ImGui::Spacing();
+
             ImGui::PopID();
         }
+
         ImGui::TreePop();
     }
 }

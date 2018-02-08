@@ -51,7 +51,7 @@ struct TerrainUniformData
     Vector4 terrainSize;
     Vector4 textureScale;
     Vector4 terrainColor[Terrain::MAX_LAYERS];
-    Vector4 terrainSlopeAltitudeData[Terrain::MAX_LAYERS];
+    Vector4 terrainLayerBlendData[Terrain::MAX_LAYERS];
     BindlessTextureHandle terrainHeightmap;
     uint16_t padding;
     BindlessTextureHandle terrainTextures[Terrain::MAX_LAYERS*2];

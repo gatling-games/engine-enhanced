@@ -40,7 +40,7 @@ layout(std140) uniform terrain_data
     uniform vec4 _TerrainSize; // XYZ, W is layercount(int)
     uniform vec4 _TextureScale; // XY
     uniform vec4 _TerrainColor[MAX_TERRAIN_LAYERS]; //Terrain color from material
-    uniform vec4 _TerrainSlopeAltitudeData[MAX_TERRAIN_LAYERS]; //XY is min max slope height, ZW is min max altitude
+    uniform vec4 _TerrainLayerBlendData[MAX_TERRAIN_LAYERS]; // xy = offset and scale for altitude blend, zw for slope
     sampler2D _TerrainHeightmap; //Texture containing the terrain heightmap
     sampler2D _TerrainTextures[MAX_TERRAIN_LAYERS]; //Terrain albedo textures
     sampler2D _TerrainNormalMapTextures[MAX_TERRAIN_LAYERS]; //Terrai normal Textures

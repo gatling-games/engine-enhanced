@@ -206,14 +206,12 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     {
         data.terrainTextures[layer*2] = (layers[layer].material->albedoTexture() == nullptr) ? 0 : layers[layer].material->albedoTexture()->bindlessHandle();
         data.terrainNormalMapTextures[layer*2] = (layers[layer].material->normalMapTexture() == nullptr) ? 0 : layers[layer].material->normalMapTexture()->bindlessHandle();
-        data.terrainSlopeAltitudeData[layer] = Vector4(layers[layer].minMaxAngle.x, layers[layer].minMaxAngle.y, layers[layer].minMaxHeight.x, layers[layer].minMaxHeight.y);
+        data.terrainLayerBlendData[layer] = Vector4(layers[layer].altitudeBorder - 0.001f, 1.0f / layers[layer].altitudeTransition, layers[layer].slopeBorder, layers[layer].slopeHardness * 20.0f);
         data.terrainColor[layer] = Vector4(layers[layer].material->color().r, layers[layer].material->color().g, layers[layer].material->color().b, layers[layer].material->color().a);
     }
 
     //Update Uniform Buffer
     terrainUniformBuffer_.update(data);
-
-
 }
 
 void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const

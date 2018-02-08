@@ -82,65 +82,78 @@ in vec2 texcoord;
 in vec3 tangentToWorld[3];
 #endif
 
-void main()
+/*
+ * Samples the albedo and normal map textures for the specified terrain layer.
+ */
+void sampleLayer(int index, out vec4 albedoSmoothness, out vec3 tangentNormal)
 {
-    SurfaceProperties surface;
-    surface.occlusion = 1.0;
-
-    // Sample and blend albedo textures for each texture layer
-    float layerLerp;
-    vec4 baseAlbedo = texture(_TerrainTextures[0], texcoord) * _TerrainColor[0];
-    for (int i = 1; i < _TerrainSize.w; ++i)
-    {
-        vec4 temp = baseAlbedo;
-        vec4 layerAlbedo = texture(_TerrainTextures[i], texcoord) * _TerrainColor[i];
-        //slopemin
-        layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_TerrainSlopeAltitudeData[i].x)), 0.0, 1.0);
-        baseAlbedo = mix(baseAlbedo, layerAlbedo, layerLerp);
-        //slopemax
-        layerLerp = clamp((-1.0 + worldNormal.y) / (1 / 5.0) + sin(radians(_TerrainSlopeAltitudeData[i].y)), 0.0, 1.0);
-        baseAlbedo = mix(temp, baseAlbedo, layerLerp);
-        //altmin
-        layerLerp = clamp(worldPosition.y * 2.0 - _TerrainSlopeAltitudeData[i].z, 0.0, 1.0);
-        baseAlbedo = mix(temp, baseAlbedo, layerLerp);
-        //altmax
-        layerLerp = clamp(-worldPosition.y / (1/2.0) + _TerrainSlopeAltitudeData[i].w, 0.0, 1.0);
-        baseAlbedo = mix(temp, baseAlbedo, layerLerp);
-    }
 #ifdef TEXTURE_ON
-    surface.diffuseColor = baseAlbedo.rgb;
-    surface.gloss = baseAlbedo.a;
+    albedoSmoothness = texture(_TerrainTextures[index], texcoord) * _TerrainColor[index];
 #else
-    surface.diffuseColor = baseColor.rgb;
-    surface.gloss = 0.2;
+    albedoSmoothness = _TerrainColor[index];
 #endif
 
 #ifdef NORMAL_MAP_ON
-    // Sample and blend the normal map textures for each texture layer
-    vec3 baseNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[0], texcoord));
-    for (int i = 1; i < _TerrainSize.w; ++i)
-    {
-        vec3 temp = baseNormal;
-        vec3 layerNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[i], texcoord));
-        //slopemin
-        layerLerp = clamp((1.0 - worldNormal.y) * 5.0 - sin(radians(_TerrainSlopeAltitudeData[i].x)), 0.0, 1.0);
-        baseNormal = mix(baseNormal, layerNormal, layerLerp);
-        //slopemax
-        layerLerp = clamp((-1.0 + worldNormal.y) / (1 / 5.0) + sin(radians(_TerrainSlopeAltitudeData[i].y)), 0.0, 1.0);
-        baseNormal = mix(temp, baseNormal, layerLerp);
+    tangentNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[index], texcoord));
+#else
+    tangentNormal = vec3(0.0, 0.0, 1.0);
+#endif
+}
 
-        //altmin
-        layerLerp = clamp(worldPosition.y * 2.0 - _TerrainSlopeAltitudeData[i].z, 0.0, 1.0);
-        baseNormal = mix(temp, baseNormal, layerLerp);
-        //altmax
-        layerLerp = clamp(-worldPosition.y / (1 / 2.0) + _TerrainSlopeAltitudeData[i].w, 0.0, 1.0);
-        baseNormal = mix(temp, baseNormal, layerLerp);
+/*
+ * Computes the altitude blend factor for the given altitude.
+ * The blend is between 0 and 1 and increases linearly across the blend area.
+ */
+float altitudeBlend(int layer, float altitude)
+{
+    return clamp((altitude - _TerrainLayerBlendData[layer].x) * _TerrainLayerBlendData[layer].y, 0.0, 1.0);
+}
+
+/*
+* Computes the slope blend factor for the given slope.
+* The blend is between 0 and 1 and increases linearly across the blend angle.
+*/
+float slopeBlend(int layer, float slope)
+{
+    return clamp((slope - _TerrainLayerBlendData[layer].z) * _TerrainLayerBlendData[layer].w, 0.0, 1.0);
+}
+
+void main()
+{
+    // Start by sampling the base layer
+    vec4 albedoSmoothness;
+    vec3 tangentNormal;
+    sampleLayer(0, albedoSmoothness, tangentNormal);
+
+    // Sample each additional layer and blend them on top of lower layers.
+    for (int layer = 1; layer < _TerrainSize.w; ++layer)
+    {
+        // Determine the blend factors for slope and altitude
+        // Combine the factors to get the final blend factor.
+        float altitudeAlpha = altitudeBlend(layer, worldPosition.y);
+        float slopeAlpha = slopeBlend(layer, worldNormal.y);
+        float alpha = altitudeAlpha * slopeAlpha;
+
+        // Sample the textures for the layer
+        vec4 layerAlbedoSmoothness;
+        vec3 layerTangentNormal;
+        sampleLayer(layer, layerAlbedoSmoothness, layerTangentNormal);
+
+        // Blend the layer data on top of lower layers.
+        albedoSmoothness = mix(albedoSmoothness, layerAlbedoSmoothness, alpha);
+        tangentNormal = mix(tangentNormal, layerTangentNormal, alpha);
     }
 
-    // Convert the normal to world space
-    surface.worldNormal.x = dot(baseNormal, tangentToWorld[0]);
-    surface.worldNormal.y = dot(baseNormal, tangentToWorld[1]);
-    surface.worldNormal.z = dot(baseNormal, tangentToWorld[2]);
+    // Pack the data into the surface structure.
+    SurfaceProperties surface;
+    surface.diffuseColor = albedoSmoothness.rgb;
+    surface.gloss = albedoSmoothness.a;
+    surface.occlusion = 1.0;
+
+#ifdef NORMAL_MAP_ON
+    surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
+    surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
+    surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
 #else
     surface.worldNormal = worldNormal;
 #endif
