@@ -2,14 +2,8 @@
 
 bool PrefabImporter::importFile(const std::string& sourceFile, const std::string& outputFile) const
 {
-    // If there is already an output file, delete it.
-    if (fs::exists(outputFile))
-    {
-        fs::remove(outputFile);
-    }
-
-    // Now copy the source directly to the output directory.
-    fs::copy(sourceFile, outputFile);
+    // Copy the source directly to the output directory.
+    fs::copy(sourceFile, outputFile, fs::copy_options::overwrite_existing);
 
     // This importer always succeeds.
     return true;
