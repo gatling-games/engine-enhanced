@@ -6,6 +6,7 @@
 #include <fstream>
 
 #include "Editor/MainWindowMenu.h"
+#include "Editor/ResourcesPanel.h"
 
 #include "Serialization/SerializedObject.h"
 
@@ -275,6 +276,9 @@ void ResourceManager::executeFilesystemScan()
             importResource(resourceIDs_[i]);
         }
     }
+
+    // Force the resources panel to recreate its tree
+    ResourcesPanel::instance()->clearTree();
 }
 
 void ResourceManager::executeResourceImport(ResourceID id)

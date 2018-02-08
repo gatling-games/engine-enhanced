@@ -3,8 +3,9 @@
 #include "Editor/EditorPanel.h"
 
 #include "ResourceManager.h"
+#include "Utils/Singleton.h"
 
-class ResourcesPanel : public EditorPanel
+class ResourcesPanel : public EditorPanel, public Singleton<ResourcesPanel>
 {
 public:
     ResourcesPanel();
@@ -12,6 +13,9 @@ public:
     // EditorPanel overrides
     virtual std::string name() const { return "Resources Panel"; }
     virtual void draw();
+
+    // Causes the tree of resources to be rebuilt on next draw.
+    void clearTree();
 
 private:
 

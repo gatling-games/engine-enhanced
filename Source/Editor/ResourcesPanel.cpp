@@ -27,6 +27,11 @@ void ResourcesPanel::draw()
     drawNodes(resourceTreeRoot_.childNodes);
 }
 
+void ResourcesPanel::clearTree()
+{
+    resourceTreeRoot_.childNodes.clear();
+}
+
 void ResourcesPanel::updateTree()
 {
     // Delete the current tree
