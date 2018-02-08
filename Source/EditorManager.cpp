@@ -154,6 +154,7 @@ std::string EditorManager::showSaveDialog(const std::string& title, const std::s
     open.lpstrTitle = title.c_str();
     open.lpstrFilter = "Prefab Files\0*.prefab";
     open.lpstrDefExt = "prefab";
+    open.Flags = OFN_NOCHANGEDIR;
 
     if (!GetSaveFileNameA(&open))
     {
