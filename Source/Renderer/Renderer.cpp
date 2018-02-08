@@ -255,7 +255,7 @@ void Renderer::executeDeferredGBufferPass() const
     for (StaticMesh* staticMesh : SceneManager::instance()->staticMeshes())
     {
         // Skip instances with no material
-        if(staticMesh->material() == nullptr)
+        if(staticMesh->material() == nullptr || staticMesh->mesh() == nullptr)
         {
             continue;
         }
