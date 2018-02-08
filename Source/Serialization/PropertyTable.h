@@ -52,6 +52,9 @@ public:
     int propertiesCount() const { return (int)properties_.size(); }
     bool isEmpty() const { return properties_.empty(); }
 
+    // Changes the mode of the property table.
+    void setMode(PropertyTableMode newMode);
+
     // Gets the names of properties in the table.
     // Note - this will not contain values equal to their defaults.
     std::vector<std::string> propertyNames() const;
@@ -156,8 +159,7 @@ public:
             }
 
             // If the resource is nullptr use 0 for the value. Otherwise, use the source path.
-            findOrCreateProperty(name)->value = (value == nullptr) ? "0"
-                : ResourceManager::instance()->resourceIDToPath(value->resourceID());
+            findOrCreateProperty(name)->value = (value == nullptr) ? "0" : value->resourcePath();
         }
     }
 

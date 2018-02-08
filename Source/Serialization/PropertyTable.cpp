@@ -15,6 +15,11 @@ PropertyTable::~PropertyTable()
 
 }
 
+void PropertyTable::setMode(PropertyTableMode newMode)
+{
+    mode_ = newMode;
+}
+
 std::vector<std::string> PropertyTable::propertyNames() const
 {
     std::vector<std::string> names;
@@ -147,6 +152,7 @@ void PropertyTable::serialize(const std::string& name, ISerializedObject& subobj
         const SerializedProperty* property = tryFindProperty(name);
         if (property != nullptr && property->subTable.get() != nullptr)
         {
+            property->subTable->setMode(PropertyTableMode::Reading);
             subobject.serialize(*property->subTable);
         }
         else
