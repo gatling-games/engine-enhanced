@@ -14,6 +14,9 @@
 
 #include "Serialization/Prefab.h"
 
+#include "Utils/ImGuiExtensions.h"
+#include "EditorManager.h"
+
 GameObject::GameObject(const std::string &name)
     : name_(name),
     prefab_(nullptr)
@@ -25,6 +28,12 @@ GameObject::GameObject(const std::string &name)
 
 void GameObject::drawEditor()
 {
+    // If we have a prefab, display a prefab info section.
+    if (prefab_ != nullptr)
+    {
+        drawPrefabInfoSection();
+    }
+
     // Draw the gameobject header
     if (ImGui::CollapsingHeader("GameObject", 0, false, true))
     {
@@ -39,6 +48,12 @@ void GameObject::drawEditor()
 
     // Place an add component button under the components list
     drawAddComponentSection();
+
+    // If we dont have a prefab, display a save as prefab button
+    if (prefab_ == nullptr)
+    {
+        drawSaveAsPrefabSection();
+    }
 }
 
 void GameObject::drawComponentsSection()
@@ -75,6 +90,39 @@ void GameObject::drawAddComponentSection()
 
         ImGui::EndPopup();
     }
+}
+
+void GameObject::drawSaveAsPrefabSection()
+{
+    ImGui::Spacing();
+    if (ImGui::Button("Save As Prefab", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    {
+        // Display a save dialog
+        const std::string savePath = EditorManager::instance()->showSaveDialog("Save As Prefab", name_, "prefab");
+        if (!savePath.empty())
+        {
+            // Create a new prefab at the save path.
+            // If a prefab already exists at the path, the existing prefab is returned.
+            Prefab* prefab = ResourceManager::instance()->createResource<Prefab>(savePath);
+
+            // Save the contents of this gameobject into the prefab.
+            prefab->cloneGameObject(this);
+            ResourceManager::instance()->saveAllSourceFiles();
+
+            // The prefab is now the prefab for this gameobject.
+            prefab_ = prefab;
+        }
+    }
+}
+
+void GameObject::drawPrefabInfoSection()
+{
+    // Display a break link button
+    if (ImGui::Button(("Break Link With " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    {
+        prefab_ = nullptr;
+    }
+    ImGui::Spacing();
 }
 
 void GameObject::serialize(PropertyTable &table)

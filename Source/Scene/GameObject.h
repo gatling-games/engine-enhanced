@@ -38,6 +38,8 @@ public:
     void drawEditor() override;
     void drawComponentsSection();
     void drawAddComponentSection();
+    void drawSaveAsPrefabSection();
+    void drawPrefabInfoSection();
 
     // Serialization methods.
     // Used for networking and saving objects to disk.
