@@ -154,7 +154,7 @@ std::string EditorManager::showSaveDialog(const std::string& title, const std::s
     open.lpstrTitle = title.c_str();
     open.lpstrFilter = "Prefab Files\0*.prefab";
     open.lpstrDefExt = "prefab";
-    open.Flags = OFN_NOCHANGEDIR;
+    open.Flags = OFN_NOCHANGEDIR | OFN_OVERWRITEPROMPT;
 
     if (!GetSaveFileNameA(&open))
     {
@@ -162,5 +162,21 @@ std::string EditorManager::showSaveDialog(const std::string& title, const std::s
         return "";
     }
 
-    return std::string(path);
+    const std::string savePath(path);
+
+    // Determine the current directory of the editor application.
+    wchar_t appDirectory_chars[MAX_FILE_LENGTH];
+    GetCurrentDirectory(MAX_FILE_LENGTH, appDirectory_chars);
+    const std::wstring appDirectory_w(appDirectory_chars);
+    const std::string appDirectory(appDirectory_w.begin(), appDirectory_w.end());
+
+    // If the file path is not inside the app directory, fail
+    if(savePath.find(appDirectory) == std::string::npos)
+    {
+        std::cerr << "Save must be inside app directory " << appDirectory << std::endl;
+        return "";
+    }
+
+    // Otherwise, strip the app directory and return
+    return savePath.substr(appDirectory.length() + 1); // The +1 is for the trailing slash
 }
