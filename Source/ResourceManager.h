@@ -120,6 +120,23 @@ public:
         return load<T>(pathToResourceID(sourcePath));
     }
 
+    // Creates a new resource of the given type and writes it to disk at the given path.
+    // If a resource already exists at the path, it will be overwritten.
+    template<typename T> 
+    ResourcePPtr<T> createResource(const std::string &sourcePath)
+    {
+        // Create a blank resource file.
+        std::ofstream fileStream(sourcePath);
+        fileStream << "{\n}";
+        fileStream.close();
+
+        // Cause the path file to be imported
+        importChangedResources();
+
+        // Load and return the now blank resource
+        return load<T>(sourcePath);
+    }
+
     // Saves all resources whose source files have been modified.
     // This affects all ISerializedObject-based resources
     void saveAllSourceFiles();
