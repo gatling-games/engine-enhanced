@@ -8,6 +8,10 @@
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
 
+// Used for displaying windows file dialogs
+#include "ShObjIdl.h"
+#include <commdlg.h>
+
 EditorManager::EditorManager(GLFWwindow* window, bool setupGLFWCallbacks)
     : glfwWindow_(window),
     mainWindow_()
@@ -133,4 +137,29 @@ void EditorManager::render()
 	
     // Now actually render the glfw draw list.
     ImGui::Render();
+}
+
+std::string EditorManager::showSaveDialog(const std::string& title, const std::string& fileName, 
+    const std::string& fileExtension) const
+{
+    const int MAX_FILE_LENGTH = 2048;
+    char path[MAX_FILE_LENGTH];
+    strcpy_s(path, fileName.c_str());
+
+    OPENFILENAMEA open;
+    memset(&open, 0, sizeof(OPENFILENAME));
+    open.lStructSize = sizeof(OPENFILENAME);
+    open.lpstrFile = path;
+    open.nMaxFile = MAX_FILE_LENGTH;
+    open.lpstrTitle = title.c_str();
+    open.lpstrFilter = "Prefab Files\0*.prefab";
+    open.lpstrDefExt = "prefab";
+
+    if (!GetSaveFileNameA(&open))
+    {
+        // The user cancelled the save dialog.
+        return "";
+    }
+
+    return std::string(path);
 }
