@@ -19,8 +19,8 @@ SceneManager::SceneManager()
 {
     // Create a camera in the scene
     GameObject* cameraGO = createGameObject("Camera");
-    cameraGO->createComponent<Transform>()->setPositionLocal(Point3(64.0f, 22.0f, -55.0f));
-	cameraGO->findComponent<Transform>()->setRotationLocal(Quaternion(0.056f, 0.822f, -0.083f, 0.56f));
+    cameraGO->createComponent<Transform>()->setPositionLocal(Point3(245.0f, 16.0f, 110.0f));
+	cameraGO->findComponent<Transform>()->setRotationLocal(Quaternion(0.0f, 0.5f, 0.0f, 0.866f));
     cameraGO->createComponent<Camera>();
     cameraGO->createComponent<Freecam>();
 
@@ -31,7 +31,7 @@ SceneManager::SceneManager()
 
 	//Create helicopter gameobject
 	GameObject* heliGO = createGameObject("Helicopter");
-	heliGO->createComponent<Transform>()->setPositionLocal(Point3(74.0f, 20.0f, -60.0f));
+	heliGO->createComponent<Transform>()->setPositionLocal(Point3(250.0f, 15.0f, 112.0f));
 	heliGO->findComponent<Transform>()->setScaleLocal(Point3(100.0f, 100.0f, 100.0f));
 	heliGO->createComponent<StaticMesh>();
 	heliGO->createComponent<Helicopter>();

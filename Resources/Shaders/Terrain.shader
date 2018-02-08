@@ -1,4 +1,3 @@
-
 #include "UniformBuffers.inc.shader"
 
 #define USE_GBUFFER_WRITE
@@ -8,9 +7,6 @@
 
 // Vertex attributes
 layout(location = 0) in vec4 _position;
-
-// Heightmap texture
-layout(binding = 0) uniform sampler2D _HeightmapTexture;
 
 // Interpolated values to fragment shader
 out vec4 worldPosition;
@@ -24,35 +20,48 @@ out vec3 tangentToWorld[3];
 
 void main()
 {
-    //Treat the X and Z of the terrain position as the tex coords
-    texcoord = _position.xz * _TerrainCoordinateOffsetScale.zw + _TerrainCoordinateOffsetScale.xy;
+    ivec2 tileIndex = ivec2(gl_InstanceID % _TerrainTileCount.x, gl_InstanceID / _TerrainTileCount.x); //_TerrainTileCount
 
-    // Compute the world position of the terrain.
+    // Compute normalized position of the terrain. This ranges from 0,1 in XYZ
     // Use the x and z and take the y from the heightmap
-    worldPosition = vec4(_position.x, texture(_HeightmapTexture, _position.xz).r, _position.z, 1.0);
-    worldPosition.xyz *= _TerrainSize.xyz;
+    vec3 normalizedPosition = _position.xyz;
+    normalizedPosition.xz += tileIndex;
+    normalizedPosition.xz /= _TerrainTileCount.xy;
+    normalizedPosition.y = texture(_TerrainHeightmap, normalizedPosition.xz).g;
+
+    worldPosition = vec4(normalizedPosition * _TerrainSize.xyz, 1.0);
 
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * worldPosition;
 
-    ivec2 heightmapRes = textureSize(_HeightmapTexture, 0);
+    // Compute the Texture coordinates from world position
+    texcoord = normalizedPosition.xz * _TextureScale.xy;// *_TerrainTextureOffsetScale.zw + _TerrainTextureOffsetScale.xy;
+
+    // Compute the offset from the normalized position to get the adjacent heightmap pixels
+    ivec2 heightmapRes = textureSize(_TerrainHeightmap, 0);
     vec2 heightmapTexelSize = 1.0 / heightmapRes;
 
-    // Get the normal in world space
-    vec4 h;
-    h.x = texture(_HeightmapTexture, _position.xz+ heightmapTexelSize * vec2(0.0, -1.0)).r * _TerrainSize.y;
-    h.y = texture(_HeightmapTexture, _position.xz+ heightmapTexelSize * vec2(-1.0, 0.0)).r * _TerrainSize.y;
-    h.z = texture(_HeightmapTexture, _position.xz+ heightmapTexelSize * vec2(1.0, 0.0)).r * _TerrainSize.y;
-    h.w = texture(_HeightmapTexture, _position.xz+ heightmapTexelSize * vec2(0.0, 1.0)).r * _TerrainSize.y;
-    worldNormal.z = h.w - h.x;
-    worldNormal.x = h.z - h.y;
-    worldNormal.y = 2.0;
-    worldNormal = normalize(worldNormal);
+    // Determine the gradient along x and z at the vertex position
+    float x1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(-1.0, 0.0)).g;
+    float x2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(1.0, 0.0)).g;
+    float z1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, -1.0)).g;
+    float z2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, 1.0)).g;
+    float dydx = x2 - x1;
+    float dydz = z2 - z1;
+    dydx *= _TerrainSize.y;
+    dydz *= _TerrainSize.y;
+    dydx /= (2.0 * heightmapTexelSize.x) * _TerrainSize.x;
+    dydz /= (2.0 * heightmapTexelSize.y) * _TerrainSize.z;
+
+    // Determine the tangents along the X and Z
+    vec3 worldTangent = normalize(vec3(1.0, dydx, 0.0));
+    vec3 worldBitangent = normalize(vec3(0.0, dydz, 1.0));
+    
+    // Cross product to get the world normal
+    worldNormal = cross(worldBitangent, worldTangent);
 
     // Compute the tangent and bitangent to make a tangent to world space matrix
 #ifdef NORMAL_MAP_ON
-    vec3 worldTangent = cross(worldNormal, vec3(1.0, 0.0, 0.0));
-    vec3 worldBitangent = cross(worldNormal, worldTangent);
     tangentToWorld[0] = vec3(worldTangent.x, worldBitangent.x, worldNormal.x);
     tangentToWorld[1] = vec3(worldTangent.y, worldBitangent.y, worldNormal.y);
     tangentToWorld[2] = vec3(worldTangent.z, worldBitangent.z, worldNormal.z);
@@ -62,15 +71,6 @@ void main()
 #endif // VERTEX_SHADER
 
 #ifdef FRAGMENT_SHADER
-
-// Texture inputs
-layout(binding = 0) uniform sampler2D _HeightmapTexture;
-layout(binding = 1) uniform sampler2D _Texture;
-layout(binding = 2) uniform sampler2D _SnowTex;
-layout(binding = 3) uniform sampler2D _RockTex;
-layout(binding = 4) uniform sampler2D _NormalMap;
-layout(binding = 5) uniform sampler2D _SnowNormalMap;
-layout(binding = 6) uniform sampler2D _RockNormalMap;
 
 // Interpolated values from vertex shader
 in vec4 worldPosition;
@@ -82,39 +82,75 @@ in vec2 texcoord;
 in vec3 tangentToWorld[3];
 #endif
 
-void main()
+/*
+ * Samples the albedo and normal map textures for the specified terrain layer.
+ */
+void sampleLayer(int index, out vec4 albedoSmoothness, out vec3 tangentNormal)
 {
-    SurfaceProperties surface;
-    surface.occlusion = 1.0;
-
-    // Work out interpolation factors for the rock and snow layers
-    // Based on altitude and slope (ak world y)
-    float rockLerp = clamp((1.0 - worldNormal.y) * 3.0 - 0.5, 0.0, 1.0);
-    float snowLerp = clamp(worldPosition.y * 2.0 - 50, 0.0, 1.0);
-
 #ifdef TEXTURE_ON
-    // Sample the diffuse textures for each texture layer
-    vec4 baseDiffuse = texture(_Texture, texcoord*_TextureScale.xy);
-    vec4 rockDiffuse = texture(_RockTex, texcoord*_TextureScale.xy);
-    vec4 snowDiffuse = texture(_SnowTex, texcoord*_TextureScale.xy);
-
-    // Blend the rock and snow textures into the base texture
-    vec4 diffuseGloss = mix(mix(baseDiffuse, rockDiffuse, rockLerp), snowDiffuse, snowLerp);
-    surface.diffuseColor = diffuseGloss.rgb;
-    surface.gloss = diffuseGloss.a;
+    albedoSmoothness = texture(_TerrainTextures[index], texcoord) * _TerrainColor[index];
 #else
-    surface.diffuseColor = vec3(1.0);
-    surface.gloss = 0.2;
+    albedoSmoothness = _TerrainColor[index];
 #endif
 
 #ifdef NORMAL_MAP_ON
-    // Sample the normal map textures for each texture layer
-    vec3 baseNormals = unpackDXT5nm(texture(_NormalMap, texcoord * _TextureScale.xy));
-    vec3 rockNormals = unpackDXT5nm(texture(_RockNormalMap, texcoord * _TextureScale.xy));
-    vec3 snowNormals = unpackDXT5nm(texture(_SnowNormalMap, texcoord * _TextureScale.xy));
-    vec3 tangentNormal = mix(mix(baseNormals, rockNormals, rockLerp), snowNormals, snowLerp);
+    tangentNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[index], texcoord));
+#else
+    tangentNormal = vec3(0.0, 0.0, 1.0);
+#endif
+}
 
-    // Convert the normal to world space
+/*
+ * Computes the altitude blend factor for the given altitude.
+ * The blend is between 0 and 1 and increases linearly across the blend area.
+ */
+float altitudeBlend(int layer, float altitude)
+{
+    return clamp((altitude - _TerrainLayerBlendData[layer].x) * _TerrainLayerBlendData[layer].y, 0.0, 1.0);
+}
+
+/*
+* Computes the slope blend factor for the given slope.
+* The blend is between 0 and 1 and increases linearly across the blend angle.
+*/
+float slopeBlend(int layer, float slope)
+{
+    return clamp((slope - _TerrainLayerBlendData[layer].z) * _TerrainLayerBlendData[layer].w, 0.0, 1.0);
+}
+
+void main()
+{
+    // Start by sampling the base layer
+    vec4 albedoSmoothness;
+    vec3 tangentNormal;
+    sampleLayer(0, albedoSmoothness, tangentNormal);
+
+    // Sample each additional layer and blend them on top of lower layers.
+    for (int layer = 1; layer < _TerrainSize.w; ++layer)
+    {
+        // Determine the blend factors for slope and altitude
+        // Combine the factors to get the final blend factor.
+        float altitudeAlpha = altitudeBlend(layer, worldPosition.y);
+        float slopeAlpha = slopeBlend(layer, worldNormal.y);
+        float alpha = altitudeAlpha * slopeAlpha;
+
+        // Sample the textures for the layer
+        vec4 layerAlbedoSmoothness;
+        vec3 layerTangentNormal;
+        sampleLayer(layer, layerAlbedoSmoothness, layerTangentNormal);
+
+        // Blend the layer data on top of lower layers.
+        albedoSmoothness = mix(albedoSmoothness, layerAlbedoSmoothness, alpha);
+        tangentNormal = mix(tangentNormal, layerTangentNormal, alpha);
+    }
+
+    // Pack the data into the surface structure.
+    SurfaceProperties surface;
+    surface.diffuseColor = albedoSmoothness.rgb;
+    surface.gloss = albedoSmoothness.a;
+    surface.occlusion = 1.0;
+
+#ifdef NORMAL_MAP_ON
     surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
     surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
     surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
