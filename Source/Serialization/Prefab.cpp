@@ -1,7 +1,5 @@
 #include "Prefab.h"
 
-#include <imgui.h>
-
 #include "SceneManager.h"
 
 Prefab::Prefab(ResourceID resourceID)
@@ -21,3 +19,13 @@ void Prefab::serialize(PropertyTable &table)
     gameObject_.serialize(table);
 }
 
+void Prefab::cloneGameObject(GameObject* original)
+{
+    // We are creating a prefab from an existing GameObject.
+    // Serialize the source gameobject, and then deserialise its contents
+    // onto the gameobject inside the prefab.
+    PropertyTable properties(PropertyTableMode::Writing);
+    original->serialize(properties);
+    properties.setMode(PropertyTableMode::Reading);
+    gameObject_.serialize(properties);
+}
