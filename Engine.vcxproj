@@ -14,6 +14,7 @@
     <ClInclude Include="Source\Editor\EditableObject.h" />
     <ClInclude Include="Source\Editor\MainWindowMenu.h" />
     <ClInclude Include="Source\Importers\MaterialImporter.h" />
+    <ClInclude Include="Source\Importers\PrefabImporter.h" />
     <ClInclude Include="Source\Renderer\Material.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
@@ -56,8 +57,8 @@
     <ClInclude Include="Source\ResourceManager.h" />
     <ClInclude Include="Source\Serialization\BitReader.h" />
     <ClInclude Include="Source\Serialization\BitWriter.h" />
+    <ClInclude Include="Source\Serialization\Prefab.h" />
     <ClInclude Include="Source\Serialization\PropertyTable.h" />
-    <ClInclude Include="Source\Serialization\SerializedGameObject.h" />
     <ClInclude Include="Source\Serialization\SerializedObject.h" />
     <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Source\Utils\ImGuiExtensions.h" />
@@ -66,6 +67,7 @@
   <ItemGroup>
     <ClCompile Include="Source\Editor\MainWindowMenu.cpp" />
     <ClCompile Include="Source\Importers\MaterialImporter.cpp" />
+    <ClCompile Include="Source\Importers\PrefabImporter.cpp" />
     <ClCompile Include="Source\Renderer\Material.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
@@ -106,8 +108,8 @@
     <ClCompile Include="Source\ResourceManager.cpp" />
     <ClCompile Include="Source\Serialization\BitReader.cpp" />
     <ClCompile Include="Source\Serialization\BitWriter.cpp" />
+    <ClCompile Include="Source\Serialization\Prefab.cpp" />
     <ClCompile Include="Source\Serialization\PropertyTable.cpp" />
-    <ClCompile Include="Source\Serialization\SerializedGameObject.cpp" />
     <ClCompile Include="Source\Utils\Clock.cpp" />
     <ClCompile Include="Source\Utils\ImGuiExtensions.cpp" />
   </ItemGroup>

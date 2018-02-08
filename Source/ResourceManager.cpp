@@ -13,10 +13,12 @@
 #include "Importers/MeshImporter.h"
 #include "Importers/TextureImporter.h"
 #include "Importers/ShaderImporter.h"
+#include "Importers/PrefabImporter.h"
 
 #include "Renderer/Material.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
+#include "Serialization/Prefab.h"
 
 std::string Resource::resourceName() const
 {
@@ -49,6 +51,7 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     registerResourceType<Texture, TextureImporter>(".jpg");
     registerResourceType<Texture, TextureImporter>(".jpeg");
     registerResourceType<Material, MaterialImporter>(".material");
+    registerResourceType<Prefab, PrefabImporter>(".prefab");
 
     // Grow the loaded resources vector, so there is space for all
     // resources without shifting them about later.
@@ -233,7 +236,6 @@ void ResourceManager::removeDeletedResources()
 
 void ResourceManager::update()
 {
-    saveAllSourceFiles();
     emptyLoadQueue();
 }
 
