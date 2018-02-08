@@ -15,6 +15,17 @@ PropertyTable::~PropertyTable()
 
 }
 
+std::vector<std::string> PropertyTable::propertyNames() const
+{
+    std::vector<std::string> names;
+    for (const SerializedProperty& property : properties_)
+    {
+        names.push_back(property.name);
+    }
+
+    return names;
+}
+
 bool PropertyTable::addPropertyData(const std::string& serializedData)
 {
     assert(mode_ == PropertyTableMode::Reading);

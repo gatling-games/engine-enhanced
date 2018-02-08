@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Editor/EditableObject.h"
+#include "Serialization/SerializedObject.h"
 
 class Component;
 class BitWriter;
@@ -19,9 +20,10 @@ typedef uint32_t GameObjectID;
 
 // Class for a game object
 // Most of the actual work is deferred to the scene manager.
-class GameObject : public IEditableObject
+class GameObject : public IEditableObject, ISerializedObject
 {
     friend class SceneManager;
+    friend class Prefab;
 
 private:
     // This is only called by SceneManager
@@ -39,8 +41,7 @@ public:
 
     // Serialization methods.
     // Used for networking and saving objects to disk.
-    void serialize(BitWriter &writer) const;
-    void deserialize(BitReader &reader);
+    void serialize(PropertyTable &table) override;
 
     // Called once per frame
     void update(float deltaTime);
@@ -67,6 +68,10 @@ public:
         // No component exists.
         return nullptr;
     }
+
+    // Looks for a component with the given name on the GameObject.
+    // Returns nullptr if none is found.
+    Component* findComponent(const std::string &typeName);
 
     // Adds a component of the given type to the GameObject, if none exists already.
     // Returns the new, or existing, component.
@@ -101,6 +106,9 @@ public:
 
 private:
     std::string name_;
+
+    // The prefab that the GameObject was instantiated from
+    Prefab* prefab_;
 
     // The components that currently exist on the GameObject
     std::vector<Component*> components_;

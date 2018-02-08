@@ -52,6 +52,10 @@ public:
     int propertiesCount() const { return (int)properties_.size(); }
     bool isEmpty() const { return properties_.empty(); }
 
+    // Gets the names of properties in the table.
+    // Note - this will not contain values equal to their defaults.
+    std::vector<std::string> propertyNames() const;
+
     // Writes already-serialized data into the property table, ready for reading.
     // Returns true if the data was read successfully.
     bool addPropertyData(const std::string &serializedData);

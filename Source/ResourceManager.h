@@ -93,6 +93,9 @@ public:
     ResourceManager(const std::string sourceDirectory, const std::string importedDirectory);
     ~ResourceManager();
 
+    // Gets the path to the source resources directory.
+    const std::string sourceDirectory() const { return sourceDirectory_; }
+
     // Gets a list of all resource source files in the project.
     const std::vector<std::string>* allSourceFiles() const { return &resourceSourcePaths_; }
 

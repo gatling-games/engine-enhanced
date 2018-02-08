@@ -12,8 +12,11 @@
 #include "Scene/Freecam.h"
 #include "Scene/Terrain.h"
 
+#include "Serialization/Prefab.h"
+
 GameObject::GameObject(const std::string &name)
-    : name_(name)
+    : name_(name),
+    prefab_(nullptr)
 {
     // Give every GameObject instance a transform component
     // This ensures that gameobject can be parented inside each other.
@@ -74,29 +77,90 @@ void GameObject::drawAddComponentSection()
     }
 }
 
-void GameObject::serialize(BitWriter&) const
+void GameObject::serialize(PropertyTable &table)
 {
-    
-}
+    // First, serialize game object settings
+    table.serialize("name", name_, "Unnamed GameObject");
+    table.serialize("prefab", prefab_, (ResourcePPtr<Prefab>)nullptr);
 
-void GameObject::deserialize(BitReader&)
-{
-    
+    // Now we need to serialize each component.
+    // This is complex, so handle reading and writing separately.
+    if (table.mode() == PropertyTableMode::Writing)
+    {
+        // Write each component to the property table.
+        // The name of each subtable is the type name of the component.
+        for (Component* component : components_)
+        {
+            table.serialize(component->name(), *component);
+        }
+    }
+    else // aka if table.mode() == PropertyTableMode::Reading
+    {
+        // The name of each property in the table is the name of a component.
+        // Loop through all of the properties and attempt to spawn each one.
+        const std::vector<std::string> propertyNames = table.propertyNames();
+
+        // First, delete any components that are on the gameobject but should not be.
+        for (unsigned int i = 0; i < components_.size(); ++i)
+        {
+            // The component should not be on the gameobject if its name
+            // cannot be found in the list of property names.
+            if (std::find(propertyNames.begin(), propertyNames.end(), components_[i]->name()) == propertyNames.end())
+            {
+                // Delete the component.
+                std::swap(components_[i], components_.back());
+                components_.pop_back();
+                i--;
+            }
+        }
+
+        // First, read data for each component that *should* be on the GameObject.
+        for (const std::string& property : propertyNames)
+        {
+            // Check if a component already exists.
+            Component* component = findComponent(property);
+
+            // If it doesnt exist, try to spawn a matching component.
+            if (component == nullptr)
+            {
+                component = createComponent(property);
+            }
+
+            // Now, if the component exists, deserialize its data.
+            if (component != nullptr)
+            {
+                table.serialize(component->name(), *component);
+            }
+        }
+    }
 }
 
 void GameObject::update(float deltaTime)
 {
-    for(unsigned int i = 0; i < components_.size(); ++i)
+    for (unsigned int i = 0; i < components_.size(); ++i)
     {
         components_[i]->update(deltaTime);
     }
+}
+
+Component* GameObject::findComponent(const std::string &typeName)
+{
+    for (Component* component : components_)
+    {
+        if (component->name() == typeName)
+        {
+            return component;
+        }
+    }
+
+    return nullptr;
 }
 
 Component* GameObject::createComponent(const std::string &typeName)
 {
     if (typeName == "Transform")
         return createComponent<Transform>();
-    
+
     if (typeName == "Camera")
         return createComponent<Camera>();
 
@@ -106,8 +170,14 @@ Component* GameObject::createComponent(const std::string &typeName)
     if (typeName == "Freecam")
         return createComponent<Freecam>();
 
-    const std::string errorMessage = "CreateComponent() type " + typeName + " not defined";
-    throw std::exception(errorMessage.c_str());
+    if (typeName == "Helicopter")
+        return createComponent<Helicopter>();
+
+    if (typeName == "Terrain")
+        return createComponent<Terrain>();
+
+    std::cerr << "CreateComponent() type " + typeName + " not defined" << std::endl;
+    return nullptr;
 }
 
 Transform* GameObject::transform() const
@@ -127,5 +197,5 @@ StaticMesh* GameObject::staticMesh() const
 
 Terrain* GameObject::terrain() const
 {
-	return findComponent<Terrain>();
+    return findComponent<Terrain>();
 }
