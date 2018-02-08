@@ -30,6 +30,9 @@ public:
     // Draws the properties fold out
     void drawProperties() override;
 
+    // Serialisation function
+    void serialize(PropertyTable &table) override;
+
     Mesh* mesh() const { return mesh_; }
     Texture* heightmap() const { return heightMap_; }
 

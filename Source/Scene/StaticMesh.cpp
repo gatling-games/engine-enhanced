@@ -3,10 +3,11 @@
 #include "Utils/ImGuiExtensions.h"
 
 StaticMesh::StaticMesh(GameObject* gameObject)
-    : Component(gameObject)
+    : Component(gameObject),
+    mesh_(nullptr),
+    material_(nullptr)
 {
-    mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/copter2.obj");
-    material_ = ResourceManager::instance()->load<Material>("Resources/Materials/default.material");
+
 }
 
 void StaticMesh::drawProperties()

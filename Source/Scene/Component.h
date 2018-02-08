@@ -1,11 +1,12 @@
 #pragma once
 
 #include "Scene/GameObject.h"
+#include "Serialization/SerializedObject.h"
 #include "Serialization/PropertyTable.h"
 
 // The base class for every component that is attached to a GameObject.
 // It contains a series of callbacks that are triggered
-class Component
+class Component : public ISerializedObject
 {
 public:
     explicit Component(GameObject* gameObject);
@@ -25,7 +26,7 @@ public:
 
     // Serialization and deserialization of the component.
     // Triggered when loading, saving, or sending over the network.
-	virtual void serialize(PropertyTable &table);
+	virtual void serialize(PropertyTable &table) override;
 
 private:
     GameObject* gameObject_;

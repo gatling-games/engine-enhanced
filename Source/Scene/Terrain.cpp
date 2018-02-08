@@ -62,3 +62,10 @@ void Terrain::drawProperties()
         ImGui::TreePop();
     }
 }
+
+void Terrain::serialize(PropertyTable &table)
+{
+    table.serialize("heightmap", heightMap_, (ResourcePPtr<Texture>)nullptr);
+    table.serialize("texture_wrap", textureWrap_, Vector2(10.0f, 10.0f));
+    table.serialize("dimensions", dimensions_, Vector3(1024.0f, 80.0f, 1024.0f));
+}
