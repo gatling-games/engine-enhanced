@@ -195,9 +195,7 @@ void Transform::removeChild(Transform* child)
         if (children_[i] == child)
         {
             // Swap & pop child element scheduled for removal
-            Transform* temp = children_[i];
-            children_[i] = children_.back();
-            children_.back() = temp;
+            std::swap(children_[i], children_.back());
             children_.pop_back();
         }
     }
