@@ -51,7 +51,7 @@ public:
     Vector3 down() const;
 
 	// Changes parent transform for manipulating transform hierarchy
-	void setParentTransform(Transform* parent, bool keepWorldPosition = true);
+	void setParentTransform(Transform* parent);
 
 	// Detach parent transform from object
 	void detachParentTransform();

@@ -111,7 +111,7 @@ Vector3 Transform::down() const
     return rotationWorld() * Vector3::down();
 }
 
-void Transform::setParentTransform(Transform* parent, bool keepWorldPosition)
+void Transform::setParentTransform(Transform* parent)
 {
     parent_ = parent;
     parent_->addChild(this);
