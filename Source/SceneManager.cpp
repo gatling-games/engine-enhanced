@@ -20,7 +20,7 @@ SceneManager::SceneManager()
     // Create a camera in the scene
     GameObject* cameraGO = createGameObject("Camera");
     cameraGO->createComponent<Transform>()->setPositionLocal(Point3(245.0f, 16.0f, 110.0f));
-	cameraGO->findComponent<Transform>()->setRotationLocal(Quaternion(0.0f, 0.5f, 0.0f, 0.866f));
+    cameraGO->findComponent<Transform>()->setRotationLocal(Quaternion(0.0f, 0.5f, 0.0f, 0.866f));
     cameraGO->createComponent<Camera>();
     cameraGO->createComponent<Freecam>();
 
@@ -29,12 +29,12 @@ SceneManager::SceneManager()
     terrainGO->createComponent<Transform>()->setPositionLocal(Point3(0.0f, 0.0f, 0.0f));
     terrainGO->createComponent<Terrain>();
 
-	//Create helicopter gameobject
-	GameObject* heliGO = createGameObject("Helicopter");
-	heliGO->createComponent<Transform>()->setPositionLocal(Point3(250.0f, 15.0f, 112.0f));
-	heliGO->findComponent<Transform>()->setScaleLocal(Point3(100.0f, 100.0f, 100.0f));
-	heliGO->createComponent<StaticMesh>();
-	heliGO->createComponent<Helicopter>();
+    //Create helicopter gameobject
+    GameObject* heliGO = createGameObject("Helicopter");
+    heliGO->createComponent<Transform>()->setPositionLocal(Point3(250.0f, 15.0f, 112.0f));
+    heliGO->findComponent<Transform>()->setScaleLocal(Point3(100.0f, 100.0f, 100.0f));
+    heliGO->createComponent<StaticMesh>();
+    heliGO->createComponent<Helicopter>();
 
     // Register menu items for creating new gameobjects
     addCreateGameObjectMenuItem<Transform>("Blank GameObject");
@@ -53,9 +53,13 @@ void SceneManager::frameStart()
     }
 }
 
-GameObject* SceneManager::createGameObject(const std::string& name)
+GameObject* SceneManager::createGameObject(const std::string& name, Transform* parent)
 {
     GameObject* go = new GameObject(name);
+    if (parent != nullptr)
+    {
+        go->createComponent<Transform>()->setParentTransform(parent);
+    }
     gameObjects_.push_back(go);
 
     return go;
@@ -113,7 +117,6 @@ const std::vector<Terrain*> SceneManager::terrains() const
     return meshes;
 }
 
-
 template<typename T>
 void SceneManager::addCreateGameObjectMenuItem(const std::string &gameObjectName)
 {
@@ -121,4 +124,14 @@ void SceneManager::addCreateGameObjectMenuItem(const std::string &gameObjectName
         "Scene/New GameObject/" + gameObjectName,
         [=] { PropertiesPanel::instance()->inspect(createGameObject(gameObjectName)->createComponent<T>()->gameObject()); }
     );
+
+    // Add a second button, allowing the gameobject to be created as 
+    // a child of the gameobject currently in the properties panel.
+    MainWindowMenu::instance()->addMenuItem(
+        "Scene/New Child GameObject/" + gameObjectName,
+        [=] {
+        GameObject* parentGO = dynamic_cast<GameObject*>(PropertiesPanel::instance()->current());
+        Transform* parentTransform = (parentGO != nullptr) ? parentGO->transform() : nullptr;
+        PropertiesPanel::instance()->inspect(createGameObject(gameObjectName, parentTransform)->createComponent<T>()->gameObject());
+    });
 }

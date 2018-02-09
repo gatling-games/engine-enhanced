@@ -20,7 +20,7 @@ public:
     void frameStart();
 
     // Creates a new GameObject in the scene
-    GameObject* createGameObject(const std::string &name);
+    GameObject* createGameObject(const std::string &name, Transform* parent = nullptr);
 
     // Gets the first camera added to the scene.
     Camera* mainCamera() const;
