@@ -14,24 +14,46 @@ void ScenePanel::draw()
     auto gameObjects = SceneManager::instance()->gameObjects();
     for (unsigned int i = 0; i < gameObjects.size(); ++i)
     {
-        drawNode(gameObjects[i]);
+        if (gameObjects[i]->transform()->parentTransform() == nullptr)
+        {
+            drawNode(gameObjects[i]);
+        }
     }
 }
 
 void ScenePanel::drawNode(GameObject* gameObject)
 {
     // Determine the tree flags, based on selection state.
-    ImGuiTreeNodeFlags nodeFlags = ImGuiTreeNodeFlags_NoTreePushOnOpen | ImGuiTreeNodeFlags_Leaf;
+    ImGuiTreeNodeFlags nodeFlags = 0;
+
+    // Set flag when gameObject selected
     if (PropertiesPanel::instance()->current() == gameObject)
     {
         nodeFlags |= ImGuiTreeNodeFlags_Selected;
     }
 
+    // Set as tree leaf when gameObject has no children
+    if (gameObject->transform()->children().empty())
+    {
+        nodeFlags |= ImGuiTreeNodeFlags_Leaf;
+    }
+
     // Draw the actual tree node
-    ImGui::TreeNodeEx(gameObject->name().c_str(), nodeFlags);
+    bool node_open = ImGui::TreeNodeEx(gameObject->name().c_str(), nodeFlags);
     if (ImGui::IsItemClicked())
     {
         gameObjectSelected(gameObject);
+    }
+
+    if (node_open)
+    {
+        // Draw child nodes when parent node opened
+        for (Transform* child : gameObject->transform()->children())
+        {
+            drawNode(child->gameObject());
+        }
+
+        ImGui::TreePop();
     }
 }
 

@@ -21,6 +21,12 @@ public:
     // Handles component serialization
     void serialize(PropertyTable &table) override;
 
+    // Return parent transform
+    Transform* parentTransform() const { return parent_; }
+
+    // Return child transform vector
+    const std::vector<Transform*>& children() const { return children_; }
+
     // Transform position / rotation / scale in local space
     Point3 positionLocal() const { return position_; }
     Quaternion rotationLocal() const { return rotation_; }
@@ -44,6 +50,15 @@ public:
     Vector3 up() const;
     Vector3 down() const;
 
+    // Changes parent transform for manipulating transform hierarchy
+    void setParentTransform(Transform* parent);
+
+    // Detach parent transform from object
+    void detachParentTransform();
+
+    // Callback when transform is changed for child notification and matrix recomputation
+    void onTransformChanged();
+
     // Directly sets the transformation TRS values
     void setPositionLocal(const Point3 &pos);
     void setRotationLocal(const Quaternion &rot);
@@ -61,8 +76,19 @@ private:
     Quaternion rotation_;
     Vector3 scale_;
 
+    // Parent transform
+    Transform* parent_;
+
+    // Child transforms
+    std::vector<Transform*> children_;
+
     // Cached transformation matrices
     Matrix4x4 worldToLocal_;
     Matrix4x4 localToWorld_;
     void recomputeMatrices();
+
+    // For adding and removal of child transforms
+    // Called when parent transforms are set by children
+    void addChild(Transform* child);
+    void removeChild(Transform* child);
 };
