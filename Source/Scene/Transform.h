@@ -21,8 +21,8 @@ public:
     // Handles component serialization
     void serialize(PropertyTable &table) override;
 
-	// Return parent transform
-	Transform* parentTransform() const { return parent_; }
+    // Return parent transform
+    Transform* parentTransform() const { return parent_; }
 
     // Return child transform vector
     const std::vector<Transform*>& children() const { return children_; }
@@ -50,11 +50,11 @@ public:
     Vector3 up() const;
     Vector3 down() const;
 
-	// Changes parent transform for manipulating transform hierarchy
-	void setParentTransform(Transform* parent);
+    // Changes parent transform for manipulating transform hierarchy
+    void setParentTransform(Transform* parent);
 
-	// Detach parent transform from object
-	void detachParentTransform();
+    // Detach parent transform from object
+    void detachParentTransform();
 
     // Callback when transform is changed for child notification and matrix recomputation
     void onTransformChanged();
@@ -76,8 +76,8 @@ private:
     Quaternion rotation_;
     Vector3 scale_;
 
-	// Parent transform
-	Transform* parent_;
+    // Parent transform
+    Transform* parent_;
 
     // Child transforms
     std::vector<Transform*> children_;
