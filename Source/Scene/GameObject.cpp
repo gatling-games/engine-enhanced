@@ -26,6 +26,19 @@ GameObject::GameObject(const std::string &name)
     createComponent<Transform>();
 }
 
+GameObject::GameObject(Prefab* prefab)
+    : name_(""),
+    prefab_(prefab)
+{
+    // Write the prefab's properties into a property table
+    PropertyTable table(PropertyTableMode::Writing);
+    prefab_->serialize(table);
+
+    // Read the properties into this gameobject.
+    table.setMode(PropertyTableMode::Reading);
+    serialize(table);
+}
+
 void GameObject::drawEditor()
 {
     // Check if this gameobject is a prefab.

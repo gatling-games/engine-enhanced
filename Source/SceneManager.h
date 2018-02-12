@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "Utils/Singleton.h"
@@ -21,6 +20,9 @@ public:
 
     // Creates a new GameObject in the scene
     GameObject* createGameObject(const std::string &name, Transform* parent = nullptr);
+
+    // Creates a new GameObject, based on the specified prefab
+    GameObject* createGameObject(Prefab* prefab);
 
     // Gets the first camera added to the scene.
     Camera* mainCamera() const;

@@ -29,6 +29,7 @@ private:
     // This is only called by SceneManager
     // To create a GameObject, call SceneManager->createGameObject.
     explicit GameObject(const std::string &name);
+    explicit GameObject(Prefab* prefab);
 
 public:
     // Getters for basic gameobject properties

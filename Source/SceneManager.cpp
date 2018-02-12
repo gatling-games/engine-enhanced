@@ -11,30 +11,19 @@
 #include "Scene/Terrain.h"
 #include "Scene/Helicopter.h"
 
+#include "Serialization/Prefab.h"
+#include "ResourceManager.h"
+
 #include "Utils/Clock.h"
 #include "Scene/Freecam.h"
 
 SceneManager::SceneManager()
     : gameObjects_()
 {
-    // Create a camera in the scene
-    GameObject* cameraGO = createGameObject("Camera");
-    cameraGO->createComponent<Transform>()->setPositionLocal(Point3(245.0f, 16.0f, 110.0f));
-    cameraGO->findComponent<Transform>()->setRotationLocal(Quaternion(0.0f, 0.5f, 0.0f, 0.866f));
-    cameraGO->createComponent<Camera>();
-    cameraGO->createComponent<Freecam>();
-
-    // Create a terain
-    GameObject* terrainGO = createGameObject("Terrain");
-    terrainGO->createComponent<Transform>()->setPositionLocal(Point3(0.0f, 0.0f, 0.0f));
-    terrainGO->createComponent<Terrain>();
-
-    //Create helicopter gameobject
-    GameObject* heliGO = createGameObject("Helicopter");
-    heliGO->createComponent<Transform>()->setPositionLocal(Point3(250.0f, 15.0f, 112.0f));
-    heliGO->findComponent<Transform>()->setScaleLocal(Point3(100.0f, 100.0f, 100.0f));
-    heliGO->createComponent<StaticMesh>();
-    heliGO->createComponent<Helicopter>();
+	// Create default gameobjects
+    createGameObject(ResourceManager::instance()->load<Prefab>("Resources/Prefabs/Camera.prefab"));
+    createGameObject(ResourceManager::instance()->load<Prefab>("Resources/Prefabs/Terrain.prefab"));
+    createGameObject(ResourceManager::instance()->load<Prefab>("Resources/Prefabs/Helicopter.prefab"));
 
     // Register menu items for creating new gameobjects
     addCreateGameObjectMenuItem<Transform>("Blank GameObject");
@@ -62,6 +51,13 @@ GameObject* SceneManager::createGameObject(const std::string& name, Transform* p
     }
     gameObjects_.push_back(go);
 
+    return go;
+}
+
+GameObject* SceneManager::createGameObject(Prefab* prefab)
+{
+    GameObject* go = new GameObject(prefab);
+    gameObjects_.push_back(go);
     return go;
 }
 
