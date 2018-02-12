@@ -185,9 +185,6 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     TerrainUniformData data;
     Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
     int layerCount = terrain->gameObject()->terrain()->layerCount();
-    Vector2 tileSize = terrain->gameObject()->terrain()->tileCount();
-    data.terrainTileCount[0] = (int)tileSize.x;
-    data.terrainTileCount[1] = (int)tileSize.y;
     data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, float(layerCount)); //layercount stored in w
     
     data.terrainTextureOffsetScale = Vector4(1.0f, 0.0f, 1.0f, 1.0f);
@@ -271,8 +268,7 @@ void Renderer::executeDeferredGBufferPass() const
         updateTerrainUniformBuffer(terrain);
 
         // Render all the terrain tiles in one instanced draw call
-        const int instanceCount = (int)(terrain->tileCount().x * terrain->tileCount().y);
-        glDrawElementsInstanced(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0, instanceCount);
+        glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
     }
 }
 

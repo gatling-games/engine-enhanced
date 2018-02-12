@@ -35,7 +35,6 @@ layout(std140) uniform per_draw_data
 //Terrain uniform buffer
 layout(std140) uniform terrain_data
 {
-    uniform ivec4 _TerrainTileCount;
     uniform vec4 _TerrainTextureOffsetScale; // XY is offset, ZW is scale
     uniform vec4 _TerrainSize; // XYZ, W is layercount(int)
     uniform vec4 _TextureScale; // XY

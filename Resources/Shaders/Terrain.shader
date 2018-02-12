@@ -20,13 +20,9 @@ out vec3 tangentToWorld[3];
 
 void main()
 {
-    ivec2 tileIndex = ivec2(gl_InstanceID % _TerrainTileCount.x, gl_InstanceID / _TerrainTileCount.x); //_TerrainTileCount
-
     // Compute normalized position of the terrain. This ranges from 0,1 in XYZ
     // Use the x and z and take the y from the heightmap
     vec3 normalizedPosition = _position.xyz;
-    normalizedPosition.xz += tileIndex;
-    normalizedPosition.xz /= _TerrainTileCount.xy;
     normalizedPosition.y = texture(_TerrainHeightmap, normalizedPosition.xz).g;
 
     worldPosition = vec4(normalizedPosition * _TerrainSize.xyz, 1.0);
