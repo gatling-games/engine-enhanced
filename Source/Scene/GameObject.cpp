@@ -140,6 +140,13 @@ void GameObject::drawPrefabInfoSection()
     {
         prefab_ = nullptr;
     }
+
+    // Display an apply changes button
+    if(ImGui::Button(("Apply Changes to " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    {
+        prefab_->cloneGameObject(this);
+    }
+
     ImGui::Spacing();
 }
 
