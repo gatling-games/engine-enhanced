@@ -147,6 +147,18 @@ void GameObject::drawPrefabInfoSection()
         prefab_->cloneGameObject(this);
     }
 
+    // Display a revert changes button
+    if(ImGui::Button(("Revert Changes from " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    {
+        // Write all prefab properties into a property table
+        PropertyTable table(PropertyTableMode::Writing);
+        prefab_->serialize(table);
+
+        // Read the properties onto the gameobject
+        table.setMode(PropertyTableMode::Reading);
+        serialize(table);
+    }
+
     ImGui::Spacing();
 }
 
