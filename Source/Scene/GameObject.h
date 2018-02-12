@@ -34,6 +34,7 @@ private:
 public:
     // Getters for basic gameobject properties
     const std::string& name() const { return name_; }
+    Prefab* prefab() const { return prefab_; }
 
     // Draws the gameobject editor panel
     void drawEditor() override;

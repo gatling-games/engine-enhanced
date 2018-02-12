@@ -38,6 +38,12 @@ void ScenePanel::drawNode(GameObject* gameObject)
         nodeFlags |= ImGuiTreeNodeFlags_Leaf;
     }
 
+    // Show a different colour for gameobjects with a prefab.
+    if (gameObject->prefab() != nullptr)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+    }
+
     // Draw the actual tree node
     bool node_open = ImGui::TreeNodeEx(gameObject->name().c_str(), nodeFlags);
     if (ImGui::IsItemClicked())
@@ -54,6 +60,12 @@ void ScenePanel::drawNode(GameObject* gameObject)
         }
 
         ImGui::TreePop();
+    }
+
+    // If we changed the colour, change it back
+    if (gameObject->prefab() != nullptr)
+    {
+        ImGui::PopStyleColor();
     }
 }
 
