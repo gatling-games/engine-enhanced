@@ -1,0 +1,11 @@
+{
+    name = Terrain
+    prefab = Resources\Prefabs\Terrain.prefab
+    Transform {
+    }
+    Terrain {
+        heightmap = Resources\Textures\heightmap.png
+        base_texture = Resources\Textures\ground_grass_01_albedo.tga
+        base_normal_map = Resources\Textures\ground_grass_01_normals.tga
+    }
+}
