@@ -32,6 +32,9 @@ Application::Application(const std::string &name, GLFWwindow* window)
 
 Application::~Application()
 {
+    // Save all source files when the application exits
+    resourceManager_->saveAllSourceFiles();
+
     // Delete modules in opposite order to
     // how they were created.
     delete sceneManager_;
