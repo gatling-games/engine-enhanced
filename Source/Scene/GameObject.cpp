@@ -28,8 +28,12 @@ GameObject::GameObject(const std::string &name)
 
 void GameObject::drawEditor()
 {
+    // Check if this gameobject is a prefab.
+    // This is done by checking if the currently viewed object is a prefab object.
+    const bool isPrefab = dynamic_cast<Prefab*>(PropertiesPanel::instance()->current()) != nullptr;
+
     // If we have a prefab, display a prefab info section.
-    if (prefab_ != nullptr)
+    if (!isPrefab && prefab_ != nullptr)
     {
         drawPrefabInfoSection();
     }
@@ -50,7 +54,7 @@ void GameObject::drawEditor()
     drawAddComponentSection();
 
     // If we dont have a prefab, display a save as prefab button
-    if (prefab_ == nullptr)
+    if (!isPrefab && prefab_ == nullptr)
     {
         drawSaveAsPrefabSection();
     }
