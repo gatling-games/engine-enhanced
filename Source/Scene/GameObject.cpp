@@ -109,12 +109,13 @@ void GameObject::drawSaveAsPrefabSection()
             // If a prefab already exists at the path, the existing prefab is returned.
             Prefab* prefab = ResourceManager::instance()->createResource<Prefab>(savePath);
 
+            // The prefab is now the prefab for this gameobject.
+            // This must be done *before* we clone into the prefab.
+            prefab_ = prefab;
+
             // Save the contents of this gameobject into the prefab.
             prefab->cloneGameObject(this);
             ResourceManager::instance()->saveAllSourceFiles();
-
-            // The prefab is now the prefab for this gameobject.
-            prefab_ = prefab;
         }
     }
 }
