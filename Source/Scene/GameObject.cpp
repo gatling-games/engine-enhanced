@@ -139,6 +139,10 @@ void GameObject::drawPrefabInfoSection()
     if (ImGui::Button(("Break Link With " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
     {
         prefab_ = nullptr;
+
+        // We no longer have a prefab, so drawin the rest of this ui will
+        // cause a crash.
+        return;
     }
 
     // Display an apply changes button
