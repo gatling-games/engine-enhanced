@@ -18,6 +18,9 @@ enum ShaderFeature
 
     SF_Fog = 16,
 
+    // Wireframe rendering mode
+    SF_DebugWireframe = 128,
+
     // GBuffer debugging modes
     SF_DebugGBufferAlbedo = 256,
     SF_DebugGBufferOcclusion = 512,

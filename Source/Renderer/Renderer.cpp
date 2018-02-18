@@ -56,6 +56,25 @@ void Renderer::renderFrame(const Camera* camera)
     updateSceneUniformBuffer();
     updateCameraUniformBuffer(camera);
 
+    // Wireframe debugging mode needs to be handled separately.
+    if(RenderManager::instance()->debugMode() == RenderDebugMode::Wireframe)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        // We want to render directly to the target framebuffer
+        targetFramebuffer_->use();
+
+        // Normally, the guffer pass only needs to clear depth, not colour.
+        // When rendering a wireframe we need to clear the color too
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        executeDeferredGBufferPass();
+
+        // Ensure wireframe rendering is turned off again
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        return;
+    }
+
     // Ensure the gbuffer exists and is ok
     createGBuffer();
 
