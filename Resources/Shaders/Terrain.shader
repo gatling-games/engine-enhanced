@@ -19,15 +19,27 @@ void main()
 
 layout(vertices = 3) out;
 
+float tessAtPoint(vec4 normalizedPosition)
+{
+    vec3 worldPosition = normalizedPosition.xyz * _TerrainSize.xyz;
+    vec3 toCamera = _CameraPosition.xyz - worldPosition;
+    return clamp(64.0 - length(toCamera) * 0.15, 4.0, 64.0);
+}
+
 void main()
 {
     if (gl_InvocationID == 0)
     {
-        gl_TessLevelInner[0] = 64.0;
-        gl_TessLevelInner[1] = 64.0;
-        gl_TessLevelOuter[0] = 64.0;
-        gl_TessLevelOuter[1] = 64.0;
-        gl_TessLevelOuter[2] = 64.0;
+        // Base the outer tessellation on the midpoint of each edge
+        // This ensures that edges shared between triangles receive the same tessellation factor
+        // on both sides of the edge, preventing gaps.
+        gl_TessLevelOuter[0] = tessAtPoint((gl_in[1].gl_Position + gl_in[2].gl_Position) / 2.0);
+        gl_TessLevelOuter[1] = tessAtPoint((gl_in[2].gl_Position + gl_in[0].gl_Position) / 2.0);
+        gl_TessLevelOuter[2] = tessAtPoint((gl_in[0].gl_Position + gl_in[1].gl_Position) / 2.0);
+
+        // Make the inner tessellation level the average of the outer ones.
+        gl_TessLevelInner[0] = (gl_TessLevelOuter[0] + gl_TessLevelOuter[1] + gl_TessLevelOuter[2]) / 3.0;
+        gl_TessLevelInner[1] = gl_TessLevelInner[0];
     }
 
     gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
