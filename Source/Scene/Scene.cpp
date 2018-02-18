@@ -14,6 +14,11 @@ Scene::Scene(ResourceID resourceID)
 void Scene::drawEditor()
 {
     ImGui::Text("Scene contains %d gameobjects", (int)gameObjects_.size());
+
+    if (ImGui::Button("Open Scene", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    {
+        SceneManager::instance()->openScene(resourcePath());
+    }
 }
 
 void Scene::serialize(PropertyTable &table)

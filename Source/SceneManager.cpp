@@ -13,6 +13,7 @@
 #include "ResourceManager.h"
 
 #include "Utils/Clock.h"
+#include "EditorManager.h"
 
 SceneManager::SceneManager()
 {
@@ -26,6 +27,11 @@ SceneManager::SceneManager()
     addCreateGameObjectMenuItem<Camera>("Camera");
     addCreateGameObjectMenuItem<StaticMesh>("Static Mesh");
     addCreateGameObjectMenuItem<Terrain>("Terrain");
+
+    // Add a create scene menu item
+    MainWindowMenu::instance()->addMenuItem("File/New Scene", [&] {
+        createScene(EditorManager::instance()->showSaveDialog("New Scene", "newscene", "scene"));
+    });
 }
 
 void SceneManager::frameStart()
@@ -43,6 +49,17 @@ void SceneManager::frameStart()
     {
         gameObject->update(deltaTime);
     }
+}
+
+void SceneManager::openScene(const std::string& scenePath)
+{
+    currentScene_ = ResourceManager::instance()->load<Scene>(scenePath);
+}
+
+void SceneManager::createScene(const std::string& scenePath)
+{
+    ResourceManager::instance()->createResource<Scene>(scenePath);
+    openScene(scenePath);
 }
 
 GameObject* SceneManager::createGameObject(const std::string& name, Transform* parent, bool hidden)

@@ -24,6 +24,12 @@ public:
     // Note - This list does not include hidden gameobjects
     const std::vector<std::shared_ptr<GameObject>>& sceneObjects() const { return currentScene_->gameObjects(); }
 
+    // Closes the current scene and opens the one at the specified path.
+    void openScene(const std::string &scenePath);
+
+    // Closes the current scene and creates a new one, saved at the specified path.
+    void createScene(const std::string &scenePath);
+
     // Creates a new GameObject in the scene
     GameObject* createGameObject(const std::string &name, Transform* parent = nullptr, bool hidden = false);
 
