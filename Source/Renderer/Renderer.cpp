@@ -276,18 +276,14 @@ void Renderer::executeDeferredGBufferPass() const
 
     //Draw terrain
     terrainShader_->bindVariant(ALL_SHADER_FEATURES);
-    auto terrains = SceneManager::instance()->terrains();
-    for (unsigned int i = 0; i < terrains.size(); ++i)
+    for (Terrain* terrain : SceneManager::instance()->terrains())
     {
-        //Get the terrain element
-        auto terrain = terrains[i];
-
         //Set mesh and heightmap
         terrain->mesh()->bind();
         updateTerrainUniformBuffer(terrain);
 
-        // Render all the terrain tiles in one instanced draw call
-        glDrawElements(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+        // Render the terrain with tessellation
+        glDrawElements(GL_PATCHES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
     }
 }
 
