@@ -5,6 +5,7 @@
 #include <fstream>
 #include <fstream>
 
+#include "EditorManager.h"
 #include "Editor/MainWindowMenu.h"
 #include "Editor/ResourcesPanel.h"
 
@@ -56,6 +57,10 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     registerResourceType<Material, MaterialImporter>(".material");
     registerResourceType<Prefab, PrefabImporter>(".prefab");
     registerResourceType<Scene, SceneImporter>(".scene");
+
+    // Add menu items for creating certain resource types
+    registerResourceCreateMenuItem<Material>("Material", "material");
+    registerResourceCreateMenuItem<Prefab>("Prefab", "prefab");
 
     // Grow the loaded resources vector, so there is space for all
     // resources without shifting them about later.

@@ -122,7 +122,7 @@ public:
 
     // Creates a new resource of the given type and writes it to disk at the given path.
     // If a resource already exists at the path, it will be overwritten.
-    template<typename T> 
+    template<typename T>
     ResourcePPtr<T> createResource(const std::string &sourcePath)
     {
         // Create a blank resource file.
@@ -201,6 +201,19 @@ private:
     // A thread running background resource imports
     bool importThreadRunning_;
     std::thread importThread_;
+
+    // Registers a menu item for creating new instances of a resource type
+    template<typename ResourceT>
+    void registerResourceCreateMenuItem(const std::string &resourceName, const std::string &fileExtension)
+    {
+        MainWindowMenu::instance()->addMenuItem("Resources/Create Resource/" + resourceName, [=] {
+            const std::string savePath = EditorManager::instance()->showSaveDialog("New " + resourceName, resourceName, fileExtension);
+            if (savePath.empty() == false)
+            {
+                PropertiesPanel::instance()->inspect(createResource<ResourceT>(savePath));
+            }
+        });
+    }
 
     // Registers a resource importer for handling a particular resource type.
     template<typename ResourceT, typename ImporterT>
