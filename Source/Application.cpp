@@ -75,7 +75,7 @@ void Application::frameStart()
         const float deltaTime = clock_->realDeltaTime();
         const float frameRate = 1.0f / deltaTime;
         const float frameTime = deltaTime * 1000.0f;
-        std::string titleWithFPS = name_ + " [" + std::to_string(frameRate).substr(0, 4) + "FPS] [" + std::to_string(frameTime).substr(0, 5) + "ms]";
+        std::string titleWithFPS = name_ + " - " + SceneManager::instance()->sceneName() + " [" + std::to_string(frameRate).substr(0, 4) + "FPS] [" + std::to_string(frameTime).substr(0, 5) + "ms]";
         if (clock_->paused()) titleWithFPS += " [Paused]";
         glfwSetWindowTitle(window_, titleWithFPS.c_str());
     }
