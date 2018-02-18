@@ -1,5 +1,4 @@
 #include "SceneManager.h"
-#include "imgui.h"
 
 #include "Editor/MainWindowMenu.h"
 #include "Editor/PropertiesPanel.h"
@@ -9,21 +8,18 @@
 #include "Scene/Camera.h"
 #include "Scene/StaticMesh.h"
 #include "Scene/Terrain.h"
-#include "Scene/Helicopter.h"
 
 #include "Serialization/Prefab.h"
 #include "ResourceManager.h"
 
 #include "Utils/Clock.h"
-#include "Scene/Freecam.h"
 
 SceneManager::SceneManager()
-    : gameObjects_()
 {
-	// Create default gameobjects
-    createGameObject(ResourceManager::instance()->load<Prefab>("Resources/Prefabs/Camera.prefab"));
-    createGameObject(ResourceManager::instance()->load<Prefab>("Resources/Prefabs/Terrain.prefab"));
-    createGameObject(ResourceManager::instance()->load<Prefab>("Resources/Prefabs/Helicopter.prefab"));
+    // We require a scene loaded at all times.
+    // Load the startup scene when the game starts
+    currentScene_ = ResourceManager::instance()->load<Scene>("Resources/Scenes/startup.scene");
+    assert(currentScene_ != nullptr);
 
     // Register menu items for creating new gameobjects
     addCreateGameObjectMenuItem<Transform>("Blank GameObject");
@@ -36,45 +32,52 @@ void SceneManager::frameStart()
 {
     const float deltaTime = Clock::instance()->deltaTime();
 
-    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    // Trigger updates for all scene gameobjects
+    for (std::shared_ptr<GameObject> gameObject : currentScene_->gameObjects())
     {
-        gameObjects_[i]->update(deltaTime);
+        gameObject->update(deltaTime);
+    }
+
+    // Trigger updates for all hidden gameobjects too
+    for (GameObject* gameObject : hiddenGameObjects_)
+    {
+        gameObject->update(deltaTime);
     }
 }
 
-GameObject* SceneManager::createGameObject(const std::string& name, Transform* parent)
+GameObject* SceneManager::createGameObject(const std::string& name, Transform* parent, bool hidden)
 {
     GameObject* go = new GameObject(name);
     if (parent != nullptr)
     {
         go->createComponent<Transform>()->setParentTransform(parent);
     }
-    gameObjects_.push_back(go);
 
-    return go;
-}
-
-GameObject* SceneManager::createGameObject(Prefab* prefab)
-{
-    GameObject* go = new GameObject(prefab);
-    gameObjects_.push_back(go);
-    return go;
-}
-
-Camera* SceneManager::mainCamera() const
-{
-    // Check every game object for a camera component
-    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    if(hidden)
     {
-        Camera* camera = gameObjects_[i]->findComponent<Camera>();
-        if (camera != nullptr)
-        {
-            return camera;
-        }
+        hiddenGameObjects_.push_back(go);
+    }
+    else
+    {
+        currentScene_->gameObjects().push_back(std::shared_ptr<GameObject>(go));
     }
 
-    // No camera in the scene
-    return nullptr;
+    return go;
+}
+
+GameObject* SceneManager::createGameObject(Prefab* prefab, bool hidden)
+{
+    GameObject* go = new GameObject(prefab);
+    if (hidden)
+    {
+        hiddenGameObjects_.push_back(go);
+    }
+    else
+    {
+        currentScene_->gameObjects().push_back(std::shared_ptr<GameObject>(go));
+    }
+
+    return go;
 }
 
 const std::vector<StaticMesh*> SceneManager::staticMeshes() const
@@ -83,9 +86,17 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
     std::vector<StaticMesh*> meshes;
 
     // Check every game object for a StaticMesh component
-    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    for (std::shared_ptr<GameObject> gameObject : currentScene_->gameObjects())
     {
-        StaticMesh* mesh = gameObjects_[i]->findComponent<StaticMesh>();
+        StaticMesh* mesh = gameObject->findComponent<StaticMesh>();
+        if (mesh != nullptr)
+        {
+            meshes.push_back(mesh);
+        }
+    }
+    for (GameObject* gameObject : hiddenGameObjects_)
+    {
+        StaticMesh* mesh = gameObject->findComponent<StaticMesh>();
         if (mesh != nullptr)
         {
             meshes.push_back(mesh);
@@ -98,19 +109,27 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
 const std::vector<Terrain*> SceneManager::terrains() const
 {
     // Make a vector to store the meshes
-    std::vector<Terrain*> meshes;
+    std::vector<Terrain*> terrains;
 
-    // Check every game object for a StaticMesh component
-    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    // Check every game object for a terrain component
+    for (std::shared_ptr<GameObject> gameObject : currentScene_->gameObjects())
     {
-        Terrain* mesh = gameObjects_[i]->findComponent<Terrain>();
-        if (mesh != nullptr)
+        Terrain* terrain = gameObject->findComponent<Terrain>();
+        if (terrain != nullptr)
         {
-            meshes.push_back(mesh);
+            terrains.push_back(terrain);
+        }
+    }
+    for (GameObject* gameObject : hiddenGameObjects_)
+    {
+        Terrain* terrain = gameObject->findComponent<Terrain>();
+        if (terrain != nullptr)
+        {
+            terrains.push_back(terrain);
         }
     }
 
-    return meshes;
+    return terrains;
 }
 
 template<typename T>

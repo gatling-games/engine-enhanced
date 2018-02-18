@@ -11,12 +11,11 @@
 void ScenePanel::draw()
 {
     // Draw all of the game objects in the scene with no parent.
-    auto gameObjects = SceneManager::instance()->gameObjects();
-    for (unsigned int i = 0; i < gameObjects.size(); ++i)
+    for (std::shared_ptr<GameObject> gameObject : SceneManager::instance()->sceneObjects())
     {
-        if (gameObjects[i]->transform()->parentTransform() == nullptr)
+        if (gameObject->transform()->parentTransform() == nullptr)
         {
-            drawNode(gameObjects[i]);
+            drawNode(gameObject.get());
         }
     }
 }

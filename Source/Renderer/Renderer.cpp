@@ -8,6 +8,7 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "Utils/Clock.h"
+#include "Scene/Transform.h"
 
 Renderer::Renderer()
     : Renderer(Framebuffer::backbuffer())

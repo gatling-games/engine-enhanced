@@ -24,14 +24,15 @@ class GameObject : public IEditableObject, ISerializedObject
 {
     friend class SceneManager;
     friend class Prefab;
+    friend class PropertyTable;
 
-private:
+public:
     // This is only called by SceneManager
     // To create a GameObject, call SceneManager->createGameObject.
+    GameObject();
     explicit GameObject(const std::string &name);
     explicit GameObject(Prefab* prefab);
 
-public:
     // Getters for basic gameobject properties
     const std::string& name() const { return name_; }
     Prefab* prefab() const { return prefab_; }

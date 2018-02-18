@@ -15,6 +15,7 @@
     <ClInclude Include="Source\Editor\MainWindowMenu.h" />
     <ClInclude Include="Source\Importers\MaterialImporter.h" />
     <ClInclude Include="Source\Importers\PrefabImporter.h" />
+    <ClInclude Include="Source\Importers\SceneImporter.h" />
     <ClInclude Include="Source\Renderer\Material.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
@@ -41,6 +42,7 @@
     <ClInclude Include="Source\Scene\Freecam.h" />
     <ClInclude Include="Source\Scene\GameObject.h" />
     <ClInclude Include="Source\Scene\Helicopter.h" />
+    <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Scene\StaticMesh.h" />
     <ClInclude Include="Source\Scene\Terrain.h" />
     <ClInclude Include="Source\Scene\Transform.h" />
@@ -68,6 +70,7 @@
     <ClCompile Include="Source\Editor\MainWindowMenu.cpp" />
     <ClCompile Include="Source\Importers\MaterialImporter.cpp" />
     <ClCompile Include="Source\Importers\PrefabImporter.cpp" />
+    <ClCompile Include="Source\Importers\SceneImporter.cpp" />
     <ClCompile Include="Source\Renderer\Material.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
@@ -92,6 +95,7 @@
     <ClCompile Include="Source\Scene\Freecam.cpp" />
     <ClCompile Include="Source\Scene\GameObject.cpp" />
     <ClCompile Include="Source\Scene\Helicopter.cpp" />
+    <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Scene\StaticMesh.cpp" />
     <ClCompile Include="Source\Scene\Terrain.cpp" />
     <ClCompile Include="Source\Scene\Transform.cpp" />

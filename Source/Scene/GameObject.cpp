@@ -17,6 +17,12 @@
 #include "Utils/ImGuiExtensions.h"
 #include "EditorManager.h"
 
+GameObject::GameObject()
+    : GameObject("Blank GameObject")
+{
+    
+}
+
 GameObject::GameObject(const std::string &name)
     : name_(name),
     prefab_(nullptr)

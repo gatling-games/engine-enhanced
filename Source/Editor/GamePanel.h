@@ -23,6 +23,9 @@ private:
     Texture* depthBuffer_;
     Texture* colorBuffer_;
     Renderer* renderer_;
+
+    // Create a hidden camera in the game for use
+    Camera* camera_;
 	
     void createFramebuffer(int width, int height);
 
