@@ -30,7 +30,11 @@ SceneManager::SceneManager()
 
     // Add a create scene menu item
     MainWindowMenu::instance()->addMenuItem("File/New Scene", [&] {
-        createScene(EditorManager::instance()->showSaveDialog("New Scene", "newscene", "scene"));
+        const std::string path = EditorManager::instance()->showSaveDialog("New Scene", "newscene", "scene");
+        if (path.empty() == false)
+        {
+            createScene(path);
+        }
     });
 }
 
