@@ -152,8 +152,7 @@ std::string EditorManager::showSaveDialog(const std::string& title, const std::s
     open.lpstrFile = path;
     open.nMaxFile = MAX_FILE_LENGTH;
     open.lpstrTitle = title.c_str();
-    open.lpstrFilter = "Prefab Files\0*.prefab";
-    open.lpstrDefExt = "prefab";
+    open.lpstrDefExt = fileExtension.c_str();
     open.Flags = OFN_NOCHANGEDIR | OFN_OVERWRITEPROMPT;
 
     if (!GetSaveFileNameA(&open))
