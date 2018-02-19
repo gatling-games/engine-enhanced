@@ -194,6 +194,7 @@ std::string ShaderVariant::createFeatureDefines() const
     if (hasFeature(SF_Specular)) defines += "#define SPECULAR_ON \n";
     if (hasFeature(SF_Cutout)) defines += "#define ALPHA_TEST_ON \n";
     if (hasFeature(SF_Fog)) defines += "#define FOG_ON \n";
+    if (hasFeature(SF_HighTessellation)) defines += "#define HIGH_TESSELLATION \n";
     if (hasFeature(SF_DebugGBufferAlbedo)) defines += "#define DEBUG_GBUFFER_ALBEDO \n";
     if (hasFeature(SF_DebugGBufferOcclusion)) defines += "#define DEBUG_GBUFFER_OCCLUSION \n";
     if (hasFeature(SF_DebugGBufferNormals)) defines += "#define DEBUG_GBUFFER_NORMALS \n";
