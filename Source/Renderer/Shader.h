@@ -18,6 +18,12 @@ enum ShaderFeature
 
     SF_Fog = 16,
 
+    // Causes a large amount of tessellation to be used on the terrain
+    SF_HighTessellation = 32,
+
+    // Wireframe rendering mode
+    SF_DebugWireframe = 128,
+
     // GBuffer debugging modes
     SF_DebugGBufferAlbedo = 256,
     SF_DebugGBufferOcclusion = 512,

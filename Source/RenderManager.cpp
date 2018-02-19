@@ -21,9 +21,11 @@ RenderManager::RenderManager()
     addShaderFeatureMenuItem(SF_Specular, "Specular Highlights");
     addShaderFeatureMenuItem(SF_Cutout, "Alpha Cutout");
     addShaderFeatureMenuItem(SF_Fog, "Fog");
+    addShaderFeatureMenuItem(SF_HighTessellation, "Extra Tessellation");
 
     // Set up menu items for showing debugging modes
     addDebugModeMenuItem(RenderDebugMode::None, "None");
+    addDebugModeMenuItem(RenderDebugMode::Wireframe, "Wireframe");
     addDebugModeMenuItem(RenderDebugMode::Albedo, "Albedo");
     addDebugModeMenuItem(RenderDebugMode::Gloss, "Gloss");
     addDebugModeMenuItem(RenderDebugMode::Normals, "Normals");

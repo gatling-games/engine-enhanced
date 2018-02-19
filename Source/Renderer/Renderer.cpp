@@ -56,6 +56,25 @@ void Renderer::renderFrame(const Camera* camera)
     updateSceneUniformBuffer();
     updateCameraUniformBuffer(camera);
 
+    // Wireframe debugging mode needs to be handled separately.
+    if(RenderManager::instance()->debugMode() == RenderDebugMode::Wireframe)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        // We want to render directly to the target framebuffer
+        targetFramebuffer_->use();
+
+        // Normally, the guffer pass only needs to clear depth, not colour.
+        // When rendering a wireframe we need to clear the color too
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        executeDeferredGBufferPass();
+
+        // Ensure wireframe rendering is turned off again
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        return;
+    }
+
     // Ensure the gbuffer exists and is ok
     createGBuffer();
 
@@ -185,9 +204,6 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     TerrainUniformData data;
     Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
     int layerCount = terrain->gameObject()->terrain()->layerCount();
-    Vector2 tileSize = terrain->gameObject()->terrain()->tileCount();
-    data.terrainTileCount[0] = (int)tileSize.x;
-    data.terrainTileCount[1] = (int)tileSize.y;
     data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, float(layerCount)); //layercount stored in w
     
     data.terrainTextureOffsetScale = Vector4(1.0f, 0.0f, 1.0f, 1.0f);
@@ -260,19 +276,14 @@ void Renderer::executeDeferredGBufferPass() const
 
     //Draw terrain
     terrainShader_->bindVariant(ALL_SHADER_FEATURES);
-    auto terrains = SceneManager::instance()->terrains();
-    for (unsigned int i = 0; i < terrains.size(); ++i)
+    for (Terrain* terrain : SceneManager::instance()->terrains())
     {
-        //Get the terrain element
-        auto terrain = terrains[i];
-
         //Set mesh and heightmap
         terrain->mesh()->bind();
         updateTerrainUniformBuffer(terrain);
 
-        // Render all the terrain tiles in one instanced draw call
-        const int instanceCount = (int)(terrain->tileCount().x * terrain->tileCount().y);
-        glDrawElementsInstanced(GL_TRIANGLES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0, instanceCount);
+        // Render the terrain with tessellation
+        glDrawElements(GL_PATCHES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
     }
 }
 

@@ -25,16 +25,6 @@ Terrain::Terrain(GameObject* gameObject)
     terrainLayers_[2].slopeHardness = 0.25f;
 }
 
-Vector2 Terrain::tileCount()
-{
-    //Determine how big the mesh is in one direction
-    int meshDimension = sqrtf(mesh()->vertexCount() / 6);
-    //divide by the total size of the heightfield to determine the number of tiles
-
-    return Vector2((float)heightMap_->width()/meshDimension, (float)heightMap_->height()/meshDimension);
-}
-
-
 void Terrain::drawProperties()
 {
     ImGui::ResourceSelect<Texture>("Heightmap", "Select Heightmap", heightMap_);

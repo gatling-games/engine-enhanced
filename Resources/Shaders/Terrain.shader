@@ -8,6 +8,46 @@
 // Vertex attributes
 layout(location = 0) in vec4 _position;
 
+void main()
+{
+    gl_Position = _position;
+}
+
+#endif // VERTEX_SHADER
+
+#ifdef TESS_CONTROL_SHADER
+
+layout(vertices = 3) out;
+
+void main()
+{
+    if (gl_InvocationID == 0)
+    {
+        // Use the same amount of tessellation across the entire terrain to prevent
+        // popping / waving artifacts
+
+#ifdef HIGH_TESSELLATION
+        float tessFactor = 64.0;
+#else
+        float tessFactor = 8.0;
+#endif
+
+        gl_TessLevelOuter[0] = tessFactor;
+        gl_TessLevelOuter[1] = tessFactor;
+        gl_TessLevelOuter[2] = tessFactor;
+        gl_TessLevelInner[0] = tessFactor;
+        gl_TessLevelInner[1] = tessFactor;
+    }
+
+    gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+}
+
+#endif // TESS_CONTROL_SHADER
+
+#ifdef TESS_EVALUATION_SHADER
+
+layout(triangles, fractional_odd_spacing, ccw) in;
+
 // Interpolated values to fragment shader
 out vec4 worldPosition;
 out vec3 worldNormal;
@@ -20,22 +60,21 @@ out vec3 tangentToWorld[3];
 
 void main()
 {
-    ivec2 tileIndex = ivec2(gl_InstanceID % _TerrainTileCount.x, gl_InstanceID / _TerrainTileCount.x); //_TerrainTileCount
-
     // Compute normalized position of the terrain. This ranges from 0,1 in XYZ
     // Use the x and z and take the y from the heightmap
-    vec3 normalizedPosition = _position.xyz;
-    normalizedPosition.xz += tileIndex;
-    normalizedPosition.xz /= _TerrainTileCount.xy;
+    vec4 normalizedPosition = gl_in[0].gl_Position * gl_TessCoord.x
+        + gl_in[1].gl_Position * gl_TessCoord.y
+        + gl_in[2].gl_Position * gl_TessCoord.z;;
     normalizedPosition.y = texture(_TerrainHeightmap, normalizedPosition.xz).g;
 
-    worldPosition = vec4(normalizedPosition * _TerrainSize.xyz, 1.0);
+    // Scale by the terrain size to get the world position
+    worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz, 1.0);
 
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * worldPosition;
 
     // Compute the Texture coordinates from world position
-    texcoord = normalizedPosition.xz * _TextureScale.xy;// *_TerrainTextureOffsetScale.zw + _TerrainTextureOffsetScale.xy;
+    texcoord = normalizedPosition.xz * _TextureScale.xy;
 
     // Compute the offset from the normalized position to get the adjacent heightmap pixels
     ivec2 heightmapRes = textureSize(_TerrainHeightmap, 0);
@@ -56,7 +95,7 @@ void main()
     // Determine the tangents along the X and Z
     vec3 worldTangent = normalize(vec3(1.0, dydx, 0.0));
     vec3 worldBitangent = normalize(vec3(0.0, dydz, 1.0));
-    
+
     // Cross product to get the world normal
     worldNormal = cross(worldBitangent, worldTangent);
 
@@ -68,7 +107,7 @@ void main()
 #endif
 }
 
-#endif // VERTEX_SHADER
+#endif // TESS_EVALUATION_SHADER
 
 #ifdef FRAGMENT_SHADER
 

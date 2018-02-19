@@ -33,9 +33,6 @@ public:
     Mesh* mesh() const { return mesh_; }
     Texture* heightmap() const { return heightMap_; }
 
-    // Num of tiles in X and Y
-    Vector2 tileCount(); 
-
     // Total size of the terrain, in m, in X,Y,Z
     Vector3 terrainDimensions() const { return dimensions_; }
     

@@ -46,7 +46,6 @@ struct CameraUniformData
 
 struct TerrainUniformData
 {
-    int terrainTileCount[4];
     Vector4 terrainTextureOffsetScale;
     Vector4 terrainSize;
     Vector4 textureScale;

@@ -74,6 +74,37 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     program_ = glCreateProgram();
     glAttachShader(program_, vertexShader);
     glAttachShader(program_, fragmentShader);
+
+    // If detected in the source code, also compile a tessellation control shader
+    if (vertexSource.find("TESS_CONTROL_SHADER") != std::string::npos)
+    {
+        const std::string tessEvaluationSource = preprocessSource(GL_TESS_CONTROL_SHADER, originalSource);
+        GLuint tessEvaluationShader;
+        if (!compileShader(GL_TESS_CONTROL_SHADER, tessEvaluationSource.c_str(), tessEvaluationShader))
+        {
+            printf("Failed to compile tessellation control shader \n");
+        }
+        else
+        {
+            glAttachShader(program_, tessEvaluationShader);
+        }
+    }
+
+    // If detected in the source code, also compile a tessellation evaluation shader
+    if(vertexSource.find("TESS_EVALUATION_SHADER") != std::string::npos)
+    {
+        const std::string tessEvaluationSource = preprocessSource(GL_TESS_EVALUATION_SHADER, originalSource);
+        GLuint tessEvaluationShader;
+        if(!compileShader(GL_TESS_EVALUATION_SHADER, tessEvaluationSource.c_str(), tessEvaluationShader))
+        {
+            printf("Failed to compile tessellation evaluation shader \n");
+        }
+        else
+        {
+            glAttachShader(program_, tessEvaluationShader);
+        }
+    }
+
     glLinkProgram(program_);
 
     // We are using program id 0 to mean no program.
@@ -103,6 +134,9 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
 
     // Set texture locations
     setTextureLocation("_MainTexture", 0);
+
+    // Specify that tessellation is always on triangles (aka patches of 3)
+    glPatchParameteri(GL_PATCH_VERTICES, 3);
 }
 
 ShaderVariant::~ShaderVariant()
@@ -160,6 +194,7 @@ std::string ShaderVariant::createFeatureDefines() const
     if (hasFeature(SF_Specular)) defines += "#define SPECULAR_ON \n";
     if (hasFeature(SF_Cutout)) defines += "#define ALPHA_TEST_ON \n";
     if (hasFeature(SF_Fog)) defines += "#define FOG_ON \n";
+    if (hasFeature(SF_HighTessellation)) defines += "#define HIGH_TESSELLATION \n";
     if (hasFeature(SF_DebugGBufferAlbedo)) defines += "#define DEBUG_GBUFFER_ALBEDO \n";
     if (hasFeature(SF_DebugGBufferOcclusion)) defines += "#define DEBUG_GBUFFER_OCCLUSION \n";
     if (hasFeature(SF_DebugGBufferNormals)) defines += "#define DEBUG_GBUFFER_NORMALS \n";
@@ -176,7 +211,8 @@ std::string ShaderVariant::preprocessSource(GLenum shaderStage, const std::strin
     finalSource += "#extension ARB_bindless_texture:require \n";
 
     // Next, add a stage-specific define
-    assert(shaderStage == GL_VERTEX_SHADER || shaderStage == GL_FRAGMENT_SHADER);
+    assert(shaderStage == GL_VERTEX_SHADER || shaderStage == GL_FRAGMENT_SHADER 
+        || shaderStage == GL_TESS_CONTROL_SHADER || shaderStage == GL_TESS_EVALUATION_SHADER);
     if (shaderStage == GL_VERTEX_SHADER)
     {
         finalSource += "#define VERTEX_SHADER 1 \n";
@@ -184,6 +220,14 @@ std::string ShaderVariant::preprocessSource(GLenum shaderStage, const std::strin
     else if (shaderStage == GL_FRAGMENT_SHADER)
     {
         finalSource += "#define FRAGMENT_SHADER 1 \n";
+    }
+    else if(shaderStage == GL_TESS_CONTROL_SHADER)
+    {
+        finalSource += "#define TESS_CONTROL_SHADER 1 \n";
+    }
+    else if(shaderStage == GL_TESS_EVALUATION_SHADER)
+    {
+        finalSource += "#define TESS_EVALUATION_SHADER 1 \n";
     }
 
     // Add feature-specific defines next in the file.
