@@ -21,7 +21,9 @@
 GameObject::GameObject()
     : GameObject("Blank GameObject")
 {
-
+    // Give every GameObject instance a transform component
+    // This ensures that gameobject can be parented inside each other.
+    createComponent<Transform>();
 }
 
 GameObject::GameObject(const std::string &name)
@@ -37,6 +39,10 @@ GameObject::GameObject(Prefab* prefab)
     : name_(""),
     prefab_(prefab)
 {
+    // Give every GameObject instance a transform component
+    // This ensures that gameobject can be parented inside each other.
+    createComponent<Transform>();
+
     // Read the prefab's properties into this gameobject.
     PropertyTable prefabProperties = prefab_->serializedProperties();
     serialize(prefabProperties);
