@@ -91,6 +91,12 @@ void GameObject::drawEditor()
     {
         drawSaveAsPrefabSection();
     }
+
+    // Delete the gameobject if the delete key is pressed
+    if (ImGui::IsKeyDown(GLFW_KEY_DELETE))
+    {
+        delete this;
+    }
 }
 
 void GameObject::drawComponentsSection()
