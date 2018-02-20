@@ -49,6 +49,13 @@ float getCloudPlane(float cloudPlaneHeight, vec2 cloudScroll, float timeOffset)
 
 void main()
 {	
+    // If the point is below the horizon, make it dark brown.
+    if (cameraToSky.y < 0.0)
+    {
+        fragColor = vec4(0.02, 0.01, 0.01, 1.0);
+        return;
+    }
+
     // Cloud plane parameters
     const float cloudPlaneHeight = 0.8;
     const vec2 cloudScroll1 = vec2(0.1, 0.025);
