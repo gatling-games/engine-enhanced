@@ -10,5 +10,11 @@
             material = Resources\Materials\ground_rock_01.material
         }
     }
+    gameobjects {
+        prefab = Resources\Prefabs\Terrain.prefab
+        Terrain {
+            heightmap = Resources\Textures\ground_snow_normals.tga
+        }
+    }
     sun_color = 0.974372 0.753849 0.549856 1
 }

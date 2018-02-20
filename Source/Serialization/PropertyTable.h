@@ -64,6 +64,13 @@ public:
     bool addPropertyData(const std::string &serializedData);
     bool addPropertyData(std::stringstream &serializedData);
 
+    // Writes property data into the property table
+    void addPropertyData(const PropertyTable &existingTable, bool overwriteExistingValues);
+
+    // Removes any property values that are also contained in the propertiesToRemove list.
+    // This is the opposite of addPropertyData().
+    void deltaCompress(const PropertyTable &propertiesToRemove);
+
     // Looks for the named property in the table.
     // If it exists, the value is returned, converted to a string.
     // If it does not exist, the default value is returned.

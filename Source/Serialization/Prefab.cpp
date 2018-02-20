@@ -12,6 +12,14 @@ Prefab::Prefab(ResourceID resourceID)
 
 }
 
+PropertyTable Prefab::serializedProperties()
+{
+    PropertyTable properties(PropertyTableMode::Writing);
+    gameObject_.serialize(properties);
+    properties.setMode(PropertyTableMode::Reading);
+    return properties;
+}
+
 void Prefab::drawEditor()
 {
     gameObject_.drawEditor();

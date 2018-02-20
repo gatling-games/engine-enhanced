@@ -1,6 +1,5 @@
 {
     name = Terrain
-    prefab = Resources\Prefabs\Terrain.prefab
     Transform {
     }
     Terrain {

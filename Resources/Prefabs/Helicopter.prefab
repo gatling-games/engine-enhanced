@@ -1,6 +1,5 @@
 {
     name = Helicopter
-    prefab = Resources\Prefabs\Helicopter.prefab
     Transform {
         Position = 74 20 -60
         Scale = 100 100 100

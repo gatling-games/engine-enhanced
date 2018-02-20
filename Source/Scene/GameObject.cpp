@@ -20,7 +20,7 @@
 GameObject::GameObject()
     : GameObject("Blank GameObject")
 {
-    
+
 }
 
 GameObject::GameObject(const std::string &name)
@@ -36,13 +36,9 @@ GameObject::GameObject(Prefab* prefab)
     : name_(""),
     prefab_(prefab)
 {
-    // Write the prefab's properties into a property table
-    PropertyTable table(PropertyTableMode::Writing);
-    prefab_->serialize(table);
-
-    // Read the properties into this gameobject.
-    table.setMode(PropertyTableMode::Reading);
-    serialize(table);
+    // Read the prefab's properties into this gameobject.
+    PropertyTable prefabProperties = prefab_->serializedProperties();
+    serialize(prefabProperties);
 }
 
 void GameObject::drawEditor()
@@ -127,14 +123,7 @@ void GameObject::drawSaveAsPrefabSection()
             // Create a new prefab at the save path.
             // If a prefab already exists at the path, the existing prefab is returned.
             Prefab* prefab = ResourceManager::instance()->createResource<Prefab>(savePath);
-
-            // The prefab is now the prefab for this gameobject.
-            // This must be done *before* we clone into the prefab.
-            prefab_ = prefab;
-
-            // Save the contents of this gameobject into the prefab.
             prefab->cloneGameObject(this);
-            ResourceManager::instance()->saveAllSourceFiles();
         }
     }
 }
@@ -152,13 +141,13 @@ void GameObject::drawPrefabInfoSection()
     }
 
     // Display an apply changes button
-    if(ImGui::Button(("Apply Changes to " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    if (ImGui::Button(("Apply Changes to " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
     {
         prefab_->cloneGameObject(this);
     }
 
     // Display a revert changes button
-    if(ImGui::Button(("Revert Changes from " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    if (ImGui::Button(("Revert Changes from " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
     {
         // Write all prefab properties into a property table
         PropertyTable table(PropertyTableMode::Writing);
@@ -174,9 +163,27 @@ void GameObject::drawPrefabInfoSection()
 
 void GameObject::serialize(PropertyTable &table)
 {
+    // If we dont yet have a prefab, check if we are meant to have one
+    if (prefab_ == nullptr && table.mode() == PropertyTableMode::Reading)
+    {
+        table.serialize("prefab", prefab_, (ResourcePPtr<Prefab>)nullptr);
+    }
+
+    // If we are reading and have a prefab, add the prefab data
+    if (table.mode() == PropertyTableMode::Reading && prefab_ != nullptr)
+    {
+        table.addPropertyData(prefab_->serializedProperties(), false);
+    }
+
     // First, serialize game object settings
     table.serialize("name", name_, "Unnamed GameObject");
-    table.serialize("prefab", prefab_, (ResourcePPtr<Prefab>)nullptr);
+
+    // If we have a prefab, we need to write it out.
+    // This MUST NOT be called when when reading, as it may replace the prefab will nullptr
+    if(table.mode() == PropertyTableMode::Writing)
+    {
+        table.serialize("prefab", prefab_, (ResourcePPtr<Prefab>)nullptr);
+    }
 
     // Now we need to serialize each component.
     // This is complex, so handle reading and writing separately.
@@ -227,6 +234,12 @@ void GameObject::serialize(PropertyTable &table)
                 table.serialize(component->name(), *component);
             }
         }
+    }
+
+    // If we are writing and have a prefab, strip out unchanged properties
+    if (table.mode() == PropertyTableMode::Writing && prefab_ != nullptr)
+    {
+        table.deltaCompress(prefab_->serializedProperties());
     }
 }
 

@@ -1,6 +1,5 @@
 {
     name = Static Mesh
-    prefab = Resources\Prefabs\Static Mesh.prefab
     Transform {
         Position = 0.3 0 13.7
         Rotation = 0 0.925584 0 0.378543

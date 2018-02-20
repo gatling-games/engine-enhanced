@@ -18,6 +18,15 @@ PropertyTable::~PropertyTable()
 void PropertyTable::setMode(PropertyTableMode newMode)
 {
     mode_ = newMode;
+
+    // Recursively set the mode on subtables
+    for(SerializedProperty& prop : properties_)
+    {
+        if(prop.subTable != nullptr)
+        {
+            prop.subTable->setMode(newMode);
+        }
+    }
 }
 
 std::vector<std::string> PropertyTable::propertyNames() const
@@ -129,6 +138,74 @@ bool PropertyTable::addPropertyData(std::stringstream& serializedData)
     // If we reach here, the stream is finished, but we never found a }.
     std::cerr << "ERROR - Property stream: Reached end of stream without }. " << std::endl;
     return false;
+}
+
+void PropertyTable::addPropertyData(const PropertyTable& existingTable, bool overwriteExistingValues)
+{
+    assert(mode_ == PropertyTableMode::Reading);
+
+    for(const SerializedProperty& property : existingTable.properties_)
+    {
+        // We need to handle single-value and subtable properties separately.
+
+        // If this is a subtable, perform this action recursively.
+        if(property.subTable != nullptr)
+        {
+            // Check a subtable exists
+            SerializedProperty* prop = findOrCreateProperty(property.name);
+            if(prop->subTable == nullptr)
+            {
+                prop->subTable.reset(new PropertyTable(PropertyTableMode::Reading));
+            }
+
+            // Addpropertydata to the subtable
+            prop->subTable->addPropertyData(*property.subTable, overwriteExistingValues);
+        }
+        // Otherwise, add/overwrite a single value
+        else if(tryFindProperty(property.name) == nullptr || overwriteExistingValues)
+        {
+            findOrCreateProperty(property.name)->value = property.value;
+        }
+    }
+}
+
+void PropertyTable::deltaCompress(const PropertyTable& propertiesToRemove)
+{
+    assert(mode_ == PropertyTableMode::Writing);
+
+    for(unsigned int i = 0; i < properties_.size(); ++i)
+    {
+        SerializedProperty& property = properties_[i];
+        
+        // First check if the property is in the list of ones to remove
+        const SerializedProperty* removeListProp = propertiesToRemove.tryFindProperty(property.name);
+        if(removeListProp == nullptr)
+        {
+            continue;
+        }
+
+        // If the property is a subtable, delta compress the subtable
+        if(property.subTable != nullptr && removeListProp->subTable != nullptr)
+        {
+            property.subTable->deltaCompress(*removeListProp->subTable);
+
+            // The property needs to stay in place if the subtable still contains data
+            if(property.subTable->properties_.empty() == false)
+            {
+                continue;
+            }
+        }
+
+        // The property needs to stay in place if the values dont match
+        if(property.value != removeListProp->value)
+        {
+            continue;
+        }
+
+        // Otherwise, the property is redundant and can be removed.
+        properties_.erase(properties_.begin() + i);
+        --i;
+    }
 }
 
 const std::string PropertyTable::getProperty(const std::string &name, const std::string &default) const

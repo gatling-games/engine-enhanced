@@ -11,6 +11,8 @@ class Prefab : public Resource, public IEditableObject, public ISerializedObject
 public:
     Prefab(ResourceID resourceID);
 
+    PropertyTable serializedProperties();
+
     // Implements a custom editor
     void drawEditor() override;
 
