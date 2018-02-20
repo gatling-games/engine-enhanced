@@ -8,14 +8,15 @@
 
 class Material;
 
-struct TerrainLayer
+struct TerrainLayer : ISerializedObject
 {
-    char name[16] = "Layer";
     float altitudeBorder = 0.0f;
     float altitudeTransition = 0.0f;
     float slopeBorder = -1.0f;
     float slopeHardness = 1.0f;
     Material* material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");;
+
+    void serialize(PropertyTable& table) override;
 };
 
 class Terrain : public Component
@@ -43,16 +44,13 @@ public:
     Vector2 textureWrapping() const { return textureWrap_; }
 
 
-    TerrainLayer* terrainLayers() { return terrainLayers_; }
-    int layerCount() const { return layerCount_; }
+    TerrainLayer* terrainLayers() { return &terrainLayers_.front(); }
+    int layerCount() const { return (int)terrainLayers_.size(); }
 
 private:
     Mesh* mesh_;
     Texture* heightMap_;
     Vector2 textureWrap_;
     Vector3 dimensions_;
-
-    TerrainLayer terrainLayers_[MAX_LAYERS];
-    int layerCount_;
-    
+    std::vector<TerrainLayer> terrainLayers_;
 };

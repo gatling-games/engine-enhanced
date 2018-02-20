@@ -4,7 +4,25 @@
     }
     Terrain {
         heightmap = Resources\Textures\heightmap.png
-        base_texture = Resources\Textures\ground_grass_01_albedo.tga
-        base_normal_map = Resources\Textures\ground_grass_01_normals.tga
+        texture_wrap = 15 15
+        layers {
+            slope_border = 0.65
+            slope_hardness = 0.141
+            material = Resources\Materials\ground_rock_01.material
+            altitude_border = 35
+            altitude_transition = 4
+        }
+        layers {
+            slope_border = 0.56
+            slope_hardness = 0.29
+            material = Resources\Materials\ground_grass_01.material
+        }
+        layers {
+            altitude_border = 35
+            altitude_transition = 4
+            slope_border = 0.48
+            slope_hardness = 0.341
+            material = Resources\Materials\ground_snow.material
+        }
     }
 }
