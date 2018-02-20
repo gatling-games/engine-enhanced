@@ -51,16 +51,10 @@ void ResourcesPanel::drawNodes(const std::vector<TreeNode> &nodes)
         // Draw a bullet for nodes with no children
         if (node->childNodes.empty())
         {
-            // Determine the tree flags, based on selection state.
-            ImGuiTreeNodeFlags nodeFlags = (ImGuiTreeNodeFlags)0;
-            if (node->resource != nullptr && 
-                PropertiesPanel::instance()->current() == dynamic_cast<IEditableObject*>(node->resource))
-            {
-                nodeFlags |= ImGuiTreeNodeFlags_Selected;
-            }
+            bool selected = node->resource != nullptr && PropertiesPanel::instance()->current() == dynamic_cast<IEditableObject*>(node->resource);
 
             ImGui::Bullet();
-            if (ImGui::Selectable(node->name.c_str(), nodeFlags))
+            if (ImGui::Selectable(node->name.c_str(), selected, ImGuiSelectableFlags_AllowDoubleClick))
             {
                 resourceSelected(node->sourcePath);
             }
@@ -82,11 +76,19 @@ void ResourcesPanel::resourceSelected(const std::string &sourcePath)
     // Load the resource
     Resource* resource = ResourceManager::instance()->load<Resource>(sourcePath);
 
-    // If the resource can be edited, display it.
     IEditableObject* ieo = dynamic_cast<IEditableObject*>(resource);
-    if(ieo != nullptr)
+    if (ieo != nullptr)
     {
-        PropertiesPanel::instance()->inspect(ieo);
+        // If the object was double clicked, open it
+        if (ImGui::IsMouseDoubleClicked(0))
+        {
+            ieo->onOpenAction();
+        }
+        else
+        {
+            // If the resource can be edited, display it.
+            PropertiesPanel::instance()->inspect(ieo);
+        }
     }
 }
 

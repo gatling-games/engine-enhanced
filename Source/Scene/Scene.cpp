@@ -11,6 +11,11 @@ Scene::Scene(ResourceID resourceID)
 
 }
 
+void Scene::onOpenAction()
+{
+    SceneManager::instance()->openScene(resourcePath());
+}
+
 void Scene::drawEditor()
 {
     if (SceneManager::instance()->currentScene() == this)
@@ -29,13 +34,6 @@ void Scene::drawEditor()
         ImGui::DragFloat("Sun Rotation", &sunRotation_.y, 1.0f, 0.0f, 360.0f);
         ImGui::DragFloat("Sun Size", &skySunSize_, 1.0f, 128.0f, 1024.0f, "%.3f", 2.0f);
         ImGui::DragFloat("Sun Falloff", &skySunFalloff_, 0.05f, 1.0f, 16.0f);
-    }
-    else
-    {
-        if (ImGui::Button("Open Scene", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
-        {
-            SceneManager::instance()->openScene(resourcePath());
-        }
     }
 }
 

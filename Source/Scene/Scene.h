@@ -31,6 +31,9 @@ public:
     float skySunSize() const { return skySunSize_; }
     float skySunFalloff() const { return skySunFalloff_; }
 
+    // Opens the scene when selected
+    void onOpenAction() override;
+
     // Implements a custom editor
     void drawEditor() override;
 
