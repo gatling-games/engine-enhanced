@@ -48,4 +48,6 @@
             material = Resources\Materials\Tests\sphere_medium.material
         }
     }
+    ambient_intensity = 0.1
+    sun_intensity = 0.97
 }

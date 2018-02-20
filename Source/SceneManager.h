@@ -17,6 +17,9 @@ public:
     // Called each frame.
     void frameStart();
 
+    // Gets the currently loaded scene
+    const Scene* currentScene() const { return currentScene_; }
+
     // Gets the name of the current scene
     std::string sceneName() const { return currentScene_->resourceName(); }
 

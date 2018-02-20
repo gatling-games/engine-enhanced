@@ -10,4 +10,5 @@
             material = Resources\Materials\ground_rock_01.material
         }
     }
+    sun_color = 0.974372 0.753849 0.549856 1
 }
