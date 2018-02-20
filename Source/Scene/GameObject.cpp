@@ -3,6 +3,7 @@
 #include <imgui.h>
 
 #include "SceneManager.h"
+#include "InputManager.h"
 
 #include "Scene/Component.h"
 #include "Scene/Camera.h"
@@ -39,6 +40,23 @@ GameObject::GameObject(Prefab* prefab)
     // Read the prefab's properties into this gameobject.
     PropertyTable prefabProperties = prefab_->serializedProperties();
     serialize(prefabProperties);
+}
+
+GameObject::~GameObject()
+{
+    for (Component* component : components_)
+    {
+        delete component;
+    }
+
+    // Ensure the scene manager knows the object has been deleted.
+    SceneManager::instance()->gameObjectDeleted(this);
+
+    // Ensure the properties panel isnt still showing the object
+    if (PropertiesPanel::instance()->current() == this)
+    {
+        PropertiesPanel::instance()->inspect(nullptr);
+    }
 }
 
 void GameObject::drawEditor()
@@ -180,7 +198,7 @@ void GameObject::serialize(PropertyTable &table)
 
     // If we have a prefab, we need to write it out.
     // This MUST NOT be called when when reading, as it may replace the prefab will nullptr
-    if(table.mode() == PropertyTableMode::Writing)
+    if (table.mode() == PropertyTableMode::Writing)
     {
         table.serialize("prefab", prefab_, (ResourcePPtr<Prefab>)nullptr);
     }

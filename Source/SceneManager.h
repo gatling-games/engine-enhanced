@@ -11,6 +11,8 @@
 
 class SceneManager : public Singleton<SceneManager>
 {
+    friend class GameObject;
+
 public:
     SceneManager();
 
@@ -43,9 +45,6 @@ public:
     // If hidden is specified, the gameobject will not be saved as part of the current scene.
     GameObject* createGameObject(Prefab* prefab, bool hidden = false);
 
-    // Deletes an existing gameobject
-    void deleteGameObject(GameObject* gameObject);
-
     // Gets a list of all static mesh components in the scene
     const std::vector<StaticMesh*> staticMeshes() const;
     const std::vector<Terrain*> terrains() const;
@@ -64,4 +63,7 @@ private:
     // Adds a menu item for creating a new gameobject with the given component
     template<typename T>
     void addCreateGameObjectMenuItem(const std::string &gameObjectName);
+
+    // Called by GameObject upon destruction
+    void gameObjectDeleted(GameObject* go);
 };

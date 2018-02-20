@@ -33,6 +33,14 @@ public:
     explicit GameObject(const std::string &name);
     explicit GameObject(Prefab* prefab);
 
+    ~GameObject();
+
+    // Prevent a GameObject from being copied or moved
+    GameObject(const GameObject&) = delete;
+    GameObject(GameObject&&) = delete;
+    GameObject& operator=(const GameObject&) = delete;
+    GameObject& operator=(GameObject&&) = delete;
+
     // Getters for basic gameobject properties
     const std::string& name() const { return name_; }
     Prefab* prefab() const { return prefab_; }
@@ -62,7 +70,7 @@ public:
         {
             // Try to cast to a T
             T* existing = dynamic_cast<T*>(components_[i]);
-            
+
             // dynamic_cast gives us nullptr if it failed
             if (existing != nullptr)
             {
@@ -104,7 +112,7 @@ public:
     Transform* transform() const;
     Camera* camera() const;
     StaticMesh* staticMesh() const;
-	Terrain* terrain() const;
+    Terrain* terrain() const;
 
     // Gets a list of all components attached to the gameobject
     const std::vector<Component*> componentList() const { return components_; }

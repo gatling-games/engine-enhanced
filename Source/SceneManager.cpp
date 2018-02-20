@@ -61,11 +61,10 @@ void SceneManager::openScene(const std::string& scenePath)
     currentScene_ = ResourceManager::instance()->load<Scene>(scenePath);
 
     // Delete all existing scene gameobjects
-    for (GameObject* go : sceneGameObjects_)
+    while (sceneGameObjects_.empty() == false)
     {
-        delete go;
+        delete sceneGameObjects_[0];
     }
-    sceneGameObjects_.clear();
 
     // Create the new objects from the scene
     currentScene_->createGameObjects(sceneGameObjects_);
@@ -90,7 +89,7 @@ GameObject* SceneManager::createGameObject(const std::string& name, Transform* p
         go->createComponent<Transform>()->setParentTransform(parent);
     }
 
-    if(hidden)
+    if (hidden)
     {
         hiddenGameObjects_.push_back(go);
     }
@@ -186,4 +185,21 @@ void SceneManager::addCreateGameObjectMenuItem(const std::string &gameObjectName
         Transform* parentTransform = (parentGO != nullptr) ? parentGO->transform() : nullptr;
         PropertiesPanel::instance()->inspect(createGameObject(gameObjectName, parentTransform)->createComponent<T>()->gameObject());
     });
+}
+
+void SceneManager::gameObjectDeleted(GameObject* go)
+{
+    // If the go is in the scene list, remove it
+    auto found = std::find(sceneGameObjects_.begin(), sceneGameObjects_.end(), go);
+    if (found != sceneGameObjects_.end())
+    {
+        sceneGameObjects_.erase(found);
+    }
+
+    // Also check the hidden gameobjects list, and remove it from there if found too
+    auto hiddenFound = std::find(hiddenGameObjects_.begin(), hiddenGameObjects_.end(), go);
+    if (hiddenFound != hiddenGameObjects_.end())
+    {
+        hiddenGameObjects_.erase(hiddenFound);
+    }
 }
