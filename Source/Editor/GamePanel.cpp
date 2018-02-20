@@ -50,7 +50,7 @@ void GamePanel::draw()
     // Make it hidden so that a) the user cant modify it, and b) it doesnt get deleted
     if (camera_ == nullptr)
     {
-        camera_ = SceneManager::instance()->createGameObject("GamePanelCamera", true)->createComponent<Camera>();
+        camera_ = SceneManager::instance()->createGameObject("GamePanelCamera", nullptr, true)->createComponent<Camera>();
         camera_->gameObject()->createComponent<Freecam>();
     }
 
