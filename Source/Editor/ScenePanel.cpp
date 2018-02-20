@@ -7,15 +7,16 @@
 
 #include "SceneManager.h"
 #include "Scene/GameObject.h"
+#include "Scene/Transform.h"
 
 void ScenePanel::draw()
 {
     // Draw all of the game objects in the scene with no parent.
-    for (std::shared_ptr<GameObject> gameObject : SceneManager::instance()->sceneObjects())
+    for (GameObject* gameObject : SceneManager::instance()->sceneObjects())
     {
         if (gameObject->transform()->parentTransform() == nullptr)
         {
-            drawNode(gameObject.get());
+            drawNode(gameObject);
         }
     }
 }

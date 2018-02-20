@@ -15,6 +15,11 @@ PropertyTable::~PropertyTable()
 
 }
 
+void PropertyTable::clear()
+{
+    properties_.clear();
+}
+
 void PropertyTable::setMode(PropertyTableMode newMode)
 {
     mode_ = newMode;

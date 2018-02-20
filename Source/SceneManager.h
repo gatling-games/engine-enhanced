@@ -25,13 +25,16 @@ public:
 
     // Gets all gameobjects in the current scene.
     // Note - This list does not include hidden gameobjects
-    const std::vector<std::shared_ptr<GameObject>>& sceneObjects() const { return currentScene_->gameObjects(); }
+    const std::vector<GameObject*>& sceneObjects() const { return sceneGameObjects_; }
 
     // Closes the current scene and opens the one at the specified path.
     void openScene(const std::string &scenePath);
 
     // Closes the current scene and creates a new one, saved at the specified path.
     void createScene(const std::string &scenePath);
+
+    // Updates the current scenes serialized gameobject list to match the gameobjects currently in the scene.
+    void saveScene();
 
     // Creates a new GameObject in the scene
     GameObject* createGameObject(const std::string &name, Transform* parent = nullptr, bool hidden = false);
@@ -40,6 +43,9 @@ public:
     // If hidden is specified, the gameobject will not be saved as part of the current scene.
     GameObject* createGameObject(Prefab* prefab, bool hidden = false);
 
+    // Deletes an existing gameobject
+    void deleteGameObject(GameObject* gameObject);
+
     // Gets a list of all static mesh components in the scene
     const std::vector<StaticMesh*> staticMeshes() const;
     const std::vector<Terrain*> terrains() const;
@@ -47,6 +53,9 @@ public:
 private:
     // The currently loaded scene
     Scene* currentScene_;
+
+    // A list of currently loaded gameobjects that *are* part of the scene.
+    std::vector<GameObject*> sceneGameObjects_;
 
     // A list of currently loaded gameobjects that are not associated
     // with the scene and are not serialized or saved to disk.

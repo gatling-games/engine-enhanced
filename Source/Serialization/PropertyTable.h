@@ -52,6 +52,9 @@ public:
     int propertiesCount() const { return (int)properties_.size(); }
     bool isEmpty() const { return properties_.empty(); }
 
+    // Deletes all data from the property table
+    void clear();
+
     // Changes the mode of the property table.
     void setMode(PropertyTableMode newMode);
 
@@ -82,7 +85,7 @@ public:
     // Serializes a vector of serializable objects to or from the property table data.
     // The vector must contain pointers to ISerializedObject objects
     template<typename T>
-    void serialize(const std::string &name, std::vector<std::shared_ptr<T>>& values)
+    void serialize(const std::string &name, std::vector<T*>& values)
     {
         if (mode_ == PropertyTableMode::Reading)
         {
@@ -100,12 +103,12 @@ public:
                 // If the list is too short, expand it and create a new element.
                 if (values.size() <= totalFound)
                 {
-                    values.push_back(std::make_shared<T>());
+                    values.push_back(new T());
                 }
                 // If the list is big enough, but the value is null, create a new element
                 else if(values[totalFound] == nullptr)
                 {
-                    values[totalFound] = std::make_shared<T>();
+                    values[totalFound] = new T();
                 }
 
                 // Deserialize the property into the object
@@ -116,13 +119,17 @@ public:
             // If there is left over space at the end, shrink the vector.
             if(totalFound < values.size())
             {
+                for(unsigned int i = totalFound; i < values.size(); ++i)
+                {
+                    delete values[i];
+                }
                 values.resize(totalFound);
             }
         }
         else
         {
             // Write every value in the vector into a separate property with the same name.
-            for(std::shared_ptr<T>& value : values)
+            for(T* value : values)
             {
                 if(value != nullptr)
                 {

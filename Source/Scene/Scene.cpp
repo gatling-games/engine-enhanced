@@ -6,7 +6,7 @@
 
 Scene::Scene(ResourceID resourceID)
     : Resource(resourceID),
-    gameObjects_()
+    gameObjects_(PropertyTableMode::Reading)
 {
 
 }
@@ -39,8 +39,23 @@ void Scene::drawEditor()
 
 void Scene::serialize(PropertyTable &table)
 {
-    // Serialize the entire list of gameobjects
-    table.serialize("gameobjects", gameObjects_);
+    // If we are about to write and this is the current scene, tell the
+    // scene manager to save changes
+    if (table.mode() == PropertyTableMode::Writing && SceneManager::instance()->currentScene() == this)
+    {
+        SceneManager::instance()->saveScene();
+    }
+
+    // The gameobject list is saved in an already-serialized form,
+    // so we just need to write the entire thing to or from the table.
+    if(table.mode() == PropertyTableMode::Writing)
+    {
+        table = gameObjects_;
+    }
+    else
+    {
+        gameObjects_ = table;
+    }
 
     // Serialize all rendering settings
     table.serialize("ambient_light", ambientLight_, Color::white());
@@ -52,4 +67,19 @@ void Scene::serialize(PropertyTable &table)
     table.serialize("sky_color_bottom", skyColorBottom_, Color(0.2f, 0.15f, 0.02f, 1.0f));
     table.serialize("sky_sun_size", skySunSize_, 512.0f);
     table.serialize("sky_sun_falloff", skySunFalloff_, 4.0f);
+}
+
+void Scene::createGameObjects(std::vector<GameObject*>& gameObjectList)
+{
+    // To create the objects, just read from the serialized form into the gameobject list
+    gameObjects_.setMode(PropertyTableMode::Reading);
+    gameObjects_.serialize("gameobjects", gameObjectList);
+}
+
+void Scene::saveGameObjects(std::vector<GameObject*>& gameObjectList)
+{
+    // To save the objects, just read them into the serialized data.
+    gameObjects_.clear();
+    gameObjects_.setMode(PropertyTableMode::Writing);
+    gameObjects_.serialize("gameobjects", gameObjectList);
 }

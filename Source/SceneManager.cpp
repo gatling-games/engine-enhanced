@@ -19,7 +19,7 @@ SceneManager::SceneManager()
 {
     // We require a scene loaded at all times.
     // Load the startup scene when the game starts
-    currentScene_ = ResourceManager::instance()->load<Scene>("Resources/Scenes/startup.scene");
+    openScene("Resources/Scenes/startup.scene");
     assert(currentScene_ != nullptr);
 
     // Register menu items for creating new gameobjects
@@ -43,7 +43,7 @@ void SceneManager::frameStart()
     const float deltaTime = Clock::instance()->deltaTime();
 
     // Trigger updates for all scene gameobjects
-    for (std::shared_ptr<GameObject> gameObject : currentScene_->gameObjects())
+    for (GameObject* gameObject : sceneGameObjects_)
     {
         gameObject->update(deltaTime);
     }
@@ -57,13 +57,29 @@ void SceneManager::frameStart()
 
 void SceneManager::openScene(const std::string& scenePath)
 {
+    // Change the current scene
     currentScene_ = ResourceManager::instance()->load<Scene>(scenePath);
+
+    // Delete all existing scene gameobjects
+    for (GameObject* go : sceneGameObjects_)
+    {
+        delete go;
+    }
+    sceneGameObjects_.clear();
+
+    // Create the new objects from the scene
+    currentScene_->createGameObjects(sceneGameObjects_);
 }
 
 void SceneManager::createScene(const std::string& scenePath)
 {
     ResourceManager::instance()->createResource<Scene>(scenePath);
     openScene(scenePath);
+}
+
+void SceneManager::saveScene()
+{
+    currentScene_->saveGameObjects(sceneGameObjects_);
 }
 
 GameObject* SceneManager::createGameObject(const std::string& name, Transform* parent, bool hidden)
@@ -80,7 +96,7 @@ GameObject* SceneManager::createGameObject(const std::string& name, Transform* p
     }
     else
     {
-        currentScene_->gameObjects().push_back(std::shared_ptr<GameObject>(go));
+        sceneGameObjects_.push_back(go);
     }
 
     return go;
@@ -95,7 +111,7 @@ GameObject* SceneManager::createGameObject(Prefab* prefab, bool hidden)
     }
     else
     {
-        currentScene_->gameObjects().push_back(std::shared_ptr<GameObject>(go));
+        sceneGameObjects_.push_back(go);
     }
 
     return go;
@@ -107,7 +123,7 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
     std::vector<StaticMesh*> meshes;
 
     // Check every game object for a StaticMesh component
-    for (std::shared_ptr<GameObject> gameObject : currentScene_->gameObjects())
+    for (GameObject* gameObject : sceneGameObjects_)
     {
         StaticMesh* mesh = gameObject->findComponent<StaticMesh>();
         if (mesh != nullptr)
@@ -133,7 +149,7 @@ const std::vector<Terrain*> SceneManager::terrains() const
     std::vector<Terrain*> terrains;
 
     // Check every game object for a terrain component
-    for (std::shared_ptr<GameObject> gameObject : currentScene_->gameObjects())
+    for (GameObject* gameObject : sceneGameObjects_)
     {
         Terrain* terrain = gameObject->findComponent<Terrain>();
         if (terrain != nullptr)

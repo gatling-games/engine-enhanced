@@ -1,7 +1,6 @@
 #pragma once
 
-#include "Scene/GameObject.h"
-
+#include "GameObject.h"
 #include "Serialization/SerializedObject.h"
 
 #include "ResourceManager.h"
@@ -17,10 +16,6 @@ class Scene : public Resource, public IEditableObject, public ISerializedObject
 
 public:
     Scene(ResourceID resourceID);
-
-    // Gets a list of gameobjects in the scene
-    const std::vector<std::shared_ptr<GameObject>>& gameObjects() const { return gameObjects_; }
-    std::vector<std::shared_ptr<GameObject>>& gameObjects() { return gameObjects_; }
 
     // Rendering settings
     Color ambientLight() const { return ambientLight_ * ambientIntensity_; }
@@ -40,9 +35,15 @@ public:
     // Reads or writes the scene objects.
     void serialize(PropertyTable &table) override;
 
+    // Creates all scene gameobjects in the provided list
+    void createGameObjects(std::vector<GameObject*>& gameObjectList);
+
+    // Writes all scene gameobjects into the serialized data
+    void saveGameObjects(std::vector<GameObject*>& gameObjectList);
+
 private:
-    // All gameobjects saved in the scene
-    std::vector<std::shared_ptr<GameObject>> gameObjects_;
+    // The serialized form of the scene gameobjects
+    PropertyTable gameObjects_;
 
     // Rendering settings
     Color ambientLight_;
