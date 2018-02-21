@@ -47,6 +47,10 @@ void Prefab::cloneGameObject(GameObject* original)
     // We need to write to a different property table and copy into the prefab after we finish.
     PropertyTable table(PropertyTableMode::Writing);
     original->serialize(table);
+
+    // Make sure the "prefab" property is not saved.
+    // This prevents it from being delta compressed and stripped out of scene files
+    table.tryDeleteProperty("prefab");
     
     // Store the properties in reading mode, ready for use later.
     properties_ = table;

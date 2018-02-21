@@ -285,6 +285,9 @@ public:
     // Converts the properties inside the table to the string-based property list format.
     std::string toString(int indentLevel = 1) const;
 
+    // Looks for a property with the given name and deletes it.
+    void tryDeleteProperty(const std::string &name);
+
 private:
     PropertyTableMode mode_;
     std::vector<SerializedProperty> properties_;
@@ -296,7 +299,4 @@ private:
     // Looks for a property entry with the given name.
     // Returns nullptr if it does not exist.
     const SerializedProperty* tryFindProperty(const std::string &name) const;
-
-    // Looks for a property with the given name and deletes it.
-    void tryDeleteProperty(const std::string &name);
 };
