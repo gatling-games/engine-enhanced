@@ -147,8 +147,6 @@ bool PropertyTable::addPropertyData(std::stringstream& serializedData)
 
 void PropertyTable::addPropertyData(const PropertyTable& existingTable, bool overwriteExistingValues)
 {
-    assert(mode_ == PropertyTableMode::Reading);
-
     for(const SerializedProperty& property : existingTable.properties_)
     {
         // We need to handle single-value and subtable properties separately.
