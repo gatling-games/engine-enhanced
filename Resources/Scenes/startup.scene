@@ -1,5 +1,5 @@
 {
-    gameobjects {
+    gameobjects::0 {
         name = Static Mesh
         Transform {
             Position = 0.3 0 13.7
@@ -10,7 +10,7 @@
             material = Resources\Materials\ground_rock_01.material
         }
     }
-    gameobjects {
+    gameobjects::1 {
         prefab = Resources\Prefabs\Terrain.prefab
     }
     sun_color = 0.974372 0.753849 0.549856 1

@@ -95,7 +95,8 @@ public:
             for (const SerializedProperty& property : properties_)
             {
                 // Skip properties that do not match the specified name
-                if (property.name != name)
+                const std::string desiredName = name + std::string("::") + std::to_string(totalFound);
+                if (property.name != desiredName)
                 {
                     continue;
                 }
@@ -129,16 +130,19 @@ public:
         else
         {
             // Write every value in the vector into a separate property with the same name.
+            int totalFound = 0;
             for (T* value : values)
             {
                 if (value != nullptr)
                 {
                     SerializedProperty newProperty;
-                    newProperty.name = name;
+                    newProperty.name = name + std::string("::") + std::to_string(totalFound);
                     newProperty.value = "";
                     newProperty.subTable = std::make_shared<PropertyTable>(PropertyTableMode::Writing);
                     value->serialize(*newProperty.subTable);
                     properties_.push_back(newProperty);
+
+                    totalFound ++;
                 }
             }
         }
@@ -157,7 +161,8 @@ public:
             for (const SerializedProperty& property : properties_)
             {
                 // Skip properties that do not match the specified name
-                if (property.name != name)
+                const std::string desiredName = name + std::string("::") + std::to_string(totalFound);
+                if (property.name != desiredName)
                 {
                     continue;
                 }
@@ -182,14 +187,17 @@ public:
         else
         {
             // Write every value in the vector into a separate property with the same name.
+            int totalFound = 0;
             for (T& value : values)
             {
                 SerializedProperty newProperty;
-                newProperty.name = name;
+                newProperty.name = name + std::string("::") + std::to_string(totalFound);
                 newProperty.value = "";
                 newProperty.subTable = std::make_shared<PropertyTable>(PropertyTableMode::Writing);
                 value.serialize(*newProperty.subTable);
                 properties_.push_back(newProperty);
+
+                totalFound++;
             }
         }
     }

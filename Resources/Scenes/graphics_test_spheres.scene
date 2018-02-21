@@ -1,5 +1,5 @@
 {
-    gameobjects {
+    gameobjects::0 {
         name = Smoothness 4
         Transform {
             Position = 0 0 4.8
@@ -9,7 +9,7 @@
             material = Resources\Materials\Tests\sphere_smooth.material
         }
     }
-    gameobjects {
+    gameobjects::1 {
         name = Smoothness 0
         Transform {
         }
@@ -18,7 +18,7 @@
             material = Resources\Materials\Tests\sphere_rough.material
         }
     }
-    gameobjects {
+    gameobjects::2 {
         name = Smoothness 3
         Transform {
             Position = 0 0 3.6
@@ -28,7 +28,7 @@
             material = Resources\Materials\Tests\sphere_medium_smooth.material
         }
     }
-    gameobjects {
+    gameobjects::3 {
         name = Smoothness 1
         Transform {
             Position = 0 0 1.2
@@ -38,7 +38,7 @@
             material = Resources\Materials\Tests\sphere_medium_rough.material
         }
     }
-    gameobjects {
+    gameobjects::4 {
         name = Smoothness 2
         Transform {
             Position = 0 0 2.4

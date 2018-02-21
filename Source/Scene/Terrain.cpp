@@ -69,12 +69,4 @@ void Terrain::serialize(PropertyTable &table)
     table.serialize("texture_wrap", textureWrap_, Vector2(10.0f, 10.0f));
     table.serialize("dimensions", dimensions_, Vector3(1024.0f, 80.0f, 1024.0f));
     table.serialize("layers", terrainLayers_);
-
-    // If the terrain layers list is empty, create a default layer
-    if (terrainLayers_.empty())
-    {
-        TerrainLayer layer;
-        layer.material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_rock_01.material");
-        terrainLayers_.push_back(layer);
-    }
 }
