@@ -1,5 +1,4 @@
 #include "SceneManager.h"
-#include "imgui.h"
 
 #include "Editor/MainWindowMenu.h"
 #include "Editor/PropertiesPanel.h"
@@ -9,76 +8,73 @@
 #include "Scene/Camera.h"
 #include "Scene/StaticMesh.h"
 #include "Scene/Terrain.h"
-#include "Scene/Helicopter.h"
+
+#include "ResourceManager.h"
 
 #include "Utils/Clock.h"
-#include "Scene/Freecam.h"
+#include "EditorManager.h"
 
 SceneManager::SceneManager()
-    : gameObjects_()
 {
-    // Create a camera in the scene
-    GameObject* cameraGO = createGameObject("Camera");
-    cameraGO->createComponent<Transform>()->setPositionLocal(Point3(245.0f, 16.0f, 110.0f));
-    cameraGO->findComponent<Transform>()->setRotationLocal(Quaternion(0.0f, 0.5f, 0.0f, 0.866f));
-    cameraGO->createComponent<Camera>();
-    cameraGO->createComponent<Freecam>();
-
-    // Create a terain
-    GameObject* terrainGO = createGameObject("Terrain");
-    terrainGO->createComponent<Transform>()->setPositionLocal(Point3(0.0f, 0.0f, 0.0f));
-    terrainGO->createComponent<Terrain>();
-
-    //Create helicopter gameobject
-    GameObject* heliGO = createGameObject("Helicopter");
-    heliGO->createComponent<Transform>()->setPositionLocal(Point3(250.0f, 15.0f, 112.0f));
-    heliGO->findComponent<Transform>()->setScaleLocal(Point3(100.0f, 100.0f, 100.0f));
-    heliGO->createComponent<StaticMesh>();
-    heliGO->createComponent<Helicopter>();
+    // We require a scene loaded at all times.
+    // Load the startup scene when the game starts
+    openScene("Resources/Scenes/startup.scene");
+    assert(currentScene_ != nullptr);
 
     // Register menu items for creating new gameobjects
     addCreateGameObjectMenuItem<Transform>("Blank GameObject");
     addCreateGameObjectMenuItem<Camera>("Camera");
     addCreateGameObjectMenuItem<StaticMesh>("Static Mesh");
     addCreateGameObjectMenuItem<Terrain>("Terrain");
+
+    // Add a create scene menu item
+    MainWindowMenu::instance()->addMenuItem("File/New Scene", [&] {
+        const std::string path = EditorManager::instance()->showSaveDialog("New Scene", "newscene", "scene");
+        if (path.empty() == false)
+        {
+            createScene(path);
+        }
+    });
 }
 
 void SceneManager::frameStart()
 {
     const float deltaTime = Clock::instance()->deltaTime();
 
-    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    // Trigger updates for all gameobjects
+    for (GameObject* gameObject : gameObjects_)
     {
-        gameObjects_[i]->update(deltaTime);
+        gameObject->update(deltaTime);
     }
 }
 
-GameObject* SceneManager::createGameObject(const std::string& name, Transform* parent)
+void SceneManager::openScene(const std::string& scenePath)
 {
-    GameObject* go = new GameObject(name);
-    if (parent != nullptr)
-    {
-        go->createComponent<Transform>()->setParentTransform(parent);
-    }
-    gameObjects_.push_back(go);
+    // Change the current scene
+    currentScene_ = ResourceManager::instance()->load<Scene>(scenePath);
 
-    return go;
-}
-
-Camera* SceneManager::mainCamera() const
-{
-    // Check every game object for a camera component
-    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    // Delete all scene gameobjects (except ones with the SurviveSceneChanges flag)
+    for(size_t i = gameObjects_.size() - 1; i < gameObjects_.size(); --i)
     {
-        Camera* camera = gameObjects_[i]->findComponent<Camera>();
-        if (camera != nullptr)
+        if(gameObjects_[i]->hasFlag(GameObjectFlag::SurviveSceneChanges) == false)
         {
-            return camera;
+            delete gameObjects_[i];
         }
     }
 
-    // No camera in the scene
-    return nullptr;
+    // Create the new objects from the scene
+    currentScene_->createGameObjects();
+}
+
+void SceneManager::createScene(const std::string& scenePath)
+{
+    ResourceManager::instance()->createResource<Scene>(scenePath);
+    openScene(scenePath);
+}
+
+void SceneManager::saveScene()
+{
+    currentScene_->saveGameObjects();
 }
 
 const std::vector<StaticMesh*> SceneManager::staticMeshes() const
@@ -87,9 +83,9 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
     std::vector<StaticMesh*> meshes;
 
     // Check every game object for a StaticMesh component
-    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    for (GameObject* gameObject : gameObjects_)
     {
-        StaticMesh* mesh = gameObjects_[i]->findComponent<StaticMesh>();
+        StaticMesh* mesh = gameObject->findComponent<StaticMesh>();
         if (mesh != nullptr)
         {
             meshes.push_back(mesh);
@@ -102,19 +98,19 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
 const std::vector<Terrain*> SceneManager::terrains() const
 {
     // Make a vector to store the meshes
-    std::vector<Terrain*> meshes;
+    std::vector<Terrain*> terrains;
 
-    // Check every game object for a StaticMesh component
-    for (unsigned int i = 0; i < gameObjects_.size(); ++i)
+    // Check every game object for a terrain component
+    for (GameObject* gameObject : gameObjects_)
     {
-        Terrain* mesh = gameObjects_[i]->findComponent<Terrain>();
-        if (mesh != nullptr)
+        Terrain* terrain = gameObject->findComponent<Terrain>();
+        if (terrain != nullptr)
         {
-            meshes.push_back(mesh);
+            terrains.push_back(terrain);
         }
     }
 
-    return meshes;
+    return terrains;
 }
 
 template<typename T>
@@ -122,7 +118,11 @@ void SceneManager::addCreateGameObjectMenuItem(const std::string &gameObjectName
 {
     MainWindowMenu::instance()->addMenuItem(
         "Scene/New GameObject/" + gameObjectName,
-        [=] { PropertiesPanel::instance()->inspect(createGameObject(gameObjectName)->createComponent<T>()->gameObject()); }
+        [=] { 
+            GameObject* go = new GameObject(gameObjectName);
+            go->createComponent<T>();
+            PropertiesPanel::instance()->inspect(go); 
+        }
     );
 
     // Add a second button, allowing the gameobject to be created as 
@@ -130,8 +130,31 @@ void SceneManager::addCreateGameObjectMenuItem(const std::string &gameObjectName
     MainWindowMenu::instance()->addMenuItem(
         "Scene/New Child GameObject/" + gameObjectName,
         [=] {
-        GameObject* parentGO = dynamic_cast<GameObject*>(PropertiesPanel::instance()->current());
-        Transform* parentTransform = (parentGO != nullptr) ? parentGO->transform() : nullptr;
-        PropertiesPanel::instance()->inspect(createGameObject(gameObjectName, parentTransform)->createComponent<T>()->gameObject());
-    });
+            GameObject* parentGO = dynamic_cast<GameObject*>(PropertiesPanel::instance()->current());
+            Transform* parentTransform = (parentGO != nullptr) ? parentGO->transform() : nullptr;
+            GameObject* go = new GameObject(gameObjectName);
+            go->transform()->setParentTransform(parentTransform);
+            go->createComponent<T>();
+            PropertiesPanel::instance()->inspect(go);
+        }
+    );
+}
+
+void SceneManager::gameObjectCreated(GameObject* go)
+{
+    // Ensure the object does not already exist in the gameobject list
+    assert(std::find(gameObjects_.begin(), gameObjects_.end(), go) == gameObjects_.end());
+
+    // Add to the gameobjects list
+    gameObjects_.push_back(go);
+}
+
+void SceneManager::gameObjectDeleted(GameObject* go)
+{
+    // If the go is in the scene list, remove it
+    auto found = std::find(gameObjects_.begin(), gameObjects_.end(), go);
+    if (found != gameObjects_.end())
+    {
+        gameObjects_.erase(found);
+    }
 }

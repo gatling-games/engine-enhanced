@@ -5,7 +5,9 @@
 #include <fstream>
 #include <fstream>
 
+#include "EditorManager.h"
 #include "Editor/MainWindowMenu.h"
+#include "Editor/ResourcesPanel.h"
 
 #include "Serialization/SerializedObject.h"
 
@@ -13,10 +15,14 @@
 #include "Importers/MeshImporter.h"
 #include "Importers/TextureImporter.h"
 #include "Importers/ShaderImporter.h"
+#include "Importers/PrefabImporter.h"
+#include "Importers/SceneImporter.h"
 
 #include "Renderer/Material.h"
 #include "Renderer/Shader.h"
 #include "Renderer/Texture.h"
+#include "Serialization/Prefab.h"
+#include "Scene/Scene.h"
 
 std::string Resource::resourceName() const
 {
@@ -49,6 +55,12 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     registerResourceType<Texture, TextureImporter>(".jpg");
     registerResourceType<Texture, TextureImporter>(".jpeg");
     registerResourceType<Material, MaterialImporter>(".material");
+    registerResourceType<Prefab, PrefabImporter>(".prefab");
+    registerResourceType<Scene, SceneImporter>(".scene");
+
+    // Add menu items for creating certain resource types
+    registerResourceCreateMenuItem<Material>("Material", "material");
+    registerResourceCreateMenuItem<Prefab>("Prefab", "prefab");
 
     // Grow the loaded resources vector, so there is space for all
     // resources without shifting them about later.
@@ -68,15 +80,24 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     emptyLoadQueue();
 
     // Start up the background thread
+    importThreadRunning_ = true;
     importThread_ = std::thread(&ResourceManager::runImportThread, this);
 
     // Create menu items for controlling the resource manager
+    MainWindowMenu::instance()->addMenuItem("File/Save All", [&] { saveAllSourceFiles(); });
     MainWindowMenu::instance()->addMenuItem("Resources/Scan For Changes", [&] { executeFilesystemScan(); });
     MainWindowMenu::instance()->addMenuItem("Resources/Reimport All", [&] { importAllResources(); });
 }
 
 ResourceManager::~ResourceManager()
 {
+    // Close the import thread
+    importThreadRunning_ = false;
+    importThread_.join();
+
+    // Ensure all changes to source files are saved to disk.
+    saveAllSourceFiles();
+
     // Delete all importers
     for (unsigned int i = 0; i < typeRegister_.size(); ++i)
     {
@@ -138,6 +159,31 @@ Resource* ResourceManager::load(ResourceID id)
 
     // No resource exists.
     return nullptr;
+}
+
+void ResourceManager::saveAllSourceFiles()
+{
+    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
+
+    // Test every loaded resource
+    for (Resource* resource : loadedResources_)
+    {
+        ISerializedObject* iso = dynamic_cast<ISerializedObject*>(resource);
+        if(iso != nullptr)
+        {
+            // Serialize the object to a propertytable
+            PropertyTable properties(PropertyTableMode::Writing);
+            iso->serialize(properties);
+
+            // Get the serialized string
+            const std::string serializedData = properties.toString();
+
+            // Write the string to the source file, overwriting old versions.
+            std::ofstream writeStream(resource->resourcePath());
+            writeStream << serializedData;
+            writeStream.close();
+        }
+    }
 }
 
 void ResourceManager::importResource(ResourceID id)
@@ -238,6 +284,9 @@ void ResourceManager::executeFilesystemScan()
             importResource(resourceIDs_[i]);
         }
     }
+
+    // Force the resources panel to recreate its tree
+    ResourcesPanel::instance()->clearTree();
 }
 
 void ResourceManager::executeResourceImport(ResourceID id)
@@ -317,7 +366,8 @@ void ResourceManager::executeResourceLoad(ResourceID id)
     {
         std::stringstream stringstream;
         stringstream << importedFileStream.rdbuf();
-        PropertyTable properties(stringstream, 99999);
+        PropertyTable properties(PropertyTableMode::Reading);
+        properties.addPropertyData(stringstream);
         iso->serialize(properties);
     }
     else
@@ -364,9 +414,9 @@ void ResourceManager::emptyLoadQueue()
 
 void ResourceManager::runImportThread()
 {
-    for (;;)
+    while(importThreadRunning_)
     {
-        Sleep(2500);
+        Sleep(500);
         emptyImportQueue();
     }
 }

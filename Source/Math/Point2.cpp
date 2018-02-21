@@ -109,7 +109,8 @@ Point2 operator / (float scalar, const Point2 &p)
 
 std::ostream& operator << (std::ostream &os, const Point2 &p)
 {
-    os << "(" << p.x << ", " << p.y << ")";
+    os << p.x;
+    os << " " << p.y;
     return os;
 }
 

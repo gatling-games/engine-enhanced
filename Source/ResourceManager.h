@@ -93,6 +93,9 @@ public:
     ResourceManager(const std::string sourceDirectory, const std::string importedDirectory);
     ~ResourceManager();
 
+    // Gets the path to the source resources directory.
+    const std::string sourceDirectory() const { return sourceDirectory_; }
+
     // Gets a list of all resource source files in the project.
     const std::vector<std::string>* allSourceFiles() const { return &resourceSourcePaths_; }
 
@@ -116,6 +119,27 @@ public:
     {
         return load<T>(pathToResourceID(sourcePath));
     }
+
+    // Creates a new resource of the given type and writes it to disk at the given path.
+    // If a resource already exists at the path, it will be overwritten.
+    template<typename T>
+    ResourcePPtr<T> createResource(const std::string &sourcePath)
+    {
+        // Create a blank resource file.
+        std::ofstream fileStream(sourcePath);
+        fileStream << "{\n}";
+        fileStream.close();
+
+        // Cause the path file to be imported
+        importChangedResources();
+
+        // Load and return the now blank resource
+        return load<T>(sourcePath);
+    }
+
+    // Saves all resources whose source files have been modified.
+    // This affects all ISerializedObject-based resources
+    void saveAllSourceFiles();
 
     // (Re)imports the specified resource.
     void importResource(ResourceID id);
@@ -175,7 +199,21 @@ private:
     std::queue<ResourceID> loadQueue_;
 
     // A thread running background resource imports
+    bool importThreadRunning_;
     std::thread importThread_;
+
+    // Registers a menu item for creating new instances of a resource type
+    template<typename ResourceT>
+    void registerResourceCreateMenuItem(const std::string &resourceName, const std::string &fileExtension)
+    {
+        MainWindowMenu::instance()->addMenuItem("Resources/Create Resource/" + resourceName, [=] {
+            const std::string savePath = EditorManager::instance()->showSaveDialog("New " + resourceName, resourceName, fileExtension);
+            if (savePath.empty() == false)
+            {
+                PropertiesPanel::instance()->inspect(createResource<ResourceT>(savePath));
+            }
+        });
+    }
 
     // Registers a resource importer for handling a particular resource type.
     template<typename ResourceT, typename ImporterT>

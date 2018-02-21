@@ -2,22 +2,37 @@
 
 #include "Serialization/PropertyTable.h"
 #include "Serialization/BitWriter.h"
+#include "Serialization/SerializedObject.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace EngineTests
 {
-    struct TestStruct
+    struct TestStruct : public ISerializedObject
     {
         int intValue1;
         int intValue2;
         std::string stringValue;
 
-        void serialize(PropertyTable &table)
+        void serialize(PropertyTable &table) override
         {
             table.serialize("IntValue1", intValue1, 578);
             table.serialize("IntValue2", intValue2, 578);
             table.serialize("StringValue", stringValue, "Hello World");
+        }
+    };
+
+    struct TestStructWithSubData : public ISerializedObject
+    {
+        int intValue1;
+        int intValue2;
+        TestStruct subData;
+
+        void serialize(PropertyTable &table) override
+        {
+            table.serialize("IntValue1", intValue1, 54);
+            table.serialize("IntValue2", intValue2, 77);
+            table.serialize("SubData", subData);
         }
     };
 
@@ -28,7 +43,7 @@ namespace EngineTests
         TEST_METHOD(BlankConstructor)
         {
             // Make a property table with no properties
-            PropertyTable table;
+            PropertyTable table(PropertyTableMode::Writing);
 
             // Check that no properties are loaded.
             Assert::IsTrue(PropertyTableMode::Writing == table.mode());
@@ -41,8 +56,9 @@ namespace EngineTests
             // Manually make a property table with 2 existing properties:
             // IntVal = 3
             // StringVal = Hello
-            const std::string existingProperties = "IntVal 3\nStringVal Hello\n";
-            PropertyTable table(existingProperties);
+            const std::string existingProperties = "{\n    IntVal = 3\n    StringVal = Hello\n}";
+            PropertyTable table(PropertyTableMode::Reading);
+            Assert::IsTrue(table.addPropertyData(existingProperties));
 
             // Check that the 2 properties are loaded
             Assert::IsTrue(PropertyTableMode::Reading == table.mode());
@@ -60,7 +76,7 @@ namespace EngineTests
             testStruct.stringValue = "A long serialized string";
 
             // Serialize it into a new property table
-            PropertyTable table;
+            PropertyTable table(PropertyTableMode::Writing);
             Assert::IsTrue(PropertyTableMode::Writing == table.mode());
             testStruct.serialize(table);
 
@@ -68,7 +84,7 @@ namespace EngineTests
             const std::string serialized = table.toString();
 
             // Check the data is correct.
-            const std::string expected = "IntValue1 109123126\nIntValue2 -231238\nStringValue A long serialized string\n";
+            const std::string expected = "{\n    IntValue1 = 109123126\n    IntValue2 = -231238\n    StringValue = A long serialized string\n}";
             Assert::AreEqual(3, table.propertiesCount());
             Assert::AreEqual(expected, serialized);
         }
@@ -82,7 +98,7 @@ namespace EngineTests
             testStruct.stringValue = "Hello World"; // default
 
             // Serialize it into a new property table
-            PropertyTable table;
+            PropertyTable table(PropertyTableMode::Writing);
             Assert::IsTrue(PropertyTableMode::Writing == table.mode());
             testStruct.serialize(table);
 
@@ -91,15 +107,44 @@ namespace EngineTests
 
             // Check the data is correct.
             // The serialized data should only contain non-default values
-            const std::string expected = "IntValue2 -231238\n";
+            const std::string expected = "{\n    IntValue2 = -231238\n}";
             Assert::AreEqual(1, table.propertiesCount());
+            Assert::AreEqual(expected, serialized);
+        }
+
+        TEST_METHOD(TestSerializeWithSubData)
+        {
+            // Create a test struct with a child object.
+            TestStructWithSubData testStruct;
+            testStruct.intValue1 = 54; // default
+            testStruct.intValue2 = -96; // != default
+            testStruct.subData.intValue1 = 578; // default
+            testStruct.subData.intValue2 = -231238; // != default
+            testStruct.subData.stringValue = "Hello World"; // default
+
+            // Serialize it into a new property table
+            PropertyTable table(PropertyTableMode::Writing);
+            Assert::IsTrue(PropertyTableMode::Writing == table.mode());
+            testStruct.serialize(table);
+
+            // Extract the serialized data as a property list.
+            const std::string serialized = table.toString();
+
+            // Check the data is correct.
+            // The serialized data should only contain non-default values
+            const std::string expected = "{\n    IntValue2 = -96\n    SubData {\n        IntValue2 = -231238\n    }\n}";
+            Assert::AreEqual(2, table.propertiesCount());
             Assert::AreEqual(expected, serialized);
         }
 
         TEST_METHOD(TestDeserialize)
         {
+            // Use test data with 3 properties
+            const std::string existingProperties = "{    IntValue1 = 109123126\n    IntValue2 = -231238\n    StringValue = A long serialized string\n}";
+
             // Create a property table with the values already in it
-            PropertyTable table("IntValue1 109123126\nIntValue2 -231238\nStringValue A long serialized string\n");
+            PropertyTable table(PropertyTableMode::Reading);
+            Assert::IsTrue(table.addPropertyData(existingProperties));
             Assert::IsTrue(PropertyTableMode::Reading == table.mode());
             Assert::AreEqual(3, table.propertiesCount());
 
@@ -115,9 +160,13 @@ namespace EngineTests
 
         TEST_METHOD(TestDeserializeUsesDefaults)
         {
+            // Use test data with 1 property
+            const std::string existingProperties = "{    IntValue2 = -231238\n}";
+
             // Create a property table with the values already in it
             // Skip some values, so they will use the default values.
-            PropertyTable table("IntValue2 -231238\n");
+            PropertyTable table(PropertyTableMode::Reading);
+            Assert::IsTrue(table.addPropertyData(existingProperties));
             Assert::IsTrue(PropertyTableMode::Reading == table.mode());
             Assert::AreEqual(1, table.propertiesCount());
 
@@ -132,28 +181,29 @@ namespace EngineTests
             Assert::AreEqual(std::string("Hello World"), testStruct.stringValue); // default
         }
 
-        TEST_METHOD(TestDeserializeUsesPropertyCount)
+        TEST_METHOD(TestDeserializeWithSubData)
         {
-            // Create a stringstream with property data for 2 properties
-            std::stringstream stream("IntValue1 109123126\nIntValue2 -231238\n");
+            // Use test data with 1 property and subdata
+            const std::string existingProperties = "{\n    IntValue2 = -96\n    SubData {\n    IntValue2 = -231238\n    }\n}";
 
-            // Create a property table and tell it to use *one* value from the stream
-            PropertyTable table(stream, 1);
+            // Create a property table with the values already in it
+            // Skip some values, so they will use the default values.
+            PropertyTable table(PropertyTableMode::Reading);
+            Assert::IsTrue(table.addPropertyData(existingProperties));
+            Assert::IsTrue(PropertyTableMode::Reading == table.mode());
+            Assert::AreEqual(2, table.propertiesCount());
 
             // Create a new test struct and deserialize from the table.
-            TestStruct testStruct;
+            TestStructWithSubData testStruct;
             testStruct.serialize(table);
 
-            // Only the first value should be set. The others should be defaults.
-            Assert::AreEqual(109123126, testStruct.intValue1); // != default
-            Assert::AreEqual(578, testStruct.intValue2); // default
-            Assert::AreEqual(std::string("Hello World"), testStruct.stringValue); // default
-
-            // The stream should have been read up to the end of the first property.
-            // Therefore the next value should be "IntValue2"
-            std::string nextStreamValue;
-            stream >> nextStreamValue;
-            Assert::AreEqual(std::string("IntValue2"), nextStreamValue);
+            // Check that the test struct values match what was in the properties table
+            // or the defaults for values that are not in the table.
+            Assert::AreEqual(54, testStruct.intValue1); // default
+            Assert::AreEqual(-96, testStruct.intValue2); // != default
+            Assert::AreEqual(578, testStruct.subData.intValue1); // default
+            Assert::AreEqual(-231238, testStruct.subData.intValue2); // != default
+            Assert::AreEqual(std::string("Hello World"), testStruct.subData.stringValue); // default
         }
     };
 }

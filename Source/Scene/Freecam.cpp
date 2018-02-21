@@ -20,6 +20,11 @@ void Freecam::drawProperties()
     ImGui::Checkbox("Timescale Independent", &timeScaleIndependent_);
 }
 
+void Freecam::serialize(PropertyTable &table)
+{
+    table.serialize("timescale_independent", timeScaleIndependent_, true);
+}
+
 void Freecam::update(float deltaTime)
 {
     // Calculate forward, vertical and lateral movement using pressed keys

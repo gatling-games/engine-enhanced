@@ -1,0 +1,53 @@
+{
+    gameobjects::0 {
+        name = Smoothness 4
+        Transform {
+            Position = 0 0 4.8
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\sphere.obj
+            material = Resources\Materials\Tests\sphere_smooth.material
+        }
+    }
+    gameobjects::1 {
+        name = Smoothness 0
+        Transform {
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\sphere.obj
+            material = Resources\Materials\Tests\sphere_rough.material
+        }
+    }
+    gameobjects::2 {
+        name = Smoothness 3
+        Transform {
+            Position = 0 0 3.6
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\sphere.obj
+            material = Resources\Materials\Tests\sphere_medium_smooth.material
+        }
+    }
+    gameobjects::3 {
+        name = Smoothness 1
+        Transform {
+            Position = 0 0 1.2
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\sphere.obj
+            material = Resources\Materials\Tests\sphere_medium_rough.material
+        }
+    }
+    gameobjects::4 {
+        name = Smoothness 2
+        Transform {
+            Position = 0 0 2.4
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\sphere.obj
+            material = Resources\Materials\Tests\sphere_medium.material
+        }
+    }
+    ambient_intensity = 0.1
+    sun_intensity = 0.97
+}

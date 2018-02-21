@@ -14,6 +14,9 @@ public:
     // Draws the freecam properties fold out
     void drawProperties() override;
 
+    // Serialisation function
+    void serialize(PropertyTable &table) override;
+
     // Runs every frame to update freecam
     void update(float deltaTime) override;
 

@@ -119,7 +119,10 @@ Vector3 operator * (const Quaternion &quat, const Vector3 &vec)
 
 std::ostream& operator << (std::ostream &os, const Quaternion &quat)
 {
-    os << "( " << quat.x << ", " << quat.y << ", " << quat.z << ", " << quat.w << " )";
+    os << quat.x;
+    os << " " << quat.y;
+    os << " " << quat.z;
+    os << " " << quat.w;
     return os;
 }
 

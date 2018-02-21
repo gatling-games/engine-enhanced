@@ -252,7 +252,9 @@ Vector3 operator / (float scalar, const Vector3 &v)
 
 std::ostream& operator << (std::ostream &os, const Vector3 &vec)
 {
-    os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ")";
+    os << vec.x;
+    os << " " << vec.y;
+    os << " " << vec.z;
     return os;
 }
 

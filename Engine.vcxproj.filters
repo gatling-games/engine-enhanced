@@ -141,9 +141,6 @@
     <ClInclude Include="Source\Serialization\PropertyTable.h">
       <Filter>Serialization</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Serialization\SerializedGameObject.h">
-      <Filter>Serialization</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Scene\Helicopter.h">
       <Filter>Scene</Filter>
     </ClInclude>
@@ -170,6 +167,18 @@
     </ClInclude>
     <ClInclude Include="Source\Editor\MainWindowMenu.h">
       <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Serialization\Prefab.h">
+      <Filter>Serialization</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Importers\PrefabImporter.h">
+      <Filter>Importers</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Importers\SceneImporter.h">
+      <Filter>Importers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -278,9 +287,6 @@
     <ClCompile Include="Source\Serialization\PropertyTable.cpp">
       <Filter>Serialization</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Serialization\SerializedGameObject.cpp">
-      <Filter>Serialization</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Renderer\Material.cpp">
       <Filter>Renderer</Filter>
     </ClCompile>
@@ -292,6 +298,18 @@
     </ClCompile>
     <ClCompile Include="Source\Editor\MainWindowMenu.cpp">
       <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Serialization\Prefab.cpp">
+      <Filter>Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Importers\PrefabImporter.cpp">
+      <Filter>Importers</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Importers\SceneImporter.cpp">
+      <Filter>Importers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

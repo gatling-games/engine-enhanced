@@ -22,9 +22,9 @@ void Camera::drawProperties()
 
 void Camera::serialize(PropertyTable &table)
 {
-    table.serialize("Near Plane", nearPlaneDistance_, 0.2f);
-    table.serialize("Far Plane", farPlaneDistance_, 10000.0f);
-    table.serialize("Horiz FOV", horizontalFOV_, 60.0f);
+    table.serialize("near_plane", nearPlaneDistance_, 0.1f);
+    table.serialize("far_plane", farPlaneDistance_, 10000.0f);
+    table.serialize("horizontal_fov", horizontalFOV_, 60.0f);
 }
 
 float Camera::getNearPlaneDistance() const

@@ -1,0 +1,21 @@
+{
+    name = wind_turbine
+    Transform {
+        Position = 466 60.1 837.8
+        Rotation = 0 0.02 0 0.9998
+    }
+    StaticMesh {
+        mesh = Resources\Meshes\turbine_tower.mesh
+        material = Resources\Materials\Tests\sphere_medium.material
+    }
+    children::0 {
+        name = Static Mesh
+        Transform {
+            Position = -2.2 21.15 0
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\turbine_blades.mesh
+            material = Resources\Materials\default.material
+        }
+    }
+}

@@ -1,2 +1,4 @@
-albedo_texture Resources/Textures/ground_grass_01_albedo.tga
-normal_map_texture Resources/Textures/ground_grass_01_normals.tga
+{
+    albedo_texture = Resources\Textures\ground_grass_01_albedo.tga
+    normal_map_texture = Resources\Textures\ground_grass_01_normals.tga
+}

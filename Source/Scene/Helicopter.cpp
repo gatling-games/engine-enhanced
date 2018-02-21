@@ -25,6 +25,14 @@ void Helicopter::drawProperties()
     ImGui::DragFloat3("Velocity", &worldVelocity_.x, 0.1f);
 }
 
+void Helicopter::serialize(PropertyTable &table)
+{
+    table.serialize("thrust_speed", thrustSpeed_, 35.0f);
+    table.serialize("pitch_speed", pitchSpeed_, 40.0f);
+    table.serialize("roll_speed", rollSpeed, 40.0f);
+    table.serialize("yaw_speed", yawSpeed_, 25.0f);
+    table.serialize("velocity", worldVelocity_, Vector3::zero());
+}
 
 void Helicopter::update(float deltaTime)
 {

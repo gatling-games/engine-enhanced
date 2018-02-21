@@ -12,7 +12,7 @@ class Transform : public Component
 {
 public:
     explicit Transform(GameObject* gameObject);
-    ~Transform() override { }
+    virtual ~Transform();
 
     // Draws the transform properties fold out
     void drawProperties() override;
@@ -52,9 +52,6 @@ public:
 
     // Changes parent transform for manipulating transform hierarchy
     void setParentTransform(Transform* parent);
-
-    // Detach parent transform from object
-    void detachParentTransform();
 
     // Callback when transform is changed for child notification and matrix recomputation
     void onTransformChanged();

@@ -7,16 +7,22 @@
 
 #include "SceneManager.h"
 #include "Scene/GameObject.h"
+#include "Scene/Transform.h"
 
 void ScenePanel::draw()
 {
     // Draw all of the game objects in the scene with no parent.
-    auto gameObjects = SceneManager::instance()->gameObjects();
-    for (unsigned int i = 0; i < gameObjects.size(); ++i)
+    for (GameObject* gameObject : SceneManager::instance()->gameObjects())
     {
-        if (gameObjects[i]->transform()->parentTransform() == nullptr)
+        // Skip objects flagged as hidden
+        if(gameObject->hasFlag(GameObjectFlag::NotShownInScenePanel))
         {
-            drawNode(gameObjects[i]);
+            continue;
+        }
+
+        if (gameObject->transform()->parentTransform() == nullptr)
+        {
+            drawNode(gameObject);
         }
     }
 }
@@ -38,6 +44,12 @@ void ScenePanel::drawNode(GameObject* gameObject)
         nodeFlags |= ImGuiTreeNodeFlags_Leaf;
     }
 
+    // Show a different colour for gameobjects with a prefab.
+    if (gameObject->prefab() != nullptr)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_Button]);
+    }
+
     // Draw the actual tree node
     bool node_open = ImGui::TreeNodeEx(gameObject->name().c_str(), nodeFlags);
     if (ImGui::IsItemClicked())
@@ -54,6 +66,12 @@ void ScenePanel::drawNode(GameObject* gameObject)
         }
 
         ImGui::TreePop();
+    }
+
+    // If we changed the colour, change it back
+    if (gameObject->prefab() != nullptr)
+    {
+        ImGui::PopStyleColor();
     }
 }
 

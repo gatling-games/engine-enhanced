@@ -3,9 +3,12 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <memory.h>
 
 // Needed for serialize<ResourcePtr> method
 #include "ResourceManager.h"
+
+class ISerializedObject;
 
 // Stores a collection of named properties for a serialized object.
 
@@ -25,28 +28,168 @@ enum class PropertyTableMode
     Writing,
 };
 
+class PropertyTable;
+
 struct SerializedProperty
 {
     std::string name;
+
+    // If a single value, it is stored here.
     std::string value;
+
+    // If the property is another property table it is here.
+    std::shared_ptr<PropertyTable> subTable;
 };
 
 class PropertyTable
 {
 public:
-    PropertyTable();
-    PropertyTable(const std::string &serializedData);
-    PropertyTable(std::stringstream &serializedData, int propertyCount);
+    PropertyTable(PropertyTableMode mode);
+    ~PropertyTable();
 
     // Information about the table
     PropertyTableMode mode() const { return mode_; }
     int propertiesCount() const { return (int)properties_.size(); }
     bool isEmpty() const { return properties_.empty(); }
 
+    // Deletes all data from the property table
+    void clear();
+
+    // Changes the mode of the property table.
+    void setMode(PropertyTableMode newMode);
+
+    // Gets the names of properties in the table.
+    // Note - this will not contain values equal to their defaults.
+    std::vector<std::string> propertyNames() const;
+
+    // Writes already-serialized data into the property table, ready for reading.
+    // Returns true if the data was read successfully.
+    bool addPropertyData(const std::string &serializedData);
+    bool addPropertyData(std::stringstream &serializedData);
+
+    // Writes property data into the property table
+    void addPropertyData(const PropertyTable &existingTable, bool overwriteExistingValues);
+
+    // Removes any property values that are also contained in the propertiesToRemove list.
+    // This is the opposite of addPropertyData().
+    void deltaCompress(const PropertyTable &propertiesToRemove);
+
     // Looks for the named property in the table.
     // If it exists, the value is returned, converted to a string.
     // If it does not exist, the default value is returned.
     const std::string getProperty(const std::string &name, const std::string &default) const;
+
+    // Serializes an entire subobject to or from the property table, depending on the current mode.
+    void serialize(const std::string &name, ISerializedObject &subobject);
+
+    // Serializes a vector of serializable objects to or from the property table data.
+    // The vector must contain pointers to ISerializedObject objects
+    template<typename T>
+    void serialize(const std::string &name, std::vector<T*>& values)
+    {
+        if (mode_ == PropertyTableMode::Reading)
+        {
+            // A vector is serialized by storing multiple properties with the same name.
+            // Search the entire property list for matching ones.
+            int totalFound = 0;
+            for (const SerializedProperty& property : properties_)
+            {
+                // Skip properties that do not match the specified name
+                const std::string desiredName = name + std::string("::") + std::to_string(totalFound);
+                if (property.name != desiredName)
+                {
+                    continue;
+                }
+
+                // If the list is too short, expand it and create a new element.
+                if (values.size() <= totalFound)
+                {
+                    values.push_back(new T());
+                }
+                // If the list is big enough, but the value is null, create a new element
+                else if (values[totalFound] == nullptr)
+                {
+                    values[totalFound] = new T();
+                }
+
+                // Deserialize the property into the object
+                values[totalFound]->serialize(*property.subTable);
+                totalFound++;
+            }
+
+            // If there is left over space at the end, shrink the vector.
+            if (totalFound < values.size())
+            {
+                for (unsigned int i = totalFound; i < values.size(); ++i)
+                {
+                    delete values[i];
+                }
+                values.resize(totalFound);
+            }
+        }
+        else
+        {
+            // Write every value in the vector into a separate property with the same name.
+            int totalFound = 0;
+            for (T* value : values)
+            {
+                if (value != nullptr)
+                {
+                    SerializedProperty newProperty;
+                    newProperty.name = name + std::string("::") + std::to_string(totalFound);
+                    newProperty.value = "";
+                    newProperty.subTable = std::make_shared<PropertyTable>(PropertyTableMode::Writing);
+                    value->serialize(*newProperty.subTable);
+                    properties_.push_back(newProperty);
+
+                    totalFound++;
+                }
+            }
+        }
+    }
+
+    // Serializes a vector of serializable objects to or from the property table data.
+    // The vector must contain pointers to ISerializedObject objects
+    template<typename T>
+    void serialize(const std::string &name, std::vector<T>& values)
+    {
+        if (mode_ == PropertyTableMode::Reading)
+        {
+            // A vector is serialized by storing multiple properties with the same name.
+            // Search the entire property list for matching ones.
+            values.resize(0);
+
+            // Search for each property until an index is not found
+            for (;;)
+            {
+                // Skip properties that do not match the specified name
+                const SerializedProperty* property = tryFindProperty(name + "::" + std::to_string(values.size()));
+                if (property == nullptr)
+                {
+                    return;
+                }
+
+                // Expand the list and create a new element.
+                values.resize(values.size() + 1);
+
+                // Deserialize the property into the object
+                values.back().serialize(*property->subTable);
+            }
+        }
+        else
+        {
+            // Write every value in the vector into a separate property with the same name.
+            for(unsigned int i = 0; i < values.size(); ++i)
+            {
+                SerializedProperty newProperty;
+                newProperty.name = name + "::" + std::to_string(i);
+                newProperty.value = "";
+                newProperty.subTable = std::make_shared<PropertyTable>(PropertyTableMode::Writing);
+                values[i].serialize(*newProperty.subTable);
+                properties_.push_back(newProperty);
+            }
+        }
+    }
 
     // Serializes a property to or from the property table, depending on the current mode.
     // In writing mode, the value is saved as a property with the given name. If
@@ -135,13 +278,15 @@ public:
             }
 
             // If the resource is nullptr use 0 for the value. Otherwise, use the source path.
-            findOrCreateProperty(name)->value = (value == nullptr) ? "0"
-                : ResourceManager::instance()->resourceIDToPath(value->resourceID());
+            findOrCreateProperty(name)->value = (value == nullptr) ? "0" : value->resourcePath();
         }
     }
 
     // Converts the properties inside the table to the string-based property list format.
-    const std::string toString() const;
+    std::string toString(int indentLevel = 1) const;
+
+    // Looks for a property with the given name and deletes it.
+    void tryDeleteProperty(const std::string &name);
 
 private:
     PropertyTableMode mode_;
@@ -154,7 +299,4 @@ private:
     // Looks for a property entry with the given name.
     // Returns nullptr if it does not exist.
     const SerializedProperty* tryFindProperty(const std::string &name) const;
-
-    // Looks for a property with the given name and deletes it.
-    void tryDeleteProperty(const std::string &name);
 };

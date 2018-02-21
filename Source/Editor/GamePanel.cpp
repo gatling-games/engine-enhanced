@@ -5,12 +5,14 @@
 #include "SceneManager.h"
 #include "Scene/Camera.h"
 #include "InputManager.h"
+#include "Scene/Freecam.h"
 
 GamePanel::GamePanel()
     : frameBuffer_(nullptr)
     , depthBuffer_(nullptr)
     , colorBuffer_(nullptr)
     , renderer_(nullptr)
+    , camera_(nullptr)
 {
 
 }
@@ -44,8 +46,19 @@ void GamePanel::draw()
         createFramebuffer(renderTextureWidth, renderTextureHeight);
     }
 
+    // When the game panel is created, add a camera in the scene
+    // Make it hidden so that a) the user cant modify it, and b) it doesnt get deleted
+    if (camera_ == nullptr)
+    {
+        GameObject* cameraGO = new GameObject("GamePanelCamera");
+        cameraGO->setFlag(GameObjectFlag::NotShownOrSaved, true);
+        cameraGO->setFlag(GameObjectFlag::SurviveSceneChanges, true);
+        cameraGO->createComponent<Freecam>();
+        camera_ = cameraGO->createComponent<Camera>();
+    }
+
     // Re-render the framebuffer on each draw
-    renderer_->renderFrame(SceneManager::instance()->mainCamera());
+    renderer_->renderFrame(camera_);
 
     // Draw the texture
     ImGui::Image((ImTextureID)(uint64_t)colorBuffer_->glid(), ImGui::GetContentRegionAvail(), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));

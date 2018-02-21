@@ -12,6 +12,9 @@ public:
 
     void drawProperties() override;
 
+    // Serialisation method
+    void serialize(PropertyTable &table) override;
+
     void update(float deltaTime) override;
 
 

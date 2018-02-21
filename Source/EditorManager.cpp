@@ -8,6 +8,10 @@
 #include <filesystem>
 namespace fs = std::experimental::filesystem::v1;
 
+// Used for displaying windows file dialogs
+#include "ShObjIdl.h"
+#include <commdlg.h>
+
 EditorManager::EditorManager(GLFWwindow* window, bool setupGLFWCallbacks)
     : glfwWindow_(window),
     mainWindow_()
@@ -133,4 +137,45 @@ void EditorManager::render()
 	
     // Now actually render the glfw draw list.
     ImGui::Render();
+}
+
+std::string EditorManager::showSaveDialog(const std::string& title, const std::string& fileName, 
+    const std::string& fileExtension) const
+{
+    const int MAX_FILE_LENGTH = 2048;
+    char path[MAX_FILE_LENGTH];
+    strcpy_s(path, fileName.c_str());
+
+    OPENFILENAMEA open;
+    memset(&open, 0, sizeof(OPENFILENAME));
+    open.lStructSize = sizeof(OPENFILENAME);
+    open.lpstrFile = path;
+    open.nMaxFile = MAX_FILE_LENGTH;
+    open.lpstrTitle = title.c_str();
+    open.lpstrDefExt = fileExtension.c_str();
+    open.Flags = OFN_NOCHANGEDIR | OFN_OVERWRITEPROMPT;
+
+    if (!GetSaveFileNameA(&open))
+    {
+        // The user cancelled the save dialog.
+        return "";
+    }
+
+    const std::string savePath(path);
+
+    // Determine the current directory of the editor application.
+    wchar_t appDirectory_chars[MAX_FILE_LENGTH];
+    GetCurrentDirectory(MAX_FILE_LENGTH, appDirectory_chars);
+    const std::wstring appDirectory_w(appDirectory_chars);
+    const std::string appDirectory(appDirectory_w.begin(), appDirectory_w.end());
+
+    // If the file path is not inside the app directory, fail
+    if(savePath.find(appDirectory) == std::string::npos)
+    {
+        std::cerr << "Save must be inside app directory " << appDirectory << std::endl;
+        return "";
+    }
+
+    // Otherwise, strip the app directory and return
+    return savePath.substr(appDirectory.length() + 1); // The +1 is for the trailing slash
 }

@@ -106,7 +106,10 @@ Vector4 operator / (float scalar, const Vector4 &v)
 
 std::ostream& operator << (std::ostream &os, const Vector4 &vec)
 {
-    os << "(" << vec.x << ", " << vec.y << ", " << vec.z << ", " << vec.w << ")";
+    os << vec.x;
+    os << " " << vec.y;
+    os << " " << vec.z;
+    os << " " << vec.w;
     return os;
 }
 

@@ -162,7 +162,10 @@ Color operator / (const Color &a, const Color &b)
 
 std::ostream& operator << (std::ostream &os, const Color &col)
 {
-    os << "(" << col.r << ", " << col.g << ", " << col.b << ", " << col.a << ")";
+    os << col.r;
+    os << " " << col.g;
+    os << " " << col.b;
+    os << " " << col.a;
     return os;
 }
 
@@ -172,6 +175,5 @@ std::istream& operator >> (std::istream &is, Color &col)
     is >> col.g;
     is >> col.b;
     is >> col.a;
-
     return is;
 }

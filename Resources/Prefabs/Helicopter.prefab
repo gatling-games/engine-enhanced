@@ -1,0 +1,13 @@
+{
+    name = Helicopter
+    Transform {
+        Position = 74 20 -60
+        Scale = 100 100 100
+    }
+    StaticMesh {
+        mesh = Resources\Meshes\copter2.obj
+        material = Resources\Materials\default.material
+    }
+    Helicopter {
+    }
+}

@@ -8,6 +8,7 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "Utils/Clock.h"
+#include "Scene/Transform.h"
 
 Renderer::Renderer()
     : Renderer(Framebuffer::backbuffer())
@@ -150,14 +151,16 @@ void Renderer::destroyGBuffer()
 
 void Renderer::updateSceneUniformBuffer() const
 {
+    const Scene* scene = SceneManager::instance()->currentScene();
+
     // Gather the new contents of the scene buffer
     SceneUniformData data;
-    data.ambientLightColor = Color(0.6f, 0.6f, 0.6f);
-    data.lightColor = Color(1.0f, 1.0f, 1.0f);
-    data.toLightDirection = Vector4(Vector3(1.0f, 1.0f, 1.0f).normalized());
-    data.skyTopColor = Color(0.23f, 0.66f, 0.86f);
-    data.skyHorizonColor = Color(0.5f, 0.55f, 0.84f);
-    data.sunParams = Vector4(4.0f, 512.0f, 0.0f, 0.0f); // x = falloff, y = size
+    data.ambientLightColor = scene->ambientLight();
+    data.lightColor = scene->sunColor();
+    data.toLightDirection = Vector4((scene->sunRotation() * Vector3(0.0f, 0.0f, -1.0f)).normalized());
+    data.skyTopColor = scene->skyColorTop();
+    data.skyHorizonColor = scene->skyColorBottom();
+    data.sunParams = Vector4(scene->skySunFalloff(), scene->skySunSize(), 0.0f, 0.0f); // x = falloff, y = size
 
     // Send time to shader for cloud texture scrolling
     const float time = Clock::instance()->time();
@@ -255,7 +258,7 @@ void Renderer::executeDeferredGBufferPass() const
     for (StaticMesh* staticMesh : SceneManager::instance()->staticMeshes())
     {
         // Skip instances with no material
-        if(staticMesh->material() == nullptr)
+        if(staticMesh->material() == nullptr || staticMesh->mesh() == nullptr)
         {
             continue;
         }

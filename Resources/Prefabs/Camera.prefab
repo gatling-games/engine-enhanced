@@ -1,0 +1,12 @@
+{
+    name = Camera
+    Transform {
+        Position = 64 22 -55
+        Rotation = 0.0560194 0.822284 -0.0830287 0.560194
+    }
+    Camera {
+        far_plane = 1500
+    }
+    Freecam {
+    }
+}

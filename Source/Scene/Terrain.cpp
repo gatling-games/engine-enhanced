@@ -4,25 +4,27 @@
 #include "Utils/ImGuiExtensions.h"
 #include "Renderer/Material.h"
 
+void TerrainLayer::serialize(PropertyTable& table)
+{
+    table.serialize("altitude_border", altitudeBorder, 0.0f);
+    table.serialize("altitude_transition", altitudeTransition, 0.0f);
+    table.serialize("slope_border", slopeBorder, -1.0f);
+    table.serialize("slope_hardness", slopeHardness, 1.0f);
+    table.serialize("material", material, (ResourcePPtr<Material>)nullptr);
+}
+
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
-    textureWrap_(Vector2(10.0f,10.0f)),
-    dimensions_(Vector3(1024.0f, 80.0f, 1024.0f)),
-    layerCount_(3)
+    textureWrap_(Vector2(10.0f, 10.0f)),
+    dimensions_(Vector3(1024.0f, 80.0f, 1024.0f))
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
     heightMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/heightmap.png");
 
-    // Set up the default layers
-    terrainLayers_[0].material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_rock_01.material");
-    terrainLayers_[1].material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");
-    terrainLayers_[1].slopeBorder = 0.6f;
-    terrainLayers_[1].slopeHardness = 0.3f;
-    terrainLayers_[2].material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_snow.material");
-    terrainLayers_[2].altitudeBorder = 35.0f;
-    terrainLayers_[2].altitudeTransition = 10.0f;
-    terrainLayers_[2].slopeBorder = 0.3f;
-    terrainLayers_[2].slopeHardness = 0.25f;
+    // Set up the default layer
+    TerrainLayer layer;
+    layer.material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_rock_01.material");
+    terrainLayers_.push_back(layer);
 }
 
 void Terrain::drawProperties()
@@ -31,19 +33,17 @@ void Terrain::drawProperties()
     ImGui::ResourceSelect<Material>("Base Material", "Select Layer Material", terrainLayers_[0].material);
     ImGui::DragFloat2("Texture Repeat", &textureWrap_.x, 0.1f, 1.0f, 1024.0f);
     ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
-    
-    if(ImGui::TreeNode("Terrain Layers"))
+
+    if (ImGui::TreeNode("Terrain Layers"))
     {
-        if(ImGui::Button("Add Layer"))
+        if (ImGui::Button("Add Layer"))
         {
-            layerCount_ += 1;
+            terrainLayers_.resize(terrainLayers_.size() + 1);
         }
 
-        for (int layer = 1; layer < layerCount_; layer++)
+        for (unsigned int layer = 1; layer < terrainLayers_.size(); layer++)
         {
             ImGui::PushID(layer);
-            ImGui::InputText("", (char*)&terrainLayers_[layer].name, sizeof(terrainLayers_[layer].name));
-            ImGui::Spacing();
 
             ImGui::DragFloat("Altitude", &terrainLayers_[layer].altitudeBorder, 0.1f, 0.0f, 300.0f);
             ImGui::DragFloat("Transition", &terrainLayers_[layer].altitudeTransition, 0.1f, 0.0f, 20.0f);
@@ -53,7 +53,7 @@ void Terrain::drawProperties()
             ImGui::DragFloat("Hardness", &terrainLayers_[layer].slopeHardness, 0.01f, 0.001f, 1.0f);
             ImGui::Spacing();
 
-            ImGui::ResourceSelect<Material>("Material", "Select Layer Material",terrainLayers_[layer].material);
+            ImGui::ResourceSelect<Material>("Material", "Select Layer Material", terrainLayers_[layer].material);
             ImGui::Spacing();
 
             ImGui::PopID();
@@ -61,4 +61,12 @@ void Terrain::drawProperties()
 
         ImGui::TreePop();
     }
+}
+
+void Terrain::serialize(PropertyTable &table)
+{
+    table.serialize("heightmap", heightMap_, (ResourcePPtr<Texture>)nullptr);
+    table.serialize("texture_wrap", textureWrap_, Vector2(10.0f, 10.0f));
+    table.serialize("dimensions", dimensions_, Vector3(1024.0f, 80.0f, 1024.0f));
+    table.serialize("layers", terrainLayers_);
 }

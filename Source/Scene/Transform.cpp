@@ -14,6 +14,18 @@ Transform::Transform(GameObject* gameObject)
 
 }
 
+Transform::~Transform()
+{
+    // If we have child transforms, delete their gameobjects too
+    for(Transform* child : children_)
+    {
+        delete child->gameObject();
+    }
+
+    // If we have a parent, unparent from it
+    setParentTransform(nullptr);
+}
+
 void Transform::drawProperties()
 {
     ImGui::DragFloat3("Position", &position_.x, 0.1f);
@@ -113,16 +125,19 @@ Vector3 Transform::down() const
 
 void Transform::setParentTransform(Transform* parent)
 {
-    parent_ = parent;
-    parent_->addChild(this);
-    recomputeMatrices();
-}
+    // If we already have a parent, remove us from it.
+    if (parent_ != nullptr)
+    {
+        parent_->removeChild(this);
+    }
 
-void Transform::detachParentTransform()
-{
-    parent_->removeChild(this);
-    parent_ = nullptr;
+    parent_ = parent;
     recomputeMatrices();
+
+    if (parent_ != nullptr)
+    {
+        parent_->addChild(this);
+    }
 }
 
 void Transform::onTransformChanged()
