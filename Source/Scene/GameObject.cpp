@@ -15,37 +15,38 @@
 
 #include "Serialization/Prefab.h"
 
-#include "Utils/ImGuiExtensions.h"
 #include "EditorManager.h"
 
 GameObject::GameObject()
     : GameObject("Blank GameObject")
 {
-    // Give every GameObject instance a transform component
-    // This ensures that gameobject can be parented inside each other.
-    createComponent<Transform>();
+
 }
 
 GameObject::GameObject(const std::string &name)
-    : name_(name),
-    prefab_(nullptr)
+    : GameObject(name, nullptr)
 {
-    // Give every GameObject instance a transform component
-    // This ensures that gameobject can be parented inside each other.
-    createComponent<Transform>();
+
 }
 
-GameObject::GameObject(Prefab* prefab)
-    : name_(""),
+GameObject::GameObject(const std::string &name, Prefab* prefab)
+    : name_(name),
+    flags_(0),
     prefab_(prefab)
 {
     // Give every GameObject instance a transform component
     // This ensures that gameobject can be parented inside each other.
     createComponent<Transform>();
 
-    // Read the prefab's properties into this gameobject.
-    PropertyTable prefabProperties = prefab_->serializedProperties();
-    serialize(prefabProperties);
+    if (prefab != nullptr)
+    {
+        // Read the prefab's properties into this gameobject.
+        PropertyTable prefabProperties = prefab_->serializedProperties();
+        serialize(prefabProperties);
+    }
+
+    // Register this gameobject with the scene manager.
+    SceneManager::instance()->gameObjectCreated(this);
 }
 
 GameObject::~GameObject()
@@ -63,6 +64,28 @@ GameObject::~GameObject()
     {
         PropertiesPanel::instance()->inspect(nullptr);
     }
+}
+
+bool GameObject::hasFlag(GameObjectFlag flag) const
+{
+    return ((int)flags_ & (int)flag) != 0;
+}
+
+void GameObject::setFlag(GameObjectFlag flag, bool state)
+{
+    if(state)
+    {
+        flags_ |= (uint32_t)flag;
+    }
+    else
+    {
+        flags_ &= ~(uint32_t)flag;
+    }
+}
+
+void GameObject::setFlags(GameObjectFlagList flags)
+{
+    flags_ = flags;
 }
 
 void GameObject::drawEditor()

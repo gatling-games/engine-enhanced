@@ -12,8 +12,14 @@
 void ScenePanel::draw()
 {
     // Draw all of the game objects in the scene with no parent.
-    for (GameObject* gameObject : SceneManager::instance()->sceneObjects())
+    for (GameObject* gameObject : SceneManager::instance()->gameObjects())
     {
+        // Skip objects flagged as hidden
+        if(gameObject->hasFlag(GameObjectFlag::NotShownInScenePanel))
+        {
+            continue;
+        }
+
         if (gameObject->transform()->parentTransform() == nullptr)
         {
             drawNode(gameObject);

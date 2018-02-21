@@ -3,6 +3,7 @@
 #include <imgui.h>
 
 #include "SceneManager.h"
+#include "GameObject.h"
 
 Scene::Scene(ResourceID resourceID)
     : Resource(resourceID),
@@ -69,17 +70,31 @@ void Scene::serialize(PropertyTable &table)
     table.serialize("sky_sun_falloff", skySunFalloff_, 4.0f);
 }
 
-void Scene::createGameObjects(std::vector<GameObject*>& gameObjectList)
+void Scene::createGameObjects()
 {
     // To create the objects, just read from the serialized form into the gameobject list
     gameObjects_.setMode(PropertyTableMode::Reading);
-    gameObjects_.serialize("gameobjects", gameObjectList);
+
+    // The propertytable supports reading out into a vector, use that.
+    // We dont actually need the vector, since the scenemanager tracks the objects
+    auto tempVector = std::vector<GameObject*>();
+    gameObjects_.serialize("gameobjects", tempVector);
 }
 
-void Scene::saveGameObjects(std::vector<GameObject*>& gameObjectList)
+void Scene::saveGameObjects()
 {
+    // Store all the objects we want to save into a vector
+    auto tempVector = std::vector<GameObject*>();
+    for(GameObject* gameObject : SceneManager::instance()->gameObjects())
+    {
+        if(gameObject->hasFlag(GameObjectFlag::NotSavedInScene) == false)
+        {
+            tempVector.push_back(gameObject);
+        }
+    }
+
     // To save the objects, just read them into the serialized data.
     gameObjects_.clear();
     gameObjects_.setMode(PropertyTableMode::Writing);
-    gameObjects_.serialize("gameobjects", gameObjectList);
+    gameObjects_.serialize("gameobjects", tempVector);
 }

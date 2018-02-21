@@ -1,6 +1,5 @@
 #pragma once
 
-#include "GameObject.h"
 #include "Serialization/SerializedObject.h"
 
 #include "ResourceManager.h"
@@ -35,11 +34,11 @@ public:
     // Reads or writes the scene objects.
     void serialize(PropertyTable &table) override;
 
-    // Creates all scene gameobjects in the provided list
-    void createGameObjects(std::vector<GameObject*>& gameObjectList);
+    // Creates new copies of all gameobjects in the scene data.
+    void createGameObjects();
 
-    // Writes all scene gameobjects into the serialized data
-    void saveGameObjects(std::vector<GameObject*>& gameObjectList);
+    // Overwrites the current scene data to match the current gameobjects.
+    void saveGameObjects();
 
 private:
     // The serialized form of the scene gameobjects

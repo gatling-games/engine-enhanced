@@ -16,7 +16,7 @@ void Prefab::drawEditor()
 {
     if(ImGui::Button("Create Instance in Scene", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
     {
-        PropertiesPanel::instance()->inspect(SceneManager::instance()->createGameObject(this));
+        new GameObject(resourceName() + " Copy", this);
     }
 }
 

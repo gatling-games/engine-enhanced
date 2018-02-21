@@ -9,7 +9,6 @@
 #include "Scene/StaticMesh.h"
 #include "Scene/Terrain.h"
 
-#include "Serialization/Prefab.h"
 #include "ResourceManager.h"
 
 #include "Utils/Clock.h"
@@ -42,14 +41,8 @@ void SceneManager::frameStart()
 {
     const float deltaTime = Clock::instance()->deltaTime();
 
-    // Trigger updates for all scene gameobjects
-    for (GameObject* gameObject : sceneGameObjects_)
-    {
-        gameObject->update(deltaTime);
-    }
-
-    // Trigger updates for all hidden gameobjects too
-    for (GameObject* gameObject : hiddenGameObjects_)
+    // Trigger updates for all gameobjects
+    for (GameObject* gameObject : gameObjects_)
     {
         gameObject->update(deltaTime);
     }
@@ -60,14 +53,17 @@ void SceneManager::openScene(const std::string& scenePath)
     // Change the current scene
     currentScene_ = ResourceManager::instance()->load<Scene>(scenePath);
 
-    // Delete all existing scene gameobjects
-    while (sceneGameObjects_.empty() == false)
+    // Delete all scene gameobjects (except ones with the SurviveSceneChanges flag)
+    for(unsigned int i = gameObjects_.size() - 1; i < gameObjects_.size(); --i)
     {
-        delete sceneGameObjects_[0];
+        if(gameObjects_[i]->hasFlag(GameObjectFlag::SurviveSceneChanges) == false)
+        {
+            delete gameObjects_[i];
+        }
     }
 
     // Create the new objects from the scene
-    currentScene_->createGameObjects(sceneGameObjects_);
+    currentScene_->createGameObjects();
 }
 
 void SceneManager::createScene(const std::string& scenePath)
@@ -78,42 +74,7 @@ void SceneManager::createScene(const std::string& scenePath)
 
 void SceneManager::saveScene()
 {
-    currentScene_->saveGameObjects(sceneGameObjects_);
-}
-
-GameObject* SceneManager::createGameObject(const std::string& name, Transform* parent, bool hidden)
-{
-    GameObject* go = new GameObject(name);
-    if (parent != nullptr)
-    {
-        go->createComponent<Transform>()->setParentTransform(parent);
-    }
-
-    if (hidden)
-    {
-        hiddenGameObjects_.push_back(go);
-    }
-    else
-    {
-        sceneGameObjects_.push_back(go);
-    }
-
-    return go;
-}
-
-GameObject* SceneManager::createGameObject(Prefab* prefab, bool hidden)
-{
-    GameObject* go = new GameObject(prefab);
-    if (hidden)
-    {
-        hiddenGameObjects_.push_back(go);
-    }
-    else
-    {
-        sceneGameObjects_.push_back(go);
-    }
-
-    return go;
+    currentScene_->saveGameObjects();
 }
 
 const std::vector<StaticMesh*> SceneManager::staticMeshes() const
@@ -122,15 +83,7 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
     std::vector<StaticMesh*> meshes;
 
     // Check every game object for a StaticMesh component
-    for (GameObject* gameObject : sceneGameObjects_)
-    {
-        StaticMesh* mesh = gameObject->findComponent<StaticMesh>();
-        if (mesh != nullptr)
-        {
-            meshes.push_back(mesh);
-        }
-    }
-    for (GameObject* gameObject : hiddenGameObjects_)
+    for (GameObject* gameObject : gameObjects_)
     {
         StaticMesh* mesh = gameObject->findComponent<StaticMesh>();
         if (mesh != nullptr)
@@ -148,15 +101,7 @@ const std::vector<Terrain*> SceneManager::terrains() const
     std::vector<Terrain*> terrains;
 
     // Check every game object for a terrain component
-    for (GameObject* gameObject : sceneGameObjects_)
-    {
-        Terrain* terrain = gameObject->findComponent<Terrain>();
-        if (terrain != nullptr)
-        {
-            terrains.push_back(terrain);
-        }
-    }
-    for (GameObject* gameObject : hiddenGameObjects_)
+    for (GameObject* gameObject : gameObjects_)
     {
         Terrain* terrain = gameObject->findComponent<Terrain>();
         if (terrain != nullptr)
@@ -173,7 +118,11 @@ void SceneManager::addCreateGameObjectMenuItem(const std::string &gameObjectName
 {
     MainWindowMenu::instance()->addMenuItem(
         "Scene/New GameObject/" + gameObjectName,
-        [=] { PropertiesPanel::instance()->inspect(createGameObject(gameObjectName)->createComponent<T>()->gameObject()); }
+        [=] { 
+            GameObject* go = new GameObject(gameObjectName);
+            go->createComponent<T>();
+            PropertiesPanel::instance()->inspect(go); 
+        }
     );
 
     // Add a second button, allowing the gameobject to be created as 
@@ -181,25 +130,31 @@ void SceneManager::addCreateGameObjectMenuItem(const std::string &gameObjectName
     MainWindowMenu::instance()->addMenuItem(
         "Scene/New Child GameObject/" + gameObjectName,
         [=] {
-        GameObject* parentGO = dynamic_cast<GameObject*>(PropertiesPanel::instance()->current());
-        Transform* parentTransform = (parentGO != nullptr) ? parentGO->transform() : nullptr;
-        PropertiesPanel::instance()->inspect(createGameObject(gameObjectName, parentTransform)->createComponent<T>()->gameObject());
-    });
+            GameObject* parentGO = dynamic_cast<GameObject*>(PropertiesPanel::instance()->current());
+            Transform* parentTransform = (parentGO != nullptr) ? parentGO->transform() : nullptr;
+            GameObject* go = new GameObject(gameObjectName);
+            go->transform()->setParentTransform(parentTransform);
+            go->createComponent<T>();
+            PropertiesPanel::instance()->inspect(go);
+        }
+    );
+}
+
+void SceneManager::gameObjectCreated(GameObject* go)
+{
+    // Ensure the object does not already exist in the gameobject list
+    assert(std::find(gameObjects_.begin(), gameObjects_.end(), go) == gameObjects_.end());
+
+    // Add to the gameobjects list
+    gameObjects_.push_back(go);
 }
 
 void SceneManager::gameObjectDeleted(GameObject* go)
 {
     // If the go is in the scene list, remove it
-    auto found = std::find(sceneGameObjects_.begin(), sceneGameObjects_.end(), go);
-    if (found != sceneGameObjects_.end())
+    auto found = std::find(gameObjects_.begin(), gameObjects_.end(), go);
+    if (found != gameObjects_.end())
     {
-        sceneGameObjects_.erase(found);
-    }
-
-    // Also check the hidden gameobjects list, and remove it from there if found too
-    auto hiddenFound = std::find(hiddenGameObjects_.begin(), hiddenGameObjects_.end(), go);
-    if (hiddenFound != hiddenGameObjects_.end())
-    {
-        hiddenGameObjects_.erase(hiddenFound);
+        gameObjects_.erase(found);
     }
 }

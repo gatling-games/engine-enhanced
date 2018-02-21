@@ -25,9 +25,9 @@ public:
     // Gets the name of the current scene
     std::string sceneName() const { return currentScene_->resourceName(); }
 
-    // Gets all gameobjects in the current scene.
-    // Note - This list does not include hidden gameobjects
-    const std::vector<GameObject*>& sceneObjects() const { return sceneGameObjects_; }
+    // Gets all gameobjects that currently exist
+    // Note - This includes hidden objects and objects flagged to not be saved.
+    const std::vector<GameObject*>& gameObjects() const { return gameObjects_; }
 
     // Closes the current scene and opens the one at the specified path.
     void openScene(const std::string &scenePath);
@@ -38,13 +38,6 @@ public:
     // Updates the current scenes serialized gameobject list to match the gameobjects currently in the scene.
     void saveScene();
 
-    // Creates a new GameObject in the scene
-    GameObject* createGameObject(const std::string &name, Transform* parent = nullptr, bool hidden = false);
-
-    // Creates a new GameObject, based on the specified prefab
-    // If hidden is specified, the gameobject will not be saved as part of the current scene.
-    GameObject* createGameObject(Prefab* prefab, bool hidden = false);
-
     // Gets a list of all static mesh components in the scene
     const std::vector<StaticMesh*> staticMeshes() const;
     const std::vector<Terrain*> terrains() const;
@@ -54,15 +47,14 @@ private:
     Scene* currentScene_;
 
     // A list of currently loaded gameobjects that *are* part of the scene.
-    std::vector<GameObject*> sceneGameObjects_;
-
-    // A list of currently loaded gameobjects that are not associated
-    // with the scene and are not serialized or saved to disk.
-    std::vector<GameObject*> hiddenGameObjects_;
+    std::vector<GameObject*> gameObjects_;
 
     // Adds a menu item for creating a new gameobject with the given component
     template<typename T>
     void addCreateGameObjectMenuItem(const std::string &gameObjectName);
+
+    // Called by GameObject upon construction
+    void gameObjectCreated(GameObject* go);
 
     // Called by GameObject upon destruction
     void gameObjectDeleted(GameObject* go);

@@ -18,6 +18,16 @@ class Terrain;
 // Identify gameobjects with a unique 32 bit ID
 typedef uint32_t GameObjectID;
 
+typedef uint32_t GameObjectFlagList;
+enum class GameObjectFlag
+{
+    None = 0,
+    NotShownInScenePanel = 1,
+    NotSavedInScene = 2,
+    NotShownOrSaved = NotShownInScenePanel | NotSavedInScene,
+    SurviveSceneChanges = 4,
+};
+
 // Class for a game object
 // Most of the actual work is deferred to the scene manager.
 class GameObject : public IEditableObject, ISerializedObject
@@ -27,11 +37,9 @@ class GameObject : public IEditableObject, ISerializedObject
     friend class PropertyTable;
 
 public:
-    // This is only called by SceneManager
-    // To create a GameObject, call SceneManager->createGameObject.
     GameObject();
     explicit GameObject(const std::string &name);
-    explicit GameObject(Prefab* prefab);
+    explicit GameObject(const std::string &name, Prefab* prefab);
 
     ~GameObject();
 
@@ -44,6 +52,12 @@ public:
     // Getters for basic gameobject properties
     const std::string& name() const { return name_; }
     Prefab* prefab() const { return prefab_; }
+
+    // Methods for getting and setting gameobject flags
+    GameObjectFlagList flags() const { return flags_; }
+    bool hasFlag(GameObjectFlag flag) const;
+    void setFlag(GameObjectFlag flag, bool state);
+    void setFlags(GameObjectFlagList flags);
 
     // Draws the gameobject editor panel
     void drawEditor() override;
@@ -119,6 +133,7 @@ public:
 
 private:
     std::string name_;
+    GameObjectFlagList flags_;
 
     // The prefab that the GameObject was instantiated from
     Prefab* prefab_;

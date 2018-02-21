@@ -50,8 +50,11 @@ void GamePanel::draw()
     // Make it hidden so that a) the user cant modify it, and b) it doesnt get deleted
     if (camera_ == nullptr)
     {
-        camera_ = SceneManager::instance()->createGameObject("GamePanelCamera", nullptr, true)->createComponent<Camera>();
-        camera_->gameObject()->createComponent<Freecam>();
+        GameObject* cameraGO = new GameObject("GamePanelCamera");
+        cameraGO->setFlag(GameObjectFlag::NotShownOrSaved, true);
+        cameraGO->setFlag(GameObjectFlag::SurviveSceneChanges, true);
+        cameraGO->createComponent<Freecam>();
+        camera_ = cameraGO->createComponent<Camera>();
     }
 
     // Re-render the framebuffer on each draw
