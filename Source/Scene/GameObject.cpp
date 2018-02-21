@@ -254,6 +254,14 @@ void GameObject::serialize(PropertyTable &table)
         {
             table.serialize(component->name(), *component);
         }
+
+        // Build a list of child gameobjects and write them too.
+        std::vector<GameObject*> children;
+        for(Transform* child : transform()->children())
+        {
+            children.push_back(child->gameObject());
+        }
+        table.serialize("children", children);
     }
     else // aka if table.mode() == PropertyTableMode::Reading
     {
@@ -292,6 +300,20 @@ void GameObject::serialize(PropertyTable &table)
             {
                 table.serialize(component->name(), *component);
             }
+        }
+
+        // Build a list of child gameobjects and get the propertytable to modify it as needed.
+        std::vector<GameObject*> children;
+        for (Transform* child : transform()->children())
+        {
+            children.push_back(child->gameObject());
+        }
+        table.serialize("children", children);
+
+        // Make sure each child references this go as its parent
+        for (GameObject* childGameObject : children)
+        {
+            childGameObject->transform()->setParentTransform(transform());
         }
     }
 

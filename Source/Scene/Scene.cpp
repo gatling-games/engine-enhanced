@@ -4,6 +4,7 @@
 
 #include "SceneManager.h"
 #include "GameObject.h"
+#include "Scene/Transform.h"
 
 Scene::Scene(ResourceID resourceID)
     : Resource(resourceID),
@@ -49,7 +50,7 @@ void Scene::serialize(PropertyTable &table)
 
     // The gameobject list is saved in an already-serialized form,
     // so we just need to write the entire thing to or from the table.
-    if(table.mode() == PropertyTableMode::Writing)
+    if (table.mode() == PropertyTableMode::Writing)
     {
         table = gameObjects_;
     }
@@ -85,12 +86,22 @@ void Scene::saveGameObjects()
 {
     // Store all the objects we want to save into a vector
     auto tempVector = std::vector<GameObject*>();
-    for(GameObject* gameObject : SceneManager::instance()->gameObjects())
+    for (GameObject* gameObject : SceneManager::instance()->gameObjects())
     {
-        if(gameObject->hasFlag(GameObjectFlag::NotSavedInScene) == false)
+        // If the gameobject has the NotSavedInScene flag, skip it.
+        if (gameObject->hasFlag(GameObjectFlag::NotSavedInScene))
         {
-            tempVector.push_back(gameObject);
+            continue;
         }
+
+        // If the gameobject is a child go, it will be saved inside its parent
+        // and shouldnt be included in this list.
+        if (gameObject->transform()->parentTransform() != nullptr)
+        {
+            continue;;
+        }
+
+        tempVector.push_back(gameObject);
     }
 
     // To save the objects, just read them into the serialized data.
