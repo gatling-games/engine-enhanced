@@ -318,7 +318,7 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
     skyboxCloudThicknessTexture_->bind(0);
 
     // Compute scale for skydome - must ensure it's big enough without exceeding far clipping plane
-    const float farPlane = camera->getFarPlaneDistance();
+    const float farPlane = camera->farPlane();
     const float skyboxScaleSqr = (1.0f / 3.0f) * farPlane * farPlane;
     const float skyboxScale = sqrtf(skyboxScaleSqr);
     const Matrix4x4 scaleMatrix = Matrix4x4::scale(Vector3(skyboxScale, skyboxScale, skyboxScale));

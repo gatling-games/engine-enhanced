@@ -6,62 +6,92 @@
 
 Camera::Camera(GameObject* gameObject)
     : Component(gameObject),
-    nearPlaneDistance_(0.2f),
-    farPlaneDistance_(10000.0f),
-    horizontalFOV_(60.0f)
+    type_(CameraType::Perspective),
+    nearPlane_(0.1f),
+    farPlane_(10000.0f),
+    orthographicSize_(100.0f),
+    fov_(60.0f)
 {
 
 }
 
 void Camera::drawProperties()
 {
-    ImGui::DragFloat("Near Plane", &nearPlaneDistance_, 0.1f, 0.001f, 0.5f);
-    ImGui::DragFloat("Far Plane", &farPlaneDistance_, 1.0f, 50.0f, 10000.0f);
-    ImGui::DragFloat("Horiz FOV", &horizontalFOV_, 1.0f, 1.0f, 180.0f);
+    ImGui::DragFloat("Near Plane", &nearPlane_, 0.1f, -10000.0f, 10000.0f);
+    ImGui::DragFloat("Far Plane", &farPlane_, 0.1f, -10000.0f, 10000.0f);
+
+    if (type() == CameraType::Orthographic)
+    {
+        ImGui::DragFloat("Ortho Size", &orthographicSize_, 0.5f, 1.0f, 50000.0f);
+
+        if (ImGui::Button("Switch to Perspective"))
+        {
+            setType(CameraType::Perspective);
+        }
+    }
+
+    if (type() == CameraType::Perspective)
+    {
+        ImGui::DragFloat("Perspective FOV", &fov_, 1.0f, 1.0f, 180.0f);
+
+        if (ImGui::Button("Switch to Orthographic"))
+        {
+            setType(CameraType::Orthographic);
+        }
+    }
 }
 
 void Camera::serialize(PropertyTable &table)
 {
-    table.serialize("near_plane", nearPlaneDistance_, 0.1f);
-    table.serialize("far_plane", farPlaneDistance_, 10000.0f);
-    table.serialize("horizontal_fov", horizontalFOV_, 60.0f);
+    table.serialize("near_plane", nearPlane_, 0.1f);
+    table.serialize("far_plane", farPlane_, 10000.0f);
+    table.serialize("fov", fov_, 60.0f);
 }
 
-float Camera::getNearPlaneDistance() const
+void Camera::setType(CameraType type)
 {
-    return nearPlaneDistance_;
+    type_ = type;
 }
 
-void Camera::setNearPlaneDistance(const float& distance)
+void Camera::setNearPlane(float nearPlane)
 {
-    nearPlaneDistance_ = distance;
+    nearPlane_ = nearPlane;
 }
 
-float Camera::getFarPlaneDistance() const
+void Camera::setFarPlane(float farPlane)
 {
-    return farPlaneDistance_;
+    farPlane_ = farPlane;
 }
 
-void Camera::setFarPlaneDistance(const float& distance)
+void Camera::setOrthographicSize(float size)
 {
-    farPlaneDistance_ = distance;
+    orthographicSize_ = size;
 }
 
-float Camera::getHorizontalFOV() const
+void Camera::setFov(float fov)
 {
-    return horizontalFOV_;
-}
-
-void Camera::setHorizontalFOV(const float& FOV)
-{
-    horizontalFOV_ = FOV;
+    fov_ = fov;
 }
 
 Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio) const
 {
     const Transform* transform = gameObject()->findComponent<Transform>();
     const Matrix4x4 worldToLocal = transform->worldToLocal();
-    const Matrix4x4 projection = Matrix4x4::perspective(horizontalFOV_, aspectRatio, nearPlaneDistance_, farPlaneDistance_);
+    
+    Matrix4x4 projection;
+    if (type_ == CameraType::Perspective)
+    {
+        projection = Matrix4x4::perspective(fov_, aspectRatio, nearPlane_, farPlane_);
+    }
+    else
+    {
+        float l = -orthographicSize_ / 2.0f;
+        float r = orthographicSize_ / 2.0f;
+        float t = orthographicSize_ / 2.0f;
+        float b = -orthographicSize_ / 2.0f;
+
+        projection = Matrix4x4::orthographic(l, r, b, t, nearPlane_, farPlane_);
+    }
 
     return projection * worldToLocal;
 }
@@ -70,7 +100,19 @@ Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio) const
 {
     const Transform* transform = gameObject()->findComponent<Transform>();
     const Matrix4x4 localToWorld = transform->localToWorld();
-    const Matrix4x4 inverseProjection = Matrix4x4::perspectiveInverse(horizontalFOV_, aspectRatio, nearPlaneDistance_, farPlaneDistance_);
+
+    Matrix4x4 inverseProjection;
+    if (type_ == CameraType::Perspective)
+    {
+        inverseProjection = Matrix4x4::perspectiveInverse(fov_, aspectRatio, nearPlane_, farPlane_);
+    }
+    else
+    {
+        // Not implemented
+        // We are only using ortho cameras for render-to-texture effects,
+        // and dont currently need to go camera space -> world space
+        return Matrix4x4::identity();
+    }
 
     return localToWorld * inverseProjection;
 }
