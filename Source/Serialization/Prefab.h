@@ -11,7 +11,10 @@ class Prefab : public Resource, public IEditableObject, public ISerializedObject
 public:
     Prefab(ResourceID resourceID);
 
-    PropertyTable serializedProperties();
+    // Gets the serialized prefab property table.
+    // This method deliberately returns *A COPY* of the table, as it is modified
+    // by per-instance properties from the instantiated gameobject
+    PropertyTable serializedProperties() const { return properties_; };
 
     // Implements a custom editor
     void drawEditor() override;
@@ -24,7 +27,6 @@ public:
     void cloneGameObject(GameObject* original);
 
 private:
-    // The template gameobject.
-    // This is not part of the actual scene, and will not be initialised.
-    GameObject gameObject_;
+    // Keep the prefab in a serialized form until instantiated.
+    PropertyTable properties_;
 };
