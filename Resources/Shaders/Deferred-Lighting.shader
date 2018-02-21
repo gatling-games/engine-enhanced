@@ -1,4 +1,5 @@
 
+#include "Common.inc.shader"
 #include "UniformBuffers.inc.shader"
 
 #define USE_SCREENSPACE_VERT_SHADER
@@ -20,9 +21,9 @@ void main()
     vec3 worldPosition = readGBufferWorldPos();
 
     // Compute the view vector and half vector from the world position
-    vec3 viewDir = _CameraPosition.xyz - worldPosition;
-    float viewDistance = length(viewDir);
-    viewDir /= viewDistance;
+    vec3 viewDirUnnormalized = _CameraPosition.xyz - worldPosition;
+    float viewDistance = length(viewDirUnnormalized);
+    vec3 viewDir = viewDirUnnormalized / viewDistance;
     vec3 halfVector = normalize(_LightDirection.xyz + viewDir);
 
     // Ambient term
@@ -68,10 +69,8 @@ void main()
 
     // Add fog based on view distance.
 #ifdef FOG_ON
-    vec3 fogColor = vec3(0.5, 0.5, 0.5);
-    float fogDensity = 0.0025 * viewDistance;
-    fogDensity = 1.0 - exp2(-fogDensity * fogDensity);
-    light = mix(light, fogColor, fogDensity);
+    float fogDensity = computeVolumetricFog(_CameraPosition.xyz, -viewDirUnnormalized, viewDistance);
+    light = applyVolumetricFog(light, fogDensity);
 #endif
 
     fragColor = vec4(light, 0.0);

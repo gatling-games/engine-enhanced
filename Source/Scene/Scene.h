@@ -24,6 +24,9 @@ public:
     Color skyColorBottom() const { return skyColorBottom_; }
     float skySunSize() const { return skySunSize_; }
     float skySunFalloff() const { return skySunFalloff_; }
+    Color fogColor() const { return fogColor_; }
+    float fogDensity() const { return fogDensity_; }
+    float fogHeightFalloff() const { return fogHeightFalloff_; }
 
     // Opens the scene when selected
     void onOpenAction() override;
@@ -54,4 +57,7 @@ private:
     Color skyColorBottom_;
     float skySunSize_;
     float skySunFalloff_;
+    Color fogColor_;
+    float fogDensity_;
+    float fogHeightFalloff_;
 };

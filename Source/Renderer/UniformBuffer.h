@@ -32,6 +32,12 @@ struct SceneUniformData
     Color skyHorizonColor;
     Vector4 sunParams; // x = falloff, y = size
     Vector4 time; // x = time, y = 1/time
+
+    // Fog settings
+    Color fogColor;
+    float fogDensity;
+    float fogHeightFalloff;
+    float fogPadding[2];
 };
 
 // Plain old uniform data for camera
