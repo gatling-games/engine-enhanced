@@ -48,6 +48,24 @@ void Camera::serialize(PropertyTable &table)
     table.serialize("fov", fov_, 60.0f);
 }
 
+void Camera::getFrustumCorners(float distance, Point3* corners, float aspect) const
+{
+    // Currently supports perspective mode only
+    assert(type_ == CameraType::Perspective);
+
+    // Calculate the frustum width and height at the specified distance
+    float halfFov = (fov_ / 2.0f) * ((float)M_PI / 180.0f);
+    float halfHeight = distance * tanf(halfFov);
+    float halfWidth = halfHeight * aspect;
+
+    // Get the 4 corners in local space
+    // Looking down positive z
+    corners[0] = Point3(halfWidth, halfHeight, distance);
+    corners[1] = Point3(halfWidth, -halfHeight, distance);
+    corners[2] = Point3(-halfWidth, halfHeight, distance);
+    corners[3] = Point3(-halfWidth, -halfHeight, distance);
+}
+
 void Camera::setType(CameraType type)
 {
     type_ = type;

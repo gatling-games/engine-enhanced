@@ -31,6 +31,10 @@ public:
     float orthographicSize() const { return orthographicSize_; }
     float fov() const { return fov_; }
 
+    // Gets the 4 corners of the view frustum at the specified distance.
+    // Perspective mode only. The points returned are in local space.
+    void getFrustumCorners(float distance, Point3* corners, float aspect) const;
+
     // Changes the type of camera
     void setType(CameraType type);
 
