@@ -54,7 +54,7 @@ void SceneManager::openScene(const std::string& scenePath)
     currentScene_ = ResourceManager::instance()->load<Scene>(scenePath);
 
     // Delete all scene gameobjects (except ones with the SurviveSceneChanges flag)
-    for(unsigned int i = gameObjects_.size() - 1; i < gameObjects_.size(); --i)
+    for(size_t i = gameObjects_.size() - 1; i < gameObjects_.size(); --i)
     {
         if(gameObjects_[i]->hasFlag(GameObjectFlag::SurviveSceneChanges) == false)
         {
