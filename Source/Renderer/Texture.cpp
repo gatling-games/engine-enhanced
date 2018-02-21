@@ -66,6 +66,70 @@ TextureFormatData* getFormatData(TextureFormat type)
     return formatsTable + (int)type;
 }
 
+ArrayTexture::ArrayTexture(TextureFormat format, int width, int height, int layers)
+    : format_(format),
+    filterMode_(TextureFilterMode::Bilinear),
+    width_(width),
+    height_(height)
+{
+    // Get details for the texture format.
+    TextureFormatData* formatData = getFormatData(format);
+
+    // Create the texture array and allocate storage
+    glCreateTextures(GL_TEXTURE_2D_ARRAY, 1, &glid_);
+    glTextureStorage3D(glid_, 1, formatData->glInternalFormat, width, height, layers);
+
+    // Set shadow mapping compare mode if required
+    if (format_ == TextureFormat::ShadowMap)
+    {
+        glTextureParameteri(glid_, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
+        glTextureParameteri(glid_, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+    }
+}
+
+ArrayTexture::~ArrayTexture()
+{
+    if (glid_ > 0)
+    {
+        glDeleteTextures(1, &glid_);
+    }
+}
+
+ArrayTexture::ArrayTexture(ArrayTexture&& other)
+{
+    format_ = other.format_;
+    filterMode_ = other.filterMode_;
+    width_ = other.width_;
+    height_ = other.height_;
+    layers_ = other.layers_;
+    glid_ = other.glid_;
+
+    other.glid_ = 0;
+}
+
+ArrayTexture& ArrayTexture::operator=(ArrayTexture&& other)
+{
+    if(this != &other)
+    {
+        format_ = other.format_;
+        filterMode_ = other.filterMode_;
+        width_ = other.width_;
+        height_ = other.height_;
+        layers_ = other.layers_;
+        glid_ = other.glid_;
+
+        other.glid_ = 0;
+    }
+
+    return *this;
+}
+
+void ArrayTexture::bind(int slot) const
+{
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_2D_ARRAY, glid_);
+}
+
 Texture::Texture(TextureFormat format, int width, int height)
     : Resource(NOT_SAVED_RESOURCE)
 {

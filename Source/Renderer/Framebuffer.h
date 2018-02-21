@@ -3,6 +3,7 @@
 #include <GL/gl3w.h>
 
 class Texture;
+class ArrayTexture;
 
 class Framebuffer
 {
@@ -38,6 +39,9 @@ public:
 
     // Sets the depth texture used by the framebuffer.
     void attachDepthTexture(const Texture* depthTexture);
+
+    // Sets the depth texture used by the framebuffer to a layer of an array texture.
+    void attachDepthTexture(const ArrayTexture* depthTexture, int layer);
 
     // Sets the depth texture used by the framebuffer to the
     // texture used by another framebuffer.

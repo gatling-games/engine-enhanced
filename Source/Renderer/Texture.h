@@ -48,6 +48,45 @@ enum class TextureFilterMode
 	Anisotropic, // Anisotropic, falls back if no mipmap or aniso support
 };
 
+// Represents an array texture.
+// This allows multiple textures of the same format and resolution to
+// be stored in an array.
+class ArrayTexture
+{
+public:
+    ArrayTexture(TextureFormat format, int width, int height, int layers);
+    ~ArrayTexture();
+
+    // Do not allow an array texture to be copied
+    ArrayTexture(const ArrayTexture&) = delete;
+    ArrayTexture& operator=(const ArrayTexture&) = delete;
+
+    // Allow an array texture to be moved
+    ArrayTexture(ArrayTexture&& other);
+    ArrayTexture& operator=(ArrayTexture&& other);
+
+    // Gets the internal opengl ID of the texture
+    GLuint glid() const { return glid_; }
+
+    // Attaches the texture to the specified slot for use.
+    void bind(int slot) const;
+
+    // Basic settings
+    TextureFormat format() const { return format_; }
+    TextureFilterMode filterMode() const { return filterMode_; }
+    int width() const { return width_; }
+    int height() const { return height_; }
+    int layers() const { return layers_; }
+
+private:
+    TextureFormat format_;
+    TextureFilterMode filterMode_;
+    int width_;
+    int height_;
+    int layers_;
+    GLuint glid_;
+};
+
 // Stores a single texture resource.
 // Can be either a stored texture, managed by the resource
 // manager, or a texture created via new() at runtime.
