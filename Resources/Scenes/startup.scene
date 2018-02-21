@@ -2,5 +2,28 @@
     gameobjects::0 {
         prefab = Resources\Prefabs\Terrain.prefab
     }
+    gameobjects::1 {
+        prefab = Resources\Prefabs\Environment\wind_turbine.prefab
+    }
+    gameobjects::2 {
+        prefab = Resources\Prefabs\Environment\wind_turbine.prefab
+        Transform {
+            Position = 478.2 60.1 808.8
+            Rotation = 0 -0.36 0 0.932952
+        }
+    }
+    gameobjects::3 {
+        prefab = Resources\Prefabs\Environment\wind_turbine.prefab
+        Transform {
+            Position = 481.3 60.1 782.8
+            Rotation = 0 0.26 0 0.965609
+        }
+    }
+    gameobjects::4 {
+        prefab = Resources\Prefabs\Environment\wind_turbine.prefab
+        Transform {
+            Position = 481.8 61.8 756.6
+        }
+    }
     sun_color = 0.974372 0.753849 0.549856 1
 }

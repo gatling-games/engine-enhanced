@@ -5,6 +5,7 @@
     Terrain {
         heightmap = Resources\Textures\heightmap.png
         texture_wrap = 15 15
+        dimensions = 2048 150 2048
         layers::0 {
             altitude_border = 35
             altitude_transition = 4
@@ -18,8 +19,8 @@
             material = Resources\Materials\ground_grass_01.material
         }
         layers::2 {
-            altitude_border = 35
-            altitude_transition = 4
+            altitude_border = 56.9
+            altitude_transition = 8
             slope_border = 0.48
             slope_hardness = 0.341
             material = Resources\Materials\ground_snow.material
