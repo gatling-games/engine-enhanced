@@ -36,6 +36,11 @@ void Scene::drawEditor()
         ImGui::DragFloat("Sun Rotation", &sunRotation_.y, 1.0f, 0.0f, 360.0f);
         ImGui::DragFloat("Sun Size", &skySunSize_, 1.0f, 128.0f, 1024.0f, "%.3f", 2.0f);
         ImGui::DragFloat("Sun Falloff", &skySunFalloff_, 0.05f, 1.0f, 16.0f);
+
+        ImGui::Spacing();
+        ImGui::ColorEdit3("Fog Color", &fogColor_.r);
+        ImGui::DragFloat("Fog Density", &fogDensity_, 0.0001f, 0.0001f, 0.3f);
+        ImGui::DragFloat("Fog Height Falloff", &fogHeightFalloff_, 0.0001f, 0.0001f, 0.1f);
     }
 }
 
@@ -69,6 +74,9 @@ void Scene::serialize(PropertyTable &table)
     table.serialize("sky_color_bottom", skyColorBottom_, Color(0.2f, 0.15f, 0.02f, 1.0f));
     table.serialize("sky_sun_size", skySunSize_, 512.0f);
     table.serialize("sky_sun_falloff", skySunFalloff_, 4.0f);
+    table.serialize("fog_color", fogColor_, Color(0.5f, 0.6f, 0.7f, 1.0f));
+    table.serialize("fog_density", fogDensity_, 0.005f);
+    table.serialize("fog_height_falloff", fogHeightFalloff_, 0.023f);
 }
 
 void Scene::createGameObjects()

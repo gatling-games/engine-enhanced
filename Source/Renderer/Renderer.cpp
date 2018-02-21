@@ -161,6 +161,9 @@ void Renderer::updateSceneUniformBuffer() const
     data.skyTopColor = scene->skyColorTop();
     data.skyHorizonColor = scene->skyColorBottom();
     data.sunParams = Vector4(scene->skySunFalloff(), scene->skySunSize(), 0.0f, 0.0f); // x = falloff, y = size
+    data.fogColor = scene->fogColor();
+    data.fogDensity = scene->fogDensity();
+    data.fogHeightFalloff = scene->fogHeightFalloff();
 
     // Send time to shader for cloud texture scrolling
     const float time = Clock::instance()->time();

@@ -12,6 +12,11 @@ layout(std140) uniform scene_data
     uniform vec4 _SkyHorizonColor;
     uniform vec4 _SunParams; // x = size, y = falloff
     uniform vec4 _Time; // x = time, y = 1/time
+
+    // Fog settings
+    uniform vec4 _FogColor;
+    uniform float _FogDensity;
+    uniform float _FogHeightFalloff;
 };
 
 // Camera uniform buffer
