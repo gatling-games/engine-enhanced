@@ -6,11 +6,11 @@
         heightmap = Resources\Textures\heightmap.png
         texture_wrap = 15 15
         layers {
+            altitude_border = 35
+            altitude_transition = 4
             slope_border = 0.65
             slope_hardness = 0.141
             material = Resources\Materials\ground_rock_01.material
-            altitude_border = 35
-            altitude_transition = 4
         }
         layers {
             slope_border = 0.56
