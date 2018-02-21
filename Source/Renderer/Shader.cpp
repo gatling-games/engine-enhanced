@@ -124,14 +124,6 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Set uniform block binding
-    setUniformBufferBinding("scene_data", UniformBufferType::SceneBuffer);
-    setUniformBufferBinding("camera_data", UniformBufferType::CameraBuffer);
-    setUniformBufferBinding("shadows_data", UniformBufferType::ShadowsBuffer);
-    setUniformBufferBinding("per_draw_data", UniformBufferType::PerDrawBuffer);
-    setUniformBufferBinding("per_material_data", UniformBufferType::PerMaterialBuffer);
-    setUniformBufferBinding("terrain_data", UniformBufferType::TerrainBuffer);
-
     // Set texture locations
     setTextureLocation("_MainTexture", 0);
 
@@ -316,16 +308,6 @@ bool ShaderVariant::checkLinkerErrors(GLuint programID)
     }
 
     return true;
-}
-
-void ShaderVariant::setUniformBufferBinding(const char *blockName, UniformBufferType type)
-{
-    const GLuint blockIndex = glGetUniformBlockIndex(program_, blockName);
-
-    if (blockIndex != GL_INVALID_INDEX)
-    {
-        glUniformBlockBinding(program_, blockIndex, (GLint)type);
-    }
 }
 
 void ShaderVariant::setTextureLocation(const char* textureName, int slot)

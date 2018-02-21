@@ -92,9 +92,6 @@ private:
     bool checkShaderErrors(GLuint shaderID);
     bool checkLinkerErrors(GLuint programID);
 
-    // Binds a uniform buffer type to the shader ubo block with the specified name
-    void setUniformBufferBinding(const char *blockName, UniformBufferType type);
-
     // Sets the texture slot for a sampler with the specified name.
     void setTextureLocation(const char* textureName, int slot);
 };

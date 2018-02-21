@@ -3,7 +3,7 @@
 #define MAX_TERRAIN_LAYERS 32
 
 // Scene uniform buffer
-layout(std140) uniform scene_data
+layout(std140, binding = 0) uniform scene_data
 {
     uniform vec4 _AmbientColor;
     uniform vec4 _LightColor;
@@ -20,7 +20,7 @@ layout(std140) uniform scene_data
 };
 
 // Camera uniform buffer
-layout(std140) uniform camera_data
+layout(std140, binding = 1) uniform camera_data
 {
     uniform vec4 _ScreenResolution; // xyzw = width, height, 1/width, 1/height
     uniform vec4 _CameraPosition;
@@ -29,7 +29,7 @@ layout(std140) uniform camera_data
 };
 
 // Per-draw uniform buffer.
-layout(std140) uniform per_draw_data
+layout(std140, binding = 3) uniform per_draw_data
 {
     uniform mat4x4 _LocalToWorld;
     uniform vec4 _Color; // rgb = color, a = smoothness
@@ -38,7 +38,7 @@ layout(std140) uniform per_draw_data
 };
 
 //Terrain uniform buffer
-layout(std140) uniform terrain_data
+layout(std140, binding = 5) uniform terrain_data
 {
     uniform vec4 _TerrainTextureOffsetScale; // XY is offset, ZW is scale
     uniform vec4 _TerrainSize; // XYZ, W is layercount(int)
