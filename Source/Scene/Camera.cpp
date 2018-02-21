@@ -2,6 +2,9 @@
 
 #include <imgui.h>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 #include "Scene/Transform.h"
 
 Camera::Camera(GameObject* gameObject)
@@ -23,21 +26,11 @@ void Camera::drawProperties()
     if (type() == CameraType::Orthographic)
     {
         ImGui::DragFloat("Ortho Size", &orthographicSize_, 0.5f, 1.0f, 50000.0f);
-
-        if (ImGui::Button("Switch to Perspective"))
-        {
-            setType(CameraType::Perspective);
-        }
     }
 
     if (type() == CameraType::Perspective)
     {
         ImGui::DragFloat("Perspective FOV", &fov_, 1.0f, 1.0f, 180.0f);
-
-        if (ImGui::Button("Switch to Orthographic"))
-        {
-            setType(CameraType::Orthographic);
-        }
     }
 }
 
