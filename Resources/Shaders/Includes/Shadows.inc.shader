@@ -12,11 +12,22 @@ int DetermineShadowCascade(float distance)
         : (distance < _CascadeMaxDistances.z ? 2 : 3);
 }
 
-float SampleSunShadow(vec3 worldPosition, float distance)
+float DetermineNextCascadeLerp(float distance, int cascade)
 {
-    // First, determine which shadow cascade the point falls into.
-    int cascade = DetermineShadowCascade(distance);
+    if (cascade == 3) return 0.0;
 
+    // Get the min distance for the current cascade and the next one
+    float currentMinDistance = cascade == 0 ? 0.0 : _CascadeMaxDistances[cascade - 1];
+    float nextMinDistance = _CascadeMaxDistances[cascade];
+
+    // Perform a linear transition for the last 33% of the cascade.
+    float transitionLength = (nextMinDistance - currentMinDistance) * 0.333;
+    float transitionStart = nextMinDistance - transitionLength;
+    return max((distance - transitionStart) / transitionLength, 0.0);
+}
+
+float SampleShadowPCF(vec3 worldPosition, int cascade)
+{
     // Convert the world position into shadow coords
     vec4 shadowCoord = _WorldToShadow[cascade] * vec4(worldPosition, 1.0);
     shadowCoord.xyw = shadowCoord.xyz;
@@ -36,14 +47,33 @@ float SampleSunShadow(vec3 worldPosition, float distance)
             sum += texture(_ShadowMapTexture, shadowCoord + vec4(xOffset, yOffset, 0.0, 0.0));
         }
     }
-    
+
     return sum / 49.0;
 #else
     // Soft shadows disabled, use a single tap.
     return texture(_ShadowMapTexture, shadowCoord);
 #endif
+}
+
+float SampleSunShadow(vec3 worldPosition, float distance)
+{
+    // First, determine which shadow cascade the point falls into.
+    int cascade = DetermineShadowCascade(distance);
 
     // Sample the shadow map at that point
+    float shadow = SampleShadowPCF(worldPosition, cascade);
+
+    // Linearly interpolate to the next cascade
+#ifdef SHADOW_CASCADE_BLENDING
+    float nextCascadeLerp = DetermineNextCascadeLerp(distance, cascade);
+    if (nextCascadeLerp > 0.001)
+    {
+        float nextShadow = SampleShadowPCF(worldPosition, cascade + 1);
+        shadow = mix(shadow, nextShadow, nextCascadeLerp);
+    }
+#endif
+
+    return shadow;
 }
 
 #endif // SHADOWS_SHADER_CODE_INCLUDED

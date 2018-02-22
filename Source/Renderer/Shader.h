@@ -27,6 +27,9 @@ enum ShaderFeature
     // Enables PCF shadows with a high filter count. Removes shadow map aliasing.
     SF_SoftShadows = 128,
 
+    // Enables a smooth transition between shadow map cascades.
+    SF_ShadowCascadeBlending = 32768,
+
     // GBuffer debugging modes
     SF_DebugGBufferAlbedo = 256,
     SF_DebugGBufferOcclusion = 512,
