@@ -75,8 +75,8 @@ void ShadowMap::updatePosition(const Camera* viewCamera, float viewCameraAspect)
     for (int i = 0; i < CASCADE_COUNT; ++i)
     {
         // Calculate the min and max distance of the cascade
-        cascades_[i].minDistance = getCascadeMin(i, viewCamera->farPlane());
-        cascades_[i].maxDistance = getCascadeMax(i, viewCamera->farPlane());
+        cascades_[i].minDistance = getCascadeMin(i);
+        cascades_[i].maxDistance = getCascadeMax(i);
 
         // Compute the corners of the frustum segment in view space.
         Point3 corners[8];
@@ -127,7 +127,7 @@ void ShadowMap::updatePosition(const Camera* viewCamera, float viewCameraAspect)
     uniformBuffer_.update(data);
 }
 
-float ShadowMap::getCascadeMin(int cascade, float farPlane) const
+float ShadowMap::getCascadeMin(int cascade) const
 {
     // Ensure cascade 0 starts at distance 0
     if (cascade == 0)
@@ -139,23 +139,23 @@ float ShadowMap::getCascadeMin(int cascade, float farPlane) const
     // i.e. ensure the index after the last cascade starts at farPlane
     if (cascade == CASCADE_COUNT)
     {
-        return farPlane;
+        return SHADOW_DRAW_DISTANCE;
     }
 
     // Compute the linear and logarithmic distances
-    float linearDistance = (farPlane / (float)CASCADE_COUNT) * cascade;
-    float logarithmicDistance = powf(farPlane, (1.0f / (float)CASCADE_COUNT) * cascade);
+    float linearDistance = (SHADOW_DRAW_DISTANCE / (float)CASCADE_COUNT) * cascade;
+    float logarithmicDistance = powf(SHADOW_DRAW_DISTANCE, (1.0f / (float)CASCADE_COUNT) * cascade);
 
     // Perform a weighted average of the 2 distances
-    const float linearWeight = 0.1f;
+    const float linearWeight = 0.3f;
     const float logarithmicWeight = 1.0f - linearWeight;
 
     // Combine the 2 distances
     return (linearDistance * linearWeight) + (logarithmicDistance * logarithmicWeight);
 }
 
-float ShadowMap::getCascadeMax(int cascade, float farPlane) const
+float ShadowMap::getCascadeMax(int cascade) const
 {
     // = min distance of next cascade
-    return getCascadeMin(cascade + 1, farPlane);
+    return getCascadeMin(cascade + 1);
 }
