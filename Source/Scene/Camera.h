@@ -5,6 +5,12 @@
 
 #include "Math/Matrix4x4.h"
 
+enum class CameraType
+{
+    Perspective,
+    Orthographic
+};
+
 class Camera : public Component
 {
 public:
@@ -18,14 +24,29 @@ public:
     // Handles component serialization
     void serialize(PropertyTable &table) override;
 
-    float getNearPlaneDistance() const;
-    void setNearPlaneDistance(const float &distance);
+    // Gets basic settings
+    CameraType type() const { return type_; }
+    float nearPlane() const { return nearPlane_; }
+    float farPlane() const { return farPlane_; }
+    float orthographicSize() const { return orthographicSize_; }
+    float fov() const { return fov_; }
 
-    float getFarPlaneDistance() const;
-    void setFarPlaneDistance(const float &distance);
+    // Gets the 4 corners of the view frustum at the specified distance.
+    // Perspective mode only. The points returned are in local space.
+    void getFrustumCorners(float distance, Point3* corners, float aspect) const;
 
-    float getHorizontalFOV() const;
-    void setHorizontalFOV(const float &FOV);
+    // Changes the type of camera
+    void setType(CameraType type);
+
+    // Sets near and far clipping planes
+    void setNearPlane(float nearPlane);
+    void setFarPlane(float farPlane);
+
+    // Sets the orthographic projection to a specified square size
+    void setOrthographicSize(float size);
+
+    // Changes the vertical fov
+    void setFov(float fov);
 
     // Gets the combined world -> clip space transformation matrix
     Matrix4x4 getWorldToCameraMatrix(float aspectRatio) const;
@@ -34,7 +55,15 @@ public:
     Matrix4x4 getCameraToWorldMatrix(float aspectRatio) const;
 
 private:
-    float nearPlaneDistance_;
-    float farPlaneDistance_;
-    float horizontalFOV_;
+    CameraType type_;
+
+    // Near and far clipping planes
+    float nearPlane_;
+    float farPlane_;
+
+    // Orthographic size
+    float orthographicSize_;
+
+    // Vertical fov
+    float fov_;
 };

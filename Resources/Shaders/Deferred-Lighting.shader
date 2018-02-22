@@ -7,6 +7,7 @@
 #include "Deferred.inc.shader"
 
 #include "PhysicallyBasedShading.inc.shader"
+#include "Shadows.inc.shader"
 
 #ifdef FRAGMENT_SHADER
 
@@ -24,48 +25,18 @@ void main()
     vec3 viewDirUnnormalized = _CameraPosition.xyz - worldPosition;
     float viewDistance = length(viewDirUnnormalized);
     vec3 viewDir = viewDirUnnormalized / viewDistance;
-    vec3 halfVector = normalize(_LightDirection.xyz + viewDir);
 
-    // Ambient term
-    vec3 light = surface.diffuseColor * _AmbientColor.rgb * 0.2;
+    // Compute the ambient and direct light separately
+    vec3 ambientLight = surface.diffuseColor * _AmbientColor.rgb * 0.2;
+    vec3 directLight = PhysicallyBasedBRDF(surface, viewDir);
 
-    // We are using a cook-torrance based brdf, based on [Lazarov2013].
-    // Like lazarov, it makes sense to split into 3 components
-    // D - normal distribution function, including (PI / 4).
-    // F - fresnel effect
-    // V - visibility function, including divide by (n.l)(n.v)
-    
-    // The microfacet brdf needs the following dot products
-    float ndoth = max(dot(halfVector, surface.worldNormal), 0.0);
-    float ndotl = max(dot(surface.worldNormal, _LightDirection.xyz), 0.0);
-    float ndotv = max(dot(surface.worldNormal, viewDir), 0.0);
-    float ldoth = dot(_LightDirection.xyz, halfVector); // Angle always < 90, so no clamp needed
-
-    // Lazarov suggests encoding gloss using 8192.0^smoothness
-    float a = exp2(13.0 * surface.gloss); // Equivalent to pow(8192.0, surface.gloss) [Lazarov13];
-    float D = normalizedBlinnPhong(a, ndoth);
-    float F = schlickFresnel(NON_METALLIC_SPECULAR, ldoth);
-    float V = schlickSmithVisibility(a, ndotl, ndotv);
-
-    // Combine the D, F and V terms for the specular BRDF.
-#ifdef SPECULAR_ON
-    float fs = F * V * D;
-    light += fs * _LightColor.rgb * ndotl;
+    // Attenuate the direct light by a shadow factor
+#ifdef SHADOWS_ON
+    directLight *= SampleSunShadow(worldPosition, viewDistance);
 #endif
-    
-    // For the diffuse brdf, we support either disney's model or 
-    // lambert diffuse.
-    // Disney's model looks better, giving a slight sheen to the edges of
-    // rough surfaces and darkening the edges of smooth ones, but it is
-    // more computationally expensive (its disney, its expected).
-#if 1
-    float fd = disneyDiffuse(ldoth, ndotl, ndotv, 1.0 - surface.gloss);
-#else
-    float fd = lambertDiffuse(ndotl);
-#endif
-    
-    // Use the diffuse brdf for diffuse lighting
-    light += fd * _LightColor.rgb * surface.diffuseColor;
+
+    // Combine the lighting components
+    vec3 light = ambientLight + directLight;
 
     // Add fog based on view distance.
 #ifdef FOG_ON

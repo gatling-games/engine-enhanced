@@ -12,7 +12,9 @@ enum class RenderDebugMode
     Albedo = SF_DebugGBufferAlbedo,
     Occlusion = SF_DebugGBufferOcclusion,
     Gloss = SF_DebugGBufferGloss,
-    Normals = SF_DebugGBufferNormals
+    Normals = SF_DebugGBufferNormals,
+    Shadows = SF_DebugShadows,
+    ShadowCascades = SF_DebugShadowCascades,
 };
 
 class RenderManager : public Singleton<RenderManager>

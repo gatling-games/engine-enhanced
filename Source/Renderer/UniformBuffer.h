@@ -49,6 +49,13 @@ struct CameraUniformData
     Matrix4x4 clipToWorld;
 };
 
+// Data relating to shadowmapping
+// Stored inside the ShadowMap class
+struct ShadowUniformData
+{
+    float cascadeMaxDistances[4];
+    Matrix4x4 worldToShadow[4];
+};
 
 struct TerrainUniformData
 {

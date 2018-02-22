@@ -21,6 +21,9 @@ RenderManager::RenderManager()
     addShaderFeatureMenuItem(SF_Specular, "Specular Highlights");
     addShaderFeatureMenuItem(SF_Cutout, "Alpha Cutout");
     addShaderFeatureMenuItem(SF_Fog, "Fog");
+    addShaderFeatureMenuItem(SF_Shadows, "Shadows");
+    addShaderFeatureMenuItem(SF_SoftShadows, "Soft Shadows");
+    addShaderFeatureMenuItem(SF_ShadowCascadeBlending, "Shadow Cascade Blending");
     addShaderFeatureMenuItem(SF_HighTessellation, "Extra Tessellation");
 
     // Set up menu items for showing debugging modes
@@ -30,6 +33,8 @@ RenderManager::RenderManager()
     addDebugModeMenuItem(RenderDebugMode::Gloss, "Gloss");
     addDebugModeMenuItem(RenderDebugMode::Normals, "Normals");
     addDebugModeMenuItem(RenderDebugMode::Occlusion, "Occlusion");
+    addDebugModeMenuItem(RenderDebugMode::Shadows, "Shadows");
+    addDebugModeMenuItem(RenderDebugMode::ShadowCascades, "Shadow Cascades");
 }
 
 bool RenderManager::isFeatureGloballyEnabled(ShaderFeature feature) const

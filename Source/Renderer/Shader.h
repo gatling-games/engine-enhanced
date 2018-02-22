@@ -21,14 +21,27 @@ enum ShaderFeature
     // Causes a large amount of tessellation to be used on the terrain
     SF_HighTessellation = 32,
 
-    // Wireframe rendering mode
-    SF_DebugWireframe = 128,
+    // Enables shadow sampling for the sun
+    SF_Shadows = 64,
+
+    // Enables PCF shadows with a high filter count. Removes shadow map aliasing.
+    SF_SoftShadows = 128,
+
+    // Enables a smooth transition between shadow map cascades.
+    SF_ShadowCascadeBlending = 32768,
 
     // GBuffer debugging modes
     SF_DebugGBufferAlbedo = 256,
     SF_DebugGBufferOcclusion = 512,
     SF_DebugGBufferNormals = 1024,
-    SF_DebugGBufferGloss = 2048
+    SF_DebugGBufferGloss = 2048,
+
+    // Shadow debugging modes for viewing raw shadow sampling & cascade splits
+    SF_DebugShadows = 4096,
+    SF_DebugShadowCascades = 8192,
+
+    // Wireframe rendering mode
+    SF_DebugWireframe = 16384,
 };
 
 typedef unsigned int ShaderFeatureList;
@@ -91,9 +104,6 @@ private:
     bool compileShader(GLenum type, const char* shader, GLuint &id);
     bool checkShaderErrors(GLuint shaderID);
     bool checkLinkerErrors(GLuint programID);
-
-    // Binds a uniform buffer type to the shader ubo block with the specified name
-    void setUniformBufferBinding(const char *blockName, UniformBufferType type);
 
     // Sets the texture slot for a sampler with the specified name.
     void setTextureLocation(const char* textureName, int slot);

@@ -20,6 +20,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     : targetFramebuffer_(targetFramebuffer),
     gbufferTextures_(),
     gbufferFramebuffer_(),
+    shadowMap_(),
     sceneUniformBuffer_(UniformBufferType::SceneBuffer),
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
     perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
@@ -69,11 +70,23 @@ void Renderer::renderFrame(const Camera* camera)
         // When rendering a wireframe we need to clear the color too
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        executeDeferredGBufferPass();
+        executeGeometryPass(camera, ALL_SHADER_FEATURES);
 
         // Ensure wireframe rendering is turned off again
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         return;
+    }
+
+    // Render the shadow map prior to the main render passes
+    if (RenderManager::instance()->filterFeatureList(SF_Shadows | SF_DebugShadows | SF_DebugShadowCascades) != 0)
+    {
+        shadowMap_.updatePosition(camera, targetFramebuffer_->width() / (float)targetFramebuffer_->height());
+        shadowMap_.bind();
+        for (int cascade = 0; cascade < ShadowMap::CASCADE_COUNT; ++cascade)
+        {
+            shadowMap_.cascadeFramebuffer(cascade).use();
+            executeGeometryPass(shadowMap_.cascadeCamera(cascade), SF_HighTessellation);
+        }
     }
 
     // Ensure the gbuffer exists and is ok
@@ -81,7 +94,7 @@ void Renderer::renderFrame(const Camera* camera)
 
     // Render each opaque object into the gbuffer textures
     gbufferFramebuffer_.use();
-    executeDeferredGBufferPass();
+    executeGeometryPass(camera, ALL_SHADER_FEATURES);
 
     // Compute lighting into final render target
     targetFramebuffer_->use();
@@ -236,6 +249,53 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     terrainUniformBuffer_.update(data);
 }
 
+void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures) const
+{
+    updateCameraUniformBuffer(camera);
+
+    // Ensure that depth testing and depth write are on
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(true);
+
+    // First, clear the depth buffer - don't need to clear color buffer as skybox will cover background
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    // Draw every static mesh component in the scene with the standard shaders
+    for (StaticMesh* staticMesh : SceneManager::instance()->staticMeshes())
+    {
+        // Skip instances with no material
+        if (staticMesh->material() == nullptr || staticMesh->mesh() == nullptr)
+        {
+            continue;
+        }
+
+        // Use the correct standard shader variant
+        standardShader_->bindVariant(staticMesh->material()->supportedFeatures() & shaderFeatures);
+
+        // Set the correct mesh
+        // Textures are bound via bindless texture handles
+        staticMesh->mesh()->bind();
+
+        // Update the per draw uniform buffer
+        updatePerDrawUniformBuffer(staticMesh, staticMesh->material()->albedoTexture(), staticMesh->material()->normalMapTexture());
+
+        // Draw the mesh
+        glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+    }
+
+    // Draw terrain
+    terrainShader_->bindVariant(shaderFeatures);
+    for (Terrain* terrain : SceneManager::instance()->terrains())
+    {
+        //Set mesh and heightmap
+        terrain->mesh()->bind();
+        updateTerrainUniformBuffer(terrain);
+
+        // Render the terrain with tessellation
+        glDrawElements(GL_PATCHES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+    }
+}
+
 void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const
 {
     // Full screen passes don't use depth testing
@@ -248,51 +308,6 @@ void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeature
     glDrawElements(GL_TRIANGLES, fullScreenMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
 }
 
-void Renderer::executeDeferredGBufferPass() const
-{
-    // Ensure that depth testing and depth write are on
-    glEnable(GL_DEPTH_TEST);
-    glDepthMask(true);
-
-    // First, clear the depth buffer - don't need to clear color buffer as skybox will cover background
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    // Draw every static mesh component in the scene with the standard shaders
-    for (StaticMesh* staticMesh : SceneManager::instance()->staticMeshes())
-    {
-        // Skip instances with no material
-        if(staticMesh->material() == nullptr || staticMesh->mesh() == nullptr)
-        {
-            continue;
-        }
-
-        // Use the correct standard shader variant
-        standardShader_->bindVariant(staticMesh->material()->supportedFeatures());
-
-        // Set the correct mesh
-        // Textures are bound via bindless texture handles
-        staticMesh->mesh()->bind();
-        
-        // Update the per draw uniform buffer
-        updatePerDrawUniformBuffer(staticMesh, staticMesh->material()->albedoTexture(), staticMesh->material()->normalMapTexture());
-
-        // Draw the mesh
-        glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
-    }
-
-    //Draw terrain
-    terrainShader_->bindVariant(ALL_SHADER_FEATURES);
-    for (Terrain* terrain : SceneManager::instance()->terrains())
-    {
-        //Set mesh and heightmap
-        terrain->mesh()->bind();
-        updateTerrainUniformBuffer(terrain);
-
-        // Render the terrain with tessellation
-        glDrawElements(GL_PATCHES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
-    }
-}
-
 void Renderer::executeDeferredLightingPass() const
 {
     executeFullScreen(deferredLightingShader_, ALL_SHADER_FEATURES);
@@ -301,7 +316,7 @@ void Renderer::executeDeferredLightingPass() const
 void Renderer::executeDeferredDebugPass() const
 {
     RenderDebugMode mode = RenderManager::instance()->debugMode();
-    executeFullScreen(deferredDebugShader_, (ShaderFeatureList)mode);
+    executeFullScreen(deferredDebugShader_, (ShaderFeatureList)mode | SF_SoftShadows);
 }
 
 void Renderer::executeSkyboxPass(const Camera* camera) const
@@ -318,7 +333,7 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
     skyboxCloudThicknessTexture_->bind(0);
 
     // Compute scale for skydome - must ensure it's big enough without exceeding far clipping plane
-    const float farPlane = camera->getFarPlaneDistance();
+    const float farPlane = camera->farPlane();
     const float skyboxScaleSqr = (1.0f / 3.0f) * farPlane * farPlane;
     const float skyboxScale = sqrtf(skyboxScaleSqr);
     const Matrix4x4 scaleMatrix = Matrix4x4::scale(Vector3(skyboxScale, skyboxScale, skyboxScale));

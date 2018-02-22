@@ -53,6 +53,15 @@ void Framebuffer::attachDepthTexture(const Texture* depthTexture)
     height_ = depthTexture->height();
 }
 
+void Framebuffer::attachDepthTexture(const ArrayTexture* depthTexture, int layer)
+{
+    glNamedFramebufferTextureLayer(id_, GL_DEPTH_ATTACHMENT, depthTexture->glid(), 0, layer);
+
+    // Store the width and height of the framebuffer
+    width_ = depthTexture->width();
+    height_ = depthTexture->height();
+}
+
 void Framebuffer::attachDepthTextureFromFramebuffer(const Framebuffer* other)
 {
     // Get the name of the depth texture on the other framebuffer

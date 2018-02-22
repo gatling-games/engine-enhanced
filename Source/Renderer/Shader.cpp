@@ -124,14 +124,6 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Set uniform block binding
-    setUniformBufferBinding("scene_data", UniformBufferType::SceneBuffer);
-    setUniformBufferBinding("camera_data", UniformBufferType::CameraBuffer);
-    setUniformBufferBinding("shadows_data", UniformBufferType::ShadowsBuffer);
-    setUniformBufferBinding("per_draw_data", UniformBufferType::PerDrawBuffer);
-    setUniformBufferBinding("per_material_data", UniformBufferType::PerMaterialBuffer);
-    setUniformBufferBinding("terrain_data", UniformBufferType::TerrainBuffer);
-
     // Set texture locations
     setTextureLocation("_MainTexture", 0);
 
@@ -195,10 +187,15 @@ std::string ShaderVariant::createFeatureDefines() const
     if (hasFeature(SF_Cutout)) defines += "#define ALPHA_TEST_ON \n";
     if (hasFeature(SF_Fog)) defines += "#define FOG_ON \n";
     if (hasFeature(SF_HighTessellation)) defines += "#define HIGH_TESSELLATION \n";
+    if (hasFeature(SF_Shadows)) defines += "#define SHADOWS_ON \n";
+    if (hasFeature(SF_SoftShadows)) defines += "#define SOFT_SHADOWS \n";
+    if (hasFeature(SF_ShadowCascadeBlending)) defines += "#define SHADOW_CASCADE_BLENDING \n";
     if (hasFeature(SF_DebugGBufferAlbedo)) defines += "#define DEBUG_GBUFFER_ALBEDO \n";
     if (hasFeature(SF_DebugGBufferOcclusion)) defines += "#define DEBUG_GBUFFER_OCCLUSION \n";
     if (hasFeature(SF_DebugGBufferNormals)) defines += "#define DEBUG_GBUFFER_NORMALS \n";
     if (hasFeature(SF_DebugGBufferGloss)) defines += "#define DEBUG_GBUFFER_GLOSS \n";
+    if (hasFeature(SF_DebugShadows)) defines += "#define DEBUG_SHADOWS \n";
+    if (hasFeature(SF_DebugShadowCascades)) defines += "#define DEBUG_SHADOW_CASCADES \n";
 
     return defines;
 }
@@ -316,16 +313,6 @@ bool ShaderVariant::checkLinkerErrors(GLuint programID)
     }
 
     return true;
-}
-
-void ShaderVariant::setUniformBufferBinding(const char *blockName, UniformBufferType type)
-{
-    const GLuint blockIndex = glGetUniformBlockIndex(program_, blockName);
-
-    if (blockIndex != GL_INVALID_INDEX)
-    {
-        glUniformBlockBinding(program_, blockIndex, (GLint)type);
-    }
 }
 
 void ShaderVariant::setTextureLocation(const char* textureName, int slot)
