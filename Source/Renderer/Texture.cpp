@@ -84,6 +84,13 @@ ArrayTexture::ArrayTexture(TextureFormat format, int width, int height, int laye
     {
         glTextureParameteri(glid_, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE);
         glTextureParameteri(glid_, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+
+        // Also give the texture a border so that sampling outside the texture does
+        // not cause issues
+        glTextureParameteri(glid_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+        glTextureParameteri(glid_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+        const float borderValues[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+        glTextureParameterfv(glid_, GL_TEXTURE_BORDER_COLOR, borderValues);
     }
 }
 
