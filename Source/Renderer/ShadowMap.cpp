@@ -147,7 +147,7 @@ float ShadowMap::getCascadeMin(int cascade) const
     float logarithmicDistance = powf(SHADOW_DRAW_DISTANCE, (1.0f / (float)CASCADE_COUNT) * cascade);
 
     // Perform a weighted average of the 2 distances
-    const float linearWeight = 0.3f;
+    const float linearWeight = 0.6f;
     const float logarithmicWeight = 1.0f - linearWeight;
 
     // Combine the 2 distances
