@@ -23,21 +23,21 @@ float SampleSunShadow(vec3 worldPosition, float distance)
     shadowCoord.z = float(cascade);
 
 #ifdef SOFT_SHADOWS
-    // Soft shadows enabled, use a 25-tap PCF filter.
+    // Soft shadows enabled, use a PCF filter with a large number of taps.
     // This could be optimised to use a smaller number of lookups to get the same result,
     // by carefully placing each tap (they each actually get 4 texels and perform a bilinear lerp),
     // but this works and it fast enough for now.
     float offset = 1.0 / float(textureSize(_ShadowMapTexture, 0).x) * 0.5;
     float sum = 0.0;
-    for (float xOffset = -offset * 2.0; xOffset <= offset * 2.00001; xOffset += offset)
+    for (float xOffset = -offset * 3.0; xOffset <= offset * 3.00001; xOffset += offset)
     {
-        for (float yOffset = -offset * 2.0; yOffset <= offset * 2.00001; yOffset += offset)
+        for (float yOffset = -offset * 3.0; yOffset <= offset * 3.00001; yOffset += offset)
         {
             sum += texture(_ShadowMapTexture, shadowCoord + vec4(xOffset, yOffset, 0.0, 0.0));
         }
     }
     
-    return sum / 25.0;
+    return sum / 49.0;
 #else
     // Soft shadows disabled, use a single tap.
     return texture(_ShadowMapTexture, shadowCoord);
