@@ -7,6 +7,7 @@
 #include "Utils/Singleton.h"
 #include "Math\Vector2.h"
 #include "Math\Vector3.h"
+#include "Math\Quaternion.h"
 
 class Clock;
 
@@ -117,14 +118,10 @@ enum class MouseButton
 
 struct InputCmd
 {
-    float deltaTime;
-    Vector2 rotationVelocity;
-    Vector3 movementVelocity;
-
-    const unsigned char* joystickButtons;
-    const float* joystickAxes;
-
-    // Add commands for shooting etc
+    float deltaTime; // Elapsed time since last update
+    Quaternion lookRotation; // Current camera orientation relative to helicopter
+    Vector3 axes; // Input helicopter velocity
+    float rotationalAcceleration; // Current helicopter rotational accelleration
 };
 
 class InputManager : public Singleton<InputManager>
@@ -141,6 +138,8 @@ public:
     void disableInput();
     void setInputEnabled(bool enabled);
 
+    InputCmd inputs;
+
     // Returns true if a key is currently down
     bool isKeyDown(InputKey key) const;
 
@@ -151,8 +150,16 @@ public:
     // Only positive = 1, only negative = -1, both/neither = 0
     float getAxis(InputKey positiveKey, InputKey negativeKey) const;
 
+    float getAxisLerp(InputKey positiveKey, InputKey negativeKey, float timeToMax) const;
+
     // Returns true if the specified mouse button is currently pressed.
     bool mouseButtonDown(MouseButton button) const;
+
+    // Capture mouse input and hide mouse from viewer
+    void captureMouse();
+
+    // Release mouse
+    void releaseMouse();
 
     // The number of pixels that the mouse has moved in the last frame.
     float mouseDeltaX() const { return (float)mouseDeltaX_; }

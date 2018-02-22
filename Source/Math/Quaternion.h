@@ -31,13 +31,15 @@ struct Quaternion
     // around the y axis, and then x degrees around the x axis.
     static Quaternion euler(float x, float y, float z);
     static Quaternion euler(const Vector3 &euler);
+
+    static Quaternion lerpUnclamped(const Quaternion &a, const Quaternion &b, float t);
+    static Quaternion lerp(const Quaternion &a, const Quaternion &b, float t);
 };
 
 bool operator == (const Quaternion &a, const Quaternion &b);
 bool operator != (const Quaternion &a, const Quaternion &b);
 
 Quaternion operator * (const Quaternion &a, const Quaternion &b);
-
 Vector3 operator * (const Quaternion &quat, const Vector3 &vec);
 
 std::ostream& operator << (std::ostream &os, const Quaternion &quat);

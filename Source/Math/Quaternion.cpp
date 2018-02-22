@@ -84,6 +84,27 @@ Quaternion Quaternion::euler(const Vector3 &euler)
     return Quaternion::euler(euler.x, euler.y, euler.z);
 }
 
+Quaternion Quaternion::lerpUnclamped(const Quaternion &a, const Quaternion &b, float t)
+{
+    Quaternion q;
+
+    q.x = ((1 - t) * a.x) + (t * b.x);
+    q.y = ((1 - t) * a.y) + (t * b.y);
+    q.z = ((1 - t) * a.z) + (t * b.z);
+    q.w = ((1 - t) * a.w) + (t * b.w);
+
+    q.normalize();
+    return q;
+}
+
+Quaternion Quaternion::lerp(const Quaternion &a, const Quaternion &b, float t)
+{
+    if (t < 0.0f) t = 0.0f;
+    if (t > 1.0f) t = 1.0f;
+
+    return lerpUnclamped(a, b, t);
+}
+
 bool operator == (const Quaternion &a, const Quaternion &b)
 {
     return fabs(a.x - b.x) < 0.001f && fabs(a.y - b.y) < 0.001f && fabs(a.z - b.z) < 0.001f && fabs(a.w-b.w) < 0.001f;

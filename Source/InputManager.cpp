@@ -33,13 +33,26 @@ void InputManager::frameStart(const Clock* clock)
 
     pollMouse();
 
-    // Create object holding input data to send to server
-    InputCmd inputs;
+    // Capture mouse when game window is clicked and release on esc. press
+    if (ignoringInput_)
+    {
+        releaseMouse();
+    }
+    else
+    {
+        captureMouse();
+    }
+
+    Vector3 axes;
+    axes.z = getAxis(InputKey::W, InputKey::S); // Get forward input
+    axes.x = getAxis(InputKey::D, InputKey::A);
+    axes.y = getAxis(InputKey::Q, InputKey::E);
 
     // Set input object parameters
     inputs.deltaTime = clock->deltaTime();
-    inputs.joystickButtons = joystickButtons_;
-    inputs.joystickAxes = joystickAxes_;
+    inputs.lookRotation = Quaternion::identity();
+    inputs.axes = axes;
+    inputs.rotationalAcceleration = mouseDeltaX();
 
     // Store array of previously pressed joypad inputs
     previousFrameJoystickButtons_ = joystickButtons_;
@@ -74,6 +87,24 @@ bool InputManager::isKeyUp(InputKey key) const
 }
 
 float InputManager::getAxis(InputKey positiveKey, InputKey negativeKey) const
+{
+    float axisPlus = 0.0f;
+    float axisMinus = 0.0f;
+
+    if (isKeyDown(positiveKey))
+    {
+        axisPlus += 1.0f;
+    }
+
+    if (isKeyDown(negativeKey))
+    {
+        axisMinus += 1.0f;
+    }
+
+    return axisPlus - axisMinus;
+}
+
+float InputManager::getAxisLerp(InputKey positiveKey, InputKey negativeKey, float timeToMax) const
 {
     float axisPlus = 0.0f;
     float axisMinus = 0.0f;

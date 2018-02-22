@@ -4,13 +4,18 @@
 #include "Scene/Transform.h"
 #include "imgui.h"
 
+#include <algorithm>
+
 Helicopter::Helicopter(GameObject* gameObject)
     : Component(gameObject),
     worldVelocity_(Vector3::zero()),
-    thrustSpeed_(35.0f),
-    pitchSpeed_(40.0f),
-    yawSpeed_(25.0f),
-    rollSpeed(40.0f)
+    worldRotation_(Quaternion::identity()),
+    horizontalMaxSpeed_(60.0f),
+    upMaxSpeed_(25.0f),
+    downMaxSpeed_(80.0f),
+    remainingRotation_(0.0f),
+    turnFactor_(0.2f),
+    decelerationFactor_(0.08f)
 {
     transform_ = gameObject->createComponent<Transform>();
 }
@@ -18,43 +23,61 @@ Helicopter::Helicopter(GameObject* gameObject)
 void Helicopter::drawProperties()
 {
     // Debugging helicopter controls
-    ImGui::DragFloat("Thrust speed", &thrustSpeed_, 0.1f);
-    ImGui::DragFloat("Pitch speed", &pitchSpeed_, 0.1f);
-    ImGui::DragFloat("Roll speed", &rollSpeed, 0.1f);
-    ImGui::DragFloat("Yaw speed", &yawSpeed_, 0.1f);
+    ImGui::DragFloat("Thrust speed", &horizontalMaxSpeed_, 0.1f);
     ImGui::DragFloat3("Velocity", &worldVelocity_.x, 0.1f);
 }
 
 void Helicopter::serialize(PropertyTable &table)
 {
-    table.serialize("thrust_speed", thrustSpeed_, 35.0f);
-    table.serialize("pitch_speed", pitchSpeed_, 40.0f);
-    table.serialize("roll_speed", rollSpeed, 40.0f);
-    table.serialize("yaw_speed", yawSpeed_, 25.0f);
-    table.serialize("velocity", worldVelocity_, Vector3::zero());
+    table.serialize("horizontal_max_speed", horizontalMaxSpeed_, 60.0f);
+    table.serialize("up_max_speed", upMaxSpeed_, 25.0f);
+    table.serialize("down_max_speed", downMaxSpeed_, 80.0f);
+    table.serialize("turn_factor", turnFactor_, 0.2f);
+    table.serialize("deceleration_factor", decelerationFactor_, 0.08f);
 }
 
 void Helicopter::update(float deltaTime)
 {
-    // Setup simple helicopter controls
-    const float forward = InputManager::instance()->getAxis(InputKey::G, InputKey::B);
-    const float lateral = InputManager::instance()->getAxis(InputKey::V, InputKey::N);
-    const float yaw = InputManager::instance()->getAxis(InputKey::H, InputKey::F);
-    const float vertical = InputManager::instance()->getAxis(InputKey::T, InputKey::Y);
+    // Get input axes (scale from -1 to 1)
+    Vector3 axis = InputManager::instance()->inputs.axes;
+    Vector3 desiredVelocity;
+    desiredVelocity.z = axis.z;
+    desiredVelocity.x = axis.x;
+    desiredVelocity.y = axis.y;
 
-    // Thrust if holding appropriate key
-    if (vertical > 0.01f)
+    // Get frame rotation based on mouse movement
+    float yaw = InputManager::instance()->inputs.rotationalAcceleration;
+    remainingRotation_ += yaw;
+
+    // Ensure total horizontal movement is no greater than thrust speed
+    float horizontalMoveSqrd = Vector2(desiredVelocity.x, desiredVelocity.z).sqrMagnitude();
+    if (horizontalMoveSqrd > 1.0f)
     {
-        worldVelocity_ += transform_->up() * thrustSpeed_ * deltaTime;
+        // Scale factor to ensure magnitude of horizontal velocity <= thrustSpeed_
+        desiredVelocity.z /= horizontalMoveSqrd;
+        desiredVelocity.x /= horizontalMoveSqrd;
     }
 
-    // Gravity
-    worldVelocity_.y -= 9.81f * deltaTime;
-    
-    // Allow pitching, rolling, yawing, and thrust
-    transform_->rotateLocal(forward * pitchSpeed_ * deltaTime, transform_->right());
-    transform_->rotateLocal(lateral * rollSpeed * deltaTime, transform_->forwards());
-    transform_->rotateLocal(yaw * yawSpeed_ * deltaTime, transform_->up());
+    // Multiply desired velocity by max move speed
+    desiredVelocity.x *= horizontalMaxSpeed_;
+    desiredVelocity.z *= horizontalMaxSpeed_;
+
+    // Simulate effects of gravity
+    if (desiredVelocity.y > 0.0f)
+    {
+        desiredVelocity.y *= upMaxSpeed_;
+    }
+    else
+    {
+        desiredVelocity.y *= downMaxSpeed_;
+    }
+
+    // Lerp world velocity and translate
+    worldVelocity_ = Vector3::lerp(worldVelocity_, desiredVelocity, 0.5f * deltaTime);
     transform_->translateLocal(worldVelocity_ * deltaTime);
+
+    // Rotate percentage of remaining rotation and reduce remaining rotation amount
+    transform_->rotateLocal(remainingRotation_ * turnFactor_ * deltaTime, Vector3(0.0f, 1.0f, 0.0f));
+    remainingRotation_ -= remainingRotation_ * decelerationFactor_;
 }
 

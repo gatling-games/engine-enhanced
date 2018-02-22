@@ -2,6 +2,7 @@
 
 #include "Scene/Component.h"
 #include "Math/Vector3.h"
+#include "Math/Quaternion.h"
 
 class Transform;
 
@@ -17,14 +18,16 @@ public:
 
     void update(float deltaTime) override;
 
-
 private:
 
     Transform* transform_;
     Vector3 worldVelocity_;
+    Quaternion worldRotation_;
 
-    float thrustSpeed_;
-    float pitchSpeed_;
-    float yawSpeed_;
-    float rollSpeed;
+    float horizontalMaxSpeed_;
+    float upMaxSpeed_;
+    float downMaxSpeed_;
+    float remainingRotation_;
+    float turnFactor_;
+    float decelerationFactor_;
 };
