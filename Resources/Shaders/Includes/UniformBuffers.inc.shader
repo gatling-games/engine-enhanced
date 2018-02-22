@@ -28,6 +28,12 @@ layout(std140, binding = 1) uniform camera_data
     uniform mat4x4 _ClipToWorld;
 };
 
+layout(std140, binding = 2) uniform shadows_data
+{
+    uniform vec4 _CascadeMaxDistances;
+    uniform mat4x4 _WorldToShadow[4];
+};
+
 // Per-draw uniform buffer.
 layout(std140, binding = 3) uniform per_draw_data
 {

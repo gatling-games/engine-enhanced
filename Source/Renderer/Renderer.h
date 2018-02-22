@@ -6,6 +6,7 @@
 
 #include "Scene/Camera.h"
 #include "Renderer/Mesh.h"
+#include "Renderer/ShadowMap.h"
 
 class Renderer
 {
@@ -32,6 +33,9 @@ private:
     // The current GBuffer objects
     Texture* gbufferTextures_[GBUFFER_RENDER_TARGETS];
     Framebuffer gbufferFramebuffer_;
+
+    // The shadow map rendering manager
+    ShadowMap shadowMap_;
 
     // A full screen triangle used for screen space passes
     ResourcePPtr<Mesh> fullScreenMesh_;
@@ -65,11 +69,13 @@ private:
     void updatePerDrawUniformBuffer(const StaticMesh* draw, const Texture* albedoTexture, const Texture* normalMapTexture) const;
     void updateTerrainUniformBuffer(const Terrain* terrain) const;
 
+    // Renders a full geometry pass using the specified camera
+    void executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures) const;
+
     // Renders a full screen pass using the specifed shader
     void executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const;
 
     // Methods for each render pass
-    void executeDeferredGBufferPass() const;
     void executeDeferredLightingPass() const;
     void executeDeferredDebugPass() const;
     void executeSkyboxPass(const Camera* camera) const;

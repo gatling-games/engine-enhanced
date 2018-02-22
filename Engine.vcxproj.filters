@@ -180,6 +180,12 @@
     <ClInclude Include="Source\Importers\SceneImporter.h">
       <Filter>Importers</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Renderer\ShadowMap.h">
+      <Filter>Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Math\Bounds.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -311,6 +317,12 @@
     <ClCompile Include="Source\Importers\SceneImporter.cpp">
       <Filter>Importers</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Renderer\ShadowMap.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\Bounds.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\SkyboxPass.shader">
@@ -347,6 +359,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\Includes\PhysicallyBasedShading.inc.shader">
+      <Filter>Shaders\Includes</Filter>
+    </None>
+    <None Include="Resources\Shaders\Includes\Shadows.inc.shader">
       <Filter>Shaders\Includes</Filter>
     </None>
   </ItemGroup>

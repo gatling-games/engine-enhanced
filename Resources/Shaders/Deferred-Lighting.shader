@@ -7,6 +7,7 @@
 #include "Deferred.inc.shader"
 
 #include "PhysicallyBasedShading.inc.shader"
+#include "Shadows.inc.shader"
 
 #ifdef FRAGMENT_SHADER
 
@@ -28,6 +29,13 @@ void main()
     // Compute the ambient and direct light separately
     vec3 ambientLight = surface.diffuseColor * _AmbientColor.rgb * 0.2;
     vec3 directLight = PhysicallyBasedBRDF(surface, viewDir);
+
+    // Attenuate the direct light by a shadow factor
+#ifdef SHADOWS_ON
+    directLight *= SampleSunShadow(worldPosition, viewDistance);
+#endif
+
+    // Combine the lighting components
     vec3 light = ambientLight + directLight;
 
     // Add fog based on view distance.
