@@ -67,6 +67,9 @@ void main()
         + gl_in[1].gl_Position * gl_TessCoord.y
         + gl_in[2].gl_Position * gl_TessCoord.z;;
 
+    // Make the water extend further than the terrain
+    normalizedPosition.xz = normalizedPosition.xz * 8.0 - 4.0;
+
     // Scale by the terrain size to get the world position
     worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz, 1.0);
 
