@@ -59,6 +59,55 @@ out vec2 texcoord;
 out vec3 tangentToWorld[3];
 #endif
 
+/*
+ * Computes the total vertical displacement of the water at the specified point
+ * Based on "Effective Water Simulation from Physical Models" by Mark Finch (GPU Gems)
+ */
+float getWaveDisplacement(vec2 position)
+{
+    const int waveCount = 2;
+
+    // The maximum amplitude of each wave
+    float waveAmplitudes[waveCount] = {
+        1.0,
+        0.7
+    };
+
+    // A vector perpendicular to the direction of travel of each wave
+    vec2 waveDirections[waveCount] = {
+        normalize(vec2(1.0, 1.0)),
+        normalize(vec2(-1.0, 0.0))
+    };
+
+    // The wavelength of each wave
+    float waveWavelengths[waveCount] = {
+        40.0,
+        30.0
+    };
+
+    // The frequency of each wave
+    // frequency * wavelength = 2 * PI
+    float waveFrequencies[waveCount] = {
+        2.0 * M_PI / waveWavelengths[0],
+        2.0 * M_PI / waveWavelengths[1]
+    };
+
+    // The phase function of each wave
+    // = wave speed * 2*PI / wavelength
+    float wavePhaseFunctions[waveCount] = {
+        4.0 * (2.0 * M_PI) / waveWavelengths[0],
+        3.0 * (2.0 * M_PI) / waveWavelengths[1]
+    };
+
+    float displacement = 0.0;
+    for (int i = 0; i < waveCount; i++)
+    {
+        displacement += waveAmplitudes[i] * sin(dot(waveDirections[i], position) * waveFrequencies[i] + _Time.x * wavePhaseFunctions[i]);
+    }
+
+    return displacement;
+}
+
 void main()
 {
     // Compute normalized position of the terrain. This ranges from 0,1 in XYZ
@@ -73,12 +122,13 @@ void main()
     // Scale by the terrain size to get the world position
     worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz, 1.0);
 
-    // Offset each vertex up and down over time to simulate waves
-
-
     // Find the water depth by comparing the terrain heightmap to the water height
     float terainHeight = texture(_TerrainHeightmap, normalizedPosition.xz).g * _TerrainSize.y - _WaterDepth;
     heightAboveTerrain = worldPosition.y - terainHeight;
+
+    // Offset each vertex up and down over time to simulate waves
+    // Determine the normal by taking the derivative of the waves and combining
+    worldPosition.y += getWaveDisplacement(worldPosition.xz);
 
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * worldPosition;
