@@ -81,8 +81,8 @@ float getWaveDisplacement(vec2 position)
 
     // The wavelength of each wave
     float waveWavelengths[waveCount] = {
-        40.0,
-        30.0
+        60.0,
+        50.0
     };
 
     // The frequency of each wave
@@ -95,8 +95,8 @@ float getWaveDisplacement(vec2 position)
     // The phase function of each wave
     // = wave speed * 2*PI / wavelength
     float wavePhaseFunctions[waveCount] = {
-        4.0 * (2.0 * M_PI) / waveWavelengths[0],
-        3.0 * (2.0 * M_PI) / waveWavelengths[1]
+        15.0 * (2.0 * M_PI) / waveWavelengths[0],
+        25.0 * (2.0 * M_PI) / waveWavelengths[1]
     };
 
     float displacement = 0.0;
@@ -134,12 +134,22 @@ void main()
     gl_Position = _ViewProjectionMatrix * worldPosition;
 
     // Compute the Texture coordinates from world position
-    texcoord = normalizedPosition.xz * _TextureScale.xy;
+    texcoord = normalizedPosition.xz * _TextureScale.xy + _Time.x * 0.2;
+
+    // Determine the gradient along x and z at the vertex position
+    float x1 = getWaveDisplacement(worldPosition.xz + vec2(-0.05, 0.0));
+    float x2 = getWaveDisplacement(worldPosition.xz + vec2(0.05, 0.0));
+    float z1 = getWaveDisplacement(worldPosition.xz + vec2(0.0, -0.05));
+    float z2 = getWaveDisplacement(worldPosition.xz + vec2(0.0, 0.05));
+    float dydx = (x2 - x1) / 0.1;
+    float dydz = (z2 - z1) / 0.1;
+
+    // Determine the tangents along the X and Z
+    vec3 worldTangent = normalize(vec3(1.0, dydx, 0.0));
+    vec3 worldBitangent = normalize(vec3(0.0, dydz, 1.0));
 
     // Cross product to get the world normal
-    worldNormal = vec3(0.0, 1.0, 0.0);
-    vec3 worldTangent = vec3(1.0, 0.0, 0.0);
-    vec3 worldBitangent = vec3(0.0, 0.0, 1.0);
+    worldNormal = cross(worldBitangent, worldTangent);
 
     // Compute the tangent and bitangent to make a tangent to world space matrix
 #ifdef NORMAL_MAP_ON
@@ -168,16 +178,20 @@ out vec4 fragColor;
 
 void main()
 {
-    // Start by sampling the base layer
-    vec4 albedoSmoothness = vec4(0.5, 0.5, 1.0, 0.0);
-    vec3 tangentNormal = vec3(0.0, 0.0, 1.0);
-
     // Pack the data into the surface structure.
     SurfaceProperties surface;
     surface.diffuseColor = _WaterColor;
-    surface.gloss = mix(0.1, 0.8, heightAboveTerrain / _WaterDepth);
+    surface.gloss = mix(0.4, 0.75, heightAboveTerrain / _WaterDepth);
     surface.occlusion = 1.0;
-    surface.worldNormal = vec3(0.0, 1.0, 0.0);
+
+#ifdef NORMAL_MAP_ON
+    vec3 tangentNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[1], texcoord * 0.2));
+    surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
+    surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
+    surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
+#else
+    surface.worldNormal = worldNormal;
+#endif
 
     // Output surface properties to the gbuffer
     writeToGBuffer(surface);
