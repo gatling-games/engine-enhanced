@@ -126,13 +126,11 @@ void main()
     SurfaceProperties surface;
     surface.diffuseColor = _WaterColor;
     surface.gloss = opacity;
-    surface.occlusion = opacity;
+    surface.occlusion = 1.0;
     surface.worldNormal = vec3(0.0, 1.0, 0.0);
 
     // Output surface properties to the gbuffer
     writeToGBuffer(surface);
-
-    // fragColor = vec4(_WaterColor, opacity);
 }
 
 #endif // FRAGMENT_SHADER

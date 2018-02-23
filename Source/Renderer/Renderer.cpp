@@ -332,11 +332,6 @@ void Renderer::executeWaterPass() const
     glEnable(GL_DEPTH_TEST);
     glDepthMask(true);
 
-    // Use alpha blending when rendering the water
-    for(int i = 0; i < GBUFFER_RENDER_TARGETS; ++i) glEnablei(GL_BLEND, i);
-    glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-
     // This pass requires a terrain in the scene
     auto terrains = SceneManager::instance()->terrains();
     if (terrains.empty())
@@ -349,8 +344,6 @@ void Renderer::executeWaterPass() const
     terrains[0]->mesh()->bind();
     glDrawElements(GL_PATCHES, terrains[0]->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
 
-    // Disable alpha blending after use
-    for (int i = 0; i < GBUFFER_RENDER_TARGETS; ++i) glDisablei(GL_BLEND, i);
 }
 
 void Renderer::executeSkyboxPass(const Camera* camera) const
