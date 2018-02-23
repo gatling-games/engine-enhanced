@@ -17,10 +17,13 @@ void TerrainLayer::serialize(PropertyTable& table)
 
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
+    heightMap_(TextureFormat::R8, HEIGHTMAP_RESOLUTION, HEIGHTMAP_RESOLUTION),
     dimensions_(Vector3(1024.0f, 80.0f, 1024.0f))
 {
-    heightMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/heightmap.png");
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
+
+    // Ensure bilinear filtering is used on the heightmap
+    heightMap_.setFilterMode(TextureFilterMode::Bilinear);
 
     // Set up the default layer
     TerrainLayer layer;

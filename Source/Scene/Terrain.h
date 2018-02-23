@@ -23,8 +23,8 @@ struct TerrainLayer : ISerializedObject
 
 class Terrain : public Component
 {
-    
 public:
+    const static int HEIGHTMAP_RESOLUTION = 1024;
     const static int MAX_LAYERS = 32;
 
     explicit Terrain(GameObject* gameObject);
@@ -37,7 +37,7 @@ public:
     void serialize(PropertyTable &table) override;
 
     const Mesh* mesh() const { return mesh_; }
-    const Texture* heightmap() const { return heightMap_; }
+    const Texture* heightmap() const { return &heightMap_; }
 
     // Total size of the terrain, in m, in X,Y,Z
     Vector3 size() const { return dimensions_; }
@@ -47,7 +47,7 @@ public:
 
 private:
     Mesh* mesh_;
-    Texture* heightMap_;
+    Texture heightMap_;
     Vector3 dimensions_;
     std::vector<TerrainLayer> terrainLayers_;
 };
