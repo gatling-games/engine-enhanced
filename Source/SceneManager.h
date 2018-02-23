@@ -40,7 +40,7 @@ public:
 
     // Gets a list of all static mesh components in the scene
     const std::vector<StaticMesh*> staticMeshes() const;
-    const std::vector<Terrain*> terrains() const;
+    const Terrain* terrain() const;
 
 private:
     // The currently loaded scene

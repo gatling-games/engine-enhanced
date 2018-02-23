@@ -284,9 +284,11 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
     }
 
     // Draw terrain
-    terrainShader_->bindVariant(shaderFeatures);
-    for (Terrain* terrain : SceneManager::instance()->terrains())
+    const Terrain* terrain = SceneManager::instance()->terrain();
+    if(terrain != nullptr)
     {
+        terrainShader_->bindVariant(shaderFeatures);
+
         //Set mesh and heightmap
         terrain->mesh()->bind();
         updateTerrainUniformBuffer(terrain);
