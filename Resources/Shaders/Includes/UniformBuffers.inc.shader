@@ -54,6 +54,7 @@ layout(std140, binding = 5) uniform terrain_data
     sampler2D _TerrainHeightmap; //Texture containing the terrain heightmap
     sampler2D _TerrainTextures[MAX_TERRAIN_LAYERS]; //Terrain albedo textures
     sampler2D _TerrainNormalMapTextures[MAX_TERRAIN_LAYERS]; //Terrai normal Textures
+    uniform float _WaterDepth;
 };
 
 

@@ -223,7 +223,8 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     TerrainUniformData data;
     Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
     int layerCount = terrain->gameObject()->terrain()->layerCount();
-    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, float(layerCount)); //layercount stored in w
+    data.terrainSize = Vector4(dimens.x, dimens.y + terrain->waterDepth(), dimens.z, float(layerCount)); //layercount stored in w
+    data.waterDepth = terrain->waterDepth();
     
     data.terrainTextureOffsetScale = Vector4(1.0f, 0.0f, 1.0f, 1.0f);
     Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();

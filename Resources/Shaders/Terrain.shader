@@ -68,7 +68,8 @@ void main()
     normalizedPosition.y = texture(_TerrainHeightmap, normalizedPosition.xz).g;
 
     // Scale by the terrain size to get the world position
-    worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz, 1.0);
+    // We also need to offset the terrain downwards to take account of the water depth
+    worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz + vec3(0.0, -_WaterDepth, 0.0), 1.0);
 
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * worldPosition;

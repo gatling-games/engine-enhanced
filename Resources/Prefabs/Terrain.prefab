@@ -1,11 +1,10 @@
 {
     name = Terrain
-    Transform {
-    }
     Terrain {
         heightmap = Resources\Textures\heightmap.png
         texture_wrap = 15 15
-        dimensions = 2048 150 2048
+        dimensions = 2048 168 2048
+        water_depth = 16.9
         layers::0 {
             altitude_border = 35
             altitude_transition = 4
@@ -19,11 +18,18 @@
             material = Resources\Materials\ground_grass_01.material
         }
         layers::2 {
-            altitude_border = 56.9
+            altitude_border = 77.2
             altitude_transition = 8
-            slope_border = 0.48
+            slope_border = 0.78
             slope_hardness = 0.341
             material = Resources\Materials\ground_snow.material
         }
+        layers::3 {
+            altitude_border = 9.5
+            altitude_transition = -6
+            material = Resources\Materials\ground_sand.material
+        }
+    }
+    Transform {
     }
 }

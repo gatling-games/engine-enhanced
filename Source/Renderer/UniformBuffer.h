@@ -68,6 +68,8 @@ struct TerrainUniformData
     uint16_t padding;
     BindlessTextureHandle terrainTextures[Terrain::MAX_LAYERS*2];
     BindlessTextureHandle terrainNormalMapTextures[Terrain::MAX_LAYERS*2];
+    float waterDepth;
+    uint32_t padding2[3];
 };
 
 // Plain old uniform data for converting object local coordinates to world space

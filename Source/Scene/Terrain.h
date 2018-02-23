@@ -43,6 +43,8 @@ public:
     //Number of repetitions of each texture layer in X and Z
     Vector2 textureWrapping() const { return textureWrap_; }
 
+    // The depth of the water at its deepest point
+    float waterDepth() const { return waterDepth_; }
 
     TerrainLayer* terrainLayers() { return &terrainLayers_.front(); }
     int layerCount() const { return (int)terrainLayers_.size(); }
@@ -52,5 +54,6 @@ private:
     Texture* heightMap_;
     Vector2 textureWrap_;
     Vector3 dimensions_;
+    float waterDepth_;
     std::vector<TerrainLayer> terrainLayers_;
 };

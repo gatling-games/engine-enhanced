@@ -16,7 +16,8 @@ void TerrainLayer::serialize(PropertyTable& table)
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
     textureWrap_(Vector2(10.0f, 10.0f)),
-    dimensions_(Vector3(1024.0f, 80.0f, 1024.0f))
+    dimensions_(Vector3(1024.0f, 80.0f, 1024.0f)),
+    waterDepth_(30.0f)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
     heightMap_ = ResourceManager::instance()->load<Texture>("Resources/Textures/heightmap.png");
@@ -33,6 +34,7 @@ void Terrain::drawProperties()
     ImGui::ResourceSelect<Material>("Base Material", "Select Layer Material", terrainLayers_[0].material);
     ImGui::DragFloat2("Texture Repeat", &textureWrap_.x, 0.1f, 1.0f, 1024.0f);
     ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
+    ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
 
     if (ImGui::TreeNode("Terrain Layers"))
     {
@@ -45,8 +47,8 @@ void Terrain::drawProperties()
         {
             ImGui::PushID(layer);
 
-            ImGui::DragFloat("Altitude", &terrainLayers_[layer].altitudeBorder, 0.1f, 0.0f, 300.0f);
-            ImGui::DragFloat("Transition", &terrainLayers_[layer].altitudeTransition, 0.1f, 0.0f, 20.0f);
+            ImGui::DragFloat("Altitude", &terrainLayers_[layer].altitudeBorder, 0.1f, -50.0f, 300.0f);
+            ImGui::DragFloat("Transition", &terrainLayers_[layer].altitudeTransition, 0.1f, -20.0f, 20.0f);
             ImGui::Spacing();
 
             ImGui::DragFloat("Slope", &terrainLayers_[layer].slopeBorder, 0.01f, -1.0f, 1.0f);
@@ -68,5 +70,6 @@ void Terrain::serialize(PropertyTable &table)
     table.serialize("heightmap", heightMap_, (ResourcePPtr<Texture>)nullptr);
     table.serialize("texture_wrap", textureWrap_, Vector2(10.0f, 10.0f));
     table.serialize("dimensions", dimensions_, Vector3(1024.0f, 80.0f, 1024.0f));
+    table.serialize("water_depth", waterDepth_, 30.0f);
     table.serialize("layers", terrainLayers_);
 }
