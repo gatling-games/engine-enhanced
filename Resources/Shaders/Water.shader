@@ -119,13 +119,10 @@ void main()
     vec4 albedoSmoothness = vec4(0.5, 0.5, 1.0, 0.0);
     vec3 tangentNormal = vec3(0.0, 0.0, 1.0);
 
-    // Determine the opacity from the water depth
-    float opacity = (heightAboveTerrain * 2.0) / _WaterDepth;
-
     // Pack the data into the surface structure.
     SurfaceProperties surface;
     surface.diffuseColor = _WaterColor;
-    surface.gloss = opacity;
+    surface.gloss = mix(0.1, 0.8, heightAboveTerrain / _WaterDepth);
     surface.occlusion = 1.0;
     surface.worldNormal = vec3(0.0, 1.0, 0.0);
 
