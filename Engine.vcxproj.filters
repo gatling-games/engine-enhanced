@@ -363,6 +363,9 @@
     </None>
     <None Include="Resources\Shaders\Includes\Shadows.inc.shader">
       <Filter>Shaders\Includes</Filter>
+	</None>
+    <None Include="Resources\Shaders\Water.shader">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -31,6 +31,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     // Load the shaders required for each render pass
     standardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Standard.shader");
     terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
+    waterShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Water.shader");
     deferredLightingShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Lighting.shader");
     deferredDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Debug.shader");
 
@@ -71,6 +72,7 @@ void Renderer::renderFrame(const Camera* camera)
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         executeGeometryPass(camera, ALL_SHADER_FEATURES);
+        executeWaterPass();
 
         // Ensure wireframe rendering is turned off again
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -96,10 +98,13 @@ void Renderer::renderFrame(const Camera* camera)
     gbufferFramebuffer_.use();
     executeGeometryPass(camera, ALL_SHADER_FEATURES);
 
+    // Render the water on top of the geometry using alpha blending
+    executeWaterPass();
+
     // Compute lighting into final render target
     targetFramebuffer_->use();
     executeDeferredLightingPass();
-
+    
     // Show any debugging modes
     if (RenderManager::instance()->debugMode() != RenderDebugMode::None)
     {
@@ -177,6 +182,7 @@ void Renderer::updateSceneUniformBuffer() const
     data.fogColor = scene->fogColor();
     data.fogDensity = scene->fogDensity();
     data.fogHeightFalloff = scene->fogHeightFalloff();
+    data.waterColor = scene->waterColor();
 
     // Send time to shader for cloud texture scrolling
     const float time = Clock::instance()->time();
@@ -320,11 +326,38 @@ void Renderer::executeDeferredDebugPass() const
     executeFullScreen(deferredDebugShader_, (ShaderFeatureList)mode | SF_SoftShadows);
 }
 
+void Renderer::executeWaterPass() const
+{
+    // Ensure that depth testing and depth write are on
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(true);
+
+    // Use alpha blending when rendering the water
+    for(int i = 0; i < GBUFFER_RENDER_TARGETS; ++i) glEnablei(GL_BLEND, i);
+    glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+
+    // This pass requires a terrain in the scene
+    auto terrains = SceneManager::instance()->terrains();
+    if (terrains.empty())
+    {
+        return;
+    }
+
+    // Render the terrain mesh, using the water shader, with tessellation
+    waterShader_->bindVariant(ALL_SHADER_FEATURES);
+    terrains[0]->mesh()->bind();
+    glDrawElements(GL_PATCHES, terrains[0]->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+
+    // Disable alpha blending after use
+    for (int i = 0; i < GBUFFER_RENDER_TARGETS; ++i) glDisablei(GL_BLEND, i);
+}
+
 void Renderer::executeSkyboxPass(const Camera* camera) const
 {
-    // Ensure that depth testing is turned on, but dont write depth
+    // Ensure that depth testing is turned on and writing depth
     glEnable(GL_DEPTH_TEST);
-    glDepthMask(false);
+    glDepthMask(true);
 
     // Ensure skybox shader is being used
     skyboxShader_->bindVariant(ALL_SHADER_FEATURES);
