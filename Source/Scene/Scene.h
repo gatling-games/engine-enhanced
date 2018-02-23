@@ -27,6 +27,7 @@ public:
     Color fogColor() const { return fogColor_; }
     float fogDensity() const { return fogDensity_; }
     float fogHeightFalloff() const { return fogHeightFalloff_; }
+    Color waterColor() const { return waterColor_; }
 
     // Opens the scene when selected
     void onOpenAction() override;
@@ -60,4 +61,5 @@ private:
     Color fogColor_;
     float fogDensity_;
     float fogHeightFalloff_;
+    Color waterColor_;
 };

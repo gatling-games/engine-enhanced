@@ -41,6 +41,9 @@ void Scene::drawEditor()
         ImGui::ColorEdit3("Fog Color", &fogColor_.r);
         ImGui::DragFloat("Fog Density", &fogDensity_, 0.0001f, 0.0001f, 0.3f);
         ImGui::DragFloat("Fog Height Falloff", &fogHeightFalloff_, 0.0001f, 0.0001f, 0.1f);
+
+        ImGui::Spacing();
+        ImGui::ColorEdit3("Water Color", &waterColor_.r);
     }
 }
 
@@ -77,6 +80,7 @@ void Scene::serialize(PropertyTable &table)
     table.serialize("fog_color", fogColor_, Color(0.5f, 0.6f, 0.7f, 1.0f));
     table.serialize("fog_density", fogDensity_, 0.005f);
     table.serialize("fog_height_falloff", fogHeightFalloff_, 0.023f);
+    table.serialize("water_color", waterColor_, Color(0.2f, 0.3f, 0.5f));
 }
 
 void Scene::createGameObjects()

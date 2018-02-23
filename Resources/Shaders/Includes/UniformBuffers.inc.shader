@@ -17,6 +17,9 @@ layout(std140, binding = 0) uniform scene_data
     uniform vec4 _FogColor;
     uniform float _FogDensity;
     uniform float _FogHeightFalloff;
+
+    // Water settings
+    uniform vec3 _WaterColor;
 };
 
 // Camera uniform buffer

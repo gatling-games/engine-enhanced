@@ -38,6 +38,9 @@ struct SceneUniformData
     float fogDensity;
     float fogHeightFalloff;
     float fogPadding[2];
+
+    // Water settings
+    Color waterColor;
 };
 
 // Plain old uniform data for camera
