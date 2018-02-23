@@ -221,31 +221,24 @@ void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw, const Texture*
 void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 {
     TerrainUniformData data;
-    Vector3 dimens = terrain->gameObject()->terrain()->terrainDimensions();
-    int layerCount = terrain->gameObject()->terrain()->layerCount();
-    data.terrainSize = Vector4(dimens.x, dimens.y, dimens.z, float(layerCount)); //layercount stored in w
-    
-    data.terrainTextureOffsetScale = Vector4(1.0f, 0.0f, 1.0f, 1.0f);
-    Vector2 texScale = terrain->gameObject()->terrain()->textureWrapping();
+    data.terrainSize = Vector4(terrain->size().x, terrain->size().y, terrain->size().z, (float)terrain->layerCount());
+    data.terrainHeightmap = terrain->heightmap()->bindlessHandle();
 
-
-    //Invert Texture scale
-    data.textureScale = Vector4(dimens.x / texScale.x, dimens.z / texScale.y, 1.0f, 1.0f);
-
-    //Set layer textures to bindless handles, also layer attributes
-    Texture* heightmap = terrain->gameObject()->terrain()->heightmap();
-    data.terrainHeightmap = (heightmap == nullptr) ? 0 : heightmap->bindlessHandle();
-
-    TerrainLayer* layers = terrain->gameObject()->terrain()->terrainLayers();
-    for (int layer = 0; layer < layerCount; ++layer)
+    for (int i = 0; i < terrain->layerCount(); ++i)
     {
-        data.terrainTextures[layer*2] = (layers[layer].material->albedoTexture() == nullptr) ? 0 : layers[layer].material->albedoTexture()->bindlessHandle();
-        data.terrainNormalMapTextures[layer*2] = (layers[layer].material->normalMapTexture() == nullptr) ? 0 : layers[layer].material->normalMapTexture()->bindlessHandle();
-        data.terrainLayerBlendData[layer] = Vector4(layers[layer].altitudeBorder - 0.001f, 1.0f / layers[layer].altitudeTransition, layers[layer].slopeBorder, layers[layer].slopeHardness * 20.0f);
-        data.terrainColor[layer] = Vector4(layers[layer].material->color().r, layers[layer].material->color().g, layers[layer].material->color().b, layers[layer].material->color().a);
+        const TerrainLayer& layer = terrain->layers()[i];
+
+        data.terrainLayerBlendData[i].x = layer.altitudeBorder;
+        data.terrainLayerBlendData[i].y = 1.0f / layer.altitudeTransition;
+        data.terrainLayerBlendData[i].z = layer.slopeBorder;
+        data.terrainLayerBlendData[i].w = layer.slopeHardness * 20.0f;
+        data.terrainLayerScale[i].x = terrain->size().x / layer.textureTileSize.x;
+        data.terrainLayerScale[i].y = terrain->size().z / layer.textureTileSize.y;
+        data.terrainLayerColours[i] = layer.material->color();
+        data.terrainTextures[i * 2] = (layer.material->albedoTexture() == nullptr) ? 0 : layer.material->albedoTexture()->bindlessHandle();
+        data.terrainNormalMapTextures[i * 2] = (layer.material->normalMapTexture() == nullptr) ? 0 : layer.material->normalMapTexture()->bindlessHandle();
     }
 
-    //Update Uniform Buffer
     terrainUniformBuffer_.update(data);
 }
 

@@ -14,6 +14,8 @@ struct TerrainLayer : ISerializedObject
     float altitudeTransition = 0.0f;
     float slopeBorder = -1.0f;
     float slopeHardness = 1.0f;
+    Vector2 textureTileSize = Vector2(10.0f, 10.0f);
+    Vector2 textureTileOffset = Vector2::zero();
     Material* material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");;
 
     void serialize(PropertyTable& table) override;
@@ -34,23 +36,18 @@ public:
     // Serialisation function
     void serialize(PropertyTable &table) override;
 
-    Mesh* mesh() const { return mesh_; }
-    Texture* heightmap() const { return heightMap_; }
+    const Mesh* mesh() const { return mesh_; }
+    const Texture* heightmap() const { return heightMap_; }
 
     // Total size of the terrain, in m, in X,Y,Z
-    Vector3 terrainDimensions() const { return dimensions_; }
+    Vector3 size() const { return dimensions_; }
     
-    //Number of repetitions of each texture layer in X and Z
-    Vector2 textureWrapping() const { return textureWrap_; }
-
-
-    TerrainLayer* terrainLayers() { return &terrainLayers_.front(); }
+    const TerrainLayer* layers() const { return &terrainLayers_.front(); }
     int layerCount() const { return (int)terrainLayers_.size(); }
 
 private:
     Mesh* mesh_;
     Texture* heightMap_;
-    Vector2 textureWrap_;
     Vector3 dimensions_;
     std::vector<TerrainLayer> terrainLayers_;
 };
