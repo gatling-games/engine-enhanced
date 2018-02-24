@@ -1,7 +1,7 @@
 {
     name = Terrain
     Terrain {
-        dimensions = 2048 150 2048
+        dimensions = 2048 188 2048
         layers::0 {
             altitude_border = 35
             altitude_transition = 4
@@ -11,19 +11,23 @@
             material = Resources\Materials\ground_rock_01.material
         }
         layers::1 {
-            slope_border = 0.56
-            slope_hardness = 0.29
+            slope_border = 0.79
+            slope_hardness = 0.46
             texture_tile_size = 20 20
             material = Resources\Materials\ground_grass_01.material
         }
         layers::2 {
-            altitude_border = 56.9
-            altitude_transition = 8
-            slope_border = 0.48
+            altitude_border = 109.4
+            altitude_transition = 20
+            slope_border = 0.5
             slope_hardness = 0.341
             texture_tile_size = 30 30
             material = Resources\Materials\ground_snow.material
         }
+        seed = 3465
+        factal_smoothness = 2.11
+        mountain_scale = 8.8
+        island_factor = 1
     }
     Transform {
     }

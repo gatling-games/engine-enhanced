@@ -51,6 +51,23 @@ private:
     Vector3 dimensions_;
     std::vector<TerrainLayer> terrainLayers_;
 
+    // Terrain generation settings
+    int seed_;
+    float fractalSmoothness_;
+    float mountainScale_;
+    float islandFactor_;
+
+    // The current heightmap
+    std::vector<float> heights_;
+
+    // A list of objects placed on the terrain
+    std::vector<GameObject*> placedObjects_;
+
     // Regenerates the terrain
     void generateTerrain();
+    void placeObjects();
+
+    // Gets the heightmap height at a specified point
+    // The x and z coordinates are in world space.
+    float sampleHeightmap(float x, float z);
 };
