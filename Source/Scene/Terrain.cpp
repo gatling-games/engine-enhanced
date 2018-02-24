@@ -47,6 +47,9 @@ void Terrain::drawProperties()
     ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
     ImGui::Spacing();
 
+    // Make a pseudo-hash of the terrain generation parameters before editing
+    float genParams = (float)seed_ + fractalSmoothness_ + mountainScale_ + islandFactor_;
+
     ImGui::InputInt("Seed", &seed_);
     ImGui::SameLine();
     if (ImGui::Button("Randomise"))
@@ -58,7 +61,12 @@ void Terrain::drawProperties()
     ImGui::DragFloat("Mountain Scale", &mountainScale_, 0.05f, 1.0f, 10.0f);
     ImGui::DragFloat("Island Factor", &islandFactor_, 0.05f, 0.1f, 20.0f);
 
-    generateTerrain();
+    // If any gen property was modified, regenerate the terrain.
+    float genParamsNew = (float)seed_ + fractalSmoothness_ + mountainScale_ + islandFactor_;
+    if (fabs(genParams - genParamsNew) > 0.001f)
+    {
+        generateTerrain();
+    }
 
     ImGui::Spacing();
 
