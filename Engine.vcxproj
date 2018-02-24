@@ -17,6 +17,7 @@
     <ClInclude Include="Source\Importers\PrefabImporter.h" />
     <ClInclude Include="Source\Importers\SceneImporter.h" />
     <ClInclude Include="Source\Math\Bounds.h" />
+    <ClInclude Include="Source\Math\Random.h" />
     <ClInclude Include="Source\Renderer\Material.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
@@ -74,6 +75,7 @@
     <ClCompile Include="Source\Importers\PrefabImporter.cpp" />
     <ClCompile Include="Source\Importers\SceneImporter.cpp" />
     <ClCompile Include="Source\Math\Bounds.cpp" />
+    <ClCompile Include="Source\Math\Random.cpp" />
     <ClCompile Include="Source\Renderer\Material.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
