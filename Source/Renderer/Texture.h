@@ -133,6 +133,10 @@ public:
     // Attaches the texture to the specified slot for use.
     // slot must be between 0 and 10, inclusive.
     void bind(int slot) const;
+
+    // Updates the data in the heightmap.
+    // The data must be the correct format and size to replace the entire mip level.
+    void setData(const void* data, int dataSizeBytes, int mipLevel);
     
     // Converts a texture format to a human-readable name.
     static const std::string& getFormatName(TextureFormat format);

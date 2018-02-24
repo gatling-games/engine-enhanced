@@ -376,6 +376,18 @@ void Texture::bind(int slot) const
     glBindTexture(GL_TEXTURE_2D, glid_);
 }
 
+void Texture::setData(const void* data, int dataSizeBytes, int mipLevel)
+{
+    assert(!isCompressed());
+    assert(dataSizeBytes == getMipSize(format_, width_, height_, mipLevel));
+    
+    // This currently only works for R8 textures (for the terrain)
+    assert(format_ == TextureFormat::R8);
+
+    glTextureSubImage2D(glid_, mipLevel, 0, 0, width_ >> mipLevel, height_ >> mipLevel,
+        GL_RED, GL_UNSIGNED_BYTE, data);
+}
+
 const std::string& Texture::getFormatName(TextureFormat format)
 {
     return getFormatData(format)->name;
