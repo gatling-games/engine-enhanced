@@ -67,9 +67,6 @@ struct TerrainUniformData
     Color terrainLayerColours[Terrain::MAX_LAYERS];
     BindlessTextureHandle terrainTextures[Terrain::MAX_LAYERS*2]; // x2 to pad each value to 16 bytes
     BindlessTextureHandle terrainNormalMapTextures[Terrain::MAX_LAYERS*2];  // x2 to pad each value to 16 bytes
-
-    BindlessTextureHandle terrainHeightmap;
-    uint16_t padding;
 };
 
 // Plain old uniform data for converting object local coordinates to world space

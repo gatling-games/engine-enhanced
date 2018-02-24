@@ -64,8 +64,6 @@ layout(std140, binding = 5) uniform terrain_data
 
     // The tangent space normal map texture handle for each layer
     sampler2D _TerrainNormalMapTextures[MAX_TERRAIN_LAYERS];
-
-    sampler2D _TerrainHeightmap;
 };
 
 

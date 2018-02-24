@@ -222,7 +222,6 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 {
     TerrainUniformData data;
     data.terrainSize = Vector4(terrain->size().x, terrain->size().y, terrain->size().z, (float)terrain->layerCount());
-    data.terrainHeightmap = terrain->heightmap()->bindlessHandle();
 
     for (int i = 0; i < terrain->layerCount(); ++i)
     {
@@ -284,6 +283,7 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
 
         //Set mesh and heightmap
         terrain->mesh()->bind();
+        terrain->heightmap()->bind(8);
         updateTerrainUniformBuffer(terrain);
 
         // Render the terrain with tessellation

@@ -58,6 +58,8 @@ out vec2 texcoord;
 out vec3 tangentToWorld[3];
 #endif
 
+layout(binding = 8) uniform sampler2D _TerrainHeightmap;
+
 void main()
 {
     // Compute normalized position of the terrain. This ranges from 0,1 in XYZ
