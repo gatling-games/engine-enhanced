@@ -23,6 +23,7 @@ enum class TextureFormat
     RGBA8_SRGB, // RGBA, 32 bits per pixel, srgb->linear rgb, linear alpha
     RGBA1010102, // RGBA, 10 bits for rgb, 2 bits for a
 	R8, // Single channel, 8 bits per pixel
+    R16, // Single channel, 16 bits per pixel
 	RFloat, // Single channel, 32 bit floating point
 	Depth, // Depth texture, 24 bits per pixel
 	ShadowMap, // Depth texture + hardware PCF, 24 bits per pixel
