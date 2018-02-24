@@ -29,6 +29,8 @@ Terrain::Terrain(GameObject* gameObject)
     TerrainLayer layer;
     layer.material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_rock_01.material");
     terrainLayers_.push_back(layer);
+
+    generateTerrain();
 }
 
 void Terrain::drawProperties()
@@ -76,4 +78,23 @@ void Terrain::serialize(PropertyTable &table)
 {
     table.serialize("dimensions", dimensions_, Vector3(1024.0f, 80.0f, 1024.0f));
     table.serialize("layers", terrainLayers_);
+}
+
+void Terrain::generateTerrain()
+{
+    std::vector<uint8_t> heights(HEIGHTMAP_RESOLUTION * HEIGHTMAP_RESOLUTION);
+
+    for(int x = 0; x < HEIGHTMAP_RESOLUTION; ++x)
+    {
+        for(int y = 0; y < HEIGHTMAP_RESOLUTION; ++y)
+        {
+            if (x < HEIGHTMAP_RESOLUTION / 2)
+                heights[x * HEIGHTMAP_RESOLUTION + y] = y / 4;
+            else
+                heights[x*HEIGHTMAP_RESOLUTION + y] = (255 - y / 4);
+        }
+    }
+
+    heightMap_.setData(heights.data(), HEIGHTMAP_RESOLUTION * HEIGHTMAP_RESOLUTION, 0);
+
 }

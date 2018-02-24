@@ -50,4 +50,7 @@ private:
     Texture heightMap_;
     Vector3 dimensions_;
     std::vector<TerrainLayer> terrainLayers_;
+
+    // Regenerates the terrain
+    void generateTerrain();
 };
