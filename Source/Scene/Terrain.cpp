@@ -276,7 +276,7 @@ void Terrain::placeObjects()
 
 float Terrain::sampleHeightmap(float x, float z)
 {
-    int xTexel = (int)((x / dimensions_.x) * HEIGHTMAP_RESOLUTION + 0.5f);
-    int zTexel = (int)((z / dimensions_.z) * HEIGHTMAP_RESOLUTION + 0.5f);
+    int xTexel = (int)((x / dimensions_.x) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
+    int zTexel = (int)((z / dimensions_.z) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
     return heights_[xTexel + zTexel * HEIGHTMAP_RESOLUTION];
 }
