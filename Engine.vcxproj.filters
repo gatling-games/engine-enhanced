@@ -186,6 +186,9 @@
     <ClInclude Include="Source\Math\Bounds.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Math\Random.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -321,6 +324,9 @@
       <Filter>Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\Math\Bounds.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Math\Random.cpp">
       <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>

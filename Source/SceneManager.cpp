@@ -95,22 +95,19 @@ const std::vector<StaticMesh*> SceneManager::staticMeshes() const
     return meshes;
 }
 
-const std::vector<Terrain*> SceneManager::terrains() const
+const Terrain* SceneManager::terrain() const
 {
-    // Make a vector to store the meshes
-    std::vector<Terrain*> terrains;
-
     // Check every game object for a terrain component
     for (GameObject* gameObject : gameObjects_)
     {
         Terrain* terrain = gameObject->findComponent<Terrain>();
         if (terrain != nullptr)
         {
-            terrains.push_back(terrain);
+            return terrain;
         }
     }
 
-    return terrains;
+    return nullptr;
 }
 
 template<typename T>

@@ -23,6 +23,7 @@ enum class TextureFormat
     RGBA8_SRGB, // RGBA, 32 bits per pixel, srgb->linear rgb, linear alpha
     RGBA1010102, // RGBA, 10 bits for rgb, 2 bits for a
 	R8, // Single channel, 8 bits per pixel
+    R16, // Single channel, 16 bits per pixel
 	RFloat, // Single channel, 32 bit floating point
 	Depth, // Depth texture, 24 bits per pixel
 	ShadowMap, // Depth texture + hardware PCF, 24 bits per pixel
@@ -133,6 +134,10 @@ public:
     // Attaches the texture to the specified slot for use.
     // slot must be between 0 and 10, inclusive.
     void bind(int slot) const;
+
+    // Updates the data in the heightmap.
+    // The data must be the correct format and size to replace the entire mip level.
+    void setData(const void* data, int dataSizeBytes, int mipLevel);
     
     // Converts a texture format to a human-readable name.
     static const std::string& getFormatName(TextureFormat format);

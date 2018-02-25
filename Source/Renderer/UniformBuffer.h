@@ -59,15 +59,14 @@ struct ShadowUniformData
 
 struct TerrainUniformData
 {
-    Vector4 terrainTextureOffsetScale;
     Vector4 terrainSize;
-    Vector4 textureScale;
-    Vector4 terrainColor[Terrain::MAX_LAYERS];
+
+    // Per-layer data
     Vector4 terrainLayerBlendData[Terrain::MAX_LAYERS];
-    BindlessTextureHandle terrainHeightmap;
-    uint16_t padding;
-    BindlessTextureHandle terrainTextures[Terrain::MAX_LAYERS*2];
-    BindlessTextureHandle terrainNormalMapTextures[Terrain::MAX_LAYERS*2];
+    Vector4 terrainLayerScale[Terrain::MAX_LAYERS]; // xy for scale, zw unused
+    Color terrainLayerColours[Terrain::MAX_LAYERS];
+    BindlessTextureHandle terrainTextures[Terrain::MAX_LAYERS*2]; // x2 to pad each value to 16 bytes
+    BindlessTextureHandle terrainNormalMapTextures[Terrain::MAX_LAYERS*2];  // x2 to pad each value to 16 bytes
 };
 
 // Plain old uniform data for converting object local coordinates to world space

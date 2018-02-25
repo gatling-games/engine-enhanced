@@ -58,6 +58,8 @@ out vec2 texcoord;
 out vec3 tangentToWorld[3];
 #endif
 
+layout(binding = 8) uniform sampler2D _TerrainHeightmap;
+
 void main()
 {
     // Compute normalized position of the terrain. This ranges from 0,1 in XYZ
@@ -65,7 +67,7 @@ void main()
     vec4 normalizedPosition = gl_in[0].gl_Position * gl_TessCoord.x
         + gl_in[1].gl_Position * gl_TessCoord.y
         + gl_in[2].gl_Position * gl_TessCoord.z;;
-    normalizedPosition.y = texture(_TerrainHeightmap, normalizedPosition.xz).g;
+    normalizedPosition.y = texture(_TerrainHeightmap, normalizedPosition.xz).r;
 
     // Scale by the terrain size to get the world position
     worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz, 1.0);
@@ -73,18 +75,18 @@ void main()
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * worldPosition;
 
-    // Compute the Texture coordinates from world position
-    texcoord = normalizedPosition.xz * _TextureScale.xy;
+    // Compute the Texture coordinates from the normalized position
+    texcoord = normalizedPosition.xz;
 
     // Compute the offset from the normalized position to get the adjacent heightmap pixels
     ivec2 heightmapRes = textureSize(_TerrainHeightmap, 0);
     vec2 heightmapTexelSize = 1.0 / heightmapRes;
 
     // Determine the gradient along x and z at the vertex position
-    float x1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(-1.0, 0.0)).g;
-    float x2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(1.0, 0.0)).g;
-    float z1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, -1.0)).g;
-    float z2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, 1.0)).g;
+    float x1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(-1.0, 0.0)).r;
+    float x2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(1.0, 0.0)).r;
+    float z1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, -1.0)).r;
+    float z2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, 1.0)).r;
     float dydx = x2 - x1;
     float dydz = z2 - z1;
     dydx *= _TerrainSize.y;
@@ -126,14 +128,16 @@ in vec3 tangentToWorld[3];
  */
 void sampleLayer(int index, out vec4 albedoSmoothness, out vec3 tangentNormal)
 {
+    vec2 layerTexcoord = texcoord * _TerrainLayerScale[index].xy;
+
 #ifdef TEXTURE_ON
-    albedoSmoothness = texture(_TerrainTextures[index], texcoord) * _TerrainColor[index];
+    albedoSmoothness = texture(_TerrainTextures[index], layerTexcoord) * _TerrainColor[index];
 #else
     albedoSmoothness = _TerrainColor[index];
 #endif
 
 #ifdef NORMAL_MAP_ON
-    tangentNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[index], texcoord));
+    tangentNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[index], layerTexcoord));
 #else
     tangentNormal = vec3(0.0, 0.0, 1.0);
 #endif

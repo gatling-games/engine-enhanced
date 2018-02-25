@@ -46,14 +46,24 @@ layout(std140, binding = 3) uniform per_draw_data
 //Terrain uniform buffer
 layout(std140, binding = 5) uniform terrain_data
 {
-    uniform vec4 _TerrainTextureOffsetScale; // XY is offset, ZW is scale
-    uniform vec4 _TerrainSize; // XYZ, W is layercount(int)
-    uniform vec4 _TextureScale; // XY
-    uniform vec4 _TerrainColor[MAX_TERRAIN_LAYERS]; //Terrain color from material
-    uniform vec4 _TerrainLayerBlendData[MAX_TERRAIN_LAYERS]; // xy = offset and scale for altitude blend, zw for slope
-    sampler2D _TerrainHeightmap; //Texture containing the terrain heightmap
-    sampler2D _TerrainTextures[MAX_TERRAIN_LAYERS]; //Terrain albedo textures
-    sampler2D _TerrainNormalMapTextures[MAX_TERRAIN_LAYERS]; //Terrai normal Textures
+    uniform vec4 _TerrainSize; // XYZ, W is layercount    
+
+    // The blending settings for each terrain layer
+    // x = altitude border, y = altitude transition
+    // z = slope border, w = slope transition
+    uniform vec4 _TerrainLayerBlendData[MAX_TERRAIN_LAYERS];
+
+    // The texture scale/offset for each layer material
+    uniform vec4 _TerrainLayerScale[MAX_TERRAIN_LAYERS];
+
+    // The material base colour for each terrain layer
+    uniform vec4 _TerrainColor[MAX_TERRAIN_LAYERS];
+
+    // The albedo / smoothness texture handle for each layer
+    sampler2D _TerrainTextures[MAX_TERRAIN_LAYERS];
+
+    // The tangent space normal map texture handle for each layer
+    sampler2D _TerrainNormalMapTextures[MAX_TERRAIN_LAYERS];
 };
 
 

@@ -14,6 +14,8 @@ struct TerrainLayer : ISerializedObject
     float altitudeTransition = 0.0f;
     float slopeBorder = -1.0f;
     float slopeHardness = 1.0f;
+    Vector2 textureTileSize = Vector2(10.0f, 10.0f);
+    Vector2 textureTileOffset = Vector2::zero();
     Material* material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");;
 
     void serialize(PropertyTable& table) override;
@@ -21,8 +23,8 @@ struct TerrainLayer : ISerializedObject
 
 class Terrain : public Component
 {
-    
 public:
+    const static int HEIGHTMAP_RESOLUTION = 1024;
     const static int MAX_LAYERS = 32;
 
     explicit Terrain(GameObject* gameObject);
@@ -34,23 +36,38 @@ public:
     // Serialisation function
     void serialize(PropertyTable &table) override;
 
-    Mesh* mesh() const { return mesh_; }
-    Texture* heightmap() const { return heightMap_; }
+    const Mesh* mesh() const { return mesh_; }
+    const Texture* heightmap() const { return &heightMap_; }
 
     // Total size of the terrain, in m, in X,Y,Z
-    Vector3 terrainDimensions() const { return dimensions_; }
+    Vector3 size() const { return dimensions_; }
     
-    //Number of repetitions of each texture layer in X and Z
-    Vector2 textureWrapping() const { return textureWrap_; }
-
-
-    TerrainLayer* terrainLayers() { return &terrainLayers_.front(); }
+    const TerrainLayer* layers() const { return &terrainLayers_.front(); }
     int layerCount() const { return (int)terrainLayers_.size(); }
 
 private:
     Mesh* mesh_;
-    Texture* heightMap_;
-    Vector2 textureWrap_;
+    Texture heightMap_;
     Vector3 dimensions_;
     std::vector<TerrainLayer> terrainLayers_;
+
+    // Terrain generation settings
+    int seed_;
+    float fractalSmoothness_;
+    float mountainScale_;
+    float islandFactor_;
+
+    // The current heightmap
+    std::vector<float> heights_;
+
+    // A list of objects placed on the terrain
+    std::vector<GameObject*> placedObjects_;
+
+    // Regenerates the terrain
+    void generateTerrain();
+    void placeObjects();
+
+    // Gets the heightmap height at a specified point
+    // The x and z coordinates are in world space.
+    float sampleHeightmap(float x, float z);
 };

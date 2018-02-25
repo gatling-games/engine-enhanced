@@ -56,6 +56,7 @@ TextureFormatData formatsTable[] = {
     {   "RGBA8_SRGB",    1, 1, 4,     GL_SRGB8_ALPHA8,                    false       }, // RGBA8_SRGB
     {   "RGBA1010102",   1, 1, 4,     GL_RGB10_A2,                        false       }, // RGBA1010102
     {   "R8",            1, 1, 1,     GL_R8,                              false       }, // R8
+    {   "R16",           1, 1, 2,     GL_R16,                             false       }, // R16
     {   "R32F",          1, 1, 4,     GL_R32F,                            false       }, // RFloat
     {   "Depth 24",      1, 1, 2,     GL_DEPTH32F_STENCIL8,               false       }, // Depth
     {   "ShadowMap",     1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // ShadowMap
@@ -374,6 +375,18 @@ void Texture::bind(int slot) const
 {
     glActiveTexture(GL_TEXTURE0 + slot);
     glBindTexture(GL_TEXTURE_2D, glid_);
+}
+
+void Texture::setData(const void* data, int dataSizeBytes, int mipLevel)
+{
+    assert(!isCompressed());
+    assert(dataSizeBytes == getMipSize(format_, width_, height_, mipLevel));
+    
+    // This currently only works for R16 textures (for the terrain)
+    assert(format_ == TextureFormat::R16);
+
+    glTextureSubImage2D(glid_, mipLevel, 0, 0, width_ >> mipLevel, height_ >> mipLevel,
+        GL_RED, GL_UNSIGNED_SHORT, data);
 }
 
 const std::string& Texture::getFormatName(TextureFormat format)
