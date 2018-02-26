@@ -31,22 +31,6 @@ bool isViewDirInSun(vec3 viewDir)
     return dot(viewDir, _LightDirectionIntensity.xyz) > 0.997;
 }
 
-vec3 inScattering(vec3 y, vec3 v)
-{
-    vec3 sum = vec3(0.0);
-
-    const int stepCount = 64;
-    for (int i = 0; i < stepCount; ++i)
-    {
-        vec3 dir = _SphereIntegralPoints[i].xyz;
-        vec3 L = _LightDirectionIntensity.w * TDirection(y, _LightDirectionIntensity.xyz);
-        sum += rayleighScattering(y.y - Rg) * max(rayleighPhase(dot(dir, v)), 0.0) * L;
-        sum += mieScattering(y.y - Rg) * max(miePhase(dot(dir, v)), 0.0) * L;
-    }
-
-    return sum / float(stepCount) * 4 * M_PI;
-}
-
 vec3 S(vec3 x, vec3 v)
 {
     // Find the position where x + tv intersects the top of the atmosphere
