@@ -24,8 +24,8 @@ ShadowMap::ShadowMap()
         cascades_[i].cameraTransform = cameraGameObject->transform();
         cascades_[i].camera = cameraGameObject->createComponent<Camera>();
         cascades_[i].camera->setType(CameraType::Orthographic);
-        cascades_[i].camera->setNearPlane(-1000.0f);
-        cascades_[i].camera->setFarPlane(1000.0f);
+        cascades_[i].camera->setNearPlane(-2000.0f);
+        cascades_[i].camera->setFarPlane(2000.0f);
     }
 }
 
