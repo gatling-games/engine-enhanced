@@ -33,6 +33,12 @@ Vector4::Vector4(const Vector3 &p)
 
 }
 
+Vector4::Vector4(const Vector3& xyz, float w)
+    : x(xyz.x), y(xyz.y), z(xyz.z), w(w)
+{
+
+}
+
 Vector4 Vector4::zero()
 {
 	return Vector4(0.0f, 0.0f, 0.0f, 0.0f);

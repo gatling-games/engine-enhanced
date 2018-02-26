@@ -6,12 +6,14 @@
 layout(std140, binding = 0) uniform scene_data
 {
     uniform vec4 _AmbientColor;
-    uniform vec4 _LightColor;
-    uniform vec4 _LightDirection;
-    uniform vec4 _SkyTopColor;
-    uniform vec4 _SkyHorizonColor;
-    uniform vec4 _SunParams; // x = size, y = falloff
-    uniform vec4 _Time; // x = time, y = 1/time
+
+    // The primary light direction and intensity
+    // xyz = to light dir, normalized
+    // w = light intensity
+    uniform vec4 _LightDirectionIntensity;
+
+    // x = time, y = 1/time
+    uniform vec4 _Time;
 
     // Fog settings
     uniform vec4 _FogColor;

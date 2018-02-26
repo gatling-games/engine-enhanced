@@ -28,17 +28,18 @@ void main()
     float viewDistance = length(viewDirUnnormalized);
     vec3 viewDir = viewDirUnnormalized / viewDistance;
 
+    // Attenuate the direct light by the atmospheric scattering
+    vec3 sunDir = _LightDirectionIntensity.xyz;
+    vec3 sunColor = _LightDirectionIntensity.w * TDirection(worldPosition + vec3(0.0, Rg, 0.0), _LightDirectionIntensity.xyz);
+
     // Compute the ambient and direct light separately
     vec3 ambientLight = surface.diffuseColor * _AmbientColor.rgb * 0.2;
-    vec3 directLight = PhysicallyBasedBRDF(surface, viewDir);
+    vec3 directLight = PhysicallyBasedBRDF(surface, sunColor, sunDir, viewDir);
 
     // Attenuate the direct light by a shadow factor
 #ifdef SHADOWS_ON
     directLight *= SampleSunShadow(worldPosition, viewDistance);
 #endif
-
-    // Attenuate the direct light by the atmospheric scattering
-    directLight *= TDirection(worldPosition + vec3(0.0, Rg, 0.0), _LightDirection.xyz);
 
     // Combine the lighting components
     vec3 light = ambientLight + directLight;

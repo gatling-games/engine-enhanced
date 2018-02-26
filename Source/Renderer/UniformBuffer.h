@@ -26,11 +26,12 @@ enum class UniformBufferType
 struct SceneUniformData
 {
     Color ambientLightColor;
-    Color lightColor;
-    Vector4 toLightDirection;
-    Color skyTopColor;
-    Color skyHorizonColor;
-    Vector4 sunParams; // x = falloff, y = size
+
+    // The primary light direction and intensity
+    // xyz = to light dir, normalized
+    // w = light intensity
+    Vector4 lightDirectionIntensity;
+
     Vector4 time; // x = time, y = 1/time
 
     // Fog settings

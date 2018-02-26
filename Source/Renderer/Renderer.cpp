@@ -174,11 +174,7 @@ void Renderer::updateSceneUniformBuffer() const
     // Gather the new contents of the scene buffer
     SceneUniformData data;
     data.ambientLightColor = scene->ambientLight();
-    data.lightColor = scene->sunColor();
-    data.toLightDirection = Vector4((scene->sunRotation() * Vector3(0.0f, 0.0f, -1.0f)).normalized());
-    data.skyTopColor = scene->skyColorTop();
-    data.skyHorizonColor = scene->skyColorBottom();
-    data.sunParams = Vector4(scene->skySunFalloff(), scene->skySunSize(), 0.0f, 0.0f); // x = falloff, y = size
+    data.lightDirectionIntensity = Vector4((scene->sunRotation() * Vector3(0.0f, 0.0f, -1.0f)).normalized(), scene->sunIntensity());
     data.fogColor = scene->fogColor();
     data.fogDensity = scene->fogDensity();
     data.fogHeightFalloff = scene->fogHeightFalloff();
@@ -360,7 +356,6 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
     // Ensure skybox mesh is being used
     skyboxMesh_->bind();
-    skyboxCloudThicknessTexture_->bind(0);
 
     // Compute scale for skydome - must ensure it's big enough without exceeding far clipping plane
     const float farPlane = camera->farPlane();
