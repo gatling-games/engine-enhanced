@@ -1,6 +1,8 @@
 #ifndef ATMOSPHERE_SHADER_CODE_INCLUDED
 #define ATMOSPHERE_SHADER_CODE_INCLUDED
 
+#include "Common.inc.shader"
+
 //////////////////////////////////////////////////////////////////
 // Atmospheric scattering code.
 //
@@ -10,6 +12,9 @@
 // A few marked parts are based on "Physically Based Sky, Atmosphere and Cloud Rendering 
 // in Frostbite" [Hilliare16]
 //////////////////////////////////////////////////////////////////
+
+// Look up table textures
+layout(binding = 5) uniform sampler2D _TransmittanceLUT;
 
 // Constants for atmospheric scattering in Earth's atmosphere.
 // The constants below match the names and values from Bruneton08
@@ -140,6 +145,7 @@ vec3 PointOnAtmosphereTop(vec3 x, vec3 v)
  */
 vec3 TDirection(vec3 x, vec3 v)
 {
+#ifdef GENERATING_TRANSMITTANCCE_LUT
     // Find the position where x + tv intersects the top of the atmosphere
     vec3 x0 = PointOnAtmosphereTop(x, v);
 
@@ -160,6 +166,14 @@ vec3 TDirection(vec3 x, vec3 v)
 
     // The transmission is e ^ -absorption
     return exp(-absorptionSum);
+#endif
+
+    // When the lut is already made, its much quicker.
+    // This uses the parameterisation proposed by [Bruneton08]
+    // The LUT generation code is in Shaders/Sky/PrecomputeTransmittance.shader
+    float r = length(x);
+    float u = dot(x, v) / r;
+    return texture(_TransmittanceLUT, vec2((r - Rg) / (Rt - Rg), u * 0.5 + 0.5)).rgb;
 }
 
 /*

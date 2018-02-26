@@ -61,6 +61,12 @@ private:
     ResourcePPtr<Shader> skyboxShader_;
     ResourcePPtr<Mesh> skyboxMesh_;
 
+    // A shader used for generating the transmittance LUT
+    ResourcePPtr<Shader> skyTransmittanceShader_;
+
+    // Sky lookup textures
+    Texture skyTransmittanceLUT_;
+
     // GBuffer management
     void createGBuffer();
     void destroyGBuffer();
@@ -82,4 +88,8 @@ private:
     void executeDeferredDebugPass() const;
     void executeWaterPass() const;
     void executeSkyboxPass(const Camera* camera) const;
+
+    // Computes the sky transmittance lut
+    // This is slow and should only be done when needed (aka when the atmosphere composition changes).
+    void regenerateSkyTransmittanceLUT();
 };

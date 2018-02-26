@@ -24,7 +24,8 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     sceneUniformBuffer_(UniformBufferType::SceneBuffer),
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
     perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
-    terrainUniformBuffer_(UniformBufferType::TerrainBuffer)
+    terrainUniformBuffer_(UniformBufferType::TerrainBuffer),
+    skyTransmittanceLUT_(TextureFormat::RGB16F, 64, 64)
 {
     fullScreenMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/full_screen_mesh.mesh");
 
@@ -38,6 +39,13 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     // Load skybox shader and mesh
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
     skyboxMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/skybox.obj");
+    skyTransmittanceShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Sky/PrecomputeTransmittance.shader");
+
+    // Generate the sky transmittance lut on startup.
+    // It should be ok for the entire app lifetime and shouldn't need to be remade.
+    regenerateSkyTransmittanceLUT();
+    const std::string name = "Transmittance LUT [" + std::to_string(skyTransmittanceLUT_.glid()) + "]";
+    glObjectLabel(GL_TEXTURE, skyTransmittanceLUT_.glid(), name.length(), name.c_str());
 }
 
 Renderer::~Renderer()
@@ -356,6 +364,9 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
     // Ensure skybox mesh is being used
     skyboxMesh_->bind();
 
+    // Bind the sky lookup textures
+    skyTransmittanceLUT_.bind(5);
+
     // Compute scale for skydome - must ensure it's big enough without exceeding far clipping plane
     const float farPlane = camera->farPlane();
     const float skyboxScaleSqr = (1.0f / 3.0f) * farPlane * farPlane;
@@ -373,4 +384,16 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
     // Draw skybox mesh
     glDrawElements(GL_TRIANGLES, skyboxMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+}
+
+void Renderer::regenerateSkyTransmittanceLUT()
+{
+    // We run this process on the GPU.
+    // The result is stored in the texture, so make a framebuffer for it.
+    Framebuffer fbo;
+    fbo.attachColorTexture(&skyTransmittanceLUT_);
+
+    // Render to the fbo
+    fbo.use();
+    executeFullScreen(skyTransmittanceShader_, ALL_SHADER_FEATURES);
 }
