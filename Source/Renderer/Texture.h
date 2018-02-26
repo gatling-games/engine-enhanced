@@ -25,6 +25,8 @@ enum class TextureFormat
 	R8, // Single channel, 8 bits per pixel
     R16, // Single channel, 16 bits per pixel
 	RFloat, // Single channel, 32 bit floating point
+    RGB16F, // RGB, 16 bit floating point per channel
+    RGB32F, // RGB, 32 bit floating point per channel
 	Depth, // Depth texture, 24 bits per pixel
 	ShadowMap, // Depth texture + hardware PCF, 24 bits per pixel
 
