@@ -15,3 +15,22 @@ Vector2 random_direction_2d()
     float angle = random_float();
     return Vector2(cosf(angle), sinf(angle));
 }
+
+Vector3 random_direction_3d()
+{
+    // Find a random direction using monte carlo
+    Vector3 dir;
+    float sqrMagnitude;
+
+    do
+    {
+        dir.x = random_float(-1.0f, 1.0f);
+        dir.y = random_float(-1.0f, 1.0f);
+        dir.z = random_float(-1.0f, 1.0f);
+        sqrMagnitude = dir.sqrMagnitude();
+    }
+    while(sqrMagnitude > 1.0f || sqrMagnitude < 0.05f);
+
+    // Normalize and return
+    return dir / sqrtf(sqrMagnitude);
+}
