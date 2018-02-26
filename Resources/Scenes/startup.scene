@@ -7,7 +7,6 @@
             water_depth = 7
         }
     }
-    sun_intensity = 5
     sun_intensity = 5.8
     sun_rotation = 25 95
     fog_density = 0.023
