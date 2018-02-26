@@ -388,6 +388,10 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
 void Renderer::regenerateSkyTransmittanceLUT()
 {
+    // Ensure the lut wrap + clamp settings are correct
+    skyTransmittanceLUT_.setFilterMode(TextureFilterMode::Bilinear);
+    skyTransmittanceLUT_.setWrapMode(TextureWrapMode::Clamp);
+
     // We run this process on the GPU.
     // The result is stored in the texture, so make a framebuffer for it.
     Framebuffer fbo;
