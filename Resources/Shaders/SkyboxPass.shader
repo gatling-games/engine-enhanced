@@ -1,84 +1,87 @@
 
+#include "Common.inc.shader"
 #include "UniformBuffers.inc.shader"
 
 #ifdef VERTEX_SHADER
 
-// Vertex attributes
 layout(location = 0) in vec4 _position;
 
-// Interpolated values to fragment shader
-out vec4 skyColor;
-out vec3 cameraToSky;
+out vec3 viewDirUnnormalized;
 
 void main()
 {
-    // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * (_LocalToWorld * _position);
-
-    // Interpolate between the horizon and sky top colors
-    skyColor = mix(_SkyHorizonColor, _SkyTopColor, _position.y);
-
-    // Set camera to sky vector to skybox vertex position
-    cameraToSky = _position.xyz;
+    viewDirUnnormalized = _position.xyz;
+    viewDirUnnormalized.y = max(0.0, viewDirUnnormalized.y);
 }
 
 #endif // VERTEX_SHADER
 
 #ifdef FRAGMENT_SHADER
 
-uniform sampler2D _MainTexture;
+// Based on "Precomputed Atmospheric Scattering" [Bruneton 2008]
 
-// Interpolated values from vertex shader
-in vec4 skyColor;
-in vec3 cameraToSky;
+#include "Atmosphere.inc.shader"
 
-// Final colour
+in vec3 viewDirUnnormalized;
 out vec4 fragColor;
 
-float getCloudPlane(float cloudPlaneHeight, vec2 cloudScroll, float timeOffset)
+bool isViewDirInSun(vec3 viewDir)
 {
-    // Calculate cloud texture coordinates (scrolling not yet implemented)
-    vec2 cloudTexCoord = (cloudPlaneHeight / cameraToSky.y) * cameraToSky.xz;
-    cloudTexCoord += cloudScroll * (_Time.x + timeOffset);
+    return dot(viewDir, _LightDirectionIntensity.xyz) > 0.997;
+}
 
-    // Get cloud texture from main texture slot
-    float cloudLerp = texture(_MainTexture, cloudTexCoord).r;
+vec3 inScattering(vec3 y, vec3 v)
+{
+    vec3 sum = vec3(0.0);
 
-    return clamp(cloudLerp * 2.5 - 1.2, 0.0, 1.0);
+    const int stepCount = 64;
+    for (int i = 0; i < stepCount; ++i)
+    {
+        vec3 dir = _SphereIntegralPoints[i].xyz;
+        vec3 L = _LightDirectionIntensity.w * TDirection(y, _LightDirectionIntensity.xyz);
+        sum += rayleighScattering(y.y - Rg) * max(rayleighPhase(dot(dir, v)), 0.0) * L;
+        sum += mieScattering(y.y - Rg) * max(miePhase(dot(dir, v)), 0.0) * L;
+    }
+
+    return sum / float(stepCount) * 4 * M_PI;
+}
+
+vec3 S(vec3 x, vec3 v)
+{
+    // Find the position where x + tv intersects the top of the atmosphere
+    vec3 x0 = PointOnAtmosphereTop(x, v);
+
+    // Integrate along the view ray
+    vec3 scatteringSum = vec3(0.0);
+    const float stepCount = 16.0;
+    vec3 stepSize = (x0 - x) / (stepCount - 1.0);
+    for (float step = 0.0; step < stepCount; ++step)
+    {
+        vec3 y = x + stepSize * step;
+        
+        // Rayleigh in-scattering 
+        scatteringSum += TPointToPoint(x, y) * rayleighScattering(y.y - Rg) * rayleighPhase(dot(normalize(v), _LightDirectionIntensity.xyz)) * TDirection(y, _LightDirectionIntensity.xyz) * _LightDirectionIntensity.w * length(stepSize);
+
+        // Mie in-scattering
+        scatteringSum += TPointToPoint(x, y) * mieScattering(y.y - Rg) * miePhase(dot(normalize(v), _LightDirectionIntensity.xyz)) * TDirection(y, _LightDirectionIntensity.xyz) * _LightDirectionIntensity.w * length(stepSize);
+    }
+
+    return scatteringSum;
 }
 
 void main()
-{	
-    // If the point is below the horizon, make it dark brown.
-    if (cameraToSky.y < 0.0)
-    {
-        fragColor = vec4(0.02, 0.01, 0.01, 1.0);
-        return;
-    }
+{
+    vec3 viewPos = _CameraPosition.xyz;
+    viewPos.y += Rg;
+    vec3 viewDir = normalize(viewDirUnnormalized);
 
-    // Cloud plane parameters
-    const float cloudPlaneHeight = 0.8;
-    const vec2 cloudScroll1 = vec2(0.1, 0.025);
-    const vec2 cloudScroll2 = vec2(0.07, 0.030);
+    // Determine the direct light from the sun
+    vec3 L0 = clamp(pow(dot(viewDir, _LightDirectionIntensity.xyz), 1024.0), 0.0, 1.0) * _LightDirectionIntensity.w * TDirection(viewPos, _LightDirectionIntensity.xyz);
+    L0 += S(viewPos, viewDir);
 
-    float cloudLerp1 = getCloudPlane(0.4, cloudScroll1, 0.0f);
-    float cloudLerp2 = getCloudPlane(0.2, cloudScroll2, 40.0f);
-
-    const vec4 cloudColor = vec4(1.0, 1.0, 1.0, 1.0);
-
-    // Get cloud texture from main texture slot
-    float cloudLerp = min(cloudLerp1 + cloudLerp2, 1.0);
-
-    // Interpolate in the sun colour when the view direction is near the sun direction
-    float viewDotSun = max(dot(cameraToSky, _LightDirection.xyz), 0.0);
-    float sunLerp = pow(viewDotSun, _SunParams.y);
-
-    // Scale sun lerp upward and clamp at 1.0 to sharpen intensity falloff
-    sunLerp = min(sunLerp*_SunParams.x, 1.0);
-
-	// Add clouds and output the final color
-    const vec4 skyWithClouds = mix(skyColor, cloudColor, cloudLerp);
-    fragColor = mix(skyWithClouds, _LightColor, sunLerp);
+    // Add the components together
+    fragColor = vec4(L0, 1.0);
 }
 
 #endif // FRAGMENT_SHADER

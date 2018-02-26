@@ -60,7 +60,6 @@ private:
     // Resources used for skybox shader pass
     ResourcePPtr<Shader> skyboxShader_;
     ResourcePPtr<Mesh> skyboxMesh_;
-    ResourcePPtr<Texture> skyboxCloudThicknessTexture_;
 
     // GBuffer management
     void createGBuffer();
