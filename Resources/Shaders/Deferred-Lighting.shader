@@ -9,6 +9,8 @@
 #include "PhysicallyBasedShading.inc.shader"
 #include "Shadows.inc.shader"
 
+#include "Atmosphere.inc.shader"
+
 #ifdef FRAGMENT_SHADER
 
 out vec4 fragColor;
@@ -34,6 +36,9 @@ void main()
 #ifdef SHADOWS_ON
     directLight *= SampleSunShadow(worldPosition, viewDistance);
 #endif
+
+    // Attenuate the direct light by the atmospheric scattering
+    directLight *= TDirection(worldPosition + vec3(0.0, Rg, 0.0), _LightDirection.xyz);
 
     // Combine the lighting components
     vec3 light = ambientLight + directLight;
