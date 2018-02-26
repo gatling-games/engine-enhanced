@@ -32,6 +32,9 @@ const vec3 RayleighE = RayleighS;
 // The mie scattering coefficient at ground level
 const float MieScattering = 0.00002;
 
+// The mie absorption coefficient, relative to mie scattering.
+const float MieAbsorption = 1.11; // [bruneton08]
+
 /*
  * Computes the rayleigh scattering coefficient at the given altitude h
  * Returns the coefficients for red, green and blue light.
@@ -79,6 +82,20 @@ float miePhase(float costheta)
 }
 
 /*
+ * Computes the sum of all absorption coefficients at the altitude h
+ */
+vec3 absorptionAtAltitude(float h)
+{
+    // Rayleigh is only scattering, so absorption = scattering
+    vec3 rayleigh = rayleighScattering(h);
+
+    // Mie scattering
+    float mie = MieAbsorption * mieScattering(h);
+
+    return clamp(rayleigh + vec3(mie), 0.0, 1.0);
+}
+
+/*
  * Computes the point on the top of the atmosphere that ray x + tv will hit.
  * x is the origin position, including Rg.
  */
@@ -102,7 +119,7 @@ vec3 TDirection(vec3 x, vec3 v)
     vec3 x0 = PointOnAtmosphereTop(x, v);
 
     // Integrate along the view ray
-    vec3 scatteringSum = vec3(0.0);
+    vec3 absorptionSum = vec3(0.0);
     const float stepCount = 32.0;
     vec3 stepSize = (x0 - x) / (stepCount - 1.0);
     for (float step = 0.0; step < stepCount; ++step)
@@ -113,12 +130,11 @@ vec3 TDirection(vec3 x, vec3 v)
         // Determine the altitude of point p
         float h = length(p) - Rg;
 
-        scatteringSum += rayleighScattering(h) * length(stepSize);
-        scatteringSum += mieScattering(h) * length(stepSize);
+        absorptionSum += absorptionAtAltitude(h) * length(stepSize);
     }
 
-    // The transmission is e ^ -scattering
-    return exp(-scatteringSum);
+    // The transmission is e ^ -absorption
+    return exp(-absorptionSum);
 }
 
 /*
