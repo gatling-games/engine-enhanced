@@ -6,6 +6,9 @@
 //
 // All equations and constants are based on "Precomputed Atmospheric Scattering" [Bruneton 2008]
 // unless otherwise noted.
+//
+// A few marked parts are based on "Physically Based Sky, Atmosphere and Cloud Rendering 
+// in Frostbite" [Hilliare16]
 //////////////////////////////////////////////////////////////////
 
 // Constants for atmospheric scattering in Earth's atmosphere.
@@ -34,6 +37,9 @@ const float MieScattering = 0.00002;
 
 // The mie absorption coefficient, relative to mie scattering.
 const float MieAbsorption = 1.11; // [bruneton08]
+
+// The ozone absorption coefficient (ozone has no scattering, only absorption)
+const vec3 OzoneAbsorption = vec3(3.426, 8.298, 0.356) * 0.0000006; // From [Hilliare16]
 
 /*
  * Computes the rayleigh scattering coefficient at the given altitude h
@@ -82,6 +88,22 @@ float miePhase(float costheta)
 }
 
 /*
+ * Computes the ozone absorption at the specified altitude h
+ * Based on [Hilliare16]
+ */
+vec3 ozoneAbsorption(float h)
+{
+    // [Hilliare16] found that the ozone result was better if it 
+    // followed the same distribution as rayleigh scattering.
+
+    // The thickness of the atmosphere if its density was uniform
+    const float Hr = 8000.0; // 8km
+
+    // The rayleigh scattering coeff decreases exponentially with height
+    return OzoneAbsorption * exp(-h / Hr);
+}
+
+/*
  * Computes the sum of all absorption coefficients at the altitude h
  */
 vec3 absorptionAtAltitude(float h)
@@ -92,7 +114,10 @@ vec3 absorptionAtAltitude(float h)
     // Mie scattering
     float mie = MieAbsorption * mieScattering(h);
 
-    return clamp(rayleigh + vec3(mie), 0.0, 1.0);
+    // Ozone absorption
+    vec3 ozone = ozoneAbsorption(h);
+
+    return clamp(rayleigh + vec3(mie) + ozone, 0.0, 1.0);
 }
 
 /*
