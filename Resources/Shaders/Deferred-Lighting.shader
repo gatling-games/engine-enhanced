@@ -45,7 +45,7 @@ void main()
     vec3 light = ambientLight + directLight;
 
     // Add light from in-scattering
-    vec3 inScattering = _LightDirectionIntensity.w * 5.0 * InScatteringPointToPoint(_CameraPosition.xyz + vec3(0.0, Rg, 0.0), worldPosition + vec3(0.0, Rg, 0.0));
+    vec3 inScattering = _LightDirectionIntensity.w * 25.0 * InScatteringPointToPoint(_CameraPosition.xyz + vec3(0.0, Rg, 0.0), worldPosition + vec3(0.0, Rg, 0.0));
     inScattering = max(inScattering, 0.0);
 
     // Add fog based on view distance.
