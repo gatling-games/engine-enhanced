@@ -178,6 +178,10 @@ out vec4 fragColor;
 
 void main()
 {
+    // Compute the absorption of the water
+    // It isn't physically accurate, but looks ok.
+    float absorption = exp(-0.5 * heightAboveTerrain);
+
     // Pack the data into the surface structure.
     SurfaceProperties surface;
     surface.diffuseColor = _WaterColor;
@@ -210,7 +214,13 @@ void main()
     light += fs * _LightColor.rgb;
 #endif
 
-    fragColor = vec4(light, 1.0 - exp(-0.5 * heightAboveTerrain));
+    // Add volumetric fog effects
+#ifdef FOG_ON
+    float fogDensity = computeVolumetricFog(_CameraPosition.xyz, viewDir, viewDistance);
+    light = applyVolumetricFog(light, fogDensity);
+#endif
+
+    fragColor = vec4(light, 1.0 - absorption);
 }
 
 #endif // FRAGMENT_SHADER
