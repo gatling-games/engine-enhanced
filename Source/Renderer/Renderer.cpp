@@ -98,13 +98,13 @@ void Renderer::renderFrame(const Camera* camera)
     gbufferFramebuffer_.use();
     executeGeometryPass(camera, ALL_SHADER_FEATURES);
 
-    // Render the water on top of the geometry using alpha blending
-    executeWaterPass();
-
     // Compute lighting into final render target
     targetFramebuffer_->use();
     executeDeferredLightingPass();
-    
+
+    // Render the water on top of the geometry using alpha blending
+    executeWaterPass();
+
     // Show any debugging modes
     if (RenderManager::instance()->debugMode() != RenderDebugMode::None)
     {
@@ -332,6 +332,12 @@ void Renderer::executeWaterPass() const
     glEnable(GL_DEPTH_TEST);
     glDepthMask(true);
 
+    // Use alpha blending
+    // The blend factor is output from the water fragment shader
+    glEnable(GL_BLEND);
+    glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+
     // This pass requires a terrain in the scene
     auto terrains = SceneManager::instance()->terrains();
     if (terrains.empty())
@@ -344,6 +350,8 @@ void Renderer::executeWaterPass() const
     terrains[0]->mesh()->bind();
     glDrawElements(GL_PATCHES, terrains[0]->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
 
+    // Reset blending state
+    glDisable(GL_BLEND);
 }
 
 void Renderer::executeSkyboxPass(const Camera* camera) const

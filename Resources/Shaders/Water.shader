@@ -1,7 +1,7 @@
-#include "UniformBuffers.inc.shader"
 
-#define USE_GBUFFER_WRITE
-#include "Deferred.inc.shader"
+#include "Common.inc.shader"
+#include "UniformBuffers.inc.shader"
+#include "PhysicallyBasedShading.inc.shader"
 
 #ifdef VERTEX_SHADER
 
@@ -50,7 +50,7 @@ layout(triangles, fractional_odd_spacing, ccw) in;
 
 // Interpolated values to fragment shader
 out float heightAboveTerrain;
-out vec4 worldPosition;
+out vec3 worldPosition;
 out vec3 worldNormal;
 out vec2 texcoord;
 
@@ -69,8 +69,8 @@ float getWaveDisplacement(vec2 position)
 
     // The maximum amplitude of each wave
     float waveAmplitudes[waveCount] = {
-        1.0,
-        0.7
+        0.4,
+        0.3
     };
 
     // A vector perpendicular to the direction of travel of each wave
@@ -81,8 +81,8 @@ float getWaveDisplacement(vec2 position)
 
     // The wavelength of each wave
     float waveWavelengths[waveCount] = {
-        60.0,
-        50.0
+        140.0,
+        100.0
     };
 
     // The frequency of each wave
@@ -120,7 +120,7 @@ void main()
     normalizedPosition.xz = normalizedPosition.xz * 8.0 - 4.0;
 
     // Scale by the terrain size to get the world position
-    worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz, 1.0);
+    worldPosition = normalizedPosition.xyz * _TerrainSize.xyz;
 
     // Find the water depth by comparing the terrain heightmap to the water height
     float terainHeight = texture(_TerrainHeightmap, normalizedPosition.xz).g * _TerrainSize.y - _WaterDepth;
@@ -128,13 +128,13 @@ void main()
 
     // Offset each vertex up and down over time to simulate waves
     // Determine the normal by taking the derivative of the waves and combining
-    worldPosition.y += getWaveDisplacement(worldPosition.xz);
+    worldPosition.y += getWaveDisplacement(worldPosition.xz) * heightAboveTerrain;
 
     // Project the vertex position to clip space
-    gl_Position = _ViewProjectionMatrix * worldPosition;
+    gl_Position = _ViewProjectionMatrix * vec4(worldPosition, 1.0);
 
     // Compute the Texture coordinates from world position
-    texcoord = normalizedPosition.xz * _TextureScale.xy + _Time.x * 0.2;
+    texcoord = normalizedPosition.xz * _TextureScale.xy * 0.05 + _Time.x * 0.01;
 
     // Determine the gradient along x and z at the vertex position
     float x1 = getWaveDisplacement(worldPosition.xz + vec2(-0.05, 0.0));
@@ -165,7 +165,7 @@ void main()
 
 // Interpolated values from vertex shader
 in float heightAboveTerrain;
-in vec4 worldPosition;
+in vec3 worldPosition;
 in vec3 worldNormal;
 in vec2 texcoord;
 
@@ -184,8 +184,9 @@ void main()
     surface.gloss = mix(0.4, 0.75, heightAboveTerrain / _WaterDepth);
     surface.occlusion = 1.0;
 
+    // Perform normal mapping
 #ifdef NORMAL_MAP_ON
-    vec3 tangentNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[1], texcoord * 0.2));
+    vec3 tangentNormal = unpackDXT5nm(texture(_TerrainNormalMapTextures[1], texcoord));
     surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);
     surface.worldNormal.y = dot(tangentNormal, tangentToWorld[1]);
     surface.worldNormal.z = dot(tangentNormal, tangentToWorld[2]);
@@ -193,8 +194,23 @@ void main()
     surface.worldNormal = worldNormal;
 #endif
 
-    // Output surface properties to the gbuffer
-    writeToGBuffer(surface);
+    // Compute the view vector and half vector from the world position
+    vec3 viewDirUnnormalized = _CameraPosition.xyz - worldPosition;
+    float viewDistance = length(viewDirUnnormalized);
+    vec3 viewDir = viewDirUnnormalized / viewDistance;
+
+    // The water shader is rendered with alpha blending and may have a large amount of overdraw
+    // Use a simplified lighting model.
+    vec3 light = (dot(_LightDirection.xyz, surface.worldNormal) * 0.5 + 0.5) * _LightColor.rgb * surface.diffuseColor;
+#ifdef SPECULAR_ON
+    vec3 halfVector = normalize(_LightDirection.xyz + viewDir);
+    float ndoth = max(dot(halfVector, surface.worldNormal), 0.0);
+    float ldoth = dot(_LightDirection.xyz, halfVector); // Angle always < 90, so no clamp needed
+    float fs = normalizedBlinnPhong(500.0, ndoth) * schlickFresnel(NON_METALLIC_SPECULAR, ldoth);
+    light += fs * _LightColor.rgb;
+#endif
+
+    fragColor = vec4(light, 1.0 - exp(-0.5 * heightAboveTerrain));
 }
 
 #endif // FRAGMENT_SHADER
