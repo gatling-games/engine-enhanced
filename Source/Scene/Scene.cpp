@@ -80,7 +80,7 @@ void Scene::serialize(PropertyTable &table)
     table.serialize("fog_color", fogColor_, Color(0.5f, 0.6f, 0.7f, 1.0f));
     table.serialize("fog_density", fogDensity_, 0.005f);
     table.serialize("fog_height_falloff", fogHeightFalloff_, 0.023f);
-    table.serialize("water_color", waterColor_, Color(0.2f, 0.3f, 0.5f));
+    table.serialize("water_color", waterColor_, Color(0.05f, 0.066f, 0.093f));
 }
 
 void Scene::createGameObjects()
