@@ -33,7 +33,6 @@ void Scene::drawEditor()
         ImGui::DragFloat("Sun Rotation", &sunRotation_.y, 1.0f, 0.0f, 360.0f);
 
         ImGui::Spacing();
-        ImGui::ColorEdit3("Fog Color", &fogColor_.r);
         ImGui::DragFloat("Fog Density", &fogDensity_, 0.0001f, 0.0001f, 0.3f);
         ImGui::DragFloat("Fog Height Falloff", &fogHeightFalloff_, 0.0001f, 0.0001f, 0.1f);
     }
@@ -64,7 +63,6 @@ void Scene::serialize(PropertyTable &table)
     table.serialize("ambient_intensity", ambientIntensity_, 1.0f);
     table.serialize("sun_intensity", sunIntensity_, 2.0f);
     table.serialize("sun_rotation", sunRotation_, Vector2(30.0f, 0.0f));
-    table.serialize("fog_color", fogColor_, Color(0.5f, 0.6f, 0.7f, 1.0f));
     table.serialize("fog_density", fogDensity_, 0.005f);
     table.serialize("fog_height_falloff", fogHeightFalloff_, 0.023f);
 }

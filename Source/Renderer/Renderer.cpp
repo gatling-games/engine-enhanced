@@ -182,7 +182,6 @@ void Renderer::updateSceneUniformBuffer() const
     SceneUniformData data;
     data.ambientLightColor = scene->ambientLight();
     data.lightDirectionIntensity = Vector4((scene->sunRotation() * Vector3(0.0f, 0.0f, -1.0f)).normalized(), scene->sunIntensity());
-    data.fogColor = scene->fogColor();
     data.fogDensity = scene->fogDensity();
     data.fogHeightFalloff = scene->fogHeightFalloff();
 

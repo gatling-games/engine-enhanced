@@ -44,10 +44,14 @@ void main()
     // Combine the lighting components
     vec3 light = ambientLight + directLight;
 
+    // Add light from in-scattering
+    vec3 inScattering = _LightDirectionIntensity.w * 5.0 * InScatteringPointToPoint(_CameraPosition.xyz + vec3(0.0, Rg, 0.0), worldPosition + vec3(0.0, Rg, 0.0));
+    inScattering = max(inScattering, 0.0);
+
     // Add fog based on view distance.
 #ifdef FOG_ON
     float fogDensity = computeVolumetricFog(_CameraPosition.xyz, -viewDirUnnormalized, viewDistance);
-    light = applyVolumetricFog(light, fogDensity);
+    light = applyVolumetricFog(light, fogDensity, inScattering);
 #endif
 
     fragColor = vec4(light, 0.0);

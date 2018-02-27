@@ -20,7 +20,6 @@ public:
     Color ambientLight() const { return ambientLight_ * ambientIntensity_; }
     float sunIntensity() const { return sunIntensity_; }
     Quaternion sunRotation() const { return Quaternion::euler(sunRotation_.x, sunRotation_.y, 0.0f); }
-    Color fogColor() const { return fogColor_; }
     float fogDensity() const { return fogDensity_; }
     float fogHeightFalloff() const { return fogHeightFalloff_; }
 
@@ -48,7 +47,6 @@ private:
     float ambientIntensity_;
     float sunIntensity_;
     Vector2 sunRotation_;
-    Color fogColor_;
     float fogDensity_;
     float fogHeightFalloff_;
 };

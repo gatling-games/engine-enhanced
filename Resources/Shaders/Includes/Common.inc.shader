@@ -50,9 +50,9 @@ float computeVolumetricFog(vec3 cameraPos, vec3 cameraToWorld, float cameraToWor
  * Applies fog to the incoming radiance, based on the specified fog density.
  * The fog density can be calculated using computeVolumetricFog() 
  */
-vec3 applyVolumetricFog(vec3 light, float fogDensity)
+vec3 applyVolumetricFog(vec3 light, float fogDensity, vec3 fogColor)
 {
-    return mix(light, _FogColor.rgb, fogDensity);
+    return mix(light, fogColor, fogDensity);
 }
 
 #endif // COMMON_SHADER_CODE_INCLUDED
