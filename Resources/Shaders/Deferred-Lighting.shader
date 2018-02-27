@@ -33,7 +33,7 @@ void main()
     vec3 sunColor = _LightDirectionIntensity.w * TDirection(worldPosition + vec3(0.0, Rg, 0.0), _LightDirectionIntensity.xyz);
 
     // Compute the ambient and direct light separately
-    vec3 ambientLight = surface.diffuseColor * _AmbientColor.rgb * 0.2;
+    vec3 ambientLight = surface.diffuseColor * _AmbientColor.rgb;
     vec3 directLight = PhysicallyBasedBRDF(surface, sunColor, sunDir, viewDir);
 
     // Attenuate the direct light by a shadow factor

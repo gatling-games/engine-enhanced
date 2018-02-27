@@ -25,7 +25,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
     perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
     terrainUniformBuffer_(UniformBufferType::TerrainBuffer),
-    skyTransmittanceLUT_(TextureFormat::RGB16F, 64, 64)
+    skyTransmittanceLUT_(TextureFormat::RGB16F, 256, 256)
 {
     fullScreenMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/full_screen_mesh.mesh");
 
