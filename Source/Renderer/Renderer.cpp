@@ -24,7 +24,8 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     sceneUniformBuffer_(UniformBufferType::SceneBuffer),
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
     perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
-    terrainUniformBuffer_(UniformBufferType::TerrainBuffer)
+    terrainUniformBuffer_(UniformBufferType::TerrainBuffer),
+    skyTransmittanceLUT_(TextureFormat::RGB16F, 256, 256)
 {
     fullScreenMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/full_screen_mesh.mesh");
 
@@ -38,7 +39,11 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     // Load skybox shader and mesh
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
     skyboxMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/skybox.obj");
-    skyboxCloudThicknessTexture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/cloud_thickness.psd");
+    skyTransmittanceShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Sky/PrecomputeTransmittance.shader");
+
+    // Generate the sky transmittance lut on startup.
+    // It should be ok for the entire app lifetime and shouldn't need to be remade.
+    regenerateSkyTransmittanceLUT();
 }
 
 Renderer::~Renderer()
@@ -174,12 +179,7 @@ void Renderer::updateSceneUniformBuffer() const
     // Gather the new contents of the scene buffer
     SceneUniformData data;
     data.ambientLightColor = scene->ambientLight();
-    data.lightColor = scene->sunColor();
-    data.toLightDirection = Vector4((scene->sunRotation() * Vector3(0.0f, 0.0f, -1.0f)).normalized());
-    data.skyTopColor = scene->skyColorTop();
-    data.skyHorizonColor = scene->skyColorBottom();
-    data.sunParams = Vector4(scene->skySunFalloff(), scene->skySunSize(), 0.0f, 0.0f); // x = falloff, y = size
-    data.fogColor = scene->fogColor();
+    data.lightDirectionIntensity = Vector4((scene->sunRotation() * Vector3(0.0f, 0.0f, -1.0f)).normalized(), scene->sunIntensity());
     data.fogDensity = scene->fogDensity();
     data.fogHeightFalloff = scene->fogHeightFalloff();
 
@@ -360,7 +360,9 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
     // Ensure skybox mesh is being used
     skyboxMesh_->bind();
-    skyboxCloudThicknessTexture_->bind(0);
+
+    // Bind the sky lookup textures
+    skyTransmittanceLUT_.bind(5);
 
     // Compute scale for skydome - must ensure it's big enough without exceeding far clipping plane
     const float farPlane = camera->farPlane();
@@ -379,4 +381,20 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
     // Draw skybox mesh
     glDrawElements(GL_TRIANGLES, skyboxMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+}
+
+void Renderer::regenerateSkyTransmittanceLUT()
+{
+    // Ensure the lut wrap + clamp settings are correct
+    skyTransmittanceLUT_.setFilterMode(TextureFilterMode::Bilinear);
+    skyTransmittanceLUT_.setWrapMode(TextureWrapMode::Clamp);
+
+    // We run this process on the GPU.
+    // The result is stored in the texture, so make a framebuffer for it.
+    Framebuffer fbo;
+    fbo.attachColorTexture(&skyTransmittanceLUT_);
+
+    // Render to the fbo
+    fbo.use();
+    executeFullScreen(skyTransmittanceShader_, ALL_SHADER_FEATURES);
 }

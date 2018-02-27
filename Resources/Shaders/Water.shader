@@ -7,6 +7,8 @@
 #undef SHADOW_CASCADE_BLENDING
 #include "Shadows.inc.shader"
 
+#include "Atmosphere.inc.shader"
+
 #ifdef VERTEX_SHADER
 
 // Vertex attributes
@@ -136,6 +138,11 @@ void main()
     // Determine the normal by taking the derivative of the waves and combining
     worldPosition.y += getWaveDisplacement(worldPosition.xz) * heightAboveTerrain;
 
+    // Hack
+    // Pull water in the distance upwards to make the horizon seem far away
+    float distanceFromTerrainCentre = length(_TerrainSize.xz * 0.5 - worldPosition.xz);
+    worldPosition.y += max(0.0, (distanceFromTerrainCentre - 5000.0) * 0.015);
+
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * vec4(worldPosition, 1.0);
 
@@ -186,7 +193,7 @@ void main()
 {
     // Compute the absorption of the water
     // It isn't physically accurate, but looks ok.
-    float absorption = exp(-heightAboveTerrain / (_WaterColorDepth.a*0.2));
+    float absorption = 1.0 - heightAboveTerrain / (_WaterColorDepth.a*0.9);
 
     // Pack the data into the surface structure.
     SurfaceProperties surface;
@@ -208,15 +215,19 @@ void main()
     float viewDistance = length(viewDirUnnormalized);
     vec3 viewDir = viewDirUnnormalized / viewDistance;
 
+    // Attenuate the direct light by the atmospheric scattering
+    vec3 sunDir = _LightDirectionIntensity.xyz;
+    vec3 sunColor = _LightDirectionIntensity.w * TDirection(worldPosition + vec3(0.0, Rg, 0.0), _LightDirectionIntensity.xyz);
+
     // The water shader is rendered with alpha blending and may have a large amount of overdraw
     // Use a simplified lighting model.
-    vec3 light = (dot(_LightDirection.xyz, surface.worldNormal) * 0.5 + 0.5) * _LightColor.rgb * surface.diffuseColor; // Half lambert
+    vec3 light = (dot(sunDir, surface.worldNormal) * 0.5 + 0.5) * sunColor * surface.diffuseColor; // Half lambert
 #ifdef SPECULAR_ON
-    vec3 halfVector = normalize(_LightDirection.xyz + viewDir);
+    vec3 halfVector = normalize(sunDir + viewDir);
     float ndoth = max(dot(halfVector, surface.worldNormal), 0.0);
-    float ldoth = dot(_LightDirection.xyz, halfVector); // Angle always < 90, so no clamp needed
+    float ldoth = dot(sunDir, halfVector); // Angle always < 90, so no clamp needed
     float fs = normalizedBlinnPhong(20.0, ndoth) * schlickFresnel(NON_METALLIC_SPECULAR, ldoth);
-    light += fs * _LightColor.rgb;
+    light += fs * sunColor;
 #endif
 
 #ifdef SHADOWS_ON
@@ -227,8 +238,12 @@ void main()
 
     // Add volumetric fog effects
 #ifdef FOG_ON
+    // Add light from in-scattering
+    vec3 inScattering = _LightDirectionIntensity.w * 25.0 * InScatteringPointToPoint(_CameraPosition.xyz + vec3(0.0, Rg, 0.0), worldPosition + vec3(0.0, Rg, 0.0));
+    inScattering = max(inScattering, 0.0);
+
     float fogDensity = computeVolumetricFog(_CameraPosition.xyz, viewDir, viewDistance);
-    light = applyVolumetricFog(light, fogDensity);
+    light = applyVolumetricFog(light, fogDensity, inScattering);
 #endif
 
     fragColor = vec4(light, 1.0 - min(absorption, 1.0));

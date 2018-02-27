@@ -18,13 +18,8 @@ public:
 
     // Rendering settings
     Color ambientLight() const { return ambientLight_ * ambientIntensity_; }
-    Color sunColor() const { return sunColor_ * sunIntensity_; }
+    float sunIntensity() const { return sunIntensity_; }
     Quaternion sunRotation() const { return Quaternion::euler(sunRotation_.x, sunRotation_.y, 0.0f); }
-    Color skyColorTop() const { return skyColorTop_; }
-    Color skyColorBottom() const { return skyColorBottom_; }
-    float skySunSize() const { return skySunSize_; }
-    float skySunFalloff() const { return skySunFalloff_; }
-    Color fogColor() const { return fogColor_; }
     float fogDensity() const { return fogDensity_; }
     float fogHeightFalloff() const { return fogHeightFalloff_; }
 
@@ -50,14 +45,8 @@ private:
     // Rendering settings
     Color ambientLight_;
     float ambientIntensity_;
-    Color sunColor_;
     float sunIntensity_;
     Vector2 sunRotation_;
-    Color skyColorTop_;
-    Color skyColorBottom_;
-    float skySunSize_;
-    float skySunFalloff_;
-    Color fogColor_;
     float fogDensity_;
     float fogHeightFalloff_;
 };

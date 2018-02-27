@@ -7,10 +7,11 @@
             water_depth = 7
         }
     }
-    sun_color = 0.974372 0.753849 0.549856 1
-    sun_intensity = 4.985
-    sun_rotation = 15 192
-    sky_sun_size = 128
-    fog_density = 0.01
-    fog_height_falloff = 0.1
+    ambient_light = 0.192568 0.238955 0.333663 1
+    ambient_intensity = 1.55
+    sun_intensity = 5.8
+    sun_rotation = 25 95
+    sun_rotation = 22 165
+    fog_density = 0.007
+    fog_height_falloff = 0.042
 }

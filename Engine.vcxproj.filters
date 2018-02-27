@@ -28,6 +28,9 @@
     <Filter Include="Scene\Serialization">
       <UniqueIdentifier>{b18a182e-0f5d-4fe0-b4e8-5f9f260f20dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Sky">
+      <UniqueIdentifier>{c5272b5c-8aac-403d-98d9-28ad46b9ed1a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -372,6 +375,12 @@
     </None>
     <None Include="Resources\Shaders\Water.shader">
       <Filter>Shaders</Filter>
+	</None>
+    <None Include="Resources\Shaders\Includes\Atmosphere.inc.shader">
+      <Filter>Shaders\Includes</Filter>
+    </None>
+    <None Include="Resources\Shaders\Sky\PrecomputeTransmittance.shader">
+      <Filter>Shaders\Sky</Filter>
     </None>
   </ItemGroup>
 </Project>

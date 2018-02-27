@@ -58,6 +58,8 @@ TextureFormatData formatsTable[] = {
     {   "R8",            1, 1, 1,     GL_R8,                              false       }, // R8
     {   "R16",           1, 1, 2,     GL_R16,                             false       }, // R16
     {   "R32F",          1, 1, 4,     GL_R32F,                            false       }, // RFloat
+    {   "RGB16F",        1, 1, 6,     GL_RGB16F,                          false       }, // RGB16f
+    {   "RGB32F",        1, 1, 12,    GL_RGB32F,                          false       }, // RGB32F
     {   "Depth 24",      1, 1, 2,     GL_DEPTH32F_STENCIL8,               false       }, // Depth
     {   "ShadowMap",     1, 1, 2,     GL_DEPTH_COMPONENT16,               false       }, // ShadowMap
 };

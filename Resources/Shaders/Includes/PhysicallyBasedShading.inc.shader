@@ -66,11 +66,11 @@ float lambertDiffuse(float ndotl)
     return ndotl;
 }
 
-vec3 PhysicallyBasedBRDF(SurfaceProperties surface, vec3 viewDir)
+vec3 PhysicallyBasedBRDF(SurfaceProperties surface, vec3 lightColor, vec3 lightDir, vec3 viewDir)
 {
     vec3 light = vec3(0.0);
 
-    vec3 halfVector = normalize(_LightDirection.xyz + viewDir);
+    vec3 halfVector = normalize(lightDir + viewDir);
 
     // We are using a cook-torrance based brdf, based on [Lazarov2013].
     // Like lazarov, it makes sense to split into 3 components
@@ -80,9 +80,9 @@ vec3 PhysicallyBasedBRDF(SurfaceProperties surface, vec3 viewDir)
 
     // The microfacet brdf needs the following dot products
     float ndoth = max(dot(halfVector, surface.worldNormal), 0.0);
-    float ndotl = max(dot(surface.worldNormal, _LightDirection.xyz), 0.0);
+    float ndotl = max(dot(surface.worldNormal, lightDir), 0.0);
     float ndotv = max(dot(surface.worldNormal, viewDir), 0.0);
-    float ldoth = dot(_LightDirection.xyz, halfVector); // Angle always < 90, so no clamp needed
+    float ldoth = dot(_LightDirectionIntensity.xyz, halfVector); // Angle always < 90, so no clamp needed
 
     // Lazarov suggests encoding gloss using 8192.0^smoothness
     float a = exp2(13.0 * surface.gloss); // Equivalent to pow(8192.0, surface.gloss) [Lazarov13];
@@ -93,7 +93,7 @@ vec3 PhysicallyBasedBRDF(SurfaceProperties surface, vec3 viewDir)
     // Combine the D, F and V terms for the specular BRDF.
 #ifdef SPECULAR_ON
     float fs = F * V * D;
-    light += fs * _LightColor.rgb * ndotl;
+    light += fs * lightColor * ndotl;
 #endif
 
     // For the diffuse brdf, we support either disney's model or 
@@ -108,7 +108,7 @@ vec3 PhysicallyBasedBRDF(SurfaceProperties surface, vec3 viewDir)
 #endif
 
     // Use the diffuse brdf for diffuse lighting
-    light += fd * _LightColor.rgb * surface.diffuseColor;
+    light += fd * lightColor * surface.diffuseColor;
     return light;
 }
 
