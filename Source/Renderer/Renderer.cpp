@@ -31,6 +31,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     // Load the shaders required for each render pass
     standardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Standard.shader");
     terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
+    waterShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Water.shader");
     deferredLightingShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Lighting.shader");
     deferredDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Debug.shader");
 
@@ -71,6 +72,7 @@ void Renderer::renderFrame(const Camera* camera)
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         executeGeometryPass(camera, ALL_SHADER_FEATURES);
+        executeWaterPass();
 
         // Ensure wireframe rendering is turned off again
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -99,6 +101,9 @@ void Renderer::renderFrame(const Camera* camera)
     // Compute lighting into final render target
     targetFramebuffer_->use();
     executeDeferredLightingPass();
+
+    // Render the water on top of the geometry using alpha blending
+    executeWaterPass();
 
     // Show any debugging modes
     if (RenderManager::instance()->debugMode() != RenderDebugMode::None)
@@ -222,6 +227,7 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
 {
     TerrainUniformData data;
     data.terrainSize = Vector4(terrain->size().x, terrain->size().y, terrain->size().z, (float)terrain->layerCount());
+    data.waterColorDepth = Vector4(terrain->waterColor().r, terrain->waterColor().g, terrain->waterColor().b, terrain->waterDepth());
 
     for (int i = 0; i < terrain->layerCount(); ++i)
     {
@@ -312,6 +318,35 @@ void Renderer::executeDeferredDebugPass() const
 {
     RenderDebugMode mode = RenderManager::instance()->debugMode();
     executeFullScreen(deferredDebugShader_, (ShaderFeatureList)mode | SF_SoftShadows);
+}
+
+void Renderer::executeWaterPass() const
+{
+    // This pass requires a terrain in the scene
+    const Terrain* terrain = SceneManager::instance()->terrain();
+    if (terrain == nullptr)
+    {
+        return;
+    }
+
+    // Ensure that depth testing and depth write are on
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(true);
+
+    // Use alpha blending
+    // The blend factor is output from the water fragment shader
+    glEnable(GL_BLEND);
+    glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+
+    // Render the terrain mesh, using the water shader, with tessellation
+    waterShader_->bindVariant(ALL_SHADER_FEATURES);
+    terrain->mesh()->bind();
+    terrain->heightmap()->bind(8);
+    glDrawElements(GL_PATCHES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+
+    // Reset blending state
+    glDisable(GL_BLEND);
 }
 
 void Renderer::executeSkyboxPass(const Camera* camera) const

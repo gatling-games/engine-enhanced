@@ -31,6 +31,7 @@ enum ShaderFeature
     SF_ShadowCascadeBlending = 32768,
 
     // GBuffer debugging modes
+    SF_DebugGBufferDepth = 32768,
     SF_DebugGBufferAlbedo = 256,
     SF_DebugGBufferOcclusion = 512,
     SF_DebugGBufferNormals = 1024,

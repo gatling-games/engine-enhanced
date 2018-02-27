@@ -9,6 +9,7 @@ enum class RenderDebugMode
 {
     None = 0,
     Wireframe = SF_DebugWireframe,
+    Depth = SF_DebugGBufferDepth,
     Albedo = SF_DebugGBufferAlbedo,
     Occlusion = SF_DebugGBufferOcclusion,
     Gloss = SF_DebugGBufferGloss,

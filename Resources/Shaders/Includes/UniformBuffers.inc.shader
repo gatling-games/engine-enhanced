@@ -46,8 +46,13 @@ layout(std140, binding = 3) uniform per_draw_data
 //Terrain uniform buffer
 layout(std140, binding = 5) uniform terrain_data
 {
-    uniform vec4 _TerrainSize; // XYZ, W is layercount    
-
+    uniform vec4 _TerrainSize; // XYZ, W is layercount   
+	
+    // The base colour and maximum depth of the terrain water
+    // rgb = base color
+    // a = max depth, m
+    uniform vec4 _WaterColorDepth;
+	
     // The blending settings for each terrain layer
     // x = altitude border, y = altitude transition
     // z = slope border, w = slope transition

@@ -27,7 +27,9 @@ Terrain::Terrain(GameObject* gameObject)
     seed_(0),
     fractalSmoothness_(2.0f),
     mountainScale_(4.0f),
-    islandFactor_(2.0f)
+    islandFactor_(2.0f),
+    waterColor_(Color(0.05f, 0.066f, 0.093f)),
+    waterDepth_(30.0f)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
 
@@ -45,6 +47,8 @@ Terrain::Terrain(GameObject* gameObject)
 void Terrain::drawProperties()
 {
     ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
+    ImGui::ColorEdit3("Water Color", &waterColor_.r);
+    ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
     ImGui::Spacing();
 
     // Make a pseudo-hash of the terrain generation parameters before editing
@@ -74,7 +78,7 @@ void Terrain::drawProperties()
     ImGui::DragFloat2("Tile Size", &terrainLayers_[0].textureTileSize.x, 0.1f, 0.5f, 50.0f);
     ImGui::DragFloat2("Tile Offset", &terrainLayers_[0].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
     ImGui::Spacing();
-
+	
     if (ImGui::TreeNode("Terrain Layers"))
     {
         if (ImGui::Button("Add Layer"))
@@ -109,6 +113,8 @@ void Terrain::drawProperties()
 void Terrain::serialize(PropertyTable &table)
 {
     table.serialize("dimensions", dimensions_, Vector3(1024.0f, 80.0f, 1024.0f));
+    table.serialize("water_color", waterColor_, Color(0.05f, 0.066f, 0.093f));
+    table.serialize("water_depth", waterDepth_, 30.0f);
     table.serialize("layers", terrainLayers_);
     table.serialize("seed", seed_, 0);
     table.serialize("factal_smoothness", fractalSmoothness_, 2.0f);

@@ -54,6 +54,9 @@ private:
     ResourcePPtr<Shader> deferredLightingShader_;
     ResourcePPtr<Shader> deferredDebugShader_;
 
+    // Shader used for the forward water pass
+    ResourcePPtr<Shader> waterShader_;
+
     // Resources used for skybox shader pass
     ResourcePPtr<Shader> skyboxShader_;
     ResourcePPtr<Mesh> skyboxMesh_;
@@ -78,5 +81,6 @@ private:
     // Methods for each render pass
     void executeDeferredLightingPass() const;
     void executeDeferredDebugPass() const;
+    void executeWaterPass() const;
     void executeSkyboxPass(const Camera* camera) const;
 };

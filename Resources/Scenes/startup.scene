@@ -3,22 +3,14 @@
         prefab = Resources\Prefabs\Terrain.prefab
         Terrain {
             dimensions = 2048 265 2048
-        }
-    }
-    gameobjects::1 {
-        name = Static Mesh
-        Transform {
-            Position = 0 8.3 0
-            Scale = 1000 1 1000
-        }
-        StaticMesh {
-            mesh = Resources\Meshes\plane.obj
-            material = Resources\Materials\default.material
+            water_color = 0.0214742 0.0279743 0.0389375 1
+            water_depth = 7
         }
     }
     sun_color = 0.974372 0.753849 0.549856 1
-    sun_intensity = 5
-    sun_rotation = 9 185
-    fog_density = 0.023
-    fog_height_falloff = 0.065
+    sun_intensity = 4.985
+    sun_rotation = 15 192
+    sky_sun_size = 128
+    fog_density = 0.01
+    fog_height_falloff = 0.1
 }

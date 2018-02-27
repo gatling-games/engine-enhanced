@@ -25,7 +25,7 @@
     <Filter Include="Shaders\Includes">
       <UniqueIdentifier>{4fda8847-5bfd-4238-8df2-b78ca48621ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Serialization">
+    <Filter Include="Scene\Serialization">
       <UniqueIdentifier>{b18a182e-0f5d-4fe0-b4e8-5f9f260f20dd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -133,13 +133,13 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Serialization\BitReader.h">
-      <Filter>Serialization</Filter>
+      <Filter>Scene\Serialization</Filter>
     </ClInclude>
     <ClInclude Include="Source\Serialization\BitWriter.h">
-      <Filter>Serialization</Filter>
+      <Filter>Scene\Serialization</Filter>
     </ClInclude>
     <ClInclude Include="Source\Serialization\PropertyTable.h">
-      <Filter>Serialization</Filter>
+      <Filter>Scene\Serialization</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\Helicopter.h">
       <Filter>Scene</Filter>
@@ -151,7 +151,7 @@
       <Filter>Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Source\Serialization\SerializedObject.h">
-      <Filter>Serialization</Filter>
+      <Filter>Scene\Serialization</Filter>
     </ClInclude>
     <ClInclude Include="Source\Editor\PropertiesPanel.h">
       <Filter>Editor</Filter>
@@ -169,7 +169,7 @@
       <Filter>Editor</Filter>
     </ClInclude>
     <ClInclude Include="Source\Serialization\Prefab.h">
-      <Filter>Serialization</Filter>
+      <Filter>Scene\Serialization</Filter>
     </ClInclude>
     <ClInclude Include="Source\Importers\PrefabImporter.h">
       <Filter>Importers</Filter>
@@ -288,13 +288,13 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\BitWriter.cpp">
-      <Filter>Serialization</Filter>
+      <Filter>Scene\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\BitReader.cpp">
-      <Filter>Serialization</Filter>
+      <Filter>Scene\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\PropertyTable.cpp">
-      <Filter>Serialization</Filter>
+      <Filter>Scene\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\Renderer\Material.cpp">
       <Filter>Renderer</Filter>
@@ -309,7 +309,7 @@
       <Filter>Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\Serialization\Prefab.cpp">
-      <Filter>Serialization</Filter>
+      <Filter>Scene\Serialization</Filter>
     </ClCompile>
     <ClCompile Include="Source\Importers\PrefabImporter.cpp">
       <Filter>Importers</Filter>
@@ -369,6 +369,9 @@
     </None>
     <None Include="Resources\Shaders\Includes\Shadows.inc.shader">
       <Filter>Shaders\Includes</Filter>
+    </None>
+    <None Include="Resources\Shaders\Water.shader">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

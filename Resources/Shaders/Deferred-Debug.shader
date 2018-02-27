@@ -16,6 +16,14 @@ void main()
 	// Sample the gBuffer textures
 	SurfaceProperties surface = readGBuffer();
 
+    // Depth mode
+#ifdef DEBUG_GBUFFER_DEPTH
+    vec2 texcoord = vec2(gl_FragCoord.xy) * _ScreenResolution.zw;
+    float depth = texture(_CameraDepthTexture, texcoord).r;
+    depth = pow(depth, 2500.0);
+    fragColor = vec4(depth);
+#endif
+
     // Diffuse color mode
 #ifdef DEBUG_GBUFFER_ALBEDO
 	fragColor = vec4(surface.diffuseColor, 1.0);

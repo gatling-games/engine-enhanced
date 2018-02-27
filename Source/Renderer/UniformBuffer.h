@@ -60,6 +60,9 @@ struct ShadowUniformData
 struct TerrainUniformData
 {
     Vector4 terrainSize;
+	
+    // rgb = Water color, a = water depth
+    Vector4 waterColorDepth;
 
     // Per-layer data
     Vector4 terrainLayerBlendData[Terrain::MAX_LAYERS];

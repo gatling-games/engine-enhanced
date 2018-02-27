@@ -3,6 +3,7 @@
 #include "Scene/Component.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/Texture.h"
+#include "Math/Color.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
 
@@ -42,6 +43,12 @@ public:
     // Total size of the terrain, in m, in X,Y,Z
     Vector3 size() const { return dimensions_; }
     
+    // The base color of the water
+    Color waterColor() const { return waterColor_; }
+
+    // The depth of the water at its deepest point
+    float waterDepth() const { return waterDepth_; }
+
     const TerrainLayer* layers() const { return &terrainLayers_.front(); }
     int layerCount() const { return (int)terrainLayers_.size(); }
 
@@ -49,6 +56,8 @@ private:
     Mesh* mesh_;
     Texture heightMap_;
     Vector3 dimensions_;
+    Color waterColor_;
+    float waterDepth_;
     std::vector<TerrainLayer> terrainLayers_;
 
     // Terrain generation settings

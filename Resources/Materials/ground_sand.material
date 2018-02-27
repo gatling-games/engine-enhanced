@@ -1,0 +1,4 @@
+{
+    albedo_texture = Resources\Textures\ground_sand_albedo.tga
+    normal_map_texture = Resources\Textures\ground_sand_normals.tga
+}

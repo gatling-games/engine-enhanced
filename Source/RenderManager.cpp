@@ -29,6 +29,7 @@ RenderManager::RenderManager()
     // Set up menu items for showing debugging modes
     addDebugModeMenuItem(RenderDebugMode::None, "None");
     addDebugModeMenuItem(RenderDebugMode::Wireframe, "Wireframe");
+    addDebugModeMenuItem(RenderDebugMode::Depth, "Depth");
     addDebugModeMenuItem(RenderDebugMode::Albedo, "Albedo");
     addDebugModeMenuItem(RenderDebugMode::Gloss, "Gloss");
     addDebugModeMenuItem(RenderDebugMode::Normals, "Normals");
