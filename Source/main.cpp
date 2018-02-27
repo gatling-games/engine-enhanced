@@ -75,6 +75,8 @@ int main(int argc, const char* argv[])
     int windowHeight = 1080;
     GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "", NULL, NULL);
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(0);
+
     gl3wInit();
 
     // Register a callback for opengl errors.
