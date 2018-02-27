@@ -151,7 +151,7 @@ vec3 TDirection(vec3 x, vec3 v)
 
     // Integrate along the view ray
     vec3 absorptionSum = vec3(0.0);
-    const float stepCount = 32.0;
+    const float stepCount = 128.0;
     vec3 stepSize = (x0 - x) / (stepCount - 1.0);
     for (float step = 0.0; step < stepCount; ++step)
     {
@@ -189,6 +189,59 @@ vec3 TPointToPoint(vec3 x, vec3 y)
 
     // Use the identity T(x, y) = TLookup(x, v) / TLookup(y, v) [Bruneton08]
     return TDirection(x, v) / TDirection(y, v);
+}
+
+/*
+ * Computes the in-scattered light arriving along the ray x + tv,
+ * where the ray goes to the top of the atmosphere.
+ */
+vec3 InScatteringDirection(vec3 x, vec3 v)
+{
+    // Find the position where x + tv intersects the top of the atmosphere
+    vec3 x0 = PointOnAtmosphereTop(x, v);
+
+    // Integrate along the view ray
+    vec3 scatteringSum = vec3(0.0);
+    const float stepCount = 32.0;
+    vec3 stepSize = (x0 - x) / (stepCount - 1.0);
+    for (float step = 0.0; step < stepCount; ++step)
+    {
+        vec3 y = x + stepSize * step;
+        float u = max(0.0, dot(normalize(v), _LightDirectionIntensity.xyz));
+        
+        // Rayleigh in-scattering 
+        scatteringSum += TPointToPoint(x, y) * rayleighScattering(y.y - Rg) * rayleighPhase(u) * TDirection(y, _LightDirectionIntensity.xyz) * length(stepSize);
+
+        // Mie in-scattering
+        scatteringSum += TPointToPoint(x, y) * mieScattering(y.y - Rg) * miePhase(u) * TDirection(y, _LightDirectionIntensity.xyz) * length(stepSize);
+    }
+
+    return scatteringSum;
+}
+
+vec3 InScatteringPointToPoint(vec3 x, vec3 y)
+{
+    // Find the position where x + tv intersects the top of the atmosphere
+    vec3 x0 = y;
+    vec3 v = normalize(y - x);
+
+    // Integrate along the view ray
+    vec3 scatteringSum = vec3(0.0);
+    const float stepCount = 16.0;
+    vec3 stepSize = (x0 - x) / (stepCount - 1.0);
+    for (float step = 0.0; step < stepCount; ++step)
+    {
+        vec3 y = x + stepSize * step;
+        float u = max(0.0, dot(normalize(v), _LightDirectionIntensity.xyz));
+        
+        // Rayleigh in-scattering 
+        scatteringSum += TPointToPoint(x, y) * rayleighScattering(y.y - Rg) * rayleighPhase(u) * TDirection(y, _LightDirectionIntensity.xyz) * length(stepSize);
+
+        // Mie in-scattering
+        scatteringSum += TPointToPoint(x, y) * mieScattering(y.y - Rg) * miePhase(u) * TDirection(y, _LightDirectionIntensity.xyz) * length(stepSize);
+    }
+
+    return scatteringSum;
 }
 
 #endif // ATMOSPHERE_SHADER_CODE_INCLUDED
