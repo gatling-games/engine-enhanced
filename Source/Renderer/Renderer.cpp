@@ -44,8 +44,6 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     // Generate the sky transmittance lut on startup.
     // It should be ok for the entire app lifetime and shouldn't need to be remade.
     regenerateSkyTransmittanceLUT();
-    const std::string name = "Transmittance LUT [" + std::to_string(skyTransmittanceLUT_.glid()) + "]";
-    glObjectLabel(GL_TEXTURE, skyTransmittanceLUT_.glid(), name.length(), name.c_str());
 }
 
 Renderer::~Renderer()
