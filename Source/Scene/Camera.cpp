@@ -11,7 +11,7 @@ Camera::Camera(GameObject* gameObject)
     : Component(gameObject),
     type_(CameraType::Perspective),
     nearPlane_(0.1f),
-    farPlane_(10000.0f),
+    farPlane_(15000.0f),
     orthographicSize_(100.0f),
     fov_(60.0f)
 {
@@ -20,8 +20,8 @@ Camera::Camera(GameObject* gameObject)
 
 void Camera::drawProperties()
 {
-    ImGui::DragFloat("Near Plane", &nearPlane_, 0.1f, -10000.0f, 10000.0f);
-    ImGui::DragFloat("Far Plane", &farPlane_, 0.1f, -10000.0f, 10000.0f);
+    ImGui::DragFloat("Near Plane", &nearPlane_, 0.1f, -10000.0f, 15000.0f);
+    ImGui::DragFloat("Far Plane", &farPlane_, 1.0f, -10000.0f, 15000.0f);
 
     if (type() == CameraType::Orthographic)
     {
@@ -37,7 +37,7 @@ void Camera::drawProperties()
 void Camera::serialize(PropertyTable &table)
 {
     table.serialize("near_plane", nearPlane_, 0.1f);
-    table.serialize("far_plane", farPlane_, 10000.0f);
+    table.serialize("far_plane", farPlane_, 15000.0f);
     table.serialize("fov", fov_, 60.0f);
 }
 
