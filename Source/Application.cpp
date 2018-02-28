@@ -113,6 +113,7 @@ void Application::frameStart()
     clock_->frameStart();
     inputManager_->frameStart();
     sceneManager_->frameStart();
+    vrManager_->frameStart();
     resourceManager_->update();
 
     // When in play mode, dispatch user input
