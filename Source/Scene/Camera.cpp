@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include "Scene/Transform.h"
+#include "VRManager.h"
 
 Camera::Camera(GameObject* gameObject)
     : Component(gameObject),
@@ -84,7 +85,7 @@ void Camera::setFov(float fov)
     fov_ = fov;
 }
 
-Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio) const
+Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio, EyeType eye) const
 {
     const Transform* transform = gameObject()->findComponent<Transform>();
     const Matrix4x4 worldToLocal = transform->worldToLocal();
@@ -104,7 +105,18 @@ Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio) const
         projection = Matrix4x4::orthographic(l, r, b, t, nearPlane_, farPlane_);
     }
 
-    return projection * worldToLocal;
+    Matrix4x4 eyeMatrix = Matrix4x4::identity();
+
+    if (eye == EyeType::LeftEye)
+    {
+        eyeMatrix = VRManager::instance()->getHmdMatrixPoseEye(vr::Hmd_Eye::Eye_Left);
+    }
+    else if (eye == EyeType::RightEye)
+    {
+        eyeMatrix = VRManager::instance()->getHmdMatrixPoseEye(vr::Hmd_Eye::Eye_Right);
+    }
+
+    return projection * eyeMatrix * worldToLocal;
 }
 
 Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio) const

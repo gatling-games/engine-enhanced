@@ -11,6 +11,13 @@ enum class CameraType
     Orthographic
 };
 
+enum class EyeType
+{
+    LeftEye,
+    RightEye,
+    None
+};
+
 class Camera : public Component
 {
 public:
@@ -49,7 +56,7 @@ public:
     void setFov(float fov);
 
     // Gets the combined world -> clip space transformation matrix
-    Matrix4x4 getWorldToCameraMatrix(float aspectRatio) const;
+    Matrix4x4 getWorldToCameraMatrix(float aspectRatio, EyeType eye = EyeType::None) const;
 
     // Gets the inverse of the world -> clip space matrix
     Matrix4x4 getCameraToWorldMatrix(float aspectRatio) const;
