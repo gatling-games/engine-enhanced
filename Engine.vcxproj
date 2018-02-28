@@ -71,6 +71,7 @@
     <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Source\Utils\ImGuiExtensions.h" />
     <ClInclude Include="Source\Utils\Singleton.h" />
+    <ClInclude Include="Source\VRManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Editor\MainWindowMenu.cpp" />
@@ -128,6 +129,7 @@
     <ClCompile Include="Source\Serialization\PropertyTable.cpp" />
     <ClCompile Include="Source\Utils\Clock.cpp" />
     <ClCompile Include="Source\Utils\ImGuiExtensions.cpp" />
+    <ClCompile Include="Source\VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\crunch\crnlib\crnlib.2008.vcxproj">

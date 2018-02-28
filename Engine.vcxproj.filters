@@ -201,6 +201,7 @@
     <ClInclude Include="Source\Scene\HelicopterView.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\VRManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -350,6 +351,7 @@
     <ClCompile Include="Source\Scene\HelicopterView.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Source\VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\SkyboxPass.shader">
