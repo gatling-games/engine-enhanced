@@ -23,6 +23,8 @@ public:
 
     std::string getTrackedDeviceString(vr::IVRSystem *hmd, vr::TrackedDeviceIndex_t device, vr::TrackedDeviceProperty prop, vr::TrackedPropertyError *error = nullptr);
 
+    void renderToHmd(GLint leftEye, GLint rightEye);
+
 private:
     bool vrEnabled_;
 
