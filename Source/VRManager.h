@@ -25,6 +25,9 @@ public:
 
     void renderToHmd(GLint leftEye, GLint rightEye);
 
+    Matrix4x4 getHmdMatrixProjectionEye(vr::Hmd_Eye eye);
+    Matrix4x4 getHmdMatrixPoseEye(vr::Hmd_Eye eye);
+
 private:
     bool vrEnabled_;
 

@@ -90,3 +90,38 @@ void VRManager::renderToHmd(GLint leftEye, GLint rightEye)
     vr::VRCompositor()->PostPresentHandoff();
 
 }
+
+Matrix4x4 VRManager::getHmdMatrixProjectionEye(vr::Hmd_Eye eye)
+{
+    if (!hmd_)
+    {
+        return Matrix4x4();
+    }
+
+    vr::HmdMatrix44_t mat = hmd_->GetProjectionMatrix(eye, 0.01f, 10000.0f);
+
+    Matrix4x4 matrix;
+    matrix.setCol(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0]);
+    matrix.setCol(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[3][1]);
+    matrix.setCol(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[3][2]);
+    matrix.setCol(3, mat.m[0][3], mat.m[1][3], mat.m[2][3], mat.m[3][3]);
+    return matrix;
+}
+
+Matrix4x4 VRManager::getHmdMatrixPoseEye(vr::Hmd_Eye eye)
+{
+    if (!hmd_)
+    {
+        return Matrix4x4();
+    }
+    vr::HmdMatrix34_t mat = hmd_->GetEyeToHeadTransform(eye);
+    Matrix4x4 matrix;
+
+    // This is only a transformation matrix, so we can invert values here.
+    matrix.setCol(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], 0.0f);
+    matrix.setCol(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], 0.0f);
+    matrix.setCol(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], 0.0f);
+    matrix.setCol(3, -mat.m[0][3], -mat.m[1][3], -mat.m[2][3], 1.0f);
+
+    return matrix;
+}
