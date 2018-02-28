@@ -8,6 +8,8 @@ VRManager::VRManager()
     {
         initVR();
         initCompositor();
+        setupFramebuffers();
+        hmd_->GetRecommendedRenderTargetSize(&width_, &height_);
         vrEnabled_ = true;
     }
 }
@@ -71,6 +73,40 @@ std::string VRManager::getTrackedDeviceString(vr::IVRSystem* hmd, vr::TrackedDev
     return result;
 }
 
+void VRManager::setupFramebuffers()
+{
+    for (int i = 0; i < 2; ++i)
+    {
+        // Delete any existing framebuffer
+        if (frameBuffers_[i] != nullptr)
+        {
+            delete frameBuffers_[i];
+            delete depthBuffers_[i];
+            delete colorBuffers_[i];
+            delete renderer_;
+        }
+
+        // Create new framebuffer and textures with new panel dimensions
+        frameBuffers_[i] = new Framebuffer();
+        depthBuffers_[i] = new Texture(TextureFormat::Depth, width_, height_);
+        colorBuffers_[i] = new Texture(TextureFormat::RGB8_SRGB, width_, height_);
+
+        // Attach new textures to new framebuffer
+        frameBuffers_[i]->attachDepthTexture(depthBuffers_[i]);
+        frameBuffers_[i]->attachColorTexture(colorBuffers_[i]);
+
+        // Then create a renderer for the framebuffer.
+    } 
+
+    renderer_ = new Renderer();
+}
+
+void VRManager::frameStart()
+{
+
+}
+
+
 void VRManager::renderToHmd(GLint leftEye, GLint rightEye)
 {
     if (!hmd_)
@@ -91,7 +127,8 @@ void VRManager::renderToHmd(GLint leftEye, GLint rightEye)
 
 }
 
-Matrix4x4 VRManager::getHmdMatrixProjectionEye(vr::Hmd_Eye eye)
+
+const Matrix4x4 VRManager::getHmdMatrixProjectionEye(vr::Hmd_Eye eye)
 {
     if (!hmd_)
     {
@@ -108,7 +145,7 @@ Matrix4x4 VRManager::getHmdMatrixProjectionEye(vr::Hmd_Eye eye)
     return matrix;
 }
 
-Matrix4x4 VRManager::getHmdMatrixPoseEye(vr::Hmd_Eye eye)
+const Matrix4x4 VRManager::getHmdMatrixPoseEye(vr::Hmd_Eye eye)
 {
     if (!hmd_)
     {
