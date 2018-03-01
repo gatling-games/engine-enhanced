@@ -45,10 +45,12 @@ private:
     UniformBuffer<CameraUniformData> cameraUniformBuffer_;
     UniformBuffer<PerDrawUniformData> perDrawUniformBuffer_;
     UniformBuffer<TerrainUniformData> terrainUniformBuffer_;
+    UniformBuffer<TerrainDetailsData> terrainDetailsUniformBuffer_;
 
     // Shaders used for gbuffer pass
     ResourcePPtr<Shader> standardShader_;
     ResourcePPtr<Shader> terrainShader_;
+    ResourcePPtr<Shader> terrainDetailMeshShader_;
 
     // Shaders used for deferred passes
     ResourcePPtr<Shader> deferredLightingShader_;

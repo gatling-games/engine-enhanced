@@ -72,5 +72,13 @@ layout(std140, binding = 5) uniform terrain_data
     sampler2D _TerrainNormalMapTextures[MAX_TERRAIN_LAYERS];
 };
 
+// Terrain details uniform buffer.
+// The buffer is updated once per details batch.
+layout(std140, binding = 6) uniform terrain_details_data
+{
+    // World-space offsets for each terrain detail.
+    // Once per detail mesh instance, up to 1024 in total.
+    uniform vec4 _TerrainDetailPositions[1024];
+};
 
 #endif // UNIFORM_BUFFERS_INCLUDED

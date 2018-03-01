@@ -375,12 +375,15 @@
     </None>
     <None Include="Resources\Shaders\Water.shader">
       <Filter>Shaders</Filter>
-	</None>
+    </None>
     <None Include="Resources\Shaders\Includes\Atmosphere.inc.shader">
       <Filter>Shaders\Includes</Filter>
     </None>
     <None Include="Resources\Shaders\Sky\PrecomputeTransmittance.shader">
       <Filter>Shaders\Sky</Filter>
+    </None>
+    <None Include="Resources\Shaders\TerrainDetail.shader">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

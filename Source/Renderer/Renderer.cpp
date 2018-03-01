@@ -25,6 +25,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
     perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
     terrainUniformBuffer_(UniformBufferType::TerrainBuffer),
+    terrainDetailsUniformBuffer_(UniformBufferType::TerrainDetailsBuffer),
     skyTransmittanceLUT_(TextureFormat::RGB16F, 256, 256)
 {
     fullScreenMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/full_screen_mesh.mesh");
@@ -32,6 +33,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     // Load the shaders required for each render pass
     standardShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Standard.shader");
     terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
+    terrainDetailMeshShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/TerrainDetail.shader");
     waterShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Water.shader");
     deferredLightingShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Lighting.shader");
     deferredDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Debug.shader");
@@ -58,6 +60,7 @@ void Renderer::renderFrame(const Camera* camera)
     cameraUniformBuffer_.use();
     perDrawUniformBuffer_.use();
     terrainUniformBuffer_.use();
+    terrainDetailsUniformBuffer_.use();
 
     // Ensure the contents of the uniform buffers is up to date
     // The per-draw buffer is handled separately
@@ -92,7 +95,7 @@ void Renderer::renderFrame(const Camera* camera)
         for (int cascade = 0; cascade < ShadowMap::CASCADE_COUNT; ++cascade)
         {
             shadowMap_.cascadeFramebuffer(cascade).use();
-            executeGeometryPass(shadowMap_.cascadeCamera(cascade), SF_HighTessellation);
+            executeGeometryPass(shadowMap_.cascadeCamera(cascade), SF_HighTessellation | SF_Cutout);
         }
     }
 
@@ -294,6 +297,29 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
 
         // Render the terrain with tessellation
         glDrawElements(GL_PATCHES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+
+        // Render each terrain details batch
+        for(const DetailBatch& batch : terrain->detailBatches())
+        {
+            batch.mesh->bind();
+
+            // Gather the new contents of the per-draw buffer
+            PerDrawUniformData data;
+            data.colorSmoothness = batch.material->color();
+            data.colorSmoothness.a = batch.material->smoothness();
+            data.albedoTexture = (batch.material->albedoTexture() == nullptr) ? 0 : batch.material->albedoTexture()->bindlessHandle();
+            data.normalMapTexture = (batch.material->normalMapTexture() == nullptr) ? 0 : batch.material->normalMapTexture()->bindlessHandle();
+
+            // Update the uniform buffer.
+            perDrawUniformBuffer_.update(data);
+
+            TerrainDetailsData detailsData;
+            std::memcpy(detailsData.detailPositions, batch.instancePositions, sizeof(Vector4) * batch.count);
+            terrainDetailsUniformBuffer_.update(detailsData);
+
+            terrainDetailMeshShader_->bindVariant(batch.material->supportedFeatures() & shaderFeatures);
+            glDrawElementsInstanced(GL_TRIANGLES, batch.mesh->elementsCount(), GL_UNSIGNED_SHORT, (void*)0, batch.count);
+        }
     }
 }
 
