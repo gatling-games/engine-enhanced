@@ -18,6 +18,8 @@ void TerrainLayer::serialize(PropertyTable& table)
     table.serialize("texture_tile_size", textureTileSize, Vector2(10.0f, 10.0f));
     table.serialize("texture_tile_offset", textureTileOffset, Vector2::zero());
     table.serialize("material", material, (ResourcePPtr<Material>)nullptr);
+    table.serialize("detail_mesh", detailMesh, (ResourcePPtr<Mesh>)nullptr);
+    table.serialize("detail_material", detailMaterial, (ResourcePPtr<Material>)nullptr);
 }
 
 Terrain::Terrain(GameObject* gameObject)
@@ -101,6 +103,10 @@ void Terrain::drawProperties()
 
             ImGui::DragFloat("Slope", &terrainLayers_[layer].slopeBorder, 0.01f, -1.0f, 1.0f);
             ImGui::DragFloat("Hardness", &terrainLayers_[layer].slopeHardness, 0.01f, 0.001f, 1.0f);
+            ImGui::Spacing();
+
+            ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", terrainLayers_[layer].detailMesh);
+            ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", terrainLayers_[layer].detailMaterial);
             ImGui::Spacing();
 
             ImGui::PopID();

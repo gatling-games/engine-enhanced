@@ -17,7 +17,12 @@ struct TerrainLayer : ISerializedObject
     float slopeHardness = 1.0f;
     Vector2 textureTileSize = Vector2(10.0f, 10.0f);
     Vector2 textureTileOffset = Vector2::zero();
-    Material* material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");;
+    Material* material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");
+
+    // Detail mesh settings
+    // The detail mesh is drawn if both the mesh & material are assigned
+    Mesh* detailMesh = nullptr;
+    Material* detailMaterial = nullptr;
 
     void serialize(PropertyTable& table) override;
 };
