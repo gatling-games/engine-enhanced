@@ -20,6 +20,7 @@ void TerrainLayer::serialize(PropertyTable& table)
     table.serialize("material", material, (ResourcePPtr<Material>)nullptr);
     table.serialize("detail_mesh", detailMesh, (ResourcePPtr<Mesh>)nullptr);
     table.serialize("detail_material", detailMaterial, (ResourcePPtr<Material>)nullptr);
+    table.serialize("detail_scale", detailScale, Vector2::one());
 }
 
 Terrain::Terrain(GameObject* gameObject)
@@ -80,7 +81,7 @@ void Terrain::drawProperties()
     ImGui::DragFloat2("Tile Size", &terrainLayers_[0].textureTileSize.x, 0.1f, 0.5f, 50.0f);
     ImGui::DragFloat2("Tile Offset", &terrainLayers_[0].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
     ImGui::Spacing();
-	
+
     if (ImGui::TreeNode("Terrain Layers"))
     {
         if (ImGui::Button("Add Layer"))
@@ -88,26 +89,32 @@ void Terrain::drawProperties()
             terrainLayers_.resize(terrainLayers_.size() + 1);
         }
 
-        for (unsigned int layer = 1; layer < terrainLayers_.size(); layer++)
+        for (unsigned int layerIndex = 1; layerIndex < terrainLayers_.size(); layerIndex++)
         {
-            ImGui::PushID(layer);
+            ImGui::PushID(layerIndex);
 
-            ImGui::ResourceSelect<Material>("Material", "Select Layer Material", terrainLayers_[layer].material);
-            ImGui::DragFloat2("Tile Size", &terrainLayers_[layer].textureTileSize.x, 0.1f, 0.5f, 50.0f);
-            ImGui::DragFloat2("Tile Offset", &terrainLayers_[layer].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
+            TerrainLayer& layer = terrainLayers_[layerIndex];
+
+            ImGui::ResourceSelect<Material>("Material", "Select Layer Material", layer.material);
+            ImGui::DragFloat2("Tile Size", &layer.textureTileSize.x, 0.1f, 0.5f, 50.0f);
+            ImGui::DragFloat2("Tile Offset", &layer.textureTileOffset.x, 0.1f, 0.0f, 50.0f);
             ImGui::Spacing();
 
-            ImGui::DragFloat("Altitude", &terrainLayers_[layer].altitudeBorder, 0.1f, 0.0f, 300.0f);
-            ImGui::DragFloat("Transition", &terrainLayers_[layer].altitudeTransition, 0.1f, 0.0f, 20.0f);
+            ImGui::DragFloat("Altitude", &layer.altitudeBorder, 0.1f, 0.0f, 300.0f);
+            ImGui::DragFloat("Transition", &layer.altitudeTransition, 0.1f, 0.0f, 20.0f);
             ImGui::Spacing();
 
-            ImGui::DragFloat("Slope", &terrainLayers_[layer].slopeBorder, 0.01f, -1.0f, 1.0f);
-            ImGui::DragFloat("Hardness", &terrainLayers_[layer].slopeHardness, 0.01f, 0.001f, 1.0f);
+            ImGui::DragFloat("Slope", &layer.slopeBorder, 0.01f, -1.0f, 1.0f);
+            ImGui::DragFloat("Hardness", &layer.slopeHardness, 0.01f, 0.001f, 1.0f);
             ImGui::Spacing();
 
-            ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", terrainLayers_[layer].detailMesh);
-            ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", terrainLayers_[layer].detailMaterial);
+            ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", layer.detailMesh);
+            ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", layer.detailMaterial);
+            ImGui::DragFloat2("Detail Scale", &layer.detailScale.x, 0.05f, 0.01f, 100.0f);
             ImGui::Spacing();
+
+            // Prevent detail scale min being bigger than max
+            layer.detailScale.x = layer.detailScale.minComponent();
 
             ImGui::PopID();
         }

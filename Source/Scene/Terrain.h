@@ -23,6 +23,7 @@ struct TerrainLayer : ISerializedObject
     // The detail mesh is drawn if both the mesh & material are assigned
     Mesh* detailMesh = nullptr;
     Material* detailMaterial = nullptr;
+    Vector2 detailScale = Vector2::one();
 
     void serialize(PropertyTable& table) override;
 };
