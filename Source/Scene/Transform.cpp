@@ -172,6 +172,15 @@ void Transform::translateLocal(const Vector3& translation)
 void Transform::rotateLocal(float angle, const Vector3& axis)
 {
     // Construct quaternion using input angle and axis
+    const Quaternion newRotation = Quaternion::rotation(angle, rotation_ * axis);
+
+    // Apply new rotation to existing local space rotation
+    rotation_ = newRotation * rotation_;
+}
+
+void Transform::rotateWorld(float angle, const Vector3& axis)
+{
+    // Construct quaternion using input angle and axis
     const Quaternion newRotation = Quaternion::rotation(angle, axis);
 
     // Apply new rotation to existing local space rotation
