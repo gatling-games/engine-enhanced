@@ -6,6 +6,7 @@
 #include "Math/Color.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
+#include "Math/Vector4.h"
 
 class Material;
 
@@ -26,6 +27,17 @@ struct TerrainLayer : ISerializedObject
     Vector2 detailScale = Vector2::one();
 
     void serialize(PropertyTable& table) override;
+};
+
+// A group of detail meshes drawn in a single batch
+struct DetailBatch
+{
+    const static int MaxInstancesPerBatch = 1024;
+
+    int count;
+    Mesh* mesh;
+    Material* material;
+    Vector4 instancePositions[MaxInstancesPerBatch];
 };
 
 class Terrain : public Component
@@ -55,8 +67,12 @@ public:
     // The depth of the water at its deepest point
     float waterDepth() const { return waterDepth_; }
 
+    // The layers on the terrain
     const TerrainLayer* layers() const { return &terrainLayers_.front(); }
     int layerCount() const { return (int)terrainLayers_.size(); }
+
+    // The detail mesh batches on the terrain
+    const std::vector<DetailBatch>& detailBatches() const { return detailMeshBatches_; }
 
 private:
     Mesh* mesh_;
@@ -78,9 +94,13 @@ private:
     // A list of objects placed on the terrain
     std::vector<GameObject*> placedObjects_;
 
+    // A list of detail mesh layers on the terrain
+    std::vector<DetailBatch> detailMeshBatches_;
+
     // Regenerates the terrain
     void generateTerrain();
     void placeObjects();
+    void placeDetailMeshes();
 
     // Gets the heightmap height at a specified point
     // The x and z coordinates are in world space.
