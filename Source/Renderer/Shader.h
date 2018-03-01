@@ -105,9 +105,6 @@ private:
     bool compileShader(GLenum type, const char* shader, GLuint &id);
     bool checkShaderErrors(GLuint shaderID);
     bool checkLinkerErrors(GLuint programID);
-
-    // Sets the texture slot for a sampler with the specified name.
-    void setTextureLocation(const char* textureName, int slot);
 };
 
 class Shader : public Resource
