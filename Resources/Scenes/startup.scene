@@ -2,9 +2,37 @@
     gameobjects::0 {
         prefab = Resources\Prefabs\Terrain.prefab
         Terrain {
-            dimensions = 2048 265 2048
+            dimensions = 1024 144 1024
             water_color = 0.0214742 0.0279743 0.0389375 1
             water_depth = 7
+            water_depth = 7.6
+            layers::0 {
+                texture_tile_size = 15 15
+            }
+            layers::1 {
+                altitude_border = 4.2
+                altitude_transition = 0.7
+                detail_mesh = Resources\Meshes\grass.obj
+                detail_material = Resources\Materials\Terrain\detail_grass.material
+                detail_scale = 1 1.7
+            }
+            layers::2 {
+                altitude_border = 55
+                altitude_transition = 10
+            }
+            layers::3 {
+                altitude_border = 4.4
+                altitude_transition = -2
+                texture_tile_size = 4 4
+                detail_mesh = Resources\Meshes\sand_debris.obj
+                detail_material = Resources\Materials\ground_sand.material
+                detail_scale = 0 0.5
+            }
+            factal_smoothness = 1.99
+            mountain_scale = 6.9
+            island_factor = 8.45
+        }
+    }
         }
     }
     ambient_light = 0.192568 0.238955 0.333663 1
