@@ -54,7 +54,7 @@ void Freecam::update(float deltaTime)
     // Transform the camera
     // Use moveDuration_ so the camera gets faster as it moves for longer.
     const float moveSpeed = powf(moveDuration_, 1.5f);
-    transform_->translateLocal(Vector3(lateral, vertical, forward) * moveSpeed);
+    transform_->translateLocal(Vector3(lateral, vertical, forward) * moveSpeed * deltaTime * 60.0f);
 
     // Apply mouse look when the right mouse button is held down
     if (InputManager::instance()->mouseButtonDown(MouseButton::Right))
