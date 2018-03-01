@@ -12,18 +12,23 @@
 void ScenePanel::draw()
 {
     // Draw all of the game objects in the scene with no parent.
-    for (GameObject* gameObject : SceneManager::instance()->gameObjects())
+    auto gameObjects = SceneManager::instance()->gameObjects();
+    for (unsigned int i = 0; i < gameObjects.size(); ++i)
     {
+        ImGui::PushID((int)i);
+        GameObject* gameObject = gameObjects[i];
+
         // Skip objects flagged as hidden
-        if(gameObject->hasFlag(GameObjectFlag::NotShownInScenePanel))
+        if (!gameObject->hasFlag(GameObjectFlag::NotShownInScenePanel))
         {
-            continue;
+            // Only show gameobjects with no parent in the hierarchy root
+            if (gameObject->transform()->parentTransform() == nullptr)
+            {
+                drawNode(gameObject);
+            }
         }
 
-        if (gameObject->transform()->parentTransform() == nullptr)
-        {
-            drawNode(gameObject);
-        }
+        ImGui::PopID();
     }
 }
 
