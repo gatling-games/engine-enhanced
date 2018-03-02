@@ -36,7 +36,7 @@ void main()
 
     // Apply a wind offset to the world position
     float offsetMagnitude = sin(_Time.x * 1.5 + dot(worldPosition, vec3(0.2))) * _position.y;
-    vec2 offsetDir = vec2(0.3, 0.2);
+    vec2 offsetDir = vec2(0.45, 0.2);
     worldPosition.xz += offsetDir * offsetMagnitude;
 
     // Project the world position to clip space
