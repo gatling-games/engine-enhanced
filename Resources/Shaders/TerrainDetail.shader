@@ -9,6 +9,7 @@
 layout(binding = 8) uniform sampler2D _TerrainHeightmap;
 
 layout(location = 0) in vec4 _position;
+layout(location = 1) in vec3 _normal;
 layout(location = 3) in vec2 _texcoord;
 
 out vec3 worldNormal;
@@ -41,30 +42,12 @@ void main()
     // Project the world position to clip space
     gl_Position = _ViewProjectionMatrix * vec4(worldPosition, 1.0);
 
-    vec3 normalizedPosition = worldPosition / _TerrainSize.xyz;
-
-    // Compute the offset from the normalized position to get the adjacent heightmap pixels
-    ivec2 heightmapRes = textureSize(_TerrainHeightmap, 0);
-    vec2 heightmapTexelSize = 1.0 / heightmapRes;
-
-    // Determine the gradient along x and z at the vertex position
-    float x1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(-1.0, 0.0)).r;
-    float x2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(1.0, 0.0)).r;
-    float z1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, -1.0)).r;
-    float z2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, 1.0)).r;
-    float dydx = x2 - x1;
-    float dydz = z2 - z1;
-    dydx *= _TerrainSize.y;
-    dydz *= _TerrainSize.y;
-    dydx /= (2.0 * heightmapTexelSize.x) * _TerrainSize.x;
-    dydz /= (2.0 * heightmapTexelSize.y) * _TerrainSize.z;
-
-    // Determine the tangents along the X and Z
-    vec3 worldTangent = normalize(vec3(1.0, dydx, 0.0));
-    vec3 worldBitangent = normalize(vec3(0.0, dydz, 1.0));
-
     // Cross product to get the world normal
-    worldNormal = cross(worldBitangent, worldTangent);
+    worldNormal = vec3(
+        _normal.x * cosRotation - _normal.z * sinRotation,
+        _normal.y,
+        _normal.x * sinRotation + _normal.z * cosRotation
+    );
 
     // Texcoord does not need to be modified.
     texcoord = _texcoord;
@@ -103,7 +86,7 @@ void main()
     surface.gloss = _Color.a;
 
     // Make grass partially translucent
-    surface.translucency = 0.5;
+    surface.translucency = 0.666;
 
     // Grass doesn't use normal mapping
     surface.worldNormal = worldNormal;
