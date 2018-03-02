@@ -37,6 +37,7 @@ enum ShaderFeature
     SF_DebugGBufferDepth = 32768,
     SF_DebugGBufferAlbedo = 256,
     SF_DebugGBufferOcclusion = 512,
+    SF_DebugGBufferTranslucency = 131072,
     SF_DebugGBufferNormals = 1024,
     SF_DebugGBufferGloss = 2048,
 

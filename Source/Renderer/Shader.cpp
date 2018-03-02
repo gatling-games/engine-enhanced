@@ -193,6 +193,7 @@ std::string ShaderVariant::createFeatureDefines() const
     if (hasFeature(SF_DebugGBufferDepth)) defines += "#define DEBUG_GBUFFER_DEPTH \n";
     if (hasFeature(SF_DebugGBufferAlbedo)) defines += "#define DEBUG_GBUFFER_ALBEDO \n";
     if (hasFeature(SF_DebugGBufferOcclusion)) defines += "#define DEBUG_GBUFFER_OCCLUSION \n";
+    if (hasFeature(SF_DebugGBufferTranslucency)) defines += "#define DEBUG_GBUFFER_TRANSLUCENCY \n";
     if (hasFeature(SF_DebugGBufferNormals)) defines += "#define DEBUG_GBUFFER_NORMALS \n";
     if (hasFeature(SF_DebugGBufferGloss)) defines += "#define DEBUG_GBUFFER_GLOSS \n";
     if (hasFeature(SF_DebugShadows)) defines += "#define DEBUG_SHADOWS \n";

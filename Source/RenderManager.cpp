@@ -35,6 +35,7 @@ RenderManager::RenderManager()
     addDebugModeMenuItem(RenderDebugMode::Gloss, "Gloss");
     addDebugModeMenuItem(RenderDebugMode::Normals, "Normals");
     addDebugModeMenuItem(RenderDebugMode::Occlusion, "Occlusion");
+    addDebugModeMenuItem(RenderDebugMode::Translucency, "Translucency");
     addDebugModeMenuItem(RenderDebugMode::Shadows, "Shadows");
     addDebugModeMenuItem(RenderDebugMode::ShadowCascades, "Shadow Cascades");
 }
