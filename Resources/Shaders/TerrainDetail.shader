@@ -102,6 +102,9 @@ void main()
     // The a channel is used for opacity, so always use a constant gloss term.
     surface.gloss = _Color.a;
 
+    // Make grass partially translucent
+    surface.translucency = 0.5;
+
     // Grass doesn't use normal mapping
     surface.worldNormal = worldNormal;
 

@@ -193,6 +193,7 @@ void main()
     surface.diffuseColor = albedoSmoothness.rgb;
     surface.gloss = albedoSmoothness.a;
     surface.occlusion = 1.0;
+    surface.translucency = 0.0;
 
 #ifdef NORMAL_MAP_ON
     surface.worldNormal.x = dot(tangentNormal, tangentToWorld[0]);

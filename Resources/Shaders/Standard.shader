@@ -65,6 +65,7 @@ void main()
 {
     SurfaceProperties surface;
     surface.occlusion = 1.0;
+    surface.translucency = 0.0;
 
     // Sample the albedo texture for the diffuse color
 #ifdef TEXTURE_ON
