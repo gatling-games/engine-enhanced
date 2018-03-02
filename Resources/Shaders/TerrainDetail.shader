@@ -33,6 +33,11 @@ void main()
     float scale = instanceOffsetScale.a;
     vec3 worldPosition = (localPosition * scale) + offset;
 
+    // Apply a wind offset to the world position
+    float offsetMagnitude = sin(_Time.x * 1.5 + dot(worldPosition, vec3(0.2))) * _position.y;
+    vec2 offsetDir = vec2(0.3, 0.2);
+    worldPosition.xz += offsetDir * offsetMagnitude;
+
     // Project the world position to clip space
     gl_Position = _ViewProjectionMatrix * vec4(worldPosition, 1.0);
 
