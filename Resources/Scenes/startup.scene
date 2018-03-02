@@ -24,9 +24,6 @@
                 altitude_border = 4.4
                 altitude_transition = -2
                 texture_tile_size = 4 4
-                detail_mesh = Resources\Meshes\sand_debris.obj
-                detail_material = Resources\Materials\ground_sand.material
-                detail_scale = 0 0.5
             }
             factal_smoothness = 1.99
             mountain_scale = 6.9
