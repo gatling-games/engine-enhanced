@@ -300,8 +300,11 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
     }
 
     // Draw terrain details
-    if(terrain != nullptr && RenderManager::instance()->isFeatureGloballyEnabled(SF_TerrainDetailMeshes))
+    if(terrain != nullptr && (shaderFeatures & SF_TerrainDetailMeshes) != 0 && RenderManager::instance()->isFeatureGloballyEnabled(SF_TerrainDetailMeshes))
     {
+        const Mesh* boundMesh = nullptr;
+        const Material* boundMaterial = nullptr;
+
         // Render each terrain details batch
         const Point3 cameraPosition = camera->gameObject()->transform()->positionWorld();
         for(const DetailBatch& batch : terrain->detailBatches())
@@ -312,17 +315,23 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
                 continue;
             }
 
-            batch.mesh->bind();
+            if (batch.mesh != boundMesh)
+            {
+                batch.mesh->bind();
+                boundMesh = batch.mesh;
+            }
 
-            // Gather the new contents of the per-draw buffer
-            PerDrawUniformData data;
-            data.colorSmoothness = batch.material->color();
-            data.colorSmoothness.a = batch.material->smoothness();
-            data.albedoTexture = (batch.material->albedoTexture() == nullptr) ? 0 : batch.material->albedoTexture()->bindlessHandle();
-            data.normalMapTexture = (batch.material->normalMapTexture() == nullptr) ? 0 : batch.material->normalMapTexture()->bindlessHandle();
+            if (batch.material != boundMaterial)
+            {
+                PerDrawUniformData data;
+                data.colorSmoothness = batch.material->color();
+                data.colorSmoothness.a = batch.material->smoothness();
+                data.albedoTexture = (batch.material->albedoTexture() == nullptr) ? 0 : batch.material->albedoTexture()->bindlessHandle();
+                data.normalMapTexture = (batch.material->normalMapTexture() == nullptr) ? 0 : batch.material->normalMapTexture()->bindlessHandle();
+                perDrawUniformBuffer_.update(data);
 
-            // Update the uniform buffer.
-            perDrawUniformBuffer_.update(data);
+                boundMaterial = batch.material;
+            }
 
             TerrainDetailsData detailsData;
             std::memcpy(detailsData.detailPositions, batch.instancePositions, sizeof(Vector4) * batch.count);
