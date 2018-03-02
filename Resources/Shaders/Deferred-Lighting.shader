@@ -36,6 +36,12 @@ void main()
     vec3 ambientLight = surface.diffuseColor * _AmbientColor.rgb;
     vec3 directLight = PhysicallyBasedBRDF(surface, sunColor, sunDir, viewDir);
 
+    // Add translucent lighting
+    // "Vegetation Procedural Animation and Shading in Crysis" [Sousa08] suggested adding a term based on -N.L
+#ifdef TRANSLUCENCY_ON
+    directLight += max(0.0, dot(-surface.worldNormal, sunDir)) * sunColor * surface.diffuseColor * surface.translucency;
+#endif
+
     // Attenuate the direct light by a shadow factor
 #ifdef SHADOWS_ON
     directLight *= SampleSunShadow(worldPosition, viewDistance);

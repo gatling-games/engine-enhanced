@@ -33,6 +33,9 @@ enum ShaderFeature
     // Enables detail meshes on the terrain
     SF_TerrainDetailMeshes = 65536,
 
+    // Enables computation of translucency lighting
+    SF_Translucency = 262144,
+
     // GBuffer debugging modes
     SF_DebugGBufferDepth = 32768,
     SF_DebugGBufferAlbedo = 256,
