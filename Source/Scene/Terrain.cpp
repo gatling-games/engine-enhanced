@@ -363,6 +363,10 @@ void Terrain::placeDetailMeshes()
 
 void Terrain::generateDetailPositions(DetailBatch& batch, const TerrainLayer& layer) const
 {
+    // Use the batch centre as the seed
+    // This ensures that multiple runs are deterministic.
+    srand((unsigned int)batch.bounds.centre().x * (unsigned int)batch.bounds.centre().y + seed_);
+
     // Reset the number of positions in the batch
     batch.count = 0;
 
