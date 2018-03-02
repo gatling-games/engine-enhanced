@@ -14,7 +14,7 @@
                 altitude_transition = 0.7
                 detail_mesh = Resources\Meshes\grass.obj
                 detail_material = Resources\Materials\Terrain\detail_grass.material
-                detail_scale = 1 1.7
+                detail_scale = 1.3 2.2
             }
             layers::2 {
                 altitude_border = 55
