@@ -24,12 +24,14 @@ public:
     Texture* albedoTexture() const { return albedoTexture_; }
     Texture* normalMapTexture() const { return normalMapTexture_; }
     float smoothness() const { return smoothness_; }
+    bool cutout() const { return cutout_; }
 
     // Sets basic material settings
     void setColor(const Color &color);
     void setAlbedoTexture(Texture* albedoTexture);
     void setNormalMapTexture(Texture* normalMapTexture);
     void setSmoothness(float smoothness);
+    void setCutout(bool cutout);
 
     // Computes the set of enabled shader features, based on material settings
     ShaderFeatureList supportedFeatures() const;
@@ -39,4 +41,5 @@ private:
     Texture* albedoTexture_;
     Texture* normalMapTexture_;
     float smoothness_;
+    bool cutout_;
 };
