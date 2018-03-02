@@ -3,6 +3,7 @@
 #include "Scene/Component.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/Texture.h"
+#include "Math/Bounds.h"
 #include "Math/Color.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
@@ -38,6 +39,8 @@ struct DetailBatch
     Mesh* mesh;
     Material* material;
     Vector4 instancePositions[MaxInstancesPerBatch];
+    Bounds bounds;
+    float drawDistance;
 };
 
 class Terrain : public Component
@@ -102,7 +105,10 @@ private:
     void placeObjects();
     void placeDetailMeshes();
 
+    // Generates detail positions for the given detail batch
+    void generateDetailPositions(DetailBatch &batch, const TerrainLayer &layer) const;
+
     // Gets the heightmap height at a specified point
     // The x and z coordinates are in world space.
-    float sampleHeightmap(float x, float z);
+    float sampleHeightmap(float x, float z) const;
 };

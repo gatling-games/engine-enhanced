@@ -299,8 +299,15 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
         glDrawElements(GL_PATCHES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
 
         // Render each terrain details batch
+        const Point3 cameraPosition = camera->gameObject()->transform()->positionWorld();
         for(const DetailBatch& batch : terrain->detailBatches())
         {
+            // Skip batches that are further than the draw distance
+            if((batch.bounds.centre() - cameraPosition).sqrMagnitude() > batch.drawDistance * batch.drawDistance)
+            {
+                continue;
+            }
+
             batch.mesh->bind();
 
             // Gather the new contents of the per-draw buffer

@@ -6,6 +6,7 @@
 class Bounds
 {
 public:
+    Bounds();
     Bounds(const Point3 &min, const Point3 &max);
 
     // Covered region

@@ -318,43 +318,68 @@ void Terrain::placeDetailMeshes()
             continue;
         }
 
-        for (int i = 0; i < 300; ++i) {
-            // Create a new batch for the layer
-            DetailBatch batch;
-            batch.mesh = layer.detailMesh;
-            batch.material = layer.detailMaterial;
-            batch.count = 0;
+        // Split the terrain into a 16x16 grid of detail batches
+        const int batchResolution = 32;
+        for(int x = 0; x < batchResolution; ++x)
+        {
+            // Determine the bounds in the x plane
+            float minX = x * dimensions_.x / (float)batchResolution;
+            float maxX = (x + 1) * dimensions_.x / (float)batchResolution;
 
-            // Otherwise, pick 1024 random points on the terrain
-            int attempts = 0;
-            while (attempts < 2000 && batch.count < DetailBatch::MaxInstancesPerBatch)
+            for(int z = 0; z < batchResolution; ++z)
             {
-                attempts++;
+                // Determine the bounds in the z plane
+                float minZ = z * dimensions_.z / (float)batchResolution;
+                float maxZ = (z + 1) * dimensions_.z / (float)batchResolution;
 
-                // Pick a random point
-                float x = random_float(0.0f, dimensions_.x);
-                float z = random_float(0.0f, dimensions_.z);
-                float y = sampleHeightmap(x, z);
+                // Try to create a new batch
+                DetailBatch batch;
+                batch.mesh = layer.detailMesh;
+                batch.material = layer.detailMaterial;
+                batch.bounds = Bounds(Point3(minX, 0.0f, minZ), Point3(maxX, dimensions_.y, maxZ));
+                batch.drawDistance = batch.bounds.size().magnitude() * 1.5f;
 
-                // Respect the layer's altitude settings
-                if ((y > layer.altitudeBorder + layer.altitudeTransition * 0.8f && layer.altitudeTransition >= 0.0f) || (y < layer.altitudeBorder && layer.altitudeTransition < 0.0f))
+                // Look for instance positions within the bounds
+                generateDetailPositions(batch, layer);
+
+                // If the batch is not empty, save it
+                if (batch.count > 0)
                 {
-                    float scale = random_float(layer.detailScale.x, layer.detailScale.y);
-
-                    batch.instancePositions[batch.count] = Vector4(x, y, z, scale);
-                    batch.count++;
+                    detailMeshBatches_.push_back(batch);
                 }
-            }
-
-            if (batch.count > 0)
-            {
-                detailMeshBatches_.push_back(batch);
             }
         }
     }
 }
 
-float Terrain::sampleHeightmap(float x, float z)
+void Terrain::generateDetailPositions(DetailBatch& batch, const TerrainLayer& layer) const
+{
+    // Reset the number of positions in the batch
+    batch.count = 0;
+
+    // Otherwise, pick 1024 random points on the terrain
+    int attempts = 0;
+    while (attempts < 2000 && batch.count < DetailBatch::MaxInstancesPerBatch)
+    {
+        attempts++;
+
+        // Pick a random point
+        float x = random_float(batch.bounds.min().x, batch.bounds.max().x);
+        float z = random_float(batch.bounds.max().x, batch.bounds.max().z);
+        float y = sampleHeightmap(x, z);
+
+        // Respect the layer's altitude settings
+        if ((y > layer.altitudeBorder + layer.altitudeTransition * 0.8f && layer.altitudeTransition >= 0.0f) || (y < layer.altitudeBorder && layer.altitudeTransition < 0.0f))
+        {
+            float scale = random_float(layer.detailScale.x, layer.detailScale.y);
+
+            batch.instancePositions[batch.count] = Vector4(x, y, z, scale);
+            batch.count++;
+        }
+    }
+}
+
+float Terrain::sampleHeightmap(float x, float z) const
 {
     int xTexel = (int)((x / dimensions_.x) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
     int zTexel = (int)((z / dimensions_.z) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
