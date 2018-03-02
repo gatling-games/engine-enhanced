@@ -86,7 +86,7 @@ void main()
     surface.gloss = _Color.a;
 
     // Make grass partially translucent
-    surface.translucency = 0.666;
+    surface.translucency = 0.333;
 
     // Grass doesn't use normal mapping
     surface.worldNormal = worldNormal;
