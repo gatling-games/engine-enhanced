@@ -286,7 +286,7 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
 
     // Draw terrain
     const Terrain* terrain = SceneManager::instance()->terrain();
-    if(terrain != nullptr)
+    if (terrain != nullptr)
     {
         terrainShader_->bindVariant(shaderFeatures);
 
@@ -297,7 +297,11 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
 
         // Render the terrain with tessellation
         glDrawElements(GL_PATCHES, terrain->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+    }
 
+    // Draw terrain details
+    if(terrain != nullptr && RenderManager::instance()->isFeatureGloballyEnabled(SF_TerrainDetailMeshes))
+    {
         // Render each terrain details batch
         const Point3 cameraPosition = camera->gameObject()->transform()->positionWorld();
         for(const DetailBatch& batch : terrain->detailBatches())

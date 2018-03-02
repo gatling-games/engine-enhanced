@@ -30,6 +30,9 @@ enum ShaderFeature
     // Enables a smooth transition between shadow map cascades.
     SF_ShadowCascadeBlending = 32768,
 
+    // Enables detail meshes on the terrain
+    SF_TerrainDetailMeshes = 65536,
+
     // GBuffer debugging modes
     SF_DebugGBufferDepth = 32768,
     SF_DebugGBufferAlbedo = 256,
