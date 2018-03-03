@@ -86,7 +86,12 @@ void main()
     surface.gloss = _Color.a;
 
     // Make grass partially translucent
+#ifdef TEXTURE_ON
+    // Use the a to make the grass more translucent at the edge
+    surface.translucency = mix(0.333, 1.0, 1.0 - diffuseAlpha.a);
+#else
     surface.translucency = 0.333;
+#endif
 
     // Grass doesn't use normal mapping
     surface.worldNormal = worldNormal;
