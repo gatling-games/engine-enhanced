@@ -378,7 +378,7 @@ void Terrain::generateDetailPositions(DetailBatch& batch, const TerrainLayer& la
 
         // Pick a random point
         float x = random_float(batch.bounds.min().x, batch.bounds.max().x);
-        float z = random_float(batch.bounds.max().x, batch.bounds.max().z);
+        float z = random_float(batch.bounds.min().z, batch.bounds.max().z);
         float y = sampleHeightmap(x, z);
 
         // Respect the layer's altitude settings
