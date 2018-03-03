@@ -23,7 +23,7 @@ SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1)
     surface.occlusion = 1.0;
     surface.gloss = gbuffer0.a;
     surface.translucency = gbuffer1.a;
-    surface.worldNormal = gbuffer1.xyz * 2.0 - 1.0;
+    surface.worldNormal = normalize(gbuffer1.xyz * 2.0 - 1.0);
     return surface;
 }
 
