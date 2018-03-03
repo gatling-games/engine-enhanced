@@ -1,35 +1,6 @@
 {
     gameobjects::0 {
         prefab = Resources\Prefabs\Terrain.prefab
-        Terrain {
-            dimensions = 1024 144 1024
-            water_color = 0.0214742 0.0279743 0.0389375 1
-            water_depth = 7
-            layers::0 {
-                texture_tile_size = 15 15
-            }
-            layers::1 {
-                altitude_border = 4.2
-                altitude_transition = 0.7
-            }
-            layers::2 {
-                altitude_border = 54.6
-                altitude_transition = 10
-            }
-            layers::3 {
-                altitude_border = 4.4
-                altitude_transition = -2
-                texture_tile_size = 4 4
-            }
-            factal_smoothness = 1.99
-            mountain_scale = 6.9
-            island_factor = 8.45
-            detail_mesh = Resources\Meshes\grass.obj
-            detail_material = Resources\Materials\Terrain\detail_grass.material
-            detail_scale = 1.9 2.6
-            detail_altitude_limits = 4.5 38.5
-            detail_slope_limit = 0.5
-        }
     }
     sun_intensity = 4.4
     sun_rotation = 16 140
