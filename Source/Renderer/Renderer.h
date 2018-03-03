@@ -76,7 +76,7 @@ private:
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;
     void updateCameraUniformBuffer(const Camera* camera) const;
-    void updatePerDrawUniformBuffer(const StaticMesh* draw, const Texture* albedoTexture, const Texture* normalMapTexture) const;
+    void updatePerDrawUniformBuffer(const Matrix4x4 &localToWorld, const Material* material) const;
     void updateTerrainUniformBuffer(const Terrain* terrain) const;
 
     // Renders a full geometry pass using the specified camera

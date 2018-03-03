@@ -212,15 +212,15 @@ void Renderer::updateCameraUniformBuffer(const Camera* camera) const
     cameraUniformBuffer_.update(data);
 }
 
-void Renderer::updatePerDrawUniformBuffer(const StaticMesh* draw, const Texture* albedoTexture, const Texture* normalMapTexture) const
+void Renderer::updatePerDrawUniformBuffer(const Matrix4x4 &localToWorld, const Material* material) const
 {
     // Gather the new contents of the per-draw buffer
     PerDrawUniformData data;
-    data.localToWorld = draw->gameObject()->transform()->localToWorld();
-    data.colorSmoothness = draw->material()->color();
-    data.colorSmoothness.a = draw->material()->smoothness();
-    data.albedoTexture = (albedoTexture == nullptr) ? 0 : albedoTexture->bindlessHandle();
-    data.normalMapTexture = (normalMapTexture == nullptr) ? 0 : normalMapTexture->bindlessHandle();
+    data.localToWorld = localToWorld;
+    data.colorSmoothness = material->color();
+    data.colorSmoothness.a = material->smoothness();
+    data.albedoTexture = (material->albedoTexture() == nullptr) ? 0 : material->albedoTexture()->bindlessHandle();
+    data.normalMapTexture = (material->normalMapTexture() == nullptr) ? 0 : material->normalMapTexture()->bindlessHandle();
 
     // Update the uniform buffer.
     perDrawUniformBuffer_.update(data);
@@ -278,7 +278,8 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
         staticMesh->mesh()->bind();
 
         // Update the per draw uniform buffer
-        updatePerDrawUniformBuffer(staticMesh, staticMesh->material()->albedoTexture(), staticMesh->material()->normalMapTexture());
+        const Matrix4x4 worldToLocal = staticMesh->gameObject()->transform()->worldToLocal();
+        updatePerDrawUniformBuffer(worldToLocal, staticMesh->material());
 
         // Draw the mesh
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
@@ -306,16 +307,14 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
         && terrain->detailMaterial() != nullptr
         && terrain->detailMesh() != nullptr)
     {
+        // Use the terrain's detail mesh
         terrain->detailMesh()->bind();
         const int elementsCount = terrain->detailMesh()->elementsCount();
 
-        PerDrawUniformData data;
-        data.colorSmoothness = terrain->detailMaterial()->color();
-        data.colorSmoothness.a = terrain->detailMaterial()->smoothness();
-        data.albedoTexture = (terrain->detailMaterial()->albedoTexture() == nullptr) ? 0 : terrain->detailMaterial()->albedoTexture()->bindlessHandle();
-        data.normalMapTexture = (terrain->detailMaterial()->normalMapTexture() == nullptr) ? 0 : terrain->detailMaterial()->normalMapTexture()->bindlessHandle();
-        perDrawUniformBuffer_.update(data);
+        // Use the terrain's detail material
+        updatePerDrawUniformBuffer(Matrix4x4::identity(), terrain->detailMaterial());
 
+        // Use the terrain's detail shader
         terrainDetailMeshShader_->bindVariant(terrain->detailMaterial()->supportedFeatures() & shaderFeatures);
 
         // Render each terrain details batch
