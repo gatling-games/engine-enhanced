@@ -129,7 +129,7 @@ void Terrain::drawProperties()
             layer.detailScale.x = layer.detailScale.minComponent();
 
             // Regenerate terrain layers when a change is detected
-            if(layer.detailMesh != prevDetailMesh || layer.detailMaterial != prevDetailMaterial
+            if (layer.detailMesh != prevDetailMesh || layer.detailMaterial != prevDetailMaterial
                 || layer.detailScale != prevDetailScale)
             {
                 placeDetailMeshes();
@@ -327,45 +327,50 @@ void Terrain::placeDetailMeshes()
             continue;
         }
 
-        // Split the terrain into a 16x16 grid of detail batches
-        const int batchResolution = 32;
-        for(int x = 0; x < batchResolution; ++x)
+        // Split the terrain into a 12x12 grid of detail batches
+        const int batchResolution = 12;
+        for (int x = 0; x < batchResolution; ++x)
         {
             // Determine the bounds in the x plane
             float minX = x * dimensions_.x / (float)batchResolution;
             float maxX = (x + 1) * dimensions_.x / (float)batchResolution;
 
-            for(int z = 0; z < batchResolution; ++z)
+            for (int z = 0; z < batchResolution; ++z)
             {
                 // Determine the bounds in the z plane
                 float minZ = z * dimensions_.z / (float)batchResolution;
                 float maxZ = (z + 1) * dimensions_.z / (float)batchResolution;
 
-                // Try to create a new batch
-                DetailBatch batch;
-                batch.mesh = layer.detailMesh;
-                batch.material = layer.detailMaterial;
-                batch.bounds = Bounds(Point3(minX, 0.0f, minZ), Point3(maxX, dimensions_.y, maxZ));
-                batch.drawDistance = batch.bounds.size().magnitude() * 1.5f;
-
-                // Look for instance positions within the bounds
-                generateDetailPositions(batch, layer);
-
-                // If the batch is not empty, save it
-                if (batch.count > 0)
+                // For each tile, attempt to make multiple batches
+                // Each batch has a different draw distance, preventing a single grass/no grass transition
+                for (int iter = 0; iter < 3; ++iter)
                 {
-                    detailMeshBatches_.push_back(batch);
+                    DetailBatch batch;
+                    batch.mesh = layer.detailMesh;
+                    batch.material = layer.detailMaterial;
+                    batch.bounds = Bounds(Point3(minX, 0.0f, minZ), Point3(maxX, dimensions_.y, maxZ));
+                    batch.drawDistance = batch.bounds.size().magnitude() * 0.25f * (float)(iter + 1);
+
+                    // Look for instance positions within the bounds
+                    const uint32_t seed = iter | (x << 12) | (z << 24);
+                    generateDetailPositions(batch, layer, seed);
+
+                    // If the batch is not empty, save it
+                    if (batch.count > 0)
+                    {
+                        detailMeshBatches_.push_back(batch);
+                    }
                 }
             }
         }
     }
 }
 
-void Terrain::generateDetailPositions(DetailBatch& batch, const TerrainLayer& layer) const
+void Terrain::generateDetailPositions(DetailBatch& batch, const TerrainLayer& layer, uint32_t seed) const
 {
     // Use the batch centre as the seed
     // This ensures that multiple runs are deterministic.
-    srand((unsigned int)batch.bounds.centre().x * (unsigned int)batch.bounds.centre().y + seed_);
+    srand(seed);
 
     // Reset the number of positions in the batch
     batch.count = 0;

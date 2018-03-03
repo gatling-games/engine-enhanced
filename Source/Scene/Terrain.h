@@ -106,7 +106,7 @@ private:
     void placeDetailMeshes();
 
     // Generates detail positions for the given detail batch
-    void generateDetailPositions(DetailBatch &batch, const TerrainLayer &layer) const;
+    void generateDetailPositions(DetailBatch &batch, const TerrainLayer &layer, uint32_t seed) const;
 
     // Gets the heightmap height at a specified point
     // The x and z coordinates are in world space.
