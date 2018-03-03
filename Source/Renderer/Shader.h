@@ -33,6 +33,9 @@ enum ShaderFeature
     // Enables detail meshes on the terrain
     SF_TerrainDetailMeshes = 65536,
 
+    // Increases the terrain details draw distance
+    SF_ExtraTerrainDetails = 524288,
+
     // Enables computation of translucency lighting
     SF_Translucency = 262144,
 

@@ -26,6 +26,7 @@ RenderManager::RenderManager()
     addShaderFeatureMenuItem(SF_ShadowCascadeBlending, "Shadow Cascade Blending");
     addShaderFeatureMenuItem(SF_HighTessellation, "Extra Tessellation");
     addShaderFeatureMenuItem(SF_TerrainDetailMeshes, "Terrain Details");
+    addShaderFeatureMenuItem(SF_ExtraTerrainDetails, "Extra Terrain Details");
     addShaderFeatureMenuItem(SF_Translucency, "Translucency");
 
     // Set up menu items for showing debugging modes

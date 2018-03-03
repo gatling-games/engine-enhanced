@@ -307,10 +307,11 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
 
         // Render each terrain details batch
         const Point3 cameraPosition = camera->gameObject()->transform()->positionWorld();
+        const float distanceScale = RenderManager::instance()->isFeatureGloballyEnabled(SF_ExtraTerrainDetails) ? 6.0f : 1.0f;
         for(const DetailBatch& batch : terrain->detailBatches())
         {
             // Skip batches that are further than the draw distance
-            if((batch.bounds.centre() - cameraPosition).sqrMagnitude() > batch.drawDistance * batch.drawDistance)
+            if((batch.bounds.centre() - cameraPosition).sqrMagnitude() > batch.drawDistance * batch.drawDistance * distanceScale)
             {
                 continue;
             }
