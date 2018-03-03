@@ -68,7 +68,7 @@ void Renderer::renderFrame(const Camera* camera)
     updateCameraUniformBuffer(camera);
 
     // Wireframe debugging mode needs to be handled separately.
-    if(RenderManager::instance()->debugMode() == RenderDebugMode::Wireframe)
+    if (RenderManager::instance()->debugMode() == RenderDebugMode::Wireframe)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -300,46 +300,40 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
     }
 
     // Draw terrain details
-    if(terrain != nullptr && (shaderFeatures & SF_TerrainDetailMeshes) != 0 && RenderManager::instance()->isFeatureGloballyEnabled(SF_TerrainDetailMeshes))
+    if (terrain != nullptr
+        && (shaderFeatures & SF_TerrainDetailMeshes) != 0
+        && RenderManager::instance()->isFeatureGloballyEnabled(SF_TerrainDetailMeshes)
+        && terrain->detailMaterial() != nullptr
+        && terrain->detailMesh() != nullptr)
     {
-        const Mesh* boundMesh = nullptr;
-        const Material* boundMaterial = nullptr;
+        terrain->detailMesh()->bind();
+        const int elementsCount = terrain->detailMesh()->elementsCount();
+
+        PerDrawUniformData data;
+        data.colorSmoothness = terrain->detailMaterial()->color();
+        data.colorSmoothness.a = terrain->detailMaterial()->smoothness();
+        data.albedoTexture = (terrain->detailMaterial()->albedoTexture() == nullptr) ? 0 : terrain->detailMaterial()->albedoTexture()->bindlessHandle();
+        data.normalMapTexture = (terrain->detailMaterial()->normalMapTexture() == nullptr) ? 0 : terrain->detailMaterial()->normalMapTexture()->bindlessHandle();
+        perDrawUniformBuffer_.update(data);
+
+        terrainDetailMeshShader_->bindVariant(terrain->detailMaterial()->supportedFeatures() & shaderFeatures);
 
         // Render each terrain details batch
         const Point3 cameraPosition = camera->gameObject()->transform()->positionWorld();
         const float distanceScale = RenderManager::instance()->isFeatureGloballyEnabled(SF_ExtraTerrainDetails) ? 6.0f : 1.0f;
-        for(const DetailBatch& batch : terrain->detailBatches())
+        for (const DetailBatch& batch : terrain->detailBatches())
         {
             // Skip batches that are further than the draw distance
-            if((batch.bounds.centre() - cameraPosition).sqrMagnitude() > batch.drawDistance * batch.drawDistance * distanceScale)
+            if ((batch.bounds.centre() - cameraPosition).sqrMagnitude() > batch.drawDistance * batch.drawDistance * distanceScale)
             {
                 continue;
-            }
-
-            if (batch.mesh != boundMesh)
-            {
-                batch.mesh->bind();
-                boundMesh = batch.mesh;
-            }
-
-            if (batch.material != boundMaterial)
-            {
-                PerDrawUniformData data;
-                data.colorSmoothness = batch.material->color();
-                data.colorSmoothness.a = batch.material->smoothness();
-                data.albedoTexture = (batch.material->albedoTexture() == nullptr) ? 0 : batch.material->albedoTexture()->bindlessHandle();
-                data.normalMapTexture = (batch.material->normalMapTexture() == nullptr) ? 0 : batch.material->normalMapTexture()->bindlessHandle();
-                perDrawUniformBuffer_.update(data);
-
-                boundMaterial = batch.material;
             }
 
             TerrainDetailsData detailsData;
             std::memcpy(detailsData.detailPositions, batch.instancePositions, sizeof(Vector4) * batch.count);
             terrainDetailsUniformBuffer_.update(detailsData);
 
-            terrainDetailMeshShader_->bindVariant(batch.material->supportedFeatures() & shaderFeatures);
-            glDrawElementsInstanced(GL_TRIANGLES, batch.mesh->elementsCount(), GL_UNSIGNED_SHORT, (void*)0, batch.count);
+            glDrawElementsInstanced(GL_TRIANGLES, elementsCount, GL_UNSIGNED_SHORT, (void*)0, batch.count);
         }
     }
 }

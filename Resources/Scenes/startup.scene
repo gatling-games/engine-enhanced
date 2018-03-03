@@ -5,19 +5,15 @@
             dimensions = 1024 144 1024
             water_color = 0.0214742 0.0279743 0.0389375 1
             water_depth = 7
-            water_depth = 7.6
             layers::0 {
                 texture_tile_size = 15 15
             }
             layers::1 {
                 altitude_border = 4.2
                 altitude_transition = 0.7
-                detail_mesh = Resources\Meshes\grass.obj
-                detail_material = Resources\Materials\Terrain\detail_grass.material
-                detail_scale = 1.3 2.2
             }
             layers::2 {
-                altitude_border = 55
+                altitude_border = 54.6
                 altitude_transition = 10
             }
             layers::3 {
@@ -28,15 +24,15 @@
             factal_smoothness = 1.99
             mountain_scale = 6.9
             island_factor = 8.45
+            detail_mesh = Resources\Meshes\grass.obj
+            detail_material = Resources\Materials\Terrain\detail_grass.material
+            detail_scale = 1.9 2.6
+            detail_altitude_limits = 4.5 38.5
+            detail_slope_limit = 0.5
         }
     }
-        }
-    }
-    ambient_light = 0.192568 0.238955 0.333663 1
-    ambient_intensity = 1.55
-    sun_intensity = 5.8
-    sun_rotation = 25 95
-    sun_rotation = 22 165
-    fog_density = 0.007
-    fog_height_falloff = 0.042
+    sun_intensity = 4.4
+    sun_rotation = 16 140
+    fog_density = 0.016
+    fog_height_falloff = 0.036
 }

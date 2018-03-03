@@ -21,12 +21,6 @@ struct TerrainLayer : ISerializedObject
     Vector2 textureTileOffset = Vector2::zero();
     Material* material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");
 
-    // Detail mesh settings
-    // The detail mesh is drawn if both the mesh & material are assigned
-    Mesh* detailMesh = nullptr;
-    Material* detailMaterial = nullptr;
-    Vector2 detailScale = Vector2::one();
-
     void serialize(PropertyTable& table) override;
 };
 
@@ -36,8 +30,6 @@ struct DetailBatch
     const static int MaxInstancesPerBatch = 1024;
 
     int count;
-    Mesh* mesh;
-    Material* material;
     Vector4 instancePositions[MaxInstancesPerBatch];
     Bounds bounds;
     float drawDistance;
@@ -60,6 +52,8 @@ public:
 
     const Mesh* mesh() const { return mesh_; }
     const Texture* heightmap() const { return &heightMap_; }
+    const Mesh* detailMesh() const { return detailMesh_; }
+    const Material* detailMaterial() const { return detailMaterial_; }
 
     // Total size of the terrain, in m, in X,Y,Z
     Vector3 size() const { return dimensions_; }
@@ -80,6 +74,11 @@ public:
 private:
     Mesh* mesh_;
     Texture heightMap_;
+    Mesh* detailMesh_;
+    Material* detailMaterial_;
+    Vector2 detailScale_;
+    Vector2 detailAltitudeLimits_;
+    float detailSlopeLimit_;
     Vector3 dimensions_;
     Color waterColor_;
     float waterDepth_;
@@ -106,7 +105,7 @@ private:
     void placeDetailMeshes();
 
     // Generates detail positions for the given detail batch
-    void generateDetailPositions(DetailBatch &batch, const TerrainLayer &layer, uint32_t seed) const;
+    void generateDetailPositions(DetailBatch &batch, uint32_t seed) const;
 
     // Gets the heightmap height at a specified point
     // The x and z coordinates are in world space.

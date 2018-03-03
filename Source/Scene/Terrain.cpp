@@ -18,14 +18,13 @@ void TerrainLayer::serialize(PropertyTable& table)
     table.serialize("texture_tile_size", textureTileSize, Vector2(10.0f, 10.0f));
     table.serialize("texture_tile_offset", textureTileOffset, Vector2::zero());
     table.serialize("material", material, (ResourcePPtr<Material>)nullptr);
-    table.serialize("detail_mesh", detailMesh, (ResourcePPtr<Mesh>)nullptr);
-    table.serialize("detail_material", detailMaterial, (ResourcePPtr<Material>)nullptr);
-    table.serialize("detail_scale", detailScale, Vector2::one());
 }
 
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
     heightMap_(TextureFormat::R16, HEIGHTMAP_RESOLUTION, HEIGHTMAP_RESOLUTION),
+    detailAltitudeLimits_(Vector2(0.0f, 500.0f)),
+    detailSlopeLimit_(0.0f),
     dimensions_(Vector3(1024.0f, 80.0f, 1024.0f)),
     seed_(0),
     fractalSmoothness_(2.0f),
@@ -91,6 +90,29 @@ void Terrain::drawProperties()
     ImGui::DragFloat2("Tile Offset", &terrainLayers_[0].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
     ImGui::Spacing();
 
+    const Mesh* prevDetailMesh = detailMesh_;
+    const Material* prevDetailMaterial = detailMaterial_;
+    const Vector2 prevDetailScale = detailScale_;
+    const Vector2 prevDetailAltitudeLimits = detailAltitudeLimits_;
+    const float prevDetailSlopeLimit = detailSlopeLimit_;
+    ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", detailMesh_);
+    ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", detailMaterial_);
+    ImGui::DragFloat2("Detail Scale", &detailScale_.x, 0.05f, 0.01f, 100.0f);
+    ImGui::DragFloat2("Altitude Limits", &detailAltitudeLimits_.x, 0.5f, -100.0f, 500.0f);
+    ImGui::DragFloat("Slope Limit", &detailSlopeLimit_, 0.05f, 0.0f, 1.0f);
+    ImGui::Spacing();
+
+    // Prevent detail scale min being bigger than max
+    detailScale_.x = detailScale_.minComponent();
+
+    // Regenerate terrain layers when a change is detected
+    if (detailMesh_ != prevDetailMesh || detailMaterial_ != prevDetailMaterial
+        || detailScale_ != prevDetailScale || detailAltitudeLimits_ != prevDetailAltitudeLimits
+        || fabs(detailSlopeLimit_ - prevDetailSlopeLimit) > 0.001f)
+    {
+        placeDetailMeshes();
+    }
+
     if (ImGui::TreeNode("Terrain Layers"))
     {
         if (ImGui::Button("Add Layer"))
@@ -117,24 +139,6 @@ void Terrain::drawProperties()
             ImGui::DragFloat("Hardness", &layer.slopeHardness, 0.01f, 0.001f, 1.0f);
             ImGui::Spacing();
 
-            const Mesh* prevDetailMesh = layer.detailMesh;
-            const Material* prevDetailMaterial = layer.detailMaterial;
-            const Vector2 prevDetailScale = layer.detailScale;
-            ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", layer.detailMesh);
-            ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", layer.detailMaterial);
-            ImGui::DragFloat2("Detail Scale", &layer.detailScale.x, 0.05f, 0.01f, 100.0f);
-            ImGui::Spacing();
-
-            // Prevent detail scale min being bigger than max
-            layer.detailScale.x = layer.detailScale.minComponent();
-
-            // Regenerate terrain layers when a change is detected
-            if (layer.detailMesh != prevDetailMesh || layer.detailMaterial != prevDetailMaterial
-                || layer.detailScale != prevDetailScale)
-            {
-                placeDetailMeshes();
-            }
-
             ImGui::PopID();
         }
 
@@ -152,6 +156,11 @@ void Terrain::serialize(PropertyTable &table)
     table.serialize("factal_smoothness", fractalSmoothness_, 2.0f);
     table.serialize("mountain_scale", mountainScale_, 4.0f);
     table.serialize("island_factor", islandFactor_, 2.0f);
+    table.serialize("detail_mesh", detailMesh_, (ResourcePPtr<Mesh>)nullptr);
+    table.serialize("detail_material", detailMaterial_, (ResourcePPtr<Material>)nullptr);
+    table.serialize("detail_scale", detailScale_, Vector2::one());
+    table.serialize("detail_altitude_limits", detailAltitudeLimits_, Vector2(0.0f, 500.0f));
+    table.serialize("detail_slope_limit", detailSlopeLimit_, 0.0f);
 
     // If we read in some new properties, the terrain needs regenerating.
     if (table.mode() == PropertyTableMode::Reading)
@@ -318,15 +327,8 @@ void Terrain::placeDetailMeshes()
     // Delete any existing detail batches
     detailMeshBatches_.clear();
 
-    // Consider each layer with a valid detail mesh.
-    for (const TerrainLayer& layer : terrainLayers_)
+    if (detailMesh_ != nullptr && detailMaterial_ != nullptr)
     {
-        // Ignore ones that dont have a detail mesh or material
-        if (layer.detailMesh == nullptr || layer.detailMaterial == nullptr)
-        {
-            continue;
-        }
-
         // Split the terrain into a 12x12 grid of detail batches
         const int batchResolution = 12;
         for (int x = 0; x < batchResolution; ++x)
@@ -346,14 +348,12 @@ void Terrain::placeDetailMeshes()
                 for (int iter = 0; iter < 3; ++iter)
                 {
                     DetailBatch batch;
-                    batch.mesh = layer.detailMesh;
-                    batch.material = layer.detailMaterial;
                     batch.bounds = Bounds(Point3(minX, 0.0f, minZ), Point3(maxX, dimensions_.y, maxZ));
                     batch.drawDistance = batch.bounds.size().magnitude() * 0.25f * (float)(iter + 1);
 
                     // Look for instance positions within the bounds
                     const uint32_t seed = iter | (x << 12) | (z << 24);
-                    generateDetailPositions(batch, layer, seed);
+                    generateDetailPositions(batch, seed);
 
                     // If the batch is not empty, save it
                     if (batch.count > 0)
@@ -366,7 +366,7 @@ void Terrain::placeDetailMeshes()
     }
 }
 
-void Terrain::generateDetailPositions(DetailBatch& batch, const TerrainLayer& layer, uint32_t seed) const
+void Terrain::generateDetailPositions(DetailBatch& batch, uint32_t seed) const
 {
     // Use the batch centre as the seed
     // This ensures that multiple runs are deterministic.
@@ -386,27 +386,21 @@ void Terrain::generateDetailPositions(DetailBatch& batch, const TerrainLayer& la
         float z = random_float(batch.bounds.min().z, batch.bounds.max().z);
         float y = sampleHeightmap(x, z);
 
-        // Do not place details higher than 50m
-        if(y > 50.0f)
+        // Respect the detail altitude limits
+        if (y > detailAltitudeLimits_.y || y < detailAltitudeLimits_.x)
         {
             continue;
         }
 
         // Respect the layer's slope settings
-        if(sampleHeightmapNormal(x, z).y < layer.slopeBorder - layer.slopeHardness * 0.5f)
+        if (sampleHeightmapNormal(x, z).y < detailSlopeLimit_)
         {
             continue;
         }
 
-        // Respect the layer's altitude settings
-        if ((y > layer.altitudeBorder + layer.altitudeTransition * 0.8f && layer.altitudeTransition >= 0.0f) || (y < layer.altitudeBorder && layer.altitudeTransition < 0.0f))
-        {
-
-            float scale = random_float(layer.detailScale.x, layer.detailScale.y);
-
-            batch.instancePositions[batch.count] = Vector4(x, y, z, scale);
-            batch.count++;
-        }
+        float scale = random_float(detailScale_.x, detailScale_.y);
+        batch.instancePositions[batch.count] = Vector4(x, y, z, scale);
+        batch.count++;
     }
 }
 
