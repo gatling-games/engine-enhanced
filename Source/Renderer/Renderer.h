@@ -78,6 +78,7 @@ private:
     void updateCameraUniformBuffer(const Camera* camera) const;
     void updatePerDrawUniformBuffer(const Matrix4x4 &localToWorld, const Material* material) const;
     void updateTerrainUniformBuffer(const Terrain* terrain) const;
+    void updateTerrainDetailsUniformBuffer(const DetailBatch& details) const;
 
     // Renders a full geometry pass using the specified camera
     void executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures) const;

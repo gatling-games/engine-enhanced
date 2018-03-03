@@ -250,6 +250,13 @@ void Renderer::updateTerrainUniformBuffer(const Terrain* terrain) const
     terrainUniformBuffer_.update(data);
 }
 
+void Renderer::updateTerrainDetailsUniformBuffer(const DetailBatch& details) const
+{
+    TerrainDetailsData detailsData;
+    std::memcpy(detailsData.detailPositions, details.instancePositions, sizeof(Vector4) * details.count);
+    terrainDetailsUniformBuffer_.update(detailsData);
+}
+
 void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures) const
 {
     updateCameraUniformBuffer(camera);
@@ -328,10 +335,8 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
                 continue;
             }
 
-            TerrainDetailsData detailsData;
-            std::memcpy(detailsData.detailPositions, batch.instancePositions, sizeof(Vector4) * batch.count);
-            terrainDetailsUniformBuffer_.update(detailsData);
-
+            // Draw the batch data using an instanced draw call
+            updateTerrainDetailsUniformBuffer(batch);
             glDrawElementsInstanced(GL_TRIANGLES, elementsCount, GL_UNSIGNED_SHORT, (void*)0, batch.count);
         }
     }
