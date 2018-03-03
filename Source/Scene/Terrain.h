@@ -111,4 +111,8 @@ private:
     // Gets the heightmap height at a specified point
     // The x and z coordinates are in world space.
     float sampleHeightmap(float x, float z) const;
+
+    // Gets the heightmap normal at a specified point
+    // The x and z coordinates are in world space.
+    Vector3 sampleHeightmapNormal(float x, float z) const;
 };

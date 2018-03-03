@@ -377,7 +377,7 @@ void Terrain::generateDetailPositions(DetailBatch& batch, const TerrainLayer& la
 
     // Otherwise, pick 1024 random points on the terrain
     int attempts = 0;
-    while (attempts < 2000 && batch.count < DetailBatch::MaxInstancesPerBatch)
+    while (attempts < 4000 && batch.count < DetailBatch::MaxInstancesPerBatch)
     {
         attempts++;
 
@@ -386,9 +386,22 @@ void Terrain::generateDetailPositions(DetailBatch& batch, const TerrainLayer& la
         float z = random_float(batch.bounds.min().z, batch.bounds.max().z);
         float y = sampleHeightmap(x, z);
 
+        // Do not place details higher than 50m
+        if(y > 50.0f)
+        {
+            continue;
+        }
+
+        // Respect the layer's slope settings
+        if(sampleHeightmapNormal(x, z).y < layer.slopeBorder - layer.slopeHardness * 0.5f)
+        {
+            continue;
+        }
+
         // Respect the layer's altitude settings
         if ((y > layer.altitudeBorder + layer.altitudeTransition * 0.8f && layer.altitudeTransition >= 0.0f) || (y < layer.altitudeBorder && layer.altitudeTransition < 0.0f))
         {
+
             float scale = random_float(layer.detailScale.x, layer.detailScale.y);
 
             batch.instancePositions[batch.count] = Vector4(x, y, z, scale);
@@ -402,4 +415,23 @@ float Terrain::sampleHeightmap(float x, float z) const
     int xTexel = (int)((x / dimensions_.x) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
     int zTexel = (int)((z / dimensions_.z) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
     return heights_[xTexel + zTexel * HEIGHTMAP_RESOLUTION] - waterDepth_;
+}
+
+Vector3 Terrain::sampleHeightmapNormal(float x, float z) const
+{
+    int xTexel = (int)((x / dimensions_.x) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
+    int zTexel = (int)((z / dimensions_.z) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
+    int x1Texel = std::max(xTexel - 1, 0);
+    int x2Texel = std::min(xTexel + 1, HEIGHTMAP_RESOLUTION - 1);
+    int z1Texel = std::max(zTexel - 1, 0);
+    int z2Texel = std::min(zTexel + 1, HEIGHTMAP_RESOLUTION - 1);
+    float x1 = heights_[x1Texel + zTexel * HEIGHTMAP_RESOLUTION];
+    float x2 = heights_[x2Texel + zTexel * HEIGHTMAP_RESOLUTION];
+    float z1 = heights_[xTexel + z1Texel * HEIGHTMAP_RESOLUTION];
+    float z2 = heights_[xTexel + z2Texel * HEIGHTMAP_RESOLUTION];
+    float dydx = (x2 - x1) * (2.0f * HEIGHTMAP_RESOLUTION / dimensions_.x);
+    float dydz = (z2 - z1) * (2.0f * HEIGHTMAP_RESOLUTION / dimensions_.z);
+    Vector3 worldTangent = Vector3(1.0f, dydx, 0.0f).normalized();
+    Vector3 worldBitangent = Vector3(0.0f, dydz, 1.0f).normalized();
+    return Vector3::cross(worldBitangent, worldTangent);
 }
