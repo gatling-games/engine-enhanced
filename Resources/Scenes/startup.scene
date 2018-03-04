@@ -1,17 +1,9 @@
 {
     gameobjects::0 {
         prefab = Resources\Prefabs\Terrain.prefab
-        Terrain {
-            dimensions = 2048 265 2048
-            water_color = 0.0214742 0.0279743 0.0389375 1
-            water_depth = 7
-        }
     }
-    ambient_light = 0.192568 0.238955 0.333663 1
-    ambient_intensity = 1.55
-    sun_intensity = 5.8
-    sun_rotation = 25 95
-    sun_rotation = 22 165
-    fog_density = 0.007
-    fog_height_falloff = 0.042
+    sun_intensity = 4.4
+    sun_rotation = 16 140
+    fog_density = 0.016
+    fog_height_falloff = 0.036
 }

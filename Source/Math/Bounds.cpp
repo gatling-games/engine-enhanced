@@ -2,6 +2,13 @@
 
 #include <algorithm>
 
+Bounds::Bounds()
+    : min_(Point3::origin()),
+    max_(Point3::origin())
+{
+
+}
+
 Bounds::Bounds(const Point3& min, const Point3& max)
     : min_(min),
     max_(max)

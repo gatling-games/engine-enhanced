@@ -25,6 +25,9 @@ RenderManager::RenderManager()
     addShaderFeatureMenuItem(SF_SoftShadows, "Soft Shadows");
     addShaderFeatureMenuItem(SF_ShadowCascadeBlending, "Shadow Cascade Blending");
     addShaderFeatureMenuItem(SF_HighTessellation, "Extra Tessellation");
+    addShaderFeatureMenuItem(SF_TerrainDetailMeshes, "Terrain Details");
+    addShaderFeatureMenuItem(SF_ExtraTerrainDetails, "Extra Terrain Details");
+    addShaderFeatureMenuItem(SF_Translucency, "Translucency");
 
     // Set up menu items for showing debugging modes
     addDebugModeMenuItem(RenderDebugMode::None, "None");
@@ -34,6 +37,7 @@ RenderManager::RenderManager()
     addDebugModeMenuItem(RenderDebugMode::Gloss, "Gloss");
     addDebugModeMenuItem(RenderDebugMode::Normals, "Normals");
     addDebugModeMenuItem(RenderDebugMode::Occlusion, "Occlusion");
+    addDebugModeMenuItem(RenderDebugMode::Translucency, "Translucency");
     addDebugModeMenuItem(RenderDebugMode::Shadows, "Shadows");
     addDebugModeMenuItem(RenderDebugMode::ShadowCascades, "Shadow Cascades");
 }

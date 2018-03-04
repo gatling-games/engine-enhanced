@@ -11,6 +11,7 @@ struct SurfaceProperties
     vec3 diffuseColor;
     float occlusion;
     float gloss;
+    float translucency;
     vec3 worldNormal;
 };
 

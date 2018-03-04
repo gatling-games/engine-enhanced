@@ -1,0 +1,5 @@
+{
+    albedo_texture = Resources\Textures\detail_grass_albedo.tga
+    smoothness = 0
+    cutout = 1
+}

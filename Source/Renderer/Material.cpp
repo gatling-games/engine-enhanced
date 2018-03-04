@@ -21,6 +21,7 @@ void Material::serialize(PropertyTable& table)
     table.serialize("albedo_texture", albedoTexture_, (ResourcePPtr<Texture>)nullptr);
     table.serialize("normal_map_texture", normalMapTexture_, (ResourcePPtr<Texture>)nullptr);
     table.serialize("smoothness", smoothness_, 0.5f);
+    table.serialize("cutout", cutout_, false);
 }
 
 void Material::drawEditor()
@@ -29,6 +30,7 @@ void Material::drawEditor()
     ImGui::ResourceSelect("Albedo", "Select Albedo Texture", albedoTexture_);
     ImGui::ResourceSelect("Normal Map", "Select Normal Map Texture", normalMapTexture_);
     ImGui::SliderFloat("Smoothness", &smoothness_, 0.0f, 1.0f);
+    ImGui::Checkbox("Cutout", &cutout_);
 }
 
 void Material::setColor(const Color& color)
@@ -51,6 +53,11 @@ void Material::setSmoothness(float smoothness)
     smoothness_ = smoothness;
 }
 
+void Material::setCutout(bool cutout)
+{
+    cutout_ = cutout;
+}
+
 ShaderFeatureList Material::supportedFeatures() const
 {
     // Start with no features
@@ -66,6 +73,12 @@ ShaderFeatureList Material::supportedFeatures() const
     if(normalMapTexture_ != nullptr)
     {
         features |= SF_NormalMap;
+    }
+
+    // Enable alpha testing if the cutout flag is set
+    if(cutout_)
+    {
+        features |= SF_Cutout;
     }
 
     return features;

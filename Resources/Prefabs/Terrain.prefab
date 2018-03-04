@@ -1,40 +1,48 @@
 {
     name = Terrain
     Terrain {
-        dimensions = 2048 168 2048
-        water_depth = 16.9
+        dimensions = 1024 144 1024
+        water_color = 0.0214742 0.0279743 0.0389375 1
+        water_depth = 7
         layers::0 {
             altitude_border = 35
             altitude_transition = 4
             slope_border = 0.65
             slope_hardness = 0.141
-            texture_tile_size = 20 20
+            texture_tile_size = 15 15
             material = Resources\Materials\ground_rock_01.material
         }
         layers::1 {
+            altitude_border = 4.2
+            altitude_transition = 0.7
             slope_border = 0.79
             slope_hardness = 0.46
             texture_tile_size = 20 20
             material = Resources\Materials\ground_grass_01.material
         }
         layers::2 {
-            altitude_border = 109.4
-            altitude_transition = 20
+            altitude_border = 54.6
+            altitude_transition = 10
             slope_border = 0.5
             slope_hardness = 0.341
             texture_tile_size = 30 30
             material = Resources\Materials\ground_snow.material
         }
         layers::3 {
-            altitude_border = 9.5
-            altitude_transition = -6
-            texture_tile_size = 30 30
+            altitude_border = 4.4
+            altitude_transition = -2
+            texture_tile_size = 4 4
             material = Resources\Materials\ground_sand.material
         }
         seed = 3465
-        factal_smoothness = 2.11
-        mountain_scale = 8.8
-        island_factor = 1
+        factal_smoothness = 1.99
+        mountain_scale = 6.9
+        island_factor = 8.45
+        detail_mesh = Resources\Meshes\grass.obj
+        detail_material = Resources\Materials\Terrain\detail_grass.material
+        detail_scale = 1.9 2.6
+        detail_altitude_limits = 4.5 38.5
+        detail_slope_limit = 0.5
     }
     Transform {
     }

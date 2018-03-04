@@ -19,7 +19,8 @@ enum class UniformBufferType
     ShadowsBuffer = 2,
     PerDrawBuffer = 3,
     PerMaterialBuffer = 4,
-    TerrainBuffer = 5
+    TerrainBuffer = 5,
+    TerrainDetailsBuffer = 6,
 };
 
 // Plain old uniform data for scene
@@ -79,6 +80,11 @@ struct PerDrawUniformData
     Color colorSmoothness;
     BindlessTextureHandle albedoTexture;
     BindlessTextureHandle normalMapTexture;
+};
+
+struct TerrainDetailsData
+{
+    Vector4 detailPositions[DetailBatch::MaxInstancesPerBatch];
 };
 
 struct PerMaterialUniformData

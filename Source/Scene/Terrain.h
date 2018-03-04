@@ -3,9 +3,11 @@
 #include "Scene/Component.h"
 #include "Renderer/Mesh.h"
 #include "Renderer/Texture.h"
+#include "Math/Bounds.h"
 #include "Math/Color.h"
 #include "Math/Vector2.h"
 #include "Math/Vector3.h"
+#include "Math/Vector4.h"
 
 class Material;
 
@@ -17,9 +19,20 @@ struct TerrainLayer : ISerializedObject
     float slopeHardness = 1.0f;
     Vector2 textureTileSize = Vector2(10.0f, 10.0f);
     Vector2 textureTileOffset = Vector2::zero();
-    Material* material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");;
+    Material* material = ResourceManager::instance()->load<Material>("Resources/Materials/ground_grass_01.material");
 
     void serialize(PropertyTable& table) override;
+};
+
+// A group of detail meshes drawn in a single batch
+struct DetailBatch
+{
+    const static int MaxInstancesPerBatch = 1024;
+
+    int count;
+    Vector4 instancePositions[MaxInstancesPerBatch];
+    Bounds bounds;
+    float drawDistance;
 };
 
 class Terrain : public Component
@@ -39,6 +52,8 @@ public:
 
     const Mesh* mesh() const { return mesh_; }
     const Texture* heightmap() const { return &heightMap_; }
+    const Mesh* detailMesh() const { return detailMesh_; }
+    const Material* detailMaterial() const { return detailMaterial_; }
 
     // Total size of the terrain, in m, in X,Y,Z
     Vector3 size() const { return dimensions_; }
@@ -49,12 +64,21 @@ public:
     // The depth of the water at its deepest point
     float waterDepth() const { return waterDepth_; }
 
+    // The layers on the terrain
     const TerrainLayer* layers() const { return &terrainLayers_.front(); }
     int layerCount() const { return (int)terrainLayers_.size(); }
+
+    // The detail mesh batches on the terrain
+    const std::vector<DetailBatch>& detailBatches() const { return detailMeshBatches_; }
 
 private:
     Mesh* mesh_;
     Texture heightMap_;
+    Mesh* detailMesh_;
+    Material* detailMaterial_;
+    Vector2 detailScale_;
+    Vector2 detailAltitudeLimits_;
+    float detailSlopeLimit_;
     Vector3 dimensions_;
     Color waterColor_;
     float waterDepth_;
@@ -72,11 +96,22 @@ private:
     // A list of objects placed on the terrain
     std::vector<GameObject*> placedObjects_;
 
+    // A list of detail mesh layers on the terrain
+    std::vector<DetailBatch> detailMeshBatches_;
+
     // Regenerates the terrain
     void generateTerrain();
     void placeObjects();
+    void placeDetailMeshes();
+
+    // Generates detail positions for the given detail batch
+    void generateDetailPositions(DetailBatch &batch, uint32_t seed) const;
 
     // Gets the heightmap height at a specified point
     // The x and z coordinates are in world space.
-    float sampleHeightmap(float x, float z);
+    float sampleHeightmap(float x, float z) const;
+
+    // Gets the heightmap normal at a specified point
+    // The x and z coordinates are in world space.
+    Vector3 sampleHeightmapNormal(float x, float z) const;
 };

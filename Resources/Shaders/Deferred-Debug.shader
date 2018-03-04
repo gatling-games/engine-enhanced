@@ -43,6 +43,11 @@ void main()
 #ifdef DEBUG_GBUFFER_OCCLUSION
     fragColor = vec4(surface.occlusion);
 #endif
+    
+    // Translucency mode
+#ifdef DEBUG_GBUFFER_TRANSLUCENCY
+    fragColor = vec4(surface.translucency);
+#endif
 
     // Shadows mode
 #ifdef DEBUG_SHADOWS

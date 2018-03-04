@@ -23,6 +23,8 @@ void TerrainLayer::serialize(PropertyTable& table)
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
     heightMap_(TextureFormat::R16, HEIGHTMAP_RESOLUTION, HEIGHTMAP_RESOLUTION),
+    detailAltitudeLimits_(Vector2(0.0f, 500.0f)),
+    detailSlopeLimit_(0.0f),
     dimensions_(Vector3(1024.0f, 80.0f, 1024.0f)),
     seed_(0),
     fractalSmoothness_(2.0f),
@@ -48,8 +50,17 @@ void Terrain::drawProperties()
 {
     ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
     ImGui::ColorEdit3("Water Color", &waterColor_.r);
+
+    float prevWaterDepth = waterDepth_;
     ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
     ImGui::Spacing();
+
+    // If the water depth is changed, objects on the terrain need regenerating
+    if (fabs(prevWaterDepth - waterDepth_) > 0.001f)
+    {
+        placeObjects();
+        placeDetailMeshes();
+    }
 
     // Make a pseudo-hash of the terrain generation parameters before editing
     float genParams = (float)seed_ + fractalSmoothness_ + mountainScale_ + islandFactor_;
@@ -78,7 +89,30 @@ void Terrain::drawProperties()
     ImGui::DragFloat2("Tile Size", &terrainLayers_[0].textureTileSize.x, 0.1f, 0.5f, 50.0f);
     ImGui::DragFloat2("Tile Offset", &terrainLayers_[0].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
     ImGui::Spacing();
-	
+
+    const Mesh* prevDetailMesh = detailMesh_;
+    const Material* prevDetailMaterial = detailMaterial_;
+    const Vector2 prevDetailScale = detailScale_;
+    const Vector2 prevDetailAltitudeLimits = detailAltitudeLimits_;
+    const float prevDetailSlopeLimit = detailSlopeLimit_;
+    ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", detailMesh_);
+    ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", detailMaterial_);
+    ImGui::DragFloat2("Detail Scale", &detailScale_.x, 0.05f, 0.01f, 100.0f);
+    ImGui::DragFloat2("Altitude Limits", &detailAltitudeLimits_.x, 0.5f, -100.0f, 500.0f);
+    ImGui::DragFloat("Slope Limit", &detailSlopeLimit_, 0.05f, 0.0f, 1.0f);
+    ImGui::Spacing();
+
+    // Prevent detail scale min being bigger than max
+    detailScale_.x = detailScale_.minComponent();
+
+    // Regenerate terrain layers when a change is detected
+    if (detailMesh_ != prevDetailMesh || detailMaterial_ != prevDetailMaterial
+        || detailScale_ != prevDetailScale || detailAltitudeLimits_ != prevDetailAltitudeLimits
+        || fabs(detailSlopeLimit_ - prevDetailSlopeLimit) > 0.001f)
+    {
+        placeDetailMeshes();
+    }
+
     if (ImGui::TreeNode("Terrain Layers"))
     {
         if (ImGui::Button("Add Layer"))
@@ -86,21 +120,23 @@ void Terrain::drawProperties()
             terrainLayers_.resize(terrainLayers_.size() + 1);
         }
 
-        for (unsigned int layer = 1; layer < terrainLayers_.size(); layer++)
+        for (unsigned int layerIndex = 1; layerIndex < terrainLayers_.size(); layerIndex++)
         {
-            ImGui::PushID(layer);
+            ImGui::PushID(layerIndex);
 
-            ImGui::ResourceSelect<Material>("Material", "Select Layer Material", terrainLayers_[layer].material);
-            ImGui::DragFloat2("Tile Size", &terrainLayers_[layer].textureTileSize.x, 0.1f, 0.5f, 50.0f);
-            ImGui::DragFloat2("Tile Offset", &terrainLayers_[layer].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
+            TerrainLayer& layer = terrainLayers_[layerIndex];
+
+            ImGui::ResourceSelect<Material>("Material", "Select Layer Material", layer.material);
+            ImGui::DragFloat2("Tile Size", &layer.textureTileSize.x, 0.1f, 0.5f, 50.0f);
+            ImGui::DragFloat2("Tile Offset", &layer.textureTileOffset.x, 0.1f, 0.0f, 50.0f);
             ImGui::Spacing();
 
-            ImGui::DragFloat("Altitude", &terrainLayers_[layer].altitudeBorder, 0.1f, 0.0f, 300.0f);
-            ImGui::DragFloat("Transition", &terrainLayers_[layer].altitudeTransition, 0.1f, 0.0f, 20.0f);
+            ImGui::DragFloat("Altitude", &layer.altitudeBorder, 0.1f, 0.0f, 300.0f);
+            ImGui::DragFloat("Transition", &layer.altitudeTransition, 0.1f, 0.0f, 20.0f);
             ImGui::Spacing();
 
-            ImGui::DragFloat("Slope", &terrainLayers_[layer].slopeBorder, 0.01f, -1.0f, 1.0f);
-            ImGui::DragFloat("Hardness", &terrainLayers_[layer].slopeHardness, 0.01f, 0.001f, 1.0f);
+            ImGui::DragFloat("Slope", &layer.slopeBorder, 0.01f, -1.0f, 1.0f);
+            ImGui::DragFloat("Hardness", &layer.slopeHardness, 0.01f, 0.001f, 1.0f);
             ImGui::Spacing();
 
             ImGui::PopID();
@@ -120,9 +156,14 @@ void Terrain::serialize(PropertyTable &table)
     table.serialize("factal_smoothness", fractalSmoothness_, 2.0f);
     table.serialize("mountain_scale", mountainScale_, 4.0f);
     table.serialize("island_factor", islandFactor_, 2.0f);
+    table.serialize("detail_mesh", detailMesh_, (ResourcePPtr<Mesh>)nullptr);
+    table.serialize("detail_material", detailMaterial_, (ResourcePPtr<Material>)nullptr);
+    table.serialize("detail_scale", detailScale_, Vector2::one());
+    table.serialize("detail_altitude_limits", detailAltitudeLimits_, Vector2(0.0f, 500.0f));
+    table.serialize("detail_slope_limit", detailSlopeLimit_, 0.0f);
 
     // If we read in some new properties, the terrain needs regenerating.
-    if(table.mode() == PropertyTableMode::Reading)
+    if (table.mode() == PropertyTableMode::Reading)
     {
         generateTerrain();
     }
@@ -240,6 +281,7 @@ void Terrain::generateTerrain()
     // The heightmap is now build.
     // Place objects on it.
     placeObjects();
+    placeDetailMeshes();
 }
 
 void Terrain::placeObjects()
@@ -254,7 +296,7 @@ void Terrain::placeObjects()
     // Pick random points on the heightmap and check if they are suitable for a windmill.
     int placed = 0;
     int attempts = 0;
-    while(attempts < 2000 && placed < 30)
+    while (attempts < 2000 && placed < 30)
     {
         attempts++;
 
@@ -264,7 +306,7 @@ void Terrain::placeObjects()
         float y = sampleHeightmap(x, z);
 
         // Only place windmills hills, but not too high
-        if(y < 30.0f || y > 100.0f)
+        if (y < 30.0f || y > 100.0f)
         {
             continue;
         }
@@ -280,9 +322,110 @@ void Terrain::placeObjects()
     }
 }
 
-float Terrain::sampleHeightmap(float x, float z)
+void Terrain::placeDetailMeshes()
+{
+    // Delete any existing detail batches
+    detailMeshBatches_.clear();
+
+    if (detailMesh_ != nullptr && detailMaterial_ != nullptr)
+    {
+        // Split the terrain into a 12x12 grid of detail batches
+        const int batchResolution = 12;
+        for (int x = 0; x < batchResolution; ++x)
+        {
+            // Determine the bounds in the x plane
+            float minX = x * dimensions_.x / (float)batchResolution;
+            float maxX = (x + 1) * dimensions_.x / (float)batchResolution;
+
+            for (int z = 0; z < batchResolution; ++z)
+            {
+                // Determine the bounds in the z plane
+                float minZ = z * dimensions_.z / (float)batchResolution;
+                float maxZ = (z + 1) * dimensions_.z / (float)batchResolution;
+
+                // For each tile, attempt to make multiple batches
+                // Each batch has a different draw distance, preventing a single grass/no grass transition
+                for (int iter = 0; iter < 3; ++iter)
+                {
+                    DetailBatch batch;
+                    batch.bounds = Bounds(Point3(minX, 0.0f, minZ), Point3(maxX, dimensions_.y, maxZ));
+                    batch.drawDistance = batch.bounds.size().magnitude() * 0.25f * (float)(iter + 1);
+
+                    // Look for instance positions within the bounds
+                    const uint32_t seed = iter | (x << 12) | (z << 24);
+                    generateDetailPositions(batch, seed);
+
+                    // If the batch is not empty, save it
+                    if (batch.count > 0)
+                    {
+                        detailMeshBatches_.push_back(batch);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Terrain::generateDetailPositions(DetailBatch& batch, uint32_t seed) const
+{
+    // Use the batch centre as the seed
+    // This ensures that multiple runs are deterministic.
+    srand(seed);
+
+    // Reset the number of positions in the batch
+    batch.count = 0;
+
+    // Otherwise, pick 1024 random points on the terrain
+    int attempts = 0;
+    while (attempts < 4000 && batch.count < DetailBatch::MaxInstancesPerBatch)
+    {
+        attempts++;
+
+        // Pick a random point
+        float x = random_float(batch.bounds.min().x, batch.bounds.max().x);
+        float z = random_float(batch.bounds.min().z, batch.bounds.max().z);
+        float y = sampleHeightmap(x, z);
+
+        // Respect the detail altitude limits
+        if (y > detailAltitudeLimits_.y || y < detailAltitudeLimits_.x)
+        {
+            continue;
+        }
+
+        // Respect the layer's slope settings
+        if (sampleHeightmapNormal(x, z).y < detailSlopeLimit_)
+        {
+            continue;
+        }
+
+        float scale = random_float(detailScale_.x, detailScale_.y);
+        batch.instancePositions[batch.count] = Vector4(x, y, z, scale);
+        batch.count++;
+    }
+}
+
+float Terrain::sampleHeightmap(float x, float z) const
 {
     int xTexel = (int)((x / dimensions_.x) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
     int zTexel = (int)((z / dimensions_.z) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
-    return heights_[xTexel + zTexel * HEIGHTMAP_RESOLUTION];
+    return heights_[xTexel + zTexel * HEIGHTMAP_RESOLUTION] - waterDepth_;
+}
+
+Vector3 Terrain::sampleHeightmapNormal(float x, float z) const
+{
+    int xTexel = (int)((x / dimensions_.x) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
+    int zTexel = (int)((z / dimensions_.z) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
+    int x1Texel = std::max(xTexel - 1, 0);
+    int x2Texel = std::min(xTexel + 1, HEIGHTMAP_RESOLUTION - 1);
+    int z1Texel = std::max(zTexel - 1, 0);
+    int z2Texel = std::min(zTexel + 1, HEIGHTMAP_RESOLUTION - 1);
+    float x1 = heights_[x1Texel + zTexel * HEIGHTMAP_RESOLUTION];
+    float x2 = heights_[x2Texel + zTexel * HEIGHTMAP_RESOLUTION];
+    float z1 = heights_[xTexel + z1Texel * HEIGHTMAP_RESOLUTION];
+    float z2 = heights_[xTexel + z2Texel * HEIGHTMAP_RESOLUTION];
+    float dydx = (x2 - x1) * (2.0f * HEIGHTMAP_RESOLUTION / dimensions_.x);
+    float dydz = (z2 - z1) * (2.0f * HEIGHTMAP_RESOLUTION / dimensions_.z);
+    Vector3 worldTangent = Vector3(1.0f, dydx, 0.0f).normalized();
+    Vector3 worldBitangent = Vector3(0.0f, dydz, 1.0f).normalized();
+    return Vector3::cross(worldBitangent, worldTangent);
 }

@@ -6,13 +6,13 @@
 
 // GBuffer Layout
 // RT0: Albedo (RGB), Gloss (A)
-// RT1: Normals (XYZ, 10 bits), Unused (A, 2 bits)
+// RT1: Normals (XYZ, 10 bits), Translucency (a, 2 bits)
 
 // Stores surface properties into the gbuffer format
 void packGBuffer(SurfaceProperties surface, out vec4 gbuffer0, out vec4 gbuffer1)
 {
     gbuffer0 = vec4(surface.diffuseColor, surface.gloss);
-    gbuffer1 = vec4(surface.worldNormal * 0.5 + 0.5, 0.0);
+    gbuffer1 = vec4(surface.worldNormal * 0.5 + 0.5, surface.translucency);
 }
 
 // Retrieves surface properties from the gbuffer format
@@ -22,7 +22,8 @@ SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1)
     surface.diffuseColor = gbuffer0.rgb;
     surface.occlusion = 1.0;
     surface.gloss = gbuffer0.a;
-    surface.worldNormal = gbuffer1.xyz * 2.0 - 1.0;
+    surface.translucency = gbuffer1.a;
+    surface.worldNormal = normalize(gbuffer1.xyz * 2.0 - 1.0);
     return surface;
 }
 

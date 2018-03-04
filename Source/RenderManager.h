@@ -12,6 +12,7 @@ enum class RenderDebugMode
     Depth = SF_DebugGBufferDepth,
     Albedo = SF_DebugGBufferAlbedo,
     Occlusion = SF_DebugGBufferOcclusion,
+    Translucency = SF_DebugGBufferTranslucency,
     Gloss = SF_DebugGBufferGloss,
     Normals = SF_DebugGBufferNormals,
     Shadows = SF_DebugShadows,

@@ -45,10 +45,12 @@ private:
     UniformBuffer<CameraUniformData> cameraUniformBuffer_;
     UniformBuffer<PerDrawUniformData> perDrawUniformBuffer_;
     UniformBuffer<TerrainUniformData> terrainUniformBuffer_;
+    UniformBuffer<TerrainDetailsData> terrainDetailsUniformBuffer_;
 
     // Shaders used for gbuffer pass
     ResourcePPtr<Shader> standardShader_;
     ResourcePPtr<Shader> terrainShader_;
+    ResourcePPtr<Shader> terrainDetailMeshShader_;
 
     // Shaders used for deferred passes
     ResourcePPtr<Shader> deferredLightingShader_;
@@ -74,8 +76,9 @@ private:
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;
     void updateCameraUniformBuffer(const Camera* camera) const;
-    void updatePerDrawUniformBuffer(const StaticMesh* draw, const Texture* albedoTexture, const Texture* normalMapTexture) const;
+    void updatePerDrawUniformBuffer(const Matrix4x4 &localToWorld, const Material* material) const;
     void updateTerrainUniformBuffer(const Terrain* terrain) const;
+    void updateTerrainDetailsUniformBuffer(const DetailBatch& details) const;
 
     // Renders a full geometry pass using the specified camera
     void executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures) const;

@@ -148,6 +148,7 @@
     <None Include="Resources\Shaders\Includes\UniformBuffers.inc.shader" />
     <None Include="Resources\Shaders\SkyboxPass.shader" />
     <None Include="Resources\Shaders\Terrain.shader" />
+    <None Include="Resources\Shaders\TerrainDetail.shader" />
     <None Include="Resources\Shaders\Water.shader" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
