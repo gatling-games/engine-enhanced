@@ -104,22 +104,25 @@ Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio, EyeType eye) const
 
         projection = Matrix4x4::orthographic(l, r, b, t, nearPlane_, farPlane_);
     }
-
-    Matrix4x4 eyeMatrix = Matrix4x4::identity();
-
-    if (eye == EyeType::LeftEye)
+    if (eye != EyeType::None)
     {
-        eyeMatrix = VRManager::instance()->getHmdMatrixPoseEye(vr::Hmd_Eye::Eye_Left);
-    }
-    else if (eye == EyeType::RightEye)
-    {
-        eyeMatrix = VRManager::instance()->getHmdMatrixPoseEye(vr::Hmd_Eye::Eye_Right);
+        Matrix4x4 eyeMatrix = Matrix4x4::identity();
+        if (eye == EyeType::LeftEye)
+        {
+            eyeMatrix = VRManager::instance()->getCurrentViewProjectionMatrix(vr::Hmd_Eye::Eye_Left);
+        }
+        else if (eye == EyeType::RightEye)
+        {
+            eyeMatrix = VRManager::instance()->getCurrentViewProjectionMatrix(vr::Hmd_Eye::Eye_Right);
+        }
+
+        return projection* eyeMatrix * worldToLocal;
     }
 
-    return projection * eyeMatrix * worldToLocal;
+    return projection * worldToLocal;
 }
 
-Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio) const
+Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio, EyeType eye) const
 {
     const Transform* transform = gameObject()->findComponent<Transform>();
     const Matrix4x4 localToWorld = transform->localToWorld();
@@ -135,6 +138,20 @@ Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio) const
         // We are only using ortho cameras for render-to-texture effects,
         // and dont currently need to go camera space -> world space
         return Matrix4x4::identity();
+    }
+    if (eye != EyeType::None)
+    {
+        Matrix4x4 eyeMatrix = Matrix4x4::identity();
+
+        if (eye == EyeType::LeftEye)
+        {
+            eyeMatrix = VRManager::instance()->getCurrentViewProjectionMatrix(vr::Hmd_Eye::Eye_Left);
+        }
+        else if (eye == EyeType::RightEye)
+        {
+            eyeMatrix = VRManager::instance()->getCurrentViewProjectionMatrix(vr::Hmd_Eye::Eye_Right);
+        }
+        return localToWorld * inverseProjection;
     }
 
     return localToWorld * inverseProjection;
