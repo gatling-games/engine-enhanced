@@ -12,14 +12,22 @@
 #include "Scene/Transform.h"
 #include "Scene/Shield.h"
 
-Renderer::Renderer()
-    : Renderer(Framebuffer::backbuffer())
-{
+//Renderer::Renderer()
+//    : 
+//    gbufferTextures_(),
+//    gbufferFramebuffer_(),
+//    shadowMap_(),
+//    sceneUniformBuffer_(UniformBufferType::SceneBuffer),
+//    cameraUniformBuffer_(UniformBufferType::CameraBuffer),
+//    perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
+//    terrainUniformBuffer_(UniformBufferType::TerrainBuffer)
+//{
+//    std::vector<Framebuffer*> fbs = { Framebuffer::backbuffer() };
+//    Renderer(*fbs);
+//}
 
-}
-
-Renderer::Renderer(const Framebuffer* targetFramebuffer)
-    : targetFramebuffer_(targetFramebuffer),
+Renderer::Renderer(std::vector<Framebuffer*> targetFramebuffers)
+    : targetFramebuffers_(targetFramebuffers),
     gbufferTextures_(),
     gbufferFramebuffer_(),
     shadowMap_(),
@@ -71,136 +79,142 @@ Renderer::~Renderer()
 
 void Renderer::renderFrame(const Camera* camera)
 {
-    // Ensure the correct uniform buffers are bound
-    sceneUniformBuffer_.use();
-    cameraUniformBuffer_.use();
-    perDrawUniformBuffer_.use();
-    terrainUniformBuffer_.use();
-    terrainDetailsUniformBuffer_.use();
-
-    // Ensure the contents of the uniform buffers is up to date
-    // The per-draw buffer is handled separately
-    updateSceneUniformBuffer();
-    updateCameraUniformBuffer(camera);
-
-    // Wireframe debugging mode needs to be handled separately.
-    if (RenderManager::instance()->debugMode() == RenderDebugMode::Wireframe)
+    for (int fb = 0; fb < targetFramebuffers_.size(); ++fb)
     {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        // Ensure the correct uniform buffers are bound
+        sceneUniformBuffer_.use();
+        cameraUniformBuffer_.use();
+        perDrawUniformBuffer_.use();
+        terrainUniformBuffer_.use();
+        terrainDetailsUniformBuffer_.use();
 
-        // We want to render directly to the target framebuffer
-        targetFramebuffer_->use();
+        // Ensure the contents of the uniform buffers is up to date
+        // The per-draw buffer is handled separately
+        updateSceneUniformBuffer();
+        updateCameraUniformBuffer(camera, fb);
 
-        // Normally, the guffer pass only needs to clear depth, not colour.
-        // When rendering a wireframe we need to clear the color too
-        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        executeGeometryPass(camera, ALL_SHADER_FEATURES);
+        // Wireframe debugging mode needs to be handled separately.
+        if (RenderManager::instance()->debugMode() == RenderDebugMode::Wireframe)
+        {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+            // We want to render directly to the target framebuffer
+            targetFramebuffers_[fb]->use();
+
+            // Normally, the guffer pass only needs to clear depth, not colour.
+            // When rendering a wireframe we need to clear the color too
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+            executeGeometryPass(camera, ALL_SHADER_FEATURES, fb);
+            executeWaterPass();
+
+            // Ensure wireframe rendering is turned off again
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            return;
+        }
+
+        // Render the shadow map prior to the main render passes
+        if (RenderManager::instance()->filterFeatureList(SF_Shadows | SF_DebugShadows | SF_DebugShadowCascades) != 0)
+        {
+            shadowMap_.updatePosition(camera, targetFramebuffers_[fb]->width() / (float)targetFramebuffers_[fb]->height());
+            shadowMap_.bind();
+            for (int cascade = 0; cascade < ShadowMap::CASCADE_COUNT; ++cascade)
+            {
+                shadowMap_.cascadeFramebuffer(cascade).use();
+                executeGeometryPass(shadowMap_.cascadeCamera(cascade), SF_HighTessellation, fb);
+            }
+        }
+
+        // Ensure the gbuffer exists and is ok
+        createGBuffer();
+
+        // Render each opaque object into the gbuffer textures
+        gbufferFramebuffer_.use();
+        executeGeometryPass(camera, ALL_SHADER_FEATURES, fb);
+
+        // Render ambient occlusion into the gbuffer, before computing lighting
+        if (RenderManager::instance()->isFeatureGloballyEnabled(SF_AmbientOcclusion))
+        {
+            executeDeferredAmbientOcclusionPass();
+        }
+
+        // Now, we need to combine deferred lighting, sky, water etc into the target framebuffer
+        targetFramebuffers_[fb]->use();
+
+        // If we are not rendering the sky, clear the screen to black
+        if (RenderManager::instance()->isFeatureGloballyEnabled(SF_Sky) == false)
+        {
+            glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
+        // Compute lighting into final render target
+        executeDeferredLightingPass();
+
+        // Render the water on top of the geometry using alpha blending
         executeWaterPass();
 
-        // Ensure wireframe rendering is turned off again
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        return;
-    }
-
-    // Render the shadow map prior to the main render passes
-    if (RenderManager::instance()->filterFeatureList(SF_Shadows | SF_DebugShadows | SF_DebugShadowCascades) != 0)
-    {
-        shadowMap_.updatePosition(camera, targetFramebuffer_->width() / (float)targetFramebuffer_->height());
-        shadowMap_.bind();
-        for (int cascade = 0; cascade < ShadowMap::CASCADE_COUNT; ++cascade)
+        // Show any debugging modes
+        if (RenderManager::instance()->debugMode() != RenderDebugMode::None)
         {
-            shadowMap_.cascadeFramebuffer(cascade).use();
-            executeGeometryPass(shadowMap_.cascadeCamera(cascade), SF_HighTessellation | SF_Cutout);
+            executeDeferredDebugPass();
         }
-    }
 
-    // Ensure the gbuffer exists and is ok
-    createGBuffer();
+        // Finally render the skybox
+        if (RenderManager::instance()->isFeatureGloballyEnabled(SF_Sky))
+        {
+            executeSkyboxPass(camera);
+        }
 
-    // First, render the gbuffer textures
-    gbufferFramebuffer_.use();
-    executeGeometryPass(camera, ALL_SHADER_FEATURES);
-
-    // Render ambient occlusion into the gbuffer, before computing lighting
-    if (RenderManager::instance()->isFeatureGloballyEnabled(SF_AmbientOcclusion))
-    {
-        executeDeferredAmbientOcclusionPass();
-    }
-    
-    // Now, we need to combine deferred lighting, sky, water etc into the target framebuffer
-    targetFramebuffer_->use();
-
-    // If we are not rendering the sky, clear the screen to black
-    if(RenderManager::instance()->isFeatureGloballyEnabled(SF_Sky) == false)
-    {
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
-    // Compute lighting into final render target
-    executeDeferredLightingPass();
-
-    // Render the water on top of the geometry using alpha blending
-    executeWaterPass();
-
-    // Show any debugging modes
-    if (RenderManager::instance()->debugMode() != RenderDebugMode::None)
-    {
-        executeDeferredDebugPass();
-    }
-
-    // Finally render the skybox
-    if (RenderManager::instance()->isFeatureGloballyEnabled(SF_Sky))
-    {
-        executeSkyboxPass(camera);
-    }
-
-    // Alpha blended shields are then rendered on top of the water and sky
-    if (RenderManager::instance()->debugMode() == RenderDebugMode::None)
-    {
-        executeShieldPass();
+        // Alpha blended shields are then rendered on top of the water and sky
+        if (RenderManager::instance()->debugMode() == RenderDebugMode::None)
+        {
+            executeShieldPass();
+        }
     }
 }
 
 void Renderer::createGBuffer()
 {
-    // If there is already an ok gbuffer, we dont need to do anything
-    // Check with the first texture - if it is ok, the whole thing is ok.
-    if (gbufferTextures_[0] != nullptr
-        && gbufferTextures_[0]->width() == targetFramebuffer_->width()
-        && gbufferTextures_[0]->height() == targetFramebuffer_->height())
+    for (int fb = 0; fb < targetFramebuffers_.size(); ++fb)
     {
-        // GBuffer already exists and is the correct resolution.
-        return;
+        // If there is already an ok gbuffer, we dont need to do anything
+        // Check with the first texture - if it is ok, the whole thing is ok.
+        if (gbufferTextures_[0] != nullptr
+            && gbufferTextures_[0]->width() == targetFramebuffers_[fb]->width()
+            && gbufferTextures_[0]->height() == targetFramebuffers_[fb]->height())
+        {
+            // GBuffer already exists and is the correct resolution.
+            return;
+        }
+
+        // First destroy any existing gbuffer textures
+        destroyGBuffer();
+
+        // Create the textures    
+        gbufferTextures_[0] = new Texture(TextureFormat::RGBA8, targetFramebuffers_[fb]->width(), targetFramebuffers_[fb]->height());
+        gbufferTextures_[1] = new Texture(TextureFormat::RGBA8, targetFramebuffers_[fb]->width(), targetFramebuffers_[fb]->height());
+        assert(GBUFFER_RENDER_TARGETS == 2); // should be one higher than the last index
+
+        // Bind the gbuffer textures for sampling in deferred passes
+        for (int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
+        {
+            // Slot 15 is reserved for the depth texture.
+            // Start with gbuffer0 in slot 14, gbuffer1 in slot 13, etc.
+            gbufferTextures_[i]->bind(14 - i);
+        }
+
+        // Bind the depth texture as target 15.
+        GLint depthTexture;
+        glGetNamedFramebufferAttachmentParameteriv(targetFramebuffers_[fb]->glid(), GL_DEPTH_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &depthTexture);
+        glActiveTexture(GL_TEXTURE15);
+        glBindTexture(GL_TEXTURE_2D, depthTexture);
+
+        // Set up the framebuffer
+        // Use the target framebuffer's depth texture and the gbuffer textures
+        gbufferFramebuffer_.attachDepthTextureFromFramebuffer(targetFramebuffers_[fb]);
+        gbufferFramebuffer_.attachColorTexturesMRT(GBUFFER_RENDER_TARGETS, (const Texture**)gbufferTextures_);
     }
-
-    // First destroy any existing gbuffer textures
-    destroyGBuffer();
-
-    // Create the textures    
-    gbufferTextures_[0] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
-    gbufferTextures_[1] = new Texture(TextureFormat::RGBA8, targetFramebuffer_->width(), targetFramebuffer_->height());
-    assert(GBUFFER_RENDER_TARGETS == 2); // should be one higher than the last index
-
-    // Bind the gbuffer textures for sampling in deferred passes
-    for (int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
-    {
-        // Slot 15 is reserved for the depth texture.
-        // Start with gbuffer0 in slot 14, gbuffer1 in slot 13, etc.
-        gbufferTextures_[i]->bind(14 - i);
-    }
-
-    // Bind the depth texture as target 15.
-    GLint depthTexture;
-    glGetNamedFramebufferAttachmentParameteriv(targetFramebuffer_->glid(), GL_DEPTH_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &depthTexture);
-    glActiveTexture(GL_TEXTURE15);
-    glBindTexture(GL_TEXTURE_2D, depthTexture);
-
-    // Set up the framebuffer
-    // Use the target framebuffer's depth texture and the gbuffer textures
-    gbufferFramebuffer_.attachDepthTextureFromFramebuffer(targetFramebuffer_);
-    gbufferFramebuffer_.attachColorTexturesMRT(GBUFFER_RENDER_TARGETS, (const Texture**)gbufferTextures_);
 }
 
 void Renderer::destroyGBuffer()
@@ -242,19 +256,37 @@ void Renderer::updateSceneUniformBuffer() const
     sceneUniformBuffer_.update(data);
 }
 
-void Renderer::updateCameraUniformBuffer(const Camera* camera) const
+void Renderer::updateCameraUniformBuffer(const Camera* camera, int targetFrameBuffer) const
 {
     // Find out the resolution and aspect ratio of the framebuffer
-    const float width = (float)targetFramebuffer_->width();
-    const float height = (float)targetFramebuffer_->height();
+    const float width = (float)targetFramebuffers_[targetFrameBuffer]->width();
+    const float height = (float)targetFramebuffers_[targetFrameBuffer]->height();
     const float aspect = width / height;
 
     // Gather the new contents of the camera buffer
     CameraUniformData data;
     data.screenResolution = Vector4(width, height, 1.0f / width, 1.0f / height);
     data.cameraPosition = Vector4(camera->gameObject()->transform()->positionWorld());
-    data.worldToClip = camera->getWorldToCameraMatrix(aspect);
-    data.clipToWorld = camera->getCameraToWorldMatrix(aspect);
+
+    // If VR
+    if (targetFramebuffers_.size() == 2)
+    {
+        if (targetFrameBuffer == 0)
+        {
+            data.worldToClip = camera->getWorldToCameraMatrix(aspect, EyeType::LeftEye);
+            data.clipToWorld = camera->getCameraToWorldMatrix(aspect, EyeType::LeftEye);
+        }
+        else if (targetFrameBuffer == 1)
+        {
+            data.worldToClip = camera->getWorldToCameraMatrix(aspect, EyeType::RightEye);
+            data.clipToWorld = camera->getCameraToWorldMatrix(aspect, EyeType::RightEye);
+        }
+    }
+    else
+    {
+        data.worldToClip = camera->getWorldToCameraMatrix(aspect);
+        data.clipToWorld = camera->getCameraToWorldMatrix(aspect);
+    }
 
     // Update the uniform buffer.
     cameraUniformBuffer_.update(data);
@@ -311,9 +343,9 @@ void Renderer::updateTerrainDetailsUniformBuffer(const DetailBatch& details) con
     terrainDetailsUniformBuffer_.update(detailsData);
 }
 
-void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures) const
+void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures, int targetFrameBuffer) const
 {
-    updateCameraUniformBuffer(camera);
+    updateCameraUniformBuffer(camera, targetFrameBuffer);
 
     // Ensure that depth testing and depth write are on
     glEnable(GL_DEPTH_TEST);

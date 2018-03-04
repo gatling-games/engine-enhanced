@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Renderer/Framebuffer.h"
 #include "Renderer/Shader.h"
 #include "Renderer/UniformBuffer.h"
@@ -18,7 +20,7 @@ public:
     Renderer();
 
     // Creates a renderer that draws to the specified framebuffer.
-    explicit Renderer(const Framebuffer* targetFramebuffer);
+    explicit Renderer(std::vector<Framebuffer*> targetFramebuffers);
 
     ~Renderer();
 
@@ -28,7 +30,7 @@ public:
 
 private:
     // The framebuffer being rendered to
-    const Framebuffer* targetFramebuffer_;
+    const std::vector<Framebuffer*> targetFramebuffers_;
 
     // The current GBuffer objects
     Texture* gbufferTextures_[GBUFFER_RENDER_TARGETS];
@@ -85,13 +87,13 @@ private:
 
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;
-    void updateCameraUniformBuffer(const Camera* camera) const;
+    void updateCameraUniformBuffer(const Camera* camera, int targetFrameBuffer) const;
     void updatePerDrawUniformBuffer(const Matrix4x4 &localToWorld, const Material* material) const;
     void updateTerrainUniformBuffer(const Terrain* terrain) const;
     void updateTerrainDetailsUniformBuffer(const DetailBatch& details) const;
 
     // Renders a full geometry pass using the specified camera
-    void executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures) const;
+    void executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures, int targetFrameBuffer) const;
 
     // Renders a full screen pass using the specifed shader
     void executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const;
