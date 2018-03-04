@@ -94,7 +94,7 @@ private:
     void updateTerrainDetailsUniformBuffer(const DetailBatch& details) const;
 
     // Renders a full geometry pass using the specified camera
-    void executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures, int targetFrameBuffer) const;
+    void executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures) const;
 
     // Renders a full screen pass using the specifed shader
     void executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const;

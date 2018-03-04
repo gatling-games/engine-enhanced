@@ -21,7 +21,7 @@ Renderer::Renderer()
 Renderer::Renderer(Framebuffer* targetFramebuffer)
     : Renderer(std::vector<Framebuffer*> { targetFramebuffer })
 {
-    
+
 }
 
 Renderer::Renderer(std::vector<Framebuffer*> targetFramebuffers)
@@ -77,18 +77,42 @@ Renderer::~Renderer()
 
 void Renderer::renderFrame(const Camera* camera)
 {
+    // Ensure the correct uniform buffers are bound
+    sceneUniformBuffer_.use();
+    cameraUniformBuffer_.use();
+    perDrawUniformBuffer_.use();
+    terrainUniformBuffer_.use();
+
+    // Ensure the contents of the uniform buffers is up to date
+    // The per-draw buffer is handled separately
+    updateSceneUniformBuffer();
+
+    // Compute the aspect ratio using one of the framebuffers
+    // All of the framebuffers are the same size anyway
+    const float aspectRatio = targetFramebuffers_[0]->width() / (float)targetFramebuffers_[0]->height();
+
+    // Render the shadow map prior to the main render passes
+    if (RenderManager::instance()->filterFeatureList(SF_Shadows | SF_DebugShadows | SF_DebugShadowCascades) != 0)
+    {
+        shadowMap_.updatePosition(camera, aspectRatio);
+        shadowMap_.bind();
+
+        for (int cascade = 0; cascade < ShadowMap::CASCADE_COUNT; ++cascade)
+        {
+            shadowMap_.cascadeFramebuffer(cascade).use();
+            updateCameraUniformBuffer(shadowMap_.cascadeCamera(cascade), 0);
+            executeGeometryPass(shadowMap_.cascadeCamera(cascade), SF_HighTessellation);
+        }
+    }
+
+    // Ensure the gbuffer exists and is ok
+    createGBuffer();
+
+    // Draw each of the bound framebuffers
+    // There is one per eye, so either 1 (no vr) or 2 (vr).
     for (int fb = 0; fb < targetFramebuffers_.size(); ++fb)
     {
-        // Ensure the correct uniform buffers are bound
-        sceneUniformBuffer_.use();
-        cameraUniformBuffer_.use();
-        perDrawUniformBuffer_.use();
-        terrainUniformBuffer_.use();
-        terrainDetailsUniformBuffer_.use();
-
-        // Ensure the contents of the uniform buffers is up to date
-        // The per-draw buffer is handled separately
-        updateSceneUniformBuffer();
+        // Set the camera parameters for the current camera + eye
         updateCameraUniformBuffer(camera, fb);
 
         // Wireframe debugging mode needs to be handled separately.
@@ -103,7 +127,7 @@ void Renderer::renderFrame(const Camera* camera)
             // When rendering a wireframe we need to clear the color too
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
             glClear(GL_COLOR_BUFFER_BIT);
-            executeGeometryPass(camera, ALL_SHADER_FEATURES, fb);
+            executeGeometryPass(camera, ALL_SHADER_FEATURES);
             executeWaterPass();
 
             // Ensure wireframe rendering is turned off again
@@ -111,24 +135,9 @@ void Renderer::renderFrame(const Camera* camera)
             return;
         }
 
-        // Render the shadow map prior to the main render passes
-        if (RenderManager::instance()->filterFeatureList(SF_Shadows | SF_DebugShadows | SF_DebugShadowCascades) != 0)
-        {
-            shadowMap_.updatePosition(camera, targetFramebuffers_[fb]->width() / (float)targetFramebuffers_[fb]->height());
-            shadowMap_.bind();
-            for (int cascade = 0; cascade < ShadowMap::CASCADE_COUNT; ++cascade)
-            {
-                shadowMap_.cascadeFramebuffer(cascade).use();
-                executeGeometryPass(shadowMap_.cascadeCamera(cascade), SF_HighTessellation, fb);
-            }
-        }
-
-        // Ensure the gbuffer exists and is ok
-        createGBuffer();
-
         // Render each opaque object into the gbuffer textures
         gbufferFramebuffer_.use();
-        executeGeometryPass(camera, ALL_SHADER_FEATURES, fb);
+        executeGeometryPass(camera, ALL_SHADER_FEATURES);
 
         // Render ambient occlusion into the gbuffer, before computing lighting
         if (RenderManager::instance()->isFeatureGloballyEnabled(SF_AmbientOcclusion))
@@ -341,10 +350,8 @@ void Renderer::updateTerrainDetailsUniformBuffer(const DetailBatch& details) con
     terrainDetailsUniformBuffer_.update(detailsData);
 }
 
-void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures, int targetFrameBuffer) const
+void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shaderFeatures) const
 {
-    updateCameraUniformBuffer(camera, targetFrameBuffer);
-
     // Ensure that depth testing and depth write are on
     glEnable(GL_DEPTH_TEST);
     glDepthMask(true);
