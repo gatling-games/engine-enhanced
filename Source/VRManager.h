@@ -36,7 +36,7 @@ public:
 private:
     bool vrEnabled_;
 
-    std::vector<Framebuffer*> frameBuffers_[2];
+    std::vector<Framebuffer*> frameBuffers_;
     Texture* depthBuffers_[2];
     Texture* colorBuffers_[2];
     Renderer* renderer_;

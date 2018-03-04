@@ -87,18 +87,18 @@ void VRManager::setupFramebuffers()
 {
     for (int i = 0; i < 2; ++i)
     {
-        frameBuffers_->push_back(new Framebuffer());
+        frameBuffers_.push_back(new Framebuffer());
         // Create new framebuffer and textures with new panel dimensions
         depthBuffers_[i] = new Texture(TextureFormat::Depth, width_, height_);
         colorBuffers_[i] = new Texture(TextureFormat::RGB8_SRGB, width_, height_);
 
         // Attach new textures to new framebuffer
-        frameBuffers_->at(i)->attachDepthTexture(depthBuffers_[i]);
-        frameBuffers_->at(i)->attachColorTexture(colorBuffers_[i]);
+        frameBuffers_[i]->attachDepthTexture(depthBuffers_[i]);
+        frameBuffers_[i]->attachColorTexture(colorBuffers_[i]);
     } 
 
     // Then create a renderer for the framebuffer.
-    renderer_ = new Renderer(*frameBuffers_);
+    renderer_ = new Renderer(frameBuffers_);
     
 }
 
