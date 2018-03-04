@@ -33,6 +33,31 @@ Framebuffer* Framebuffer::backbuffer()
     return &bb;
 }
 
+Framebuffer::Framebuffer(Framebuffer&& other)
+{
+    id_ = other.id_;
+    width_ = other.width_;
+    height_ = other.height_;
+    other.id_ = 0;
+    other.width_ = -1;
+    other.height_ = -1;
+}
+
+Framebuffer& Framebuffer::operator=(Framebuffer&& other)
+{
+    if(this != &other)
+    {
+        id_ = other.id_;
+        width_ = other.width_;
+        height_ = other.height_;
+        other.id_ = 0;
+        other.width_ = -1;
+        other.height_ = -1;
+    }
+
+    return *this;
+}
+
 void Framebuffer::setResolution(int width, int height)
 {
     // This should be used for the back buffer only.

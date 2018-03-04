@@ -26,6 +26,10 @@ public:
     Framebuffer(const Framebuffer&) = delete;
     Framebuffer& operator=(const Framebuffer) = delete;
 
+    // Allow framebuffers to be moved
+    Framebuffer(Framebuffer&& other);
+    Framebuffer& operator=(Framebuffer&& other);
+
     // Gets the internal opengl id.
     GLuint glid() const { return id_; }
 

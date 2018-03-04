@@ -38,7 +38,7 @@ private:
 
     // The current GBuffer objects
     Texture* gbufferTextures_[GBUFFER_RENDER_TARGETS];
-    Framebuffer gbufferFramebuffer_;
+    std::vector<Framebuffer> gbufferFramebuffers_;
 
     // The shadow map rendering manager
     ShadowMap shadowMap_;

@@ -27,7 +27,7 @@ Renderer::Renderer(Framebuffer* targetFramebuffer)
 Renderer::Renderer(std::vector<Framebuffer*> targetFramebuffers)
     : targetFramebuffers_(targetFramebuffers),
     gbufferTextures_(),
-    gbufferFramebuffer_(),
+    gbufferFramebuffers_(),
     shadowMap_(),
     sceneUniformBuffer_(UniformBufferType::SceneBuffer),
     cameraUniformBuffer_(UniformBufferType::CameraBuffer),
@@ -160,7 +160,7 @@ void Renderer::renderFrame(const Camera* camera)
         }
 
         // Render each opaque object into the gbuffer textures
-        gbufferFramebuffer_.use();
+        gbufferFramebuffers_[fb].use();
         executeGeometryPass(camera, ALL_SHADER_FEATURES);
 
         // Render ambient occlusion into the gbuffer, before computing lighting
@@ -207,30 +207,40 @@ void Renderer::renderFrame(const Camera* camera)
 
 void Renderer::createGBuffer()
 {
-    for (int fb = 0; fb < targetFramebuffers_.size(); ++fb)
+    // If there is already an ok gbuffer, we dont need to do anything
+    // Check with the first texture - if it is ok, the whole thing is ok.
+    if (gbufferTextures_[0] != nullptr
+        && gbufferTextures_[0]->width() == targetFramebuffers_[0]->width()
+        && gbufferTextures_[0]->height() == targetFramebuffers_[0]->height())
     {
-        // If there is already an ok gbuffer, we dont need to do anything
-        // Check with the first texture - if it is ok, the whole thing is ok.
-        if (gbufferTextures_[0] != nullptr
-            && gbufferTextures_[0]->width() == targetFramebuffers_[fb]->width()
-            && gbufferTextures_[0]->height() == targetFramebuffers_[fb]->height())
-        {
-            // GBuffer already exists and is the correct resolution.
-            return;
-        }
+        // GBuffer already exists and is the correct resolution.
+        return;
+    }
 
-        // First destroy any existing gbuffer textures
-        destroyGBuffer();
+    // First destroy any existing gbuffer textures
+    destroyGBuffer();
 
+    // Create the textures    
+    gbufferTextures_[0] = new Texture(TextureFormat::RGBA8, targetFramebuffers_[0]->width(), targetFramebuffers_[0]->height());
+    gbufferTextures_[1] = new Texture(TextureFormat::RGBA1010102, targetFramebuffers_[0]->width(), targetFramebuffers_[0]->height());
+    assert(GBUFFER_RENDER_TARGETS == 2); // should be one higher than the last index
+
+<<<<<<< HEAD
         // Create the textures    
         gbufferTextures_[0] = new Texture(TextureFormat::RGBA8, targetFramebuffers_[fb]->width(), targetFramebuffers_[fb]->height());
         gbufferTextures_[1] = new Texture(TextureFormat::RGBA8, targetFramebuffers_[fb]->width(), targetFramebuffers_[fb]->height());
         assert(GBUFFER_RENDER_TARGETS == 2); // should be one higher than the last index
+=======
+    // Create the gbuffer framebuffers
+    gbufferFramebuffers_.resize(targetFramebuffers_.size());
+>>>>>>> Renderer - [Fix] Make a different gbuffer fbo for each target fbo
 
-        // Set up the framebuffer
-        // Use the target framebuffer's depth texture and the gbuffer textures
-        gbufferFramebuffer_.attachDepthTextureFromFramebuffer(targetFramebuffers_[fb]);
-        gbufferFramebuffer_.attachColorTexturesMRT(GBUFFER_RENDER_TARGETS, (const Texture**)gbufferTextures_);
+    // Use the target framebuffer's depth texture and the gbuffer textures
+    // The same gbuffer textures are used for each framebuffer, only the depth texture is different
+    for (int fb = 0; fb < targetFramebuffers_.size(); ++fb)
+    {
+        gbufferFramebuffers_[fb].attachDepthTextureFromFramebuffer(targetFramebuffers_[fb]);
+        gbufferFramebuffers_[fb].attachColorTexturesMRT(GBUFFER_RENDER_TARGETS, (const Texture**)gbufferTextures_);
     }
 }
 
