@@ -12,19 +12,17 @@
 #include "Scene/Transform.h"
 #include "Scene/Shield.h"
 
-//Renderer::Renderer()
-//    : 
-//    gbufferTextures_(),
-//    gbufferFramebuffer_(),
-//    shadowMap_(),
-//    sceneUniformBuffer_(UniformBufferType::SceneBuffer),
-//    cameraUniformBuffer_(UniformBufferType::CameraBuffer),
-//    perDrawUniformBuffer_(UniformBufferType::PerDrawBuffer),
-//    terrainUniformBuffer_(UniformBufferType::TerrainBuffer)
-//{
-//    std::vector<Framebuffer*> fbs = { Framebuffer::backbuffer() };
-//    Renderer(*fbs);
-//}
+Renderer::Renderer()
+    : Renderer(Framebuffer::backbuffer())
+{
+
+}
+
+Renderer::Renderer(Framebuffer* targetFramebuffer)
+    : Renderer(std::vector<Framebuffer*> { targetFramebuffer })
+{
+    
+}
 
 Renderer::Renderer(std::vector<Framebuffer*> targetFramebuffers)
     : targetFramebuffers_(targetFramebuffers),

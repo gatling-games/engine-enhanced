@@ -19,7 +19,8 @@ public:
     // Creates a renderer that draws directly to the back buffer
     Renderer();
 
-    // Creates a renderer that draws to the specified framebuffer.
+    // Creates a renderer that draws to the specified framebuffer(s).
+    explicit Renderer(Framebuffer* targetFramebuffer);
     explicit Renderer(std::vector<Framebuffer*> targetFramebuffers);
 
     ~Renderer();
