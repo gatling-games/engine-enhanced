@@ -96,7 +96,8 @@ void GamePanel::createFramebuffer(int width, int height)
     frameBuffer_->attachColorTexture(colorBuffer_);
 
     // Then create a renderer for the framebuffer.
-    renderer_ = new Renderer(frameBuffer_);
+    std::vector<Framebuffer*> fb = { frameBuffer_ };
+    renderer_ = new Renderer(fb);
 }
 
 void GamePanel::drawFeatureToggle(ShaderFeature feature, const char* label) const
