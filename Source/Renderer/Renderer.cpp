@@ -63,10 +63,19 @@ Renderer::Renderer(std::vector<Framebuffer*> targetFramebuffers)
     regenerateSkyTransmittanceLUT();
 
     // Generate the random poisson disks on startup.
-    for(int i = 0; i < 16; ++i)
+    for (int i = 0; i < 16; ++i)
     {
         const Vector2 disk = random_in_unit_circle();
         poissonDisks_[i] = Vector4(disk.x, disk.y, 0.0f, 0.0f);
+    }
+
+    // Find the depth texture id for each framebuffer
+    // They are needed for the render loop later.
+    for(Framebuffer* framebuffer : targetFramebuffers_)
+    {
+        GLint depthTexture;
+        glGetNamedFramebufferAttachmentParameteriv(framebuffer->glid(), GL_DEPTH_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &depthTexture);
+        framebufferDepthTextures_.push_back(depthTexture);
     }
 }
 
@@ -108,12 +117,27 @@ void Renderer::renderFrame(const Camera* camera)
     // Ensure the gbuffer exists and is ok
     createGBuffer();
 
+    // Bind the gbuffer textures for sampling in deferred passes
+    // The gbuffer textures are shared between eyes, but the depth
+    // textures are not, so bind the correct ones later.
+    for (int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
+    {
+        // Slot 15 is reserved for the depth texture.
+        // Start with gbuffer0 in slot 14, gbuffer1 in slot 13, etc.
+        gbufferTextures_[i]->bind(14 - i);
+    }
+
     // Draw each of the bound framebuffers
     // There is one per eye, so either 1 (no vr) or 2 (vr).
     for (int fb = 0; fb < targetFramebuffers_.size(); ++fb)
     {
         // Set the camera parameters for the current camera + eye
         updateCameraUniformBuffer(camera, fb);
+
+        // Each target framebuffer uses a different depth texture, so
+        // bind the correct one to slot 15
+        glActiveTexture(GL_TEXTURE15);
+        glBindTexture(GL_TEXTURE_2D, framebufferDepthTextures_[fb]);
 
         // Wireframe debugging mode needs to be handled separately.
         if (RenderManager::instance()->debugMode() == RenderDebugMode::Wireframe)
@@ -202,20 +226,6 @@ void Renderer::createGBuffer()
         gbufferTextures_[0] = new Texture(TextureFormat::RGBA8, targetFramebuffers_[fb]->width(), targetFramebuffers_[fb]->height());
         gbufferTextures_[1] = new Texture(TextureFormat::RGBA8, targetFramebuffers_[fb]->width(), targetFramebuffers_[fb]->height());
         assert(GBUFFER_RENDER_TARGETS == 2); // should be one higher than the last index
-
-        // Bind the gbuffer textures for sampling in deferred passes
-        for (int i = 0; i < GBUFFER_RENDER_TARGETS; ++i)
-        {
-            // Slot 15 is reserved for the depth texture.
-            // Start with gbuffer0 in slot 14, gbuffer1 in slot 13, etc.
-            gbufferTextures_[i]->bind(14 - i);
-        }
-
-        // Bind the depth texture as target 15.
-        GLint depthTexture;
-        glGetNamedFramebufferAttachmentParameteriv(targetFramebuffers_[fb]->glid(), GL_DEPTH_ATTACHMENT, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME, &depthTexture);
-        glActiveTexture(GL_TEXTURE15);
-        glBindTexture(GL_TEXTURE_2D, depthTexture);
 
         // Set up the framebuffer
         // Use the target framebuffer's depth texture and the gbuffer textures

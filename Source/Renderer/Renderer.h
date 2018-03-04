@@ -33,6 +33,9 @@ private:
     // The framebuffer being rendered to
     const std::vector<Framebuffer*> targetFramebuffers_;
 
+    // The depth buffer texture ids for each framebuffer
+    std::vector<GLint> framebufferDepthTextures_;
+
     // The current GBuffer objects
     Texture* gbufferTextures_[GBUFFER_RENDER_TARGETS];
     Framebuffer gbufferFramebuffer_;
