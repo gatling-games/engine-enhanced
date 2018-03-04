@@ -129,7 +129,7 @@ void Renderer::renderFrame(const Camera* camera)
 
     // Draw each of the bound framebuffers
     // There is one per eye, so either 1 (no vr) or 2 (vr).
-    for (int fb = 0; fb < targetFramebuffers_.size(); ++fb)
+    for (unsigned int fb = 0; fb < targetFramebuffers_.size(); ++fb)
     {
         // Set the camera parameters for the current camera + eye
         updateCameraUniformBuffer(camera, fb);
