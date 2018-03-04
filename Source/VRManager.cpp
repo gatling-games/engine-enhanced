@@ -133,10 +133,15 @@ void VRManager::renderToHmd(GLint leftEye, GLint rightEye)
     vr::Texture_t leftEyeTexture = { (void*)(uintptr_t)leftEye, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
     vr::Texture_t rightEyeTexture = { (void*)(uintptr_t)rightEye, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
 
-    vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture);
-    vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture);
+    if(vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture) != vr::VRCompositorError_None)
+    {
+        throw;
+    }
 
-    //vr::VRCompositor()->WaitGetPoses(, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+    if(vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture) != vr::VRCompositorError_None)
+    {
+        throw;
+    }
 
     vr::VRCompositor()->PostPresentHandoff();
     //updateHmdPose();
