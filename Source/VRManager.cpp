@@ -1,4 +1,5 @@
 #include "VRManager.h"
+#include "SceneManager.h"
 
 VRManager::VRManager()
     : vrEnabled_(false),
@@ -8,8 +9,8 @@ VRManager::VRManager()
     {
         initVR();
         initCompositor();
+        setupCameras();
         setupFramebuffers();
-        hmd_->GetRecommendedRenderTargetSize(&width_, &height_);
         vrEnabled_ = true;
     }
 }
@@ -37,7 +38,7 @@ void VRManager::initVR()
 {
     vr::EVRInitError error = vr::VRInitError_None;
     hmd_ = vr::VR_Init(&error, vr::VRApplication_Scene);
-
+    hmd_->GetRecommendedRenderTargetSize(&width_, &height_);
     renderModels_ = (vr::IVRRenderModels*)vr::VR_GetGenericInterface(vr::IVRRenderModels_Version, &error);
 
     std::string driver = getTrackedDeviceString(hmd_, vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_TrackingSystemName_String);
@@ -73,37 +74,49 @@ std::string VRManager::getTrackedDeviceString(vr::IVRSystem* hmd, vr::TrackedDev
     return result;
 }
 
+void VRManager::setupCameras()
+{
+    eyeProjectionLeft_ = getHmdMatrixProjectionEye(vr::Eye_Left);
+    eyeProjectionRight_ = getHmdMatrixProjectionEye(vr::Eye_Right);
+    eyePosLeft_ = getHmdMatrixPoseEye(vr::Eye_Left);
+    eyePosRight_ = getHmdMatrixPoseEye(vr::Eye_Right);
+}
+
+
 void VRManager::setupFramebuffers()
 {
     for (int i = 0; i < 2; ++i)
     {
-        // Delete any existing framebuffer
-        if (frameBuffers_[i] != nullptr)
-        {
-            delete frameBuffers_[i];
-            delete depthBuffers_[i];
-            delete colorBuffers_[i];
-            delete renderer_;
-        }
-
+        frameBuffers_->push_back(new Framebuffer());
         // Create new framebuffer and textures with new panel dimensions
-        frameBuffers_[i] = new Framebuffer();
         depthBuffers_[i] = new Texture(TextureFormat::Depth, width_, height_);
         colorBuffers_[i] = new Texture(TextureFormat::RGB8_SRGB, width_, height_);
 
         // Attach new textures to new framebuffer
-        frameBuffers_[i]->attachDepthTexture(depthBuffers_[i]);
-        frameBuffers_[i]->attachColorTexture(colorBuffers_[i]);
-
-        // Then create a renderer for the framebuffer.
+        frameBuffers_->at(i)->attachDepthTexture(depthBuffers_[i]);
+        frameBuffers_->at(i)->attachColorTexture(colorBuffers_[i]);
     } 
 
-    renderer_ = new Renderer();
+    // Then create a renderer for the framebuffer.
+    renderer_ = new Renderer(*frameBuffers_);
+    
 }
 
 void VRManager::frameStart()
 {
+    if (!hmd_)
+    {
+        return;
+    }
 
+    const Camera* cam = SceneManager::instance()->mainCamera();
+    if (!cam)
+    {
+        return;
+    }
+
+    renderer_->renderFrame(cam);
+    renderToHmd(colorBuffers_[0]->glid(), colorBuffers_[1]->glid());
 }
 
 
@@ -123,8 +136,35 @@ void VRManager::renderToHmd(GLint leftEye, GLint rightEye)
     vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture);
     vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture);
 
-    vr::VRCompositor()->PostPresentHandoff();
+    //vr::VRCompositor()->WaitGetPoses(, vr::k_unMaxTrackedDeviceCount, NULL, 0);
 
+    vr::VRCompositor()->PostPresentHandoff();
+    //updateHmdPose();
+}
+
+void VRManager::updateHmdPose()
+{
+    if (!hmd_)
+    {
+        return;
+    }
+
+    //vr::VRCompositor()->WaitGetPoses()
+}
+
+
+const Matrix4x4 VRManager::getCurrentViewProjectionMatrix(vr::Hmd_Eye eye)
+{
+    Matrix4x4 mat;
+    if (eye == vr::Eye_Left)
+    {
+        mat = eyeProjectionLeft_ * eyePosLeft_;
+    }
+    else if (eye == vr::Eye_Right)
+    {
+        mat = eyeProjectionRight_ * eyePosRight_;
+    }
+    return mat;
 }
 
 
@@ -155,10 +195,28 @@ const Matrix4x4 VRManager::getHmdMatrixPoseEye(vr::Hmd_Eye eye)
     Matrix4x4 matrix;
 
     // This is only a transformation matrix, so we can invert values here.
-    matrix.setCol(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], 0.0f);
-    matrix.setCol(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], 0.0f);
-    matrix.setCol(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], 0.0f);
-    matrix.setCol(3, -mat.m[0][3], -mat.m[1][3], -mat.m[2][3], 1.0f);
+    matrix.setRow(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], 0.0f);
+    matrix.setRow(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], 0.0f);
+    matrix.setRow(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], 0.0f);
+    matrix.setRow(3, -mat.m[0][3], -mat.m[1][3], -mat.m[2][3], 1.0f);
+
+    return matrix;
+}
+
+const Matrix4x4 VRManager::getHmdMatrixPoseEyeInverse(vr::Hmd_Eye eye)
+{
+    if (!hmd_)
+    {
+        return Matrix4x4();
+    }
+    vr::HmdMatrix34_t mat = hmd_->GetEyeToHeadTransform(eye);
+    Matrix4x4 matrix;
+
+    // This is only a transformation matrix, so we can invert values here.
+    matrix.setRow(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], 0.0f);
+    matrix.setRow(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], 0.0f);
+    matrix.setRow(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], 0.0f);
+    matrix.setRow(3, mat.m[0][3], mat.m[1][3], mat.m[2][3], 1.0f);
 
     return matrix;
 }
