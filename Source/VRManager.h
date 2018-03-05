@@ -24,7 +24,6 @@ public:
     bool enabled() const { return vrEnabled_; }
 
     std::string getTrackedDeviceString(vr::IVRSystem *hmd, vr::TrackedDeviceIndex_t device, vr::TrackedDeviceProperty prop, vr::TrackedPropertyError *error = nullptr);
-    void setupCameras();
     void setupFramebuffers();
 
     void frameStart();
