@@ -243,7 +243,7 @@ public:
     // Method for serializing a resource ptr value.
     // This writes the source path of the resource to the property value.
     template<typename T>
-    void serialize(const std::string &name, ResourcePPtr<T> &value)
+    void serialize(const std::string &name, T* &value)
     {
         if (mode_ == PropertyTableMode::Reading)
         {

@@ -245,7 +245,7 @@ std::string ShaderVariant::preprocessSource(GLenum shaderStage, const std::strin
         const std::string includePath = "Resources/Shaders/Includes/" + includeName;
 
         // Load the shader include at that path
-        const ResourcePPtr<ShaderInclude> includeResource = ResourceManager::instance()->load<ShaderInclude>(includePath);
+        const ShaderInclude* includeResource = ResourceManager::instance()->load<ShaderInclude>(includePath);
 
         // Replace the include directive with the actual source code
         finalSource.replace(includeMatch.position(), includeName.length() + 11, includeResource->originalSource());

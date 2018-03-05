@@ -18,11 +18,6 @@ namespace fs = std::experimental::filesystem::v1;
 // Resources are identified by a 64 bit hash of their path.
 typedef uint64_t ResourceID;
 
-// For now, resources are never moved in memory, so a standard
-// pointer is sufficient.
-template<typename T>
-using ResourcePPtr = T*;
-
 class Resource
 {
 public:
@@ -108,14 +103,14 @@ public:
 
     // Loads a resource of the given type and the given ID.
     template<typename T>
-    ResourcePPtr<T> load(ResourceID id)
+    T* load(ResourceID id)
     {
-        return dynamic_cast<ResourcePPtr<T>>(load(id));
+        return dynamic_cast<T*>(load(id));
     }
 
     // The path should be relative to the Resources folder (eg Textures/wood_diffuse.png)
     template<typename T>
-    ResourcePPtr<T> load(const std::string &sourcePath)
+    T* load(const std::string &sourcePath)
     {
         return load<T>(pathToResourceID(sourcePath));
     }
@@ -123,7 +118,7 @@ public:
     // Creates a new resource of the given type and writes it to disk at the given path.
     // If a resource already exists at the path, it will be overwritten.
     template<typename T>
-    ResourcePPtr<T> createResource(const std::string &sourcePath)
+    T* createResource(const std::string &sourcePath)
     {
         // Create a blank resource file.
         std::ofstream fileStream(sourcePath);
