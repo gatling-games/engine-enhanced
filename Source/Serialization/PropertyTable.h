@@ -250,8 +250,8 @@ public:
             // Look for the named property
             const SerializedProperty* property = tryFindProperty(name);
 
-            // If the property doesnt exist, or the property is "0", the resource is null
-            if (property == nullptr || property->value == "0")
+            // If the property doesnt exist the resource is null
+            if (property == nullptr)
             {
                 value = nullptr;
                 return;
@@ -263,8 +263,11 @@ public:
         }
         else
         {
-            // If the resource is nullptr use 0 for the value. Otherwise, use the source path.
-            findOrCreateProperty(name)->value = (value == nullptr) ? "0" : value->resourcePath();
+            // If the resource is nullptr dont save it. Otherwise, use the source path.
+            if (value != nullptr)
+            {
+                findOrCreateProperty(name)->value = value->resourcePath();
+            }
         }
     }
 
