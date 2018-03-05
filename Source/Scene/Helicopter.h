@@ -24,10 +24,13 @@ private:
     Vector3 worldVelocity_;
     Quaternion worldRotation_;
 
+    float currentTilt_;
+
     float horizontalMaxSpeed_;
     float upMaxSpeed_;
     float downMaxSpeed_;
-    float remainingRotation_;
+    float remainingYaw_;
+    float remainingPitch_;
     float turnFactor_;
     float decelerationFactor_;
 };

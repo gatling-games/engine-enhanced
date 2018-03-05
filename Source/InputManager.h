@@ -121,7 +121,8 @@ struct InputCmd
     float deltaTime; // Elapsed time since last update
     Quaternion lookRotation; // Current camera orientation relative to helicopter
     Vector3 axes; // Input helicopter velocity
-    float rotationalAcceleration; // Current helicopter rotational accelleration
+    float yawAcceleration; // Current helicopter rotational accelleration
+    float pitchAcceleration;
 };
 
 class InputManager : public Singleton<InputManager>

@@ -52,7 +52,8 @@ void InputManager::frameStart(const Clock* clock)
     inputs.deltaTime = clock->deltaTime();
     inputs.lookRotation = Quaternion::identity();
     inputs.axes = axes;
-    inputs.rotationalAcceleration = mouseDeltaX();
+    inputs.yawAcceleration = mouseDeltaX();
+    inputs.pitchAcceleration = mouseDeltaY();
 
     // Store array of previously pressed joypad inputs
     previousFrameJoystickButtons_ = joystickButtons_;
