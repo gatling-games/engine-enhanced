@@ -9,7 +9,6 @@ VRManager::VRManager()
     {
         initVR();
         initCompositor();
-        setupCameras();
         setupFramebuffers();
         vrEnabled_ = true;
     }
@@ -73,15 +72,6 @@ std::string VRManager::getTrackedDeviceString(vr::IVRSystem* hmd, vr::TrackedDev
     delete[] buffer;
     return result;
 }
-
-void VRManager::setupCameras()
-{
-    eyeProjectionLeft_ = getHmdMatrixProjectionEye(vr::Eye_Left);
-    eyeProjectionRight_ = getHmdMatrixProjectionEye(vr::Eye_Right);
-    eyePosLeft_ = getHmdMatrixPoseEye(vr::Eye_Left);
-    eyePosRight_ = getHmdMatrixPoseEye(vr::Eye_Right);
-}
-
 
 void VRManager::setupFramebuffers()
 {
@@ -157,71 +147,48 @@ void VRManager::updateHmdPose()
     //vr::VRCompositor()->WaitGetPoses()
 }
 
-
-const Matrix4x4 VRManager::getCurrentViewProjectionMatrix(vr::Hmd_Eye eye)
+Matrix4x4 VRManager::getProjectionMatrix(EyeType eye, float nearPlane, float farPlane) const
 {
-    Matrix4x4 mat;
-    if (eye == vr::Eye_Left)
-    {
-        mat = eyeProjectionLeft_ * eyePosLeft_;
-    }
-    else if (eye == vr::Eye_Right)
-    {
-        mat = eyeProjectionRight_ * eyePosRight_;
-    }
-    return mat;
-}
-
-
-const Matrix4x4 VRManager::getHmdMatrixProjectionEye(vr::Hmd_Eye eye)
-{
-    if (!hmd_)
-    {
-        return Matrix4x4();
-    }
-
-    vr::HmdMatrix44_t mat = hmd_->GetProjectionMatrix(eye, 0.01f, 10000.0f);
-
+    assert(eye != EyeType::None);
+    
+    vr::HmdMatrix44_t proj = hmd_->GetProjectionMatrix(eye == EyeType::LeftEye ? vr::Eye_Left : vr::Eye_Right, nearPlane, farPlane);
     Matrix4x4 matrix;
-    matrix.setCol(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0]);
-    matrix.setCol(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[3][1]);
-    matrix.setCol(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[3][2]);
-    matrix.setCol(3, mat.m[0][3], mat.m[1][3], mat.m[2][3], mat.m[3][3]);
+    matrix.setCol(0, proj.m[0][0], proj.m[1][0], proj.m[2][0], proj.m[3][0]);
+    matrix.setCol(1, proj.m[0][1], proj.m[1][1], proj.m[2][1], proj.m[3][1]);
+    matrix.setCol(2, -proj.m[0][2], -proj.m[1][2], -proj.m[2][2], -proj.m[3][2]);
+    matrix.setCol(3, proj.m[0][3], proj.m[1][3], proj.m[2][3], proj.m[3][3]);
     return matrix;
 }
 
-const Matrix4x4 VRManager::getHmdMatrixPoseEye(vr::Hmd_Eye eye)
+Matrix4x4 VRManager::getInverseProjectionMatrix(EyeType eye, float nearPlane, float farPlane) const
 {
-    if (!hmd_)
-    {
-        return Matrix4x4();
-    }
-    vr::HmdMatrix34_t mat = hmd_->GetEyeToHeadTransform(eye);
+    assert(eye != EyeType::None);
+
+    vr::HmdMatrix44_t proj = hmd_->GetProjectionMatrix(eye == EyeType::LeftEye ? vr::Eye_Left : vr::Eye_Right, nearPlane, farPlane);
     Matrix4x4 matrix;
-
-    // This is only a transformation matrix, so we can invert values here.
-    matrix.setCol(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], 0.0f);
-    matrix.setCol(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], 0.0f);
-    matrix.setCol(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], 0.0f);
-    matrix.setCol(3, -mat.m[0][3], -mat.m[1][3], -mat.m[2][3], 1.0f);
-
+    matrix.setCol(0, proj.m[0][0], proj.m[1][0], proj.m[2][0], proj.m[3][0]);
+    matrix.setCol(1, proj.m[0][1], proj.m[1][1], proj.m[2][1], proj.m[3][1]);
+    matrix.setCol(2, -proj.m[0][2], -proj.m[1][2], -proj.m[2][2], -proj.m[3][2]);
+    matrix.setCol(3, proj.m[0][3], proj.m[1][3], proj.m[2][3], proj.m[3][3]);
     return matrix;
 }
 
-const Matrix4x4 VRManager::getHmdMatrixPoseEyeInverse(vr::Hmd_Eye eye)
+Matrix4x4 VRManager::getEyeMatrix(EyeType eye) const
 {
-    if (!hmd_)
-    {
-        return Matrix4x4();
-    }
-    vr::HmdMatrix34_t mat = hmd_->GetEyeToHeadTransform(eye);
-    Matrix4x4 matrix;
+    assert(eye != EyeType::None);
 
-    // This is only a transformation matrix, so we can invert values here.
-    matrix.setCol(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], 0.0f);
-    matrix.setCol(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], 0.0f);
-    matrix.setCol(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], 0.0f);
-    matrix.setCol(3, mat.m[0][3], mat.m[1][3], mat.m[2][3], 1.0f);
+    vr::HmdMatrix34_t em = hmd_->GetEyeToHeadTransform(eye == EyeType::LeftEye ? vr::Eye_Left : vr::Eye_Right);
+    Matrix4x4 matrix = Matrix4x4::identity();
+    matrix.setCol(3, -em.m[0][3], -em.m[1][3], -em.m[2][3], 1.0f);
+    return matrix;
+}
 
+Matrix4x4 VRManager::getInverseEyeMatrix(EyeType eye) const
+{
+    assert(eye != EyeType::None);
+
+    vr::HmdMatrix34_t em = hmd_->GetEyeToHeadTransform(eye == EyeType::LeftEye ? vr::Eye_Left : vr::Eye_Right);
+    Matrix4x4 matrix = Matrix4x4::identity();
+    matrix.setCol(3, em.m[0][3], em.m[1][3], em.m[2][3], 1.0f);
     return matrix;
 }

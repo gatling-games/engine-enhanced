@@ -30,8 +30,11 @@ public:
     void frameStart();
     void renderToHmd(GLint leftEye, GLint rightEye);
     void updateHmdPose();
-
-    const Matrix4x4 getCurrentViewProjectionMatrix(vr::Hmd_Eye eye);
+    
+    Matrix4x4 getProjectionMatrix(EyeType eye, float nearPlane, float farPlane) const;
+    Matrix4x4 getInverseProjectionMatrix(EyeType eye, float nearPlane, float farPlane) const;
+    Matrix4x4 getEyeMatrix(EyeType eye) const;
+    Matrix4x4 getInverseEyeMatrix(EyeType eye) const;
 
 private:
     bool vrEnabled_;
@@ -45,14 +48,4 @@ private:
     vr::IVRRenderModels *renderModels_;
     uint32_t width_;
     uint32_t height_;
-
-    Matrix4x4 eyePosLeft_;
-    Matrix4x4 eyeProjectionLeft_;
-
-    Matrix4x4 eyePosRight_;
-    Matrix4x4 eyeProjectionRight_;
-
-    const Matrix4x4 getHmdMatrixProjectionEye(vr::Hmd_Eye eye);
-    const Matrix4x4 getHmdMatrixPoseEye(vr::Hmd_Eye eye);
-    const Matrix4x4 getHmdMatrixPoseEyeInverse(vr::Hmd_Eye eye);
 };

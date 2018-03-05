@@ -104,22 +104,15 @@ Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio, EyeType eye) const
 
         projection = Matrix4x4::orthographic(l, r, b, t, nearPlane_, farPlane_);
     }
-    if (eye != EyeType::None)
-    {
-        Matrix4x4 eyeMatrix = Matrix4x4::identity();
-        if (eye == EyeType::LeftEye)
-        {
-            eyeMatrix = VRManager::instance()->getCurrentViewProjectionMatrix(vr::Hmd_Eye::Eye_Left);
-        }
-        else if (eye == EyeType::RightEye)
-        {
-            eyeMatrix = VRManager::instance()->getCurrentViewProjectionMatrix(vr::Hmd_Eye::Eye_Right);
-        }
 
-        return projection* eyeMatrix * worldToLocal;
+    Matrix4x4 eyeMat = Matrix4x4::identity();
+    if(eye != EyeType::None)
+    {
+        projection = VRManager::instance()->getProjectionMatrix(eye, nearPlane_, farPlane_);
+        eyeMat = VRManager::instance()->getEyeMatrix(eye);
     }
 
-    return projection * worldToLocal;
+    return projection * eyeMat * worldToLocal;
 }
 
 Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio, EyeType eye) const
@@ -139,20 +132,13 @@ Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio, EyeType eye) const
         // and dont currently need to go camera space -> world space
         return Matrix4x4::identity();
     }
+
+    Matrix4x4 eyeMat = Matrix4x4::identity();
     if (eye != EyeType::None)
     {
-        Matrix4x4 eyeMatrix = Matrix4x4::identity();
-
-        if (eye == EyeType::LeftEye)
-        {
-            eyeMatrix = VRManager::instance()->getCurrentViewProjectionMatrix(vr::Hmd_Eye::Eye_Left);
-        }
-        else if (eye == EyeType::RightEye)
-        {
-            eyeMatrix = VRManager::instance()->getCurrentViewProjectionMatrix(vr::Hmd_Eye::Eye_Right);
-        }
-        return localToWorld * inverseProjection;
+       //inverseProjection = VRManager::instance()->getProjectionMatrix(eye, nearPlane_, farPlane_);
+        eyeMat = VRManager::instance()->getInverseEyeMatrix(eye);
     }
 
-    return localToWorld * inverseProjection;
+    return localToWorld * eyeMat * inverseProjection;
 }
