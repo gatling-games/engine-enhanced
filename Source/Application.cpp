@@ -18,7 +18,7 @@ Application::Application(const std::string &name, GLFWwindow* window)
     // Create engine modules
     editorManager_ = new EditorManager(window, true);
     inputManager_ = new InputManager(window);
-    resourceManager_ = new ResourceManager("Resources/", "Build/Resources");
+    resourceManager_ = new ResourceManager("Resources/", "Build/CompiledResources");
     sceneManager_ = new SceneManager();
     renderManager_ = new RenderManager();
 

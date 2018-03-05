@@ -365,7 +365,6 @@ Component* GameObject::createComponent(const std::string &typeName)
     if (typeName == "Terrain")
         return createComponent<Terrain>();
 
-    std::cerr << "CreateComponent() type " + typeName + " not defined" << std::endl;
     return nullptr;
 }
 

@@ -124,9 +124,6 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // Set texture locations
-    setTextureLocation("_MainTexture", 0);
-
     // Specify that tessellation is always on triangles (aka patches of 3)
     glPatchParameteri(GL_PATCH_VERTICES, 3);
 }
@@ -316,15 +313,6 @@ bool ShaderVariant::checkLinkerErrors(GLuint programID)
     }
 
     return true;
-}
-
-void ShaderVariant::setTextureLocation(const char* textureName, int slot)
-{
-    const GLuint textureIndex = glGetUniformLocation(program_, textureName);
-    if (textureIndex != -1)
-    {
-        glProgramUniform1i(program_, textureIndex, slot);
-    }
 }
 
 //Shader

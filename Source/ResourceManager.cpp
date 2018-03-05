@@ -42,6 +42,23 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     resourceImportedPaths_(),
     loadedResources_()
 {
+    // If the resources directory does not exist, move upwards through the directory 
+    // tree and look for it
+    int steps = 0;
+    while (fs::exists(sourceDirectory_) == false)
+    {
+        const fs::path parent = fs::absolute("").parent_path();
+        SetCurrentDirectory(parent.c_str());
+
+        // Prevent infinite loops
+        steps++;
+        if (steps > 20)
+        {
+            std::cerr << "Unable to find source directory" << std::endl;
+            throw;
+        }
+    }
+
     // Register each supported resource type, file extension, and importer
     registerResourceType<Mesh, MeshImporter>(".obj");
     registerResourceType<Mesh, MeshImporter>(".mesh");

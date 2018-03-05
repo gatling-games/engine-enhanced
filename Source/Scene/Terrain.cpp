@@ -255,6 +255,13 @@ void Terrain::generateTerrain()
             }
 
             heights_[x + y * HEIGHTMAP_RESOLUTION] *= 1.0f - powf(distanceFromCentre, islandFactor_);
+
+            // Force values at the very edge of the terrain to 0.
+            // This prevents weird artifacts in the water depth calculations
+            if (x == 0 || x == HEIGHTMAP_RESOLUTION - 1 || y == 0 || y == HEIGHTMAP_RESOLUTION - 1)
+            {
+                heights_[x + y * HEIGHTMAP_RESOLUTION] = 0.0f;
+            }
         }
     }
 

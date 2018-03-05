@@ -38,23 +38,12 @@ void Freecam::update(float deltaTime)
         deltaTime = Clock::instance()->realDeltaTime();
     }
 
-    // Add deltatime to movement duration and reset to 0 if stopped
-    if (fabs(forward) > 0.01f || fabs(lateral) > 0.01f || fabs(vertical) > 0.01f)
-    {
-        if (fabs(moveDuration_) < 3.0f)
-        {
-            moveDuration_ += deltaTime;
-        }        
-    }
-    else
-    {
-        moveDuration_ = 0.0f;        
-    }
+    // Make 2 speeds of movement
+    // Use the fast mode when the shift key is pressed
+    const float moveSpeed = InputManager::instance()->isKeyDown(InputKey::LShift) ? 150.0f : 35.0f;
 
     // Transform the camera
-    // Use moveDuration_ so the camera gets faster as it moves for longer.
-    const float moveSpeed = powf(moveDuration_, 1.5f);
-    transform_->translateLocal(Vector3(lateral, vertical, forward) * moveSpeed);
+    transform_->translateLocal(Vector3(lateral, vertical, forward) * moveSpeed * deltaTime);
 
     // Apply mouse look when the right mouse button is held down
     if (InputManager::instance()->mouseButtonDown(MouseButton::Right))
