@@ -34,6 +34,7 @@ public:
     Matrix4x4 getInverseProjectionMatrix(EyeType eye, float nearPlane, float farPlane) const;
     Matrix4x4 getEyeMatrix(EyeType eye) const;
     Matrix4x4 getInverseEyeMatrix(EyeType eye) const;
+    Matrix4x4 getHmdMatrix() { return hmdPose_; }
 
 private:
     bool vrEnabled_;
@@ -44,6 +45,8 @@ private:
     Renderer* renderer_;
 
     vr::IVRSystem *hmd_;
+    Matrix4x4 hmdPose_;
+    vr::TrackedDevicePose_t trackedDevicePoses_[vr::k_unMaxTrackedDeviceCount];
     vr::IVRRenderModels *renderModels_;
     uint32_t width_;
     uint32_t height_;

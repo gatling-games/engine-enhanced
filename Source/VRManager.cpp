@@ -116,9 +116,8 @@ void VRManager::renderToHmd(GLint leftEye, GLint rightEye)
     {
         return;
     }
-
-    vr::TrackedDevicePose_t trackedDevicePose[vr::k_unMaxTrackedDeviceCount];
-    vr::VRCompositor()->WaitGetPoses(trackedDevicePose, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
+    // Update HMD's position as part of the main render loop
+    updateHmdPose();
 
     vr::Texture_t leftEyeTexture = { (void*)(uintptr_t)leftEye, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
     vr::Texture_t rightEyeTexture = { (void*)(uintptr_t)rightEye, vr::TextureType_OpenGL, vr::ColorSpace_Gamma };
@@ -131,10 +130,7 @@ void VRManager::renderToHmd(GLint leftEye, GLint rightEye)
     if(vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeTexture) != vr::VRCompositorError_None)
     {
         throw;
-    }
-
-    vr::VRCompositor()->PostPresentHandoff();
-    //updateHmdPose();
+    }  
 }
 
 void VRManager::updateHmdPose()
@@ -144,7 +140,19 @@ void VRManager::updateHmdPose()
         return;
     }
 
-    //vr::VRCompositor()->WaitGetPoses()
+    vr::VRCompositor()->WaitGetPoses(trackedDevicePoses_, vr::k_unMaxTrackedDeviceCount, NULL, 0);
+
+    if (trackedDevicePoses_[vr::k_unTrackedDeviceIndex_Hmd].bPoseIsValid)
+    {
+        vr::HmdMatrix34_t mat = trackedDevicePoses_[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking;
+        Matrix4x4 matrix;
+        matrix.setCol(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], 0.0f);
+        matrix.setCol(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], 0.0f);
+        matrix.setCol(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], 0.0f);
+        matrix.setCol(3, -mat.m[0][3], -mat.m[1][3], -mat.m[2][3], 1.0f);
+
+        hmdPose_ = matrix;
+    }
 }
 
 Matrix4x4 VRManager::getProjectionMatrix(EyeType eye, float nearPlane, float farPlane) const
