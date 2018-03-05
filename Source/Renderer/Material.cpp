@@ -18,8 +18,8 @@ Material::Material(ResourceID resourceID)
 void Material::serialize(PropertyTable& table)
 {
     table.serialize("color", color_, Color::white());
-    table.serialize("albedo_texture", albedoTexture_, (ResourcePPtr<Texture>)nullptr);
-    table.serialize("normal_map_texture", normalMapTexture_, (ResourcePPtr<Texture>)nullptr);
+    table.serialize("albedo_texture", albedoTexture_);
+    table.serialize("normal_map_texture", normalMapTexture_);
     table.serialize("smoothness", smoothness_, 0.5f);
     table.serialize("cutout", cutout_, false);
 }

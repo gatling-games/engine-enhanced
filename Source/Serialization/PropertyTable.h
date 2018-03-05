@@ -179,7 +179,7 @@ public:
         else
         {
             // Write every value in the vector into a separate property with the same name.
-            for(unsigned int i = 0; i < values.size(); ++i)
+            for (unsigned int i = 0; i < values.size(); ++i)
             {
                 SerializedProperty newProperty;
                 newProperty.name = name + "::" + std::to_string(i);
@@ -243,40 +243,26 @@ public:
     // Method for serializing a resource ptr value.
     // This writes the source path of the resource to the property value.
     template<typename T>
-    void serialize(const std::string &name, ResourcePPtr<T> &value, const ResourcePPtr<T> default)
+    void serialize(const std::string &name, ResourcePPtr<T> &value)
     {
         if (mode_ == PropertyTableMode::Reading)
         {
             // Look for the named property
             const SerializedProperty* property = tryFindProperty(name);
-            if (property == nullptr)
+
+            // If the property doesnt exist, or the property is "0", the resource is null
+            if (property == nullptr || property->value == "0")
             {
-                // The property wasnt found. Use the default.
-                value = default;
+                value = nullptr;
                 return;
             }
 
-            // The property exists. It will be "0" if the resource is nullptr and
             // it will be the source path otherwise.
-            if (property->value == "0")
-            {
-                value = nullptr;
-            }
-            else
-            {
-                const std::string sourcePath = property->value;
-                value = ResourceManager::instance()->load<T>(sourcePath);
-            }
+            const std::string sourcePath = property->value;
+            value = ResourceManager::instance()->load<T>(sourcePath);
         }
         else
         {
-            // Default values are not stored in the property table
-            if (value == default)
-            {
-                tryDeleteProperty(name);
-                return;
-            }
-
             // If the resource is nullptr use 0 for the value. Otherwise, use the source path.
             findOrCreateProperty(name)->value = (value == nullptr) ? "0" : value->resourcePath();
         }

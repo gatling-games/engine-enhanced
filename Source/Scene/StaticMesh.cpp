@@ -18,6 +18,6 @@ void StaticMesh::drawProperties()
 
 void StaticMesh::serialize(PropertyTable &table)
 {
-    table.serialize("mesh", mesh_, (Mesh*)nullptr);
-    table.serialize("material", material_, (Material*)nullptr);
+    table.serialize("mesh", mesh_);
+    table.serialize("material", material_);
 }
