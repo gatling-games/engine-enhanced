@@ -38,7 +38,7 @@ private:
     ShadowMap shadowMap_;
 
     // A full screen triangle used for screen space passes
-    ResourcePPtr<Mesh> fullScreenMesh_;
+    Mesh* fullScreenMesh_;
 
     // Uniform buffers used in different render stages
     UniformBuffer<SceneUniformData> sceneUniformBuffer_;
@@ -48,23 +48,23 @@ private:
     UniformBuffer<TerrainDetailsData> terrainDetailsUniformBuffer_;
 
     // Shaders used for gbuffer pass
-    ResourcePPtr<Shader> standardShader_;
-    ResourcePPtr<Shader> terrainShader_;
-    ResourcePPtr<Shader> terrainDetailMeshShader_;
+    Shader* standardShader_;
+    Shader* terrainShader_;
+    Shader* terrainDetailMeshShader_;
 
     // Shaders used for deferred passes
-    ResourcePPtr<Shader> deferredLightingShader_;
-    ResourcePPtr<Shader> deferredDebugShader_;
+    Shader* deferredLightingShader_;
+    Shader* deferredDebugShader_;
 
     // Shader used for the forward water pass
-    ResourcePPtr<Shader> waterShader_;
+    Shader* waterShader_;
 
     // Resources used for skybox shader pass
-    ResourcePPtr<Shader> skyboxShader_;
-    ResourcePPtr<Mesh> skyboxMesh_;
+    Shader* skyboxShader_;
+    Mesh* skyboxMesh_;
 
     // A shader used for generating the transmittance LUT
-    ResourcePPtr<Shader> skyTransmittanceShader_;
+    Shader* skyTransmittanceShader_;
 
     // Sky lookup textures
     Texture skyTransmittanceLUT_;

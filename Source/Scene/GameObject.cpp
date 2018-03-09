@@ -225,7 +225,7 @@ void GameObject::serialize(PropertyTable &table)
     // If we dont yet have a prefab, check if we are meant to have one
     if (prefab_ == nullptr && table.mode() == PropertyTableMode::Reading)
     {
-        table.serialize("prefab", prefab_, (ResourcePPtr<Prefab>)nullptr);
+        table.serialize("prefab", prefab_);
     }
 
     // If we are reading and have a prefab, add the prefab data
@@ -241,7 +241,7 @@ void GameObject::serialize(PropertyTable &table)
     // This MUST NOT be called when when reading, as it may replace the prefab will nullptr
     if (table.mode() == PropertyTableMode::Writing)
     {
-        table.serialize("prefab", prefab_, (ResourcePPtr<Prefab>)nullptr);
+        table.serialize("prefab", prefab_);
     }
 
     // Now we need to serialize each component.

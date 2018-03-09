@@ -17,7 +17,7 @@ void TerrainLayer::serialize(PropertyTable& table)
     table.serialize("slope_hardness", slopeHardness, 1.0f);
     table.serialize("texture_tile_size", textureTileSize, Vector2(10.0f, 10.0f));
     table.serialize("texture_tile_offset", textureTileOffset, Vector2::zero());
-    table.serialize("material", material, (ResourcePPtr<Material>)nullptr);
+    table.serialize("material", material);
 }
 
 Terrain::Terrain(GameObject* gameObject)
@@ -156,8 +156,8 @@ void Terrain::serialize(PropertyTable &table)
     table.serialize("factal_smoothness", fractalSmoothness_, 2.0f);
     table.serialize("mountain_scale", mountainScale_, 4.0f);
     table.serialize("island_factor", islandFactor_, 2.0f);
-    table.serialize("detail_mesh", detailMesh_, (ResourcePPtr<Mesh>)nullptr);
-    table.serialize("detail_material", detailMaterial_, (ResourcePPtr<Material>)nullptr);
+    table.serialize("detail_mesh", detailMesh_);
+    table.serialize("detail_material", detailMaterial_);
     table.serialize("detail_scale", detailScale_, Vector2::one());
     table.serialize("detail_altitude_limits", detailAltitudeLimits_, Vector2(0.0f, 500.0f));
     table.serialize("detail_slope_limit", detailSlopeLimit_, 0.0f);
