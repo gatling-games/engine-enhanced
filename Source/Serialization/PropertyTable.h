@@ -47,6 +47,10 @@ public:
     PropertyTable(PropertyTableMode mode);
     ~PropertyTable();
 
+    // Returns true if the specified property name is a valid name.
+    // Property names must contain only letters, numbers, and underscores.
+    static bool validatePropertyName(const std::string &name);
+
     // Information about the table
     PropertyTableMode mode() const { return mode_; }
     int propertiesCount() const { return (int)properties_.size(); }
@@ -87,6 +91,8 @@ public:
     template<typename T>
     void serialize(const std::string &name, std::vector<T*>& values)
     {
+        assert(validatePropertyName(name));
+
         if (mode_ == PropertyTableMode::Reading)
         {
             // A vector is serialized by storing multiple properties with the same name.
@@ -153,6 +159,8 @@ public:
     template<typename T>
     void serialize(const std::string &name, std::vector<T>& values)
     {
+        assert(validatePropertyName(name));
+
         if (mode_ == PropertyTableMode::Reading)
         {
             // A vector is serialized by storing multiple properties with the same name.
@@ -203,6 +211,8 @@ public:
     template<typename T>
     void serialize(const std::string &name, T &value, const T default)
     {
+        assert(validatePropertyName(name));
+
         if (mode_ == PropertyTableMode::Reading)
         {
             // Look for the named property.
@@ -245,6 +255,8 @@ public:
     template<typename T>
     void serialize(const std::string &name, T* &value)
     {
+        assert(validatePropertyName(name));
+
         if (mode_ == PropertyTableMode::Reading)
         {
             // Look for the named property

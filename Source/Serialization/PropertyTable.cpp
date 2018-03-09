@@ -1,6 +1,7 @@
 #include "PropertyTable.h"
 
 #include <iostream>
+#include <regex>
 
 #include "SerializedObject.h"
 
@@ -13,6 +14,13 @@ PropertyTable::PropertyTable(PropertyTableMode mode)
 PropertyTable::~PropertyTable()
 {
 
+}
+
+bool PropertyTable::validatePropertyName(const std::string& name)
+{
+    // Property names must contain only letters, numbers and underscores
+    const std::regex regex(R"(^[a-zA-Z0-9_]+$)");
+    return std::regex_match(name, regex);
 }
 
 void PropertyTable::clear()
@@ -226,6 +234,8 @@ const std::string PropertyTable::getProperty(const std::string &name, const std:
 
 void PropertyTable::serialize(const std::string& name, ISerializedObject& subobject)
 {
+    assert(validatePropertyName(name));
+
     if (mode_ == PropertyTableMode::Reading)
     {
         // Look for a property table with the correct name.
@@ -256,6 +266,8 @@ void PropertyTable::serialize(const std::string& name, ISerializedObject& subobj
 
 void PropertyTable::serialize(const std::string &name, std::string &value, const std::string default)
 {
+    assert(validatePropertyName(name));
+
     if (mode_ == PropertyTableMode::Reading)
     {
         // Set the value to the named property, or the default.
