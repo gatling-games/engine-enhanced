@@ -62,23 +62,20 @@ void Terrain::drawProperties()
         placeDetailMeshes();
     }
 
-    // Make a pseudo-hash of the terrain generation parameters before editing
-    float genParams = (float)seed_ + fractalSmoothness_ + mountainScale_ + islandFactor_;
-
-    ImGui::InputInt("Seed", &seed_);
+    bool terrainGenerationNeeded = ImGui::InputInt("Seed", &seed_);
     ImGui::SameLine();
     if (ImGui::Button("Randomise"))
     {
         seed_ = rand();
+        terrainGenerationNeeded = true;
     }
 
-    ImGui::DragFloat("Fractal Smoothness", &fractalSmoothness_, 0.01f, 1.5f, 2.5f);
-    ImGui::DragFloat("Mountain Scale", &mountainScale_, 0.05f, 1.0f, 10.0f);
-    ImGui::DragFloat("Island Factor", &islandFactor_, 0.05f, 0.1f, 20.0f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Fractal Smoothness", &fractalSmoothness_, 0.01f, 1.5f, 2.5f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Mountain Scale", &mountainScale_, 0.05f, 1.0f, 10.0f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Island Factor", &islandFactor_, 0.05f, 0.1f, 20.0f);
 
-    // If any gen property was modified, regenerate the terrain.
-    float genParamsNew = (float)seed_ + fractalSmoothness_ + mountainScale_ + islandFactor_;
-    if (fabs(genParams - genParamsNew) > 0.001f)
+    // If any generation property was modified, regenerate the terrain.
+    if (terrainGenerationNeeded)
     {
         generateTerrain();
     }
@@ -90,25 +87,18 @@ void Terrain::drawProperties()
     ImGui::DragFloat2("Tile Offset", &terrainLayers_[0].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
     ImGui::Spacing();
 
-    const Mesh* prevDetailMesh = detailMesh_;
-    const Material* prevDetailMaterial = detailMaterial_;
-    const Vector2 prevDetailScale = detailScale_;
-    const Vector2 prevDetailAltitudeLimits = detailAltitudeLimits_;
-    const float prevDetailSlopeLimit = detailSlopeLimit_;
-    ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", detailMesh_);
-    ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", detailMaterial_);
-    ImGui::DragFloat2("Detail Scale", &detailScale_.x, 0.05f, 0.01f, 100.0f);
-    ImGui::DragFloat2("Altitude Limits", &detailAltitudeLimits_.x, 0.5f, -100.0f, 500.0f);
-    ImGui::DragFloat("Slope Limit", &detailSlopeLimit_, 0.05f, 0.0f, 1.0f);
+    bool detailsNeedPlacing = ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", detailMesh_);
+    detailsNeedPlacing |= ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", detailMaterial_);
+    detailsNeedPlacing |= ImGui::DragFloat2("Detail Scale", &detailScale_.x, 0.05f, 0.01f, 100.0f);
+    detailsNeedPlacing |= ImGui::DragFloat2("Altitude Limits", &detailAltitudeLimits_.x, 0.5f, -100.0f, 500.0f);
+    detailsNeedPlacing |= ImGui::DragFloat("Slope Limit", &detailSlopeLimit_, 0.05f, 0.0f, 1.0f);
     ImGui::Spacing();
 
     // Prevent detail scale min being bigger than max
     detailScale_.x = detailScale_.minComponent();
 
     // Regenerate terrain layers when a change is detected
-    if (detailMesh_ != prevDetailMesh || detailMaterial_ != prevDetailMaterial
-        || detailScale_ != prevDetailScale || detailAltitudeLimits_ != prevDetailAltitudeLimits
-        || fabs(detailSlopeLimit_ - prevDetailSlopeLimit) > 0.001f)
+    if (detailsNeedPlacing)
     {
         placeDetailMeshes();
     }
