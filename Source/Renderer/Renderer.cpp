@@ -285,8 +285,8 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
         staticMesh->mesh()->bind();
 
         // Update the per draw uniform buffer
-        const Matrix4x4 worldToLocal = staticMesh->gameObject()->transform()->worldToLocal();
-        updatePerDrawUniformBuffer(worldToLocal, staticMesh->material());
+        const Matrix4x4 localToWorld = staticMesh->gameObject()->transform()->localToWorld();
+        updatePerDrawUniformBuffer(localToWorld, staticMesh->material());
 
         // Draw the mesh
         glDrawElements(GL_TRIANGLES, staticMesh->mesh()->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
