@@ -1,0 +1,5 @@
+{
+    albedo_texture = Resources\Textures\cardboard_albedo.tga
+    normal_map_texture = Resources\Textures\cardboard_normals.tga
+    smoothness = 1
+}
