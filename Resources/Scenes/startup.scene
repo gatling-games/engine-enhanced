@@ -2,6 +2,36 @@
     gameobjects::0 {
         prefab = Resources\Prefabs\Terrain.prefab
     }
+    gameobjects::1 {
+        prefab = Resources\Prefabs\Buildings\base_main.prefab
+    }
+    gameobjects::2 {
+        prefab = Resources\Prefabs\Buildings\base_small.prefab
+    }
+    gameobjects::3 {
+        prefab = Resources\Prefabs\Buildings\base_small.prefab
+        Transform {
+            Position = 428.6 4.4 945.1
+        }
+    }
+    gameobjects::4 {
+        prefab = Resources\Prefabs\Buildings\base_small.prefab
+        Transform {
+            Position = 226.1 -2 606.1
+        }
+    }
+    gameobjects::5 {
+        prefab = Resources\Prefabs\Buildings\base_small.prefab
+        Transform {
+            Position = 951.7 6.5 622.5
+        }
+    }
+    gameobjects::6 {
+        prefab = Resources\Prefabs\Buildings\base_small.prefab
+        Transform {
+            Position = 780 -1.7 120.3
+        }
+    }
     ambient_intensity = 1.567
     sun_intensity = 5.8
     sun_rotation = 26 45
