@@ -6,7 +6,8 @@
 #include "Editor/MainWindowMenu.h"
 
 RenderManager::RenderManager()
-    : allowedShaderFeatures_(~0u),
+    : vsyncEnabled_(true),
+    allowedShaderFeatures_(~0u),
     debugMode_(RenderDebugMode::None)
 {
     // Set default opengl settings
@@ -14,6 +15,9 @@ RenderManager::RenderManager()
 
     // Ensure linear space rendering is used
     glEnable(GL_FRAMEBUFFER_SRGB);
+
+    // Default to vsync on
+    glfwSwapInterval(1);
 
     // Set up menu items for toggling render features
     addShaderFeatureMenuItem(SF_Texture, "Textures");
@@ -40,6 +44,13 @@ RenderManager::RenderManager()
     addDebugModeMenuItem(RenderDebugMode::Translucency, "Translucency");
     addDebugModeMenuItem(RenderDebugMode::Shadows, "Shadows");
     addDebugModeMenuItem(RenderDebugMode::ShadowCascades, "Shadow Cascades");
+
+    // Set up a menu item for toggling vsync
+    MainWindowMenu::instance()->addMenuItem(
+        "View/VSync",
+        [&] { glfwSwapInterval(vsyncEnabled_ ? 0 : 1); vsyncEnabled_ = !vsyncEnabled_; },
+        [&] { return vsyncEnabled_; }
+    );
 }
 
 bool RenderManager::isFeatureGloballyEnabled(ShaderFeature feature) const

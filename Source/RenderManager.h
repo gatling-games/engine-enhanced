@@ -43,6 +43,8 @@ public:
     void render();
 
 private:
+    bool vsyncEnabled_;
+
     // Globally enabled shader features.
     // Features that are not globally enabled cannot be used.
     ShaderFeatureList allowedShaderFeatures_;
