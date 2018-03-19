@@ -48,11 +48,15 @@ Terrain::Terrain(GameObject* gameObject)
 
 void Terrain::drawProperties()
 {
-    ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
+    // Keep track of whether the terrain settings have been modified in a 
+    // way that requires the terrain to be regenerated.
+    bool terrainGenerationNeeded = false;
+
+    terrainGenerationNeeded |= ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
     ImGui::ColorEdit3("Water Color", &waterColor_.r);
 
     float prevWaterDepth = waterDepth_;
-    ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
     ImGui::Spacing();
 
     // If the water depth is changed, objects on the terrain need regenerating
@@ -62,7 +66,7 @@ void Terrain::drawProperties()
         placeDetailMeshes();
     }
 
-    bool terrainGenerationNeeded = ImGui::InputInt("Seed", &seed_);
+    terrainGenerationNeeded |= ImGui::InputInt("Seed", &seed_);
     ImGui::SameLine();
     if (ImGui::Button("Randomise"))
     {
