@@ -15,6 +15,9 @@ RenderManager::RenderManager()
     // Ensure linear space rendering is used
     glEnable(GL_FRAMEBUFFER_SRGB);
 
+    // Default to vsync on
+    glfwSwapInterval(1);
+
     // Set up menu items for toggling render features
     addShaderFeatureMenuItem(SF_Texture, "Textures");
     addShaderFeatureMenuItem(SF_NormalMap, "Normal Maps");
