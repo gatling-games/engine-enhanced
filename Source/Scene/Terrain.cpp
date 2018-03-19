@@ -55,16 +55,8 @@ void Terrain::drawProperties()
     terrainGenerationNeeded |= ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
     ImGui::ColorEdit3("Water Color", &waterColor_.r);
 
-    float prevWaterDepth = waterDepth_;
     terrainGenerationNeeded |= ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
     ImGui::Spacing();
-
-    // If the water depth is changed, objects on the terrain need regenerating
-    if (fabs(prevWaterDepth - waterDepth_) > 0.001f)
-    {
-        placeObjects();
-        placeDetailMeshes();
-    }
 
     terrainGenerationNeeded |= ImGui::InputInt("Seed", &seed_);
     ImGui::SameLine();
