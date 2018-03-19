@@ -89,13 +89,10 @@ void Terrain::drawProperties()
 
     bool detailsNeedPlacing = ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", detailMesh_);
     detailsNeedPlacing |= ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", detailMaterial_);
-    detailsNeedPlacing |= ImGui::DragFloat2("Detail Scale", &detailScale_.x, 0.05f, 0.01f, 100.0f);
-    detailsNeedPlacing |= ImGui::DragFloat2("Altitude Limits", &detailAltitudeLimits_.x, 0.5f, -100.0f, 500.0f);
+    detailsNeedPlacing |= ImGui::DragFloatRange2("Detail Scale", &detailScale_.x, &detailScale_.y, 0.05f, 0.01f, 100.0f);
+    detailsNeedPlacing |= ImGui::DragFloatRange2("Altitude Limits", &detailAltitudeLimits_.x, &detailAltitudeLimits_.y, 0.5f, -100.0f, 500.0f);
     detailsNeedPlacing |= ImGui::DragFloat("Slope Limit", &detailSlopeLimit_, 0.05f, 0.0f, 1.0f);
     ImGui::Spacing();
-
-    // Prevent detail scale min being bigger than max
-    detailScale_.x = detailScale_.minComponent();
 
     // Regenerate terrain layers when a change is detected
     if (detailsNeedPlacing)
