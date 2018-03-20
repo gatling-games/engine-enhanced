@@ -32,7 +32,8 @@ RenderManager::RenderManager()
     addShaderFeatureMenuItem(SF_TerrainDetailMeshes, "Terrain Details");
     addShaderFeatureMenuItem(SF_ExtraTerrainDetails, "Extra Terrain Details");
     addShaderFeatureMenuItem(SF_Translucency, "Translucency");
-
+    addShaderFeatureMenuItem(SF_Sky, "Sky");
+    
     // Set up menu items for showing debugging modes
     addDebugModeMenuItem(RenderDebugMode::None, "None");
     addDebugModeMenuItem(RenderDebugMode::Wireframe, "Wireframe");

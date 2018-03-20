@@ -39,6 +39,9 @@ enum ShaderFeature
     // Enables computation of translucency lighting
     SF_Translucency = 262144,
 
+    // Enables sky rendering
+    SF_Sky = 1048576,
+
     // GBuffer debugging modes
     SF_DebugGBufferDepth = 32768,
     SF_DebugGBufferAlbedo = 256,

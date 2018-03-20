@@ -102,12 +102,21 @@ void Renderer::renderFrame(const Camera* camera)
     // Ensure the gbuffer exists and is ok
     createGBuffer();
 
-    // Render each opaque object into the gbuffer textures
+    // First, render the gbuffer textures
     gbufferFramebuffer_.use();
     executeGeometryPass(camera, ALL_SHADER_FEATURES);
 
-    // Compute lighting into final render target
+    // Now, we need to combine deferred lighting, sky, water etc into the target framebuffer
     targetFramebuffer_->use();
+
+    // If we are not rendering the sky, clear the screen to black
+    if(RenderManager::instance()->isFeatureGloballyEnabled(SF_Sky) == false)
+    {
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    // Compute lighting into final render target
     executeDeferredLightingPass();
 
     // Render the water on top of the geometry using alpha blending
@@ -120,7 +129,10 @@ void Renderer::renderFrame(const Camera* camera)
     }
 
     // Finally render the skybox
-    executeSkyboxPass(camera);
+    if (RenderManager::instance()->isFeatureGloballyEnabled(SF_Sky))
+    {
+        executeSkyboxPass(camera);
+    }
 }
 
 void Renderer::createGBuffer()
