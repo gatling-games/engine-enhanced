@@ -6,33 +6,34 @@
 
 // GBuffer Layout
 // RT0: Albedo (RGB), Gloss (A)
-// RT1: Normal XY (RG), ZSign*Gloss (B), Translucency (a, 2 bits)
+// RT1: Normal (RG), NormalZSign*Gloss (B), Translucency (a, 2 bits)
 
 // Stores surface properties into the gbuffer format
 void packGBuffer(SurfaceProperties surface, out vec4 gbuffer0, out vec4 gbuffer1)
 {
-    // Pack the gloss and sign of the normal z into a single channel
+    // We need to save space in the gbuffer, so pack the smoothness + worldnormal into 3 channels
     // This uses the mapping by [Sousa13] ("The rendering technologies of Crysis 3")
+    vec2 packedNormal = surface.worldNormal.xy / (1.0 - surface.worldNormal.z) * 0.5 + 0.5;
     float glossZSign = (sign(surface.worldNormal.z) * surface.gloss) * 0.5 + 0.5;
 
+    // Store all surface properties into the gbuffer
     gbuffer0 = vec4(surface.diffuseColor, surface.occlusion);
-    gbuffer1 = vec4(surface.worldNormal.xy * 0.5 + 0.5, glossZSign, surface.translucency);
+    gbuffer1 = vec4(packedNormal, glossZSign, surface.translucency);
 }
 
 // Retrieves surface properties from the gbuffer format
 SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1)
 {
     // Recover the gloss & zsign from the [Sousa13] mapping
+    vec2 packedXY = gbuffer1.xy * 2.0 - 1.0;
+    float packedXYSqrSum = dot(packedXY, packedXY);
+    vec3 worldNormal = vec3(2.0 * packedXY, -1.0 + packedXYSqrSum) / (1.0 + packedXYSqrSum);
     float glossZSign = gbuffer1.z * 2.0 - 1.0;
     float zSign = sign(glossZSign);
-    float gloss = glossZSign / zSign;
+    worldNormal.z *= zSign;
+    float gloss = abs(glossZSign);
 
-    // Recover the world space normal
-    // x and y were stored using the range [0-1], and we need to reconstruct the z.
-    vec3 worldNormal;
-    worldNormal.xy = gbuffer1.xy * 2.0 - 1.0;
-    worldNormal.z = sqrt(1.0 - dot(worldNormal.xy, worldNormal.xy)) * zSign;
-
+    // Read everything into the surface properties struct
     SurfaceProperties surface;
     surface.diffuseColor = gbuffer0.rgb;
     surface.occlusion = gbuffer0.a;
