@@ -33,8 +33,8 @@ void Scene::drawEditor()
         ImGui::DragFloat("Sun Rotation", &sunRotation_.y, 1.0f, 0.0f, 360.0f);
 
         ImGui::Spacing();
-        ImGui::DragFloat("Fog Density", &fogDensity_, 0.0001f, 0.0001f, 0.3f);
-        ImGui::DragFloat("Fog Height Falloff", &fogHeightFalloff_, 0.0001f, 0.0001f, 0.1f);
+        ImGui::DragFloat("Fog Density", &fogDensity_, 0.001f, 0.001f, 0.3f);
+        ImGui::DragFloat("Fog Height Falloff", &fogHeightFalloff_, 0.00005f, 0.001f, 0.5f);
     }
 }
 
