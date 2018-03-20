@@ -196,6 +196,7 @@ std::string ShaderVariant::createFeatureDefines() const
     if (hasFeature(SF_DebugGBufferGloss)) defines += "#define DEBUG_GBUFFER_GLOSS \n";
     if (hasFeature(SF_DebugShadows)) defines += "#define DEBUG_SHADOWS \n";
     if (hasFeature(SF_DebugShadowCascades)) defines += "#define DEBUG_SHADOW_CASCADES \n";
+    if (hasFeature(SF_AmbientOcclusion)) defines += "#define AMBIENT_OCCLUSION_ON \n";
 
     return defines;
 }
