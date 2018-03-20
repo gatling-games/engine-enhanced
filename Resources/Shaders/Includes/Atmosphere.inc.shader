@@ -200,23 +200,40 @@ vec3 InScatteringDirection(vec3 x, vec3 v)
     // Find the position where x + tv intersects the top of the atmosphere
     vec3 x0 = PointOnAtmosphereTop(x, v);
 
-    // Integrate along the view ray
-    vec3 scatteringSum = vec3(0.0);
+    // We need to integrate the in scattering along the view ray
+    // This involves summing the in scattered light at each point on the ray,
+    //   modulated by the transmittance from that point to the eye.
+
+    // Approximate the in scattered light using a finite number of steps
     const float stepCount = 32.0;
     vec3 stepSize = (x0 - x) / (stepCount - 1.0);
+
+    // We are using this for sun scattering, so the view and light directions
+    // are constant along the entire ray.
+    // The phase functions are therefore constant along the ray too.
+    float u = max(0.0, dot(normalize(v), _LightDirectionIntensity.xyz));
+    float rayleighPhaseFunc = rayleighPhase(u);
+    float miePhaseFunc = miePhase(u);
+
+    // Sum the in scattered light at each point
+    // This is the sum of rayleigh + mie scattered light
+    vec3 scatteringSumRayleigh = vec3(0.0);
+    vec3 scatteringSumMie = vec3(0.0);
     for (float step = 0.0; step < stepCount; ++step)
     {
         vec3 y = x + stepSize * step;
-        float u = max(0.0, dot(normalize(v), _LightDirectionIntensity.xyz));
-        
+        vec3 outTransmittance = TPointToPoint(x, y);
+        vec3 inLight = TDirection(y, _LightDirectionIntensity.xyz);
+
         // Rayleigh in-scattering 
-        scatteringSum += TPointToPoint(x, y) * rayleighScattering(y.y - Rg) * rayleighPhase(u) * TDirection(y, _LightDirectionIntensity.xyz) * length(stepSize);
+        scatteringSumRayleigh += inLight * rayleighScattering(y.y - Rg) * outTransmittance;
 
         // Mie in-scattering
-        scatteringSum += TPointToPoint(x, y) * mieScattering(y.y - Rg) * miePhase(u) * TDirection(y, _LightDirectionIntensity.xyz) * length(stepSize);
+        scatteringSumMie += inLight * mieScattering(y.y - Rg) * outTransmittance;
     }
 
-    return scatteringSum;
+    // We still need to apply the phase functions & multiply by the step size.
+    return ((scatteringSumRayleigh * rayleighPhaseFunc) + (scatteringSumMie * miePhaseFunc)) * length(stepSize);
 }
 
 vec3 InScatteringPointToPoint(vec3 x, vec3 y)
@@ -225,23 +242,40 @@ vec3 InScatteringPointToPoint(vec3 x, vec3 y)
     vec3 x0 = y;
     vec3 v = normalize(y - x);
 
-    // Integrate along the view ray
-    vec3 scatteringSum = vec3(0.0);
+    // We need to integrate the in scattering along the view ray
+    // This involves summing the in scattered light at each point on the ray,
+    //   modulated by the transmittance from that point to the eye.
+
+    // Approximate the in scattered light using a finite number of steps
     const float stepCount = 16.0;
     vec3 stepSize = (x0 - x) / (stepCount - 1.0);
+
+    // We are using this for sun scattering, so the view and light directions
+    // are constant along the entire ray.
+    // The phase functions are therefore constant along the ray too.
+    float u = max(0.0, dot(normalize(v), _LightDirectionIntensity.xyz));
+    float rayleighPhaseFunc = rayleighPhase(u);
+    float miePhaseFunc = miePhase(u);
+
+    // Sum the in scattered light at each point
+    // This is the sum of rayleigh + mie scattered light
+    vec3 scatteringSumRayleigh = vec3(0.0);
+    vec3 scatteringSumMie = vec3(0.0);
     for (float step = 0.0; step < stepCount; ++step)
     {
         vec3 y = x + stepSize * step;
-        float u = max(0.0, dot(normalize(v), _LightDirectionIntensity.xyz));
-        
+        vec3 outTransmittance = TPointToPoint(x, y);
+        vec3 inLight = TDirection(y, _LightDirectionIntensity.xyz);
+
         // Rayleigh in-scattering 
-        scatteringSum += TPointToPoint(x, y) * rayleighScattering(y.y - Rg) * rayleighPhase(u) * TDirection(y, _LightDirectionIntensity.xyz) * length(stepSize);
+        scatteringSumRayleigh += inLight * rayleighScattering(y.y - Rg) * outTransmittance;
 
         // Mie in-scattering
-        scatteringSum += TPointToPoint(x, y) * mieScattering(y.y - Rg) * miePhase(u) * TDirection(y, _LightDirectionIntensity.xyz) * length(stepSize);
+        scatteringSumMie += inLight * mieScattering(y.y - Rg) * outTransmittance;
     }
 
-    return scatteringSum;
+    // We still need to apply the phase functions & multiply by the step size.
+    return ((scatteringSumRayleigh * rayleighPhaseFunc) + (scatteringSumMie * miePhaseFunc)) * length(stepSize);
 }
 
 #endif // ATMOSPHERE_SHADER_CODE_INCLUDED
