@@ -385,5 +385,8 @@
     <None Include="Resources\Shaders\TerrainDetail.shader">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\Deferred-AmbientOcclusion.shader">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

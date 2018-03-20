@@ -38,7 +38,11 @@ struct SceneUniformData
     // Fog settings
     float fogDensity;
     float fogHeightFalloff;
-    float fogPadding[2];
+
+    // Ambient occlusion settings
+    float ambientOcclusionDistance;
+    float ambientOcclusionFalloff;
+    Vector4 ambientOcclusionPoissonDisks[16];
 };
 
 // Plain old uniform data for camera

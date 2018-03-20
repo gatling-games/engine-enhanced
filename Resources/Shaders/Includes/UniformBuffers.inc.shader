@@ -18,6 +18,13 @@ layout(std140, binding = 0) uniform scene_data
     // Fog settings
     uniform float _FogDensity;
     uniform float _FogHeightFalloff;
+
+    // Ambient occlusion settings
+    uniform float _AmbientOcclusionDistance;
+    uniform float _AmbientOcclusionFalloff;
+
+    // Precomputed poisson disk offsets for ambient occlusion
+    uniform vec2 _AmbientOcclusionPoissonDisks[16];
 };
 
 // Camera uniform buffer

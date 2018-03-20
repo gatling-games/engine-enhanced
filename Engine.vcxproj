@@ -135,6 +135,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\Deferred-AmbientOcclusion.shader" />
     <None Include="Resources\Shaders\Deferred-Debug.shader" />
     <None Include="Resources\Shaders\Deferred-Lighting.shader" />
     <None Include="Resources\Shaders\Includes\Atmosphere.inc.shader" />

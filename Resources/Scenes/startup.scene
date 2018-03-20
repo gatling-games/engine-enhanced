@@ -2,8 +2,11 @@
     gameobjects::0 {
         prefab = Resources\Prefabs\Terrain.prefab
     }
-    sun_intensity = 4.4
-    sun_rotation = 16 140
-    fog_density = 0.016
-    fog_height_falloff = 0.036
+    ambient_intensity = 1.567
+    sun_intensity = 5.8
+    sun_rotation = 26 45
+    fog_density = 0.028
+    fog_height_falloff = 0.16
+    ambient_occlusion_distance = 5.7
+    ambient_occlusion_falloff = 3
 }

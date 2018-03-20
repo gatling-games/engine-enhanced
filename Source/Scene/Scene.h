@@ -22,6 +22,8 @@ public:
     Quaternion sunRotation() const { return Quaternion::euler(sunRotation_.x, sunRotation_.y, 0.0f); }
     float fogDensity() const { return fogDensity_; }
     float fogHeightFalloff() const { return fogHeightFalloff_; }
+    float ambientOcclusionDistance() const { return ambientOcclusionDistance_; }
+    float ambientOcclusionFalloff() const { return ambientOcclusionFalloff_; }
 
     // Opens the scene when selected
     void onOpenAction() override;
@@ -49,4 +51,6 @@ private:
     Vector2 sunRotation_;
     float fogDensity_;
     float fogHeightFalloff_;
+    float ambientOcclusionDistance_;
+    float ambientOcclusionFalloff_;
 };

@@ -35,6 +35,10 @@ void Scene::drawEditor()
         ImGui::Spacing();
         ImGui::DragFloat("Fog Density", &fogDensity_, 0.0001f, 0.0001f, 0.3f);
         ImGui::DragFloat("Fog Height Falloff", &fogHeightFalloff_, 0.0001f, 0.0001f, 0.1f);
+
+        ImGui::Spacing();
+        ImGui::DragFloat("AO Distance", &ambientOcclusionDistance_, 0.05f, 5.0f, 50.0f);
+        ImGui::DragFloat("AO Intensity", &ambientOcclusionFalloff_, 0.01f, 0.3f, 3.0f);
     }
 }
 
@@ -65,6 +69,8 @@ void Scene::serialize(PropertyTable &table)
     table.serialize("sun_rotation", sunRotation_, Vector2(30.0f, 0.0f));
     table.serialize("fog_density", fogDensity_, 0.005f);
     table.serialize("fog_height_falloff", fogHeightFalloff_, 0.023f);
+    table.serialize("ambient_occlusion_distance", ambientOcclusionDistance_, 10.0f);
+    table.serialize("ambient_occlusion_falloff", ambientOcclusionFalloff_, 2.0f);
 }
 
 void Scene::createGameObjects()

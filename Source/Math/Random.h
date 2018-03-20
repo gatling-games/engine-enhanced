@@ -9,6 +9,9 @@ float random_float();
 // Returns a random number between min and max.
 float random_float(float min, float max);
 
+// Returns a random vector inside the unit circle.
+Vector2 random_in_unit_circle();
+
 // Returns a random direction vector of unit length.
 Vector2 random_direction_2d();
 

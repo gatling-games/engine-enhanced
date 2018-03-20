@@ -4,6 +4,7 @@
 
 #include <assert.h>
 
+#include "Math/Random.h"
 #include "RenderManager.h"
 #include "ResourceManager.h"
 #include "SceneManager.h"
@@ -35,6 +36,7 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     terrainShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Terrain.shader");
     terrainDetailMeshShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/TerrainDetail.shader");
     waterShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Water.shader");
+    deferredAmbientOcclusionShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-AmbientOcclusion.shader");
     deferredLightingShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Lighting.shader");
     deferredDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Debug.shader");
 
@@ -46,6 +48,13 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     // Generate the sky transmittance lut on startup.
     // It should be ok for the entire app lifetime and shouldn't need to be remade.
     regenerateSkyTransmittanceLUT();
+
+    // Generate the random poisson disks on startup.
+    for(int i = 0; i < 16; ++i)
+    {
+        const Vector2 disk = random_in_unit_circle();
+        poissonDisks_[i] = Vector4(disk.x, disk.y, 0.0f, 0.0f);
+    }
 }
 
 Renderer::~Renderer()
@@ -105,6 +114,12 @@ void Renderer::renderFrame(const Camera* camera)
     // Render each opaque object into the gbuffer textures
     gbufferFramebuffer_.use();
     executeGeometryPass(camera, ALL_SHADER_FEATURES);
+
+    // Render ambient occlusion into the gbuffer, before computing lighting
+    if (RenderManager::instance()->isFeatureGloballyEnabled(SF_AmbientOcclusion))
+    {
+        executeDeferredAmbientOcclusionPass();
+    }
 
     // Compute lighting into final render target
     targetFramebuffer_->use();
@@ -185,6 +200,14 @@ void Renderer::updateSceneUniformBuffer() const
     data.lightDirectionIntensity = Vector4((scene->sunRotation() * Vector3(0.0f, 0.0f, -1.0f)).normalized(), scene->sunIntensity());
     data.fogDensity = scene->fogDensity();
     data.fogHeightFalloff = scene->fogHeightFalloff();
+    data.ambientOcclusionDistance = scene->ambientOcclusionDistance();
+    data.ambientOcclusionFalloff = scene->ambientOcclusionFalloff();
+
+    // Copy the poisson disks into the scene data
+    for(int disk = 0; disk < 16; ++disk)
+    {
+        data.ambientOcclusionPoissonDisks[disk] = poissonDisks_[disk];
+    }
 
     // Send time to shader for cloud texture scrolling
     const float time = Clock::instance()->time();
@@ -352,6 +375,18 @@ void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeature
     fullScreenMesh_->bind();
     shader->bindVariant(shaderFeatures);
     glDrawElements(GL_TRIANGLES, fullScreenMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+}
+
+void Renderer::executeDeferredAmbientOcclusionPass() const
+{
+    // We only want to render into the occlusion gbuffer channel (gbuffer 0 alpha).
+    glColorMask(false, false, false, true);
+
+    // Render the ao shader full screen
+    executeFullScreen(deferredAmbientOcclusionShader_, ALL_SHADER_FEATURES);
+
+    // Reset the color mask when done
+    glColorMask(true, true, true, true);
 }
 
 void Renderer::executeDeferredLightingPass() const

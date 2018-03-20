@@ -39,6 +39,9 @@ enum ShaderFeature
     // Enables computation of translucency lighting
     SF_Translucency = 262144,
 
+    // Enables a heightmap-based ambient occlusion pass
+    SF_AmbientOcclusion = 2097152,
+
     // GBuffer debugging modes
     SF_DebugGBufferDepth = 32768,
     SF_DebugGBufferAlbedo = 256,

@@ -53,6 +53,7 @@ private:
     Shader* terrainDetailMeshShader_;
 
     // Shaders used for deferred passes
+    Shader* deferredAmbientOcclusionShader_;
     Shader* deferredLightingShader_;
     Shader* deferredDebugShader_;
 
@@ -68,6 +69,9 @@ private:
 
     // Sky lookup textures
     Texture skyTransmittanceLUT_;
+
+    // The poisson disks used for ambient occlusion
+    Vector4 poissonDisks_[16];
 
     // GBuffer management
     void createGBuffer();
@@ -87,6 +91,7 @@ private:
     void executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const;
 
     // Methods for each render pass
+    void executeDeferredAmbientOcclusionPass() const;
     void executeDeferredLightingPass() const;
     void executeDeferredDebugPass() const;
     void executeWaterPass() const;
