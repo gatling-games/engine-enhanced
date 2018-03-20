@@ -33,8 +33,13 @@ void main()
     vec3 sunColor = _LightDirectionIntensity.w * TDirection(worldPosition + vec3(0.0, Rg, 0.0), _LightDirectionIntensity.xyz);
 
     // Compute the ambient and direct light separately
-    vec3 ambientLight = surface.diffuseColor * _AmbientColor.rgb * surface.occlusion;
+    vec3 ambientLight = surface.diffuseColor * _AmbientColor.rgb;
     vec3 directLight = PhysicallyBasedBRDF(surface, sunColor, sunDir, viewDir);
+
+    // Modulate the ambient light by the ambient occlusion factor
+#ifdef AMBIENT_OCCLUSION_ON
+    ambientLight *= surface.occlusion;
+#endif
 
     // Add translucent lighting
     // "Vegetation Procedural Animation and Shading in Crysis" [Sousa08] suggested adding a term based on -N.L
