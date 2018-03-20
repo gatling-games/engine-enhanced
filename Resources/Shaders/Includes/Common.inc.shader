@@ -53,6 +53,12 @@ float computeVolumetricFog(vec3 cameraPos, vec3 cameraToWorld, float cameraToWor
  */
 vec3 applyVolumetricFog(vec3 light, float fogDensity, vec3 fogColor)
 {
+    // Boost the fog color slightly, preventing it from being too dark 
+    // when the viewer is facing away from the sun.
+    // This makes up for the lack of multiple scattering when computing
+    // the fog color.
+    fogColor = fogColor * 0.8 + normalize(fogColor) * 0.2;
+
     return mix(light, fogColor, fogDensity);
 }
 
