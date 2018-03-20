@@ -247,7 +247,7 @@ vec3 InScatteringPointToPoint(vec3 x, vec3 y)
     //   modulated by the transmittance from that point to the eye.
 
     // Approximate the in scattered light using a finite number of steps
-    const float stepCount = 16.0;
+    const float stepCount = 4.0;
     vec3 stepSize = (x0 - x) / (stepCount - 1.0);
 
     // We are using this for sun scattering, so the view and light directions
