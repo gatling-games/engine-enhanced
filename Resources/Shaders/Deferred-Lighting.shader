@@ -38,7 +38,7 @@ void main()
 
     // Modulate the ambient light by the ambient occlusion factor
 #ifdef AMBIENT_OCCLUSION_ON
-    ambientLight *= surface.occlusion;
+    ambientLight *= surface.occlusion * 0.95 + 0.05; // *0.95+0.05 to prevent ao from making the surface completely black
 #endif
 
     // Add translucent lighting
