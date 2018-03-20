@@ -6,7 +6,7 @@
 
 // GBuffer Layout
 // RT0: Albedo (RGB), Gloss (A)
-// RT1: Normal (RG), NormalZSign*Gloss (B), Translucency (a, 2 bits)
+// RT1: Normal (RG), NormalZSign*Gloss (B), Translucency (a)
 
 // Stores surface properties into the gbuffer format
 void packGBuffer(SurfaceProperties surface, out vec4 gbuffer0, out vec4 gbuffer1)
