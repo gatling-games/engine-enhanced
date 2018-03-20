@@ -6,24 +6,39 @@
 
 // GBuffer Layout
 // RT0: Albedo (RGB), Gloss (A)
-// RT1: Normals (XYZ, 10 bits), Translucency (a, 2 bits)
+// RT1: Normal XY (RG), ZSign*Gloss (B), Translucency (a, 2 bits)
 
 // Stores surface properties into the gbuffer format
 void packGBuffer(SurfaceProperties surface, out vec4 gbuffer0, out vec4 gbuffer1)
 {
-    gbuffer0 = vec4(surface.diffuseColor, surface.gloss);
-    gbuffer1 = vec4(surface.worldNormal * 0.5 + 0.5, surface.translucency);
+    // Pack the gloss and sign of the normal z into a single channel
+    // This uses the mapping by [Sousa13] ("The rendering technologies of Crysis 3")
+    float glossZSign = (sign(surface.worldNormal.z) * surface.gloss) * 0.5 + 0.5;
+
+    gbuffer0 = vec4(surface.diffuseColor, surface.occlusion);
+    gbuffer1 = vec4(surface.worldNormal.xy * 0.5 + 0.5, glossZSign, surface.translucency);
 }
 
 // Retrieves surface properties from the gbuffer format
 SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1)
 {
+    // Recover the gloss & zsign from the [Sousa13] mapping
+    float glossZSign = gbuffer1.z * 2.0 - 1.0;
+    float zSign = sign(glossZSign);
+    float gloss = glossZSign / zSign;
+
+    // Recover the world space normal
+    // x and y were stored using the range [0-1], and we need to reconstruct the z.
+    vec3 worldNormal;
+    worldNormal.xy = gbuffer1.xy * 2.0 - 1.0;
+    worldNormal.z = sqrt(1.0 - dot(worldNormal.xy, worldNormal.xy)) * zSign;
+
     SurfaceProperties surface;
     surface.diffuseColor = gbuffer0.rgb;
-    surface.occlusion = 1.0;
-    surface.gloss = gbuffer0.a;
+    surface.occlusion = gbuffer0.a;
+    surface.gloss = gloss;
     surface.translucency = gbuffer1.a;
-    surface.worldNormal = normalize(gbuffer1.xyz * 2.0 - 1.0);
+    surface.worldNormal = worldNormal;
     return surface;
 }
 
