@@ -382,10 +382,9 @@ void Renderer::executeDeferredAmbientOcclusionPass() const
     // We only want to render into the occlusion gbuffer channel (gbuffer 0 alpha).
     glColorMask(false, false, false, true);
 
-    // Use multiply blending for alpha (= occlusion) so existing ao information is not lost
+    // Use min blending for alpha (= occlusion) so existing ao information is not lost
     glEnable(GL_BLEND);
-    glBlendEquationSeparate(GL_DST_COLOR, GL_DST_ALPHA);
-    glBlendFuncSeparate(GL_ONE, GL_ZERO, GL_DST_ALPHA, GL_ZERO);
+    glBlendEquation(GL_MIN);
 
     // Render the ao shader full screen
     executeFullScreen(deferredAmbientOcclusionShader_, ALL_SHADER_FEATURES);
