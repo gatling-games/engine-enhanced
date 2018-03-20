@@ -14,6 +14,7 @@ layout(location = 3) in vec2 _texcoord;
 
 out vec3 worldNormal;
 out vec2 texcoord;
+out float occlusion;
 
 void main()
 {
@@ -51,6 +52,9 @@ void main()
 
     // Texcoord does not need to be modified.
     texcoord = _texcoord;
+
+    // The top should be non-occluded, the bottom should be occluded
+    occlusion = _position.y;
 }
 
 #endif // VERTEX_SHADER
@@ -59,11 +63,11 @@ void main()
 
 in vec3 worldNormal;
 in vec2 texcoord;
+in float occlusion;
 
 void main()
 {
     SurfaceProperties surface;
-    surface.occlusion = 1.0;
 
     // Sample the albedo texture for the diffuse color
 #ifdef TEXTURE_ON
@@ -95,6 +99,9 @@ void main()
 
     // Grass doesn't use normal mapping
     surface.worldNormal = worldNormal;
+
+    // The bottom of grass is occluded
+    surface.occlusion = max(occlusion, 0.5);
 
     // Output surface properties to the gbuffer
     writeToGBuffer(surface);
