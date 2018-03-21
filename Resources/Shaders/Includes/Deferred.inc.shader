@@ -12,7 +12,8 @@
 
     void main()
     {
-        gl_Position = _position;
+        // Always ensure the full screen quad is at max depth
+        gl_Position = vec4(_position.xy, 1.0, 1.0);
     }
 
 #endif

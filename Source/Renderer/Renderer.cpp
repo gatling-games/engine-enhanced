@@ -111,7 +111,7 @@ void Renderer::renderFrame(const Camera* camera)
     // Ensure the gbuffer exists and is ok
     createGBuffer();
 
-    // Render each opaque object into the gbuffer textures
+    // First, render the gbuffer textures
     gbufferFramebuffer_.use();
     executeGeometryPass(camera, ALL_SHADER_FEATURES);
 
@@ -120,9 +120,18 @@ void Renderer::renderFrame(const Camera* camera)
     {
         executeDeferredAmbientOcclusionPass();
     }
+    
+    // Now, we need to combine deferred lighting, sky, water etc into the target framebuffer
+    targetFramebuffer_->use();
+
+    // If we are not rendering the sky, clear the screen to black
+    if(RenderManager::instance()->isFeatureGloballyEnabled(SF_Sky) == false)
+    {
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
 
     // Compute lighting into final render target
-    targetFramebuffer_->use();
     executeDeferredLightingPass();
 
     // Render the water on top of the geometry using alpha blending
@@ -135,7 +144,10 @@ void Renderer::renderFrame(const Camera* camera)
     }
 
     // Finally render the skybox
-    executeSkyboxPass(camera);
+    if (RenderManager::instance()->isFeatureGloballyEnabled(SF_Sky))
+    {
+        executeSkyboxPass(camera);
+    }
 }
 
 void Renderer::createGBuffer()
@@ -288,7 +300,8 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
     glEnable(GL_DEPTH_TEST);
     glDepthMask(true);
 
-    // First, clear the depth buffer - don't need to clear color buffer as skybox will cover background
+    // We only need to clear the depth buffer, and not the color buffer
+    // This pass is rendering into the gbuffer and the non-rendered areas are not used.
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Draw every static mesh component in the scene with the standard shaders
@@ -367,14 +380,22 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
 
 void Renderer::executeFullScreen(Shader* shader, ShaderFeatureList shaderFeatures) const
 {
-    // Full screen passes don't use depth testing
-    glDisable(GL_DEPTH_TEST);
+    // "Full Screen" passes should write to all pixels that are not sky.
+    // To do this, we render a full screen quad at the maximum depth
+    // and only render where the quad is further than the depth buffer value
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_GREATER);
+
+    // Ensure that we arent' writing depth
     glDepthMask(false);
 
     // Draw the full screen mesh
     fullScreenMesh_->bind();
     shader->bindVariant(shaderFeatures);
     glDrawElements(GL_TRIANGLES, fullScreenMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+
+    // Put the depth function back to normal
+    glDepthFunc(GL_LESS);
 }
 
 void Renderer::executeDeferredAmbientOcclusionPass() const

@@ -41,6 +41,9 @@ enum ShaderFeature
 
     // Enables a heightmap-based ambient occlusion pass
     SF_AmbientOcclusion = 2097152,
+    
+    // Enables sky rendering
+    SF_Sky = 1048576,
 
     // GBuffer debugging modes
     SF_DebugGBufferDepth = 32768,
