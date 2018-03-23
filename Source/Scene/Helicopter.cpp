@@ -108,7 +108,7 @@ void Helicopter::update(float deltaTime)
     // This forces translation to be dependent on rotation
     Quaternion newRotation = Quaternion::rotation(remainingYaw_ * turnFactor_ * deltaTime, Vector3::up());
     worldRotation_ = newRotation * worldRotation_;
-    `
+    
     // Reduce remaining yaw
     remainingYaw_ -= remainingYaw_ * decelerationFactor_;
 
