@@ -101,18 +101,19 @@ void Helicopter::update(float deltaTime)
     worldVelocity_ = Vector3::lerp(worldVelocity_, desiredVelocity, 0.5f * deltaTime);
     transform_->translateWorld(yawQuaternion * worldVelocity_ * deltaTime);
 
-    // Rotate percentage of remaining yaw and reduce remaining yaw amount
-    transform_->rotateWorld(remainingYaw_ * turnFactor_ * deltaTime, Vector3(0.0f, 1.0f, 0.0f));
+    // Rotate percentage of remaining yaw
+    transform_->rotateLocal(remainingYaw_ * turnFactor_ * deltaTime, Vector3::up());
 
     // Construct yaw rotation and modify world rotation
-    Quaternion newRotation = Quaternion::rotation(remainingYaw_ * turnFactor_ * deltaTime, Vector3(0.0f, 1.0f, 0.0f));
+    // This forces translation to be dependent on rotation
+    Quaternion newRotation = Quaternion::rotation(remainingYaw_ * turnFactor_ * deltaTime, Vector3::up());
     worldRotation_ = newRotation * worldRotation_;
-
+    `
     // Reduce remaining yaw
     remainingYaw_ -= remainingYaw_ * decelerationFactor_;
 
     // Rotate percentage of remaining pitch and modify tracked forward tilt angle
-    transform_->rotateLocal(remainingPitch_ * turnFactor_ * deltaTime, Vector3(1.0f, 0.0f, 0.0f));
+    transform_->rotateLocal(remainingPitch_ * turnFactor_ * deltaTime, transform_->right());
     currentTilt_ += remainingPitch_ * turnFactor_ * deltaTime;
 
     // Reduce remaining pitch

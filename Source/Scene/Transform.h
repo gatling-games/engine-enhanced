@@ -67,7 +67,6 @@ public:
 
     // Rotates object around a vector in local/world space
     void rotateLocal(float angle, const Vector3& axis);
-    void rotateWorld(float angle, const Vector3& axis);
 
 private:
     // Local space transformation values
