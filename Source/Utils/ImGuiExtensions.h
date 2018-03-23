@@ -7,8 +7,10 @@
 
 namespace ImGui
 {
+    // Shows a modal window when for changing the specified resouce.
+    // Returns true if the resource was changed.
     template<typename T>
-    void ResourceSelectModal(const char* modalName, T* &resource)
+    bool ResourceSelectModal(const char* modalName, T* &resource)
     {
         if (ImGui::BeginPopupModal(modalName))
         {
@@ -19,6 +21,7 @@ namespace ImGui
                 {
                     resource = other;
                     ImGui::CloseCurrentPopup();
+                    return true;
                 }
             }
 
@@ -30,10 +33,14 @@ namespace ImGui
 
             ImGui::EndPopup();
         }
+
+        return false;
     }
 
+    // Shows a resource select field, which opens a modal window when clicked.
+    // Returns true if the resource was changed.
     template<typename T>
-    void ResourceSelect(const char* label, const char* modalTitle, T* &resource)
+    bool ResourceSelect(const char* label, const char* modalTitle, T* &resource)
     {
         // Push an extra ID so that multiple ResourceSelect()s work.
         ImGui::PushID(label);
@@ -50,7 +57,7 @@ namespace ImGui
             {
                 PropertiesPanel::instance()->inspect(ieo);
                 ImGui::PopID();
-                return;
+                return false;
             }
         }
 
@@ -66,9 +73,11 @@ namespace ImGui
         ImGui::Text(label);
 
         // Finally draw the file selection modal (when open).
-        ResourceSelectModal<T>(modalTitle, resource);
+        bool changed = ResourceSelectModal<T>(modalTitle, resource);
 
         // We are done with the ID.
         ImGui::PopID();
+
+        return changed;
     }
 }

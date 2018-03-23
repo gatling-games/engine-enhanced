@@ -125,7 +125,7 @@ void main()
         + gl_in[2].gl_Position * gl_TessCoord.z;
 
     // Make the water extend further than the terrain
-    normalizedPosition.xz = normalizedPosition.xz * 8.0 - 4.0;
+    normalizedPosition.xz = normalizedPosition.xz * 16.0 - 8.0;
 
     // Scale by the terrain size to get the world position
     worldPosition = normalizedPosition.xyz * _TerrainSize.xyz;
@@ -242,7 +242,11 @@ void main()
     vec3 inScattering = _LightDirectionIntensity.w * 25.0 * InScatteringPointToPoint(_CameraPosition.xyz + vec3(0.0, Rg, 0.0), worldPosition + vec3(0.0, Rg, 0.0));
     inScattering = max(inScattering, 0.0);
 
+	// Use volumetric fog, with a greater density at the horizon
     float fogDensity = computeVolumetricFog(_CameraPosition.xyz, viewDir, viewDistance);
+    float horizonFog = clamp((viewDistance - 500.0) * 0.0001, 0.0, 1.0);
+    fogDensity = max(fogDensity, horizonFog);
+
     light = applyVolumetricFog(light, fogDensity, inScattering);
 #endif
 

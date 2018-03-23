@@ -69,6 +69,15 @@ void main()
         + gl_in[2].gl_Position * gl_TessCoord.z;;
     normalizedPosition.y = texture(_TerrainHeightmap, normalizedPosition.xz).r;
 
+	// The normalized position is only in the range 0 to 1.
+	// This causes the underwater terrain to abruptly stop a few m away from the shore.
+	// To fix this, push the edge vertices outwards from the terrain centre.
+	vec2 centreToNormalizedPos = (normalizedPosition.xz - 0.5);
+	if (abs(centreToNormalizedPos).x > 0.4999 || abs(centreToNormalizedPos).y > 0.4999)
+	{
+		normalizedPosition.xz += centreToNormalizedPos;
+	}
+
     // Scale by the terrain size to get the world position
     // We also need to offset the terrain downwards to take account of the water depth
     worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz + vec3(0.0, -_WaterColorDepth.a, 0.0), 1.0);
