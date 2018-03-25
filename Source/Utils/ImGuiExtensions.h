@@ -12,6 +12,8 @@ namespace ImGui
     template<typename T>
     bool ResourceSelectModal(const char* modalName, T* &resource)
     {
+        bool changed = false;
+
         if (ImGui::BeginPopupModal(modalName))
         {
             // Draw a button for each resource of the correct type
@@ -21,7 +23,7 @@ namespace ImGui
                 {
                     resource = other;
                     ImGui::CloseCurrentPopup();
-                    return true;
+                    changed = true;
                 }
             }
 
@@ -33,8 +35,8 @@ namespace ImGui
 
             ImGui::EndPopup();
         }
-
-        return false;
+        
+        return changed;
     }
 
     // Shows a resource select field, which opens a modal window when clicked.
