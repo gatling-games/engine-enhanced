@@ -110,6 +110,24 @@ const Terrain* SceneManager::terrain() const
     return nullptr;
 }
 
+const std::vector<Shield*> SceneManager::shields() const
+{
+    // Make a vector to store the shields
+    std::vector<Shield*> shields;
+
+    // Check every game object for a Shield component
+    for (GameObject* gameObject : gameObjects_)
+    {
+        Shield* shield = gameObject->findComponent<Shield>();
+        if (shield != nullptr)
+        {
+            shields.push_back(shield);
+        }
+    }
+
+    return shields;
+}
+
 template<typename T>
 void SceneManager::addCreateGameObjectMenuItem(const std::string &gameObjectName)
 {

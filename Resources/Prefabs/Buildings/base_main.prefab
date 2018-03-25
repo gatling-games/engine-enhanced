@@ -1,12 +1,14 @@
 {
     name = base_main
+    StaticMesh {
+        mesh = Resources\Meshes\base_main.obj
+        material = Resources\Materials\cardboard.material
+    }
     Transform {
         Position = 662 0 372.8
         Rotation = 0 0.939714 0 0.341961
         Scale = 4 4 4
     }
-    StaticMesh {
-        mesh = Resources\Meshes\base_main.obj
-        material = Resources\Materials\cardboard.material
+    Shield {
     }
 }
