@@ -20,6 +20,16 @@ void TerrainLayer::serialize(PropertyTable& table)
     table.serialize("material", material);
 }
 
+void TerrainObject::serialize(PropertyTable& table)
+{
+    table.serialize("prefab", prefab);
+    table.serialize("min_altitude", minAltitude, 0.0f);
+    table.serialize("max_altitude", maxAltitude, 1000.0f);
+    table.serialize("max_slope", maxSlope, 1.0f);
+    table.serialize("min_instances", minInstances, 1);
+    table.serialize("max_instances", maxInstances, 100);
+}
+
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
     heightMap_(TextureFormat::R16, HEIGHTMAP_RESOLUTION, HEIGHTMAP_RESOLUTION),
@@ -135,6 +145,7 @@ void Terrain::serialize(PropertyTable &table)
     table.serialize("water_color", waterColor_, Color(0.05f, 0.066f, 0.093f));
     table.serialize("water_depth", waterDepth_, 30.0f);
     table.serialize("layers", terrainLayers_);
+    table.serialize("placed_objects", placedObjects_);
     table.serialize("seed", seed_, 0);
     table.serialize("factal_smoothness", fractalSmoothness_, 2.0f);
     table.serialize("mountain_scale", mountainScale_, 4.0f);
@@ -277,11 +288,11 @@ void Terrain::generateTerrain()
 void Terrain::placeObjects()
 {
     // Delete any existing objects
-    for (GameObject* go : placedObjects_)
+    for (GameObject* go : placedObjectInstances_)
     {
         delete go;
     }
-    placedObjects_.clear();
+    placedObjectInstances_.clear();
 
     // Pick random points on the heightmap and check if they are suitable for a windmill.
     int placed = 0;
@@ -306,7 +317,7 @@ void Terrain::placeObjects()
         newGO->setFlag(GameObjectFlag::NotShownOrSaved, true);
         newGO->transform()->setPositionLocal(Point3(x, y, z));
         newGO->transform()->setRotationLocal(Quaternion::euler(0.0f, 32.0f, 0.0f));
-        placedObjects_.push_back(newGO);
+        placedObjectInstances_.push_back(newGO);
 
         placed++;
     }
