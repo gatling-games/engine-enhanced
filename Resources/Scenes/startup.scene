@@ -34,9 +34,9 @@
     }
     ambient_intensity = 1.567
     sun_intensity = 5.8
-    sun_rotation = 26 45
+    sun_rotation = 27 281
     fog_density = 0.028
     fog_height_falloff = 0.16
-    ambient_occlusion_distance = 5.7
-    ambient_occlusion_falloff = 3
+    ambient_occlusion_distance = 8.3
+    ambient_occlusion_falloff = 1.63
 }
