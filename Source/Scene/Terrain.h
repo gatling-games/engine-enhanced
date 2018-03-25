@@ -125,6 +125,9 @@ private:
     void placeObjects();
     void placeDetailMeshes();
 
+    // Generates object instances for the given object type
+    void generateObjectInstances(const TerrainObject &objectType);
+
     // Generates detail positions for the given detail batch
     void generateDetailPositions(DetailBatch &batch, uint32_t seed) const;
 

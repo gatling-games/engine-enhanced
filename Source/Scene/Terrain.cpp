@@ -68,7 +68,7 @@ void Terrain::drawProperties()
     ImGui::Spacing();
 
     // Draw the popout for editing terrain details
-    if(ImGui::TreeNode("Details"))
+    if (ImGui::TreeNode("Details"))
     {
         drawDetailsProperties();
         ImGui::TreePop();
@@ -77,7 +77,7 @@ void Terrain::drawProperties()
     ImGui::Spacing();
 
     // Draw the popout for editing the types of object that are spawned
-    if(ImGui::TreeNode("Objects"))
+    if (ImGui::TreeNode("Objects"))
     {
         drawObjectsProperties();
         ImGui::TreePop();
@@ -190,7 +190,7 @@ void Terrain::drawObjectsProperties()
         objectsNeedPlacing = true;
     }
 
-    if(objectsNeedPlacing)
+    if (objectsNeedPlacing)
     {
         placeObjects();
     }
@@ -361,32 +361,10 @@ void Terrain::placeObjects()
     }
     placedObjectInstances_.clear();
 
-    // Pick random points on the heightmap and check if they are suitable for a windmill.
-    int placed = 0;
-    int attempts = 0;
-    while (attempts < 2000 && placed < 30)
+    // Consider each type of object we are supposed to place
+    for (const TerrainObject& objectType : placedObjects_)
     {
-        attempts++;
-
-        // Pick a random point
-        float x = random_float(0.0f, dimensions_.x);
-        float z = random_float(0.0f, dimensions_.z);
-        float y = sampleHeightmap(x, z);
-
-        // Only place windmills hills, but not too high
-        if (y < 30.0f || y > 100.0f)
-        {
-            continue;
-        }
-
-        // Place the object at that point
-        GameObject* newGO = new GameObject("Windmill", ResourceManager::instance()->load<Prefab>("Resources/Prefabs/Environment/wind_turbine.prefab"));
-        newGO->setFlag(GameObjectFlag::NotShownOrSaved, true);
-        newGO->transform()->setPositionLocal(Point3(x, y, z));
-        newGO->transform()->setRotationLocal(Quaternion::euler(0.0f, 32.0f, 0.0f));
-        placedObjectInstances_.push_back(newGO);
-
-        placed++;
+        generateObjectInstances(objectType);
     }
 }
 
@@ -430,6 +408,59 @@ void Terrain::placeDetailMeshes()
                     }
                 }
             }
+        }
+    }
+}
+
+void Terrain::generateObjectInstances(const TerrainObject& objectType)
+{
+    // Use the object type seed
+    // This ensures that multiple runs are deterministic.
+    srand(objectType.seed);
+
+    // Check the object type is ok
+    if (objectType.prefab == nullptr)
+    {
+        return;
+    }
+
+    // Pick random points on the heightmap and check if they are suitable for a windmill.
+    int placed = 0;
+    int attempts = 0;
+    while (placed < objectType.minInstances || (attempts < objectType.maxInstances * 10 && placed < objectType.maxInstances))
+    {
+        attempts++;
+
+        // Pick a random point
+        float x = random_float(0.0f, dimensions_.x);
+        float z = random_float(0.0f, dimensions_.z);
+        float y = sampleHeightmap(x, z);
+
+        // Check the altitude constraints are met
+        if (y < objectType.minAltitude || y > objectType.maxAltitude)
+        {
+            continue;
+        }
+
+        // Check the slope constraints are met
+        if (sampleHeightmapNormal(x, z).y < (1.0f - objectType.maxSlope))
+        {
+            continue;
+        }
+
+        // Place the object at that point
+        GameObject* newGO = new GameObject(objectType.prefab->resourceName(), objectType.prefab);
+        newGO->setFlag(GameObjectFlag::NotShownOrSaved, true);
+        newGO->transform()->setPositionLocal(Point3(x, y, z));
+        newGO->transform()->setRotationLocal(Quaternion::euler(0.0f, random_float(0.0f, 360.0f), 0.0f));
+        placedObjectInstances_.push_back(newGO);
+        placed++;
+
+        // Safety - if we have done a huge number of attempts, exit
+        if (attempts > 100000)
+        {
+            printf("Failed to place object type %s on terrain - too many attempts", objectType.prefab->resourceName().c_str());
+            return;
         }
     }
 }
