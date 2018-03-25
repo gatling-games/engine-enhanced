@@ -159,15 +159,17 @@ void Terrain::drawDetailsProperties()
 
 void Terrain::drawObjectsProperties()
 {
+    bool objectsNeedPlacing = false;
+
     for (unsigned int i = 0; i < placedObjects_.size(); i++)
     {
         ImGui::PushID(i);
 
         TerrainObject& object = placedObjects_[i];
-        ImGui::ResourceSelect<Prefab>("Prefab", "Select Prefab", object.prefab);
-        ImGui::DragFloatRange2("Altitude Range", &object.minAltitude, &object.maxAltitude, 1.0f, -100.0f, 1000.0f);
-        ImGui::DragFloat("Max Slope", &object.maxSlope, 0.005f, 0.0f, 1.0f);
-        ImGui::DragIntRange2("Instances", &object.minInstances, &object.maxInstances, 1, 0, 1000);
+        objectsNeedPlacing |= ImGui::ResourceSelect<Prefab>("Prefab", "Select Prefab", object.prefab);
+        objectsNeedPlacing |= ImGui::DragFloatRange2("Altitude Range", &object.minAltitude, &object.maxAltitude, 1.0f, -100.0f, 1000.0f);
+        objectsNeedPlacing |= ImGui::DragFloat("Max Slope", &object.maxSlope, 0.005f, 0.0f, 1.0f);
+        objectsNeedPlacing |= ImGui::DragIntRange2("Instances", &object.minInstances, &object.maxInstances, 1, 0, 1000);
         ImGui::Spacing();
 
         ImGui::PopID();
@@ -176,6 +178,12 @@ void Terrain::drawObjectsProperties()
     if (ImGui::Button("Add Layer"))
     {
         placedObjects_.resize(placedObjects_.size() + 1);
+        objectsNeedPlacing = true;
+    }
+
+    if(objectsNeedPlacing)
+    {
+        placeObjects();
     }
 }
 
