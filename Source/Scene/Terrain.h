@@ -33,6 +33,7 @@ struct TerrainObject : ISerializedObject
     float maxSlope = 1.0f;
     int minInstances = 0;
     int maxInstances = 100;
+    int seed = 0;
 
     void serialize(PropertyTable& table) override;
 };
