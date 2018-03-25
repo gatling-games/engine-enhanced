@@ -1,9 +1,12 @@
 #include "Vector3.h"
 
 #include <algorithm>
+
+#define _USE_MATH_DEFINES
 #include <math.h>
 
 #include "Point3.h"
+#include "Quaternion.h"
 
 Vector3::Vector3()
     : x(0.0f), y(0.0f), z(0.0f)
@@ -188,6 +191,19 @@ Vector3 Vector3::lerp(const Vector3 &a, const Vector3 &b, float t)
     if (t > 1.0f) t = 1.0f;
 
     return lerpUnclamped(a, b, t);
+}
+
+Vector3 Vector3::quat(const Quaternion& q)
+{
+    // Based on math from https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+    const float radToDeg = 180.0f / (float)M_PI;
+
+    Vector3 euler;
+    euler.x = atan2f(2.0f * (q.w * q.x + q.y * q.z), 1.0f - 2.0f * (q.x * q.x + q.y * q.y)) * radToDeg;
+    euler.y = asinf(2.0f * (q.w * q.y - q.z * q.x)) * radToDeg;
+    euler.z = atan2f(2.0f * (q.w * q.z + q.x * q.y), 1.0f - 2.0f * (q.y * q.y + q.z * q.z)) * radToDeg;
+
+    return euler;
 }
 
 bool operator == (const Vector3 &a, const Vector3 &b)

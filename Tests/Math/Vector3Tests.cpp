@@ -1,6 +1,7 @@
 #include "CppUnitTest.h"
 
 #include "Math/Vector3.h"
+#include "Math/Quaternion.h"
 
 #define _USE_MATH_DEFINES  // M_PI
 #include <math.h>
@@ -209,6 +210,31 @@ namespace EngineTests
             // Check the lerped value at t = -1.0
             Assert::IsTrue(a == Vector3::lerp(a, b, -1.0f));
             Assert::IsTrue(b == Vector3::lerp(b, a, -1.0f));
+        }
+
+        TEST_METHOD(Quat)
+        {
+            // Construct euler angle rotations
+            const Vector3 euler1(0.0f, 0.0f, 0.0f);
+            const Vector3 euler2(32.0f, 0.0f, 0.0f);
+            const Vector3 euler3(0.0f, -42.0f, 0.0f);
+            const Vector3 euler4(0.0f, 0.0f, 14.0f);
+            const Vector3 euler5(90.0f, 70.0f, 14.0f);
+
+            // Convert the euler rotations to quaternions
+            const Quaternion quat1 = Quaternion::euler(euler1);
+            const Quaternion quat2 = Quaternion::euler(euler2);
+            const Quaternion quat3 = Quaternion::euler(euler3);
+            const Quaternion quat4 = Quaternion::euler(euler4);
+            const Quaternion quat5 = Quaternion::euler(euler5);
+
+            // Conver the quaternions back to euler and check
+            // the result matches the original values
+            Assert::IsTrue(euler1 == Vector3::quat(quat1));
+            Assert::IsTrue(euler2 == Vector3::quat(quat2));
+            Assert::IsTrue(euler3 == Vector3::quat(quat3));
+            Assert::IsTrue(euler4 == Vector3::quat(quat4));
+            Assert::IsTrue(euler5 == Vector3::quat(quat5));
         }
 
         TEST_METHOD(EqualityOperators)

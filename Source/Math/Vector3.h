@@ -3,6 +3,7 @@
 #include <iostream>
 
 struct Point3;
+struct Quaternion;
 
 struct Vector3
 {
@@ -53,6 +54,9 @@ struct Vector3
 
     // Linearly interpolates from a to b, with t clamped to between 0 and 1.
     static Vector3 lerp(const Vector3 &a, const Vector3 &b, float t);
+
+    // Converts a quaternion into the corresponding euler angles
+    static Vector3 quat(const Quaternion& q);
 };
 
 bool operator == (const Vector3 &a, const Vector3 &b);
