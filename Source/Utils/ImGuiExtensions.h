@@ -4,6 +4,7 @@
 
 #include "ResourceManager.h"
 #include "Editor/PropertiesPanel.h"
+#include "Math/Quaternion.h"
 
 namespace ImGui
 {
@@ -80,4 +81,7 @@ namespace ImGui
 
         return changed;
     }
+
+    // Displays a quaternion editor that decomposes the quaternion into euler angles
+    bool QuaternionEdit(const char* label, Quaternion* quat);
 }
