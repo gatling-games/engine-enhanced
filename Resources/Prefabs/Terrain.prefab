@@ -34,6 +34,25 @@
             texture_tile_size = 4 4
             material = Resources\Materials\ground_sand.material
         }
+        placed_objects::0 {
+            prefab = Resources\Prefabs\Environment\wind_turbine.prefab
+            min_altitude = 5
+            max_altitude = 19
+            min_instances = 0
+            max_instances = 34
+        }
+        placed_objects::1 {
+            prefab = Resources\Prefabs\Buildings\base_small.prefab
+            min_altitude = 2
+            max_altitude = 20
+            min_instances = 3
+            max_instances = 6
+        }
+        placed_objects::2 {
+            prefab = Resources\Prefabs\Buildings\base_main.prefab
+            max_altitude = 20
+            max_instances = 1
+        }
         seed = 3465
         factal_smoothness = 1.99
         mountain_scale = 6.9
