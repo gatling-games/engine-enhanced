@@ -113,6 +113,11 @@ private:
     // A list of detail mesh layers on the terrain
     std::vector<DetailBatch> detailMeshBatches_;
 
+    // Draws sections of the terrain editor
+    void drawGenerationProperties();
+    void drawDetailsProperties();
+    void drawAppearenceProperties();
+
     // Regenerates the terrain
     void generateTerrain();
     void placeObjects();

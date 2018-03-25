@@ -58,83 +58,28 @@ Terrain::Terrain(GameObject* gameObject)
 
 void Terrain::drawProperties()
 {
-    // Keep track of whether the terrain settings have been modified in a 
-    // way that requires the terrain to be regenerated.
-    bool terrainGenerationNeeded = false;
-
-    terrainGenerationNeeded |= ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
-    ImGui::ColorEdit3("Water Color", &waterColor_.r);
-
-    terrainGenerationNeeded |= ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
-    ImGui::Spacing();
-
-    terrainGenerationNeeded |= ImGui::InputInt("Seed", &seed_);
-    ImGui::SameLine();
-    if (ImGui::Button("Randomise"))
+    // Draw the popout for terrain generation settings
+    if (ImGui::TreeNode("Generation"))
     {
-        seed_ = rand();
-        terrainGenerationNeeded = true;
-    }
-
-    terrainGenerationNeeded |= ImGui::DragFloat("Fractal Smoothness", &fractalSmoothness_, 0.01f, 1.5f, 2.5f);
-    terrainGenerationNeeded |= ImGui::DragFloat("Mountain Scale", &mountainScale_, 0.05f, 1.0f, 10.0f);
-    terrainGenerationNeeded |= ImGui::DragFloat("Island Factor", &islandFactor_, 0.05f, 0.1f, 20.0f);
-
-    // If any generation property was modified, regenerate the terrain.
-    if (terrainGenerationNeeded)
-    {
-        generateTerrain();
+        drawGenerationProperties();
+        ImGui::TreePop();
     }
 
     ImGui::Spacing();
 
-    ImGui::ResourceSelect<Material>("Base Material", "Select Layer Material", terrainLayers_[0].material);
-    ImGui::DragFloat2("Tile Size", &terrainLayers_[0].textureTileSize.x, 0.1f, 0.5f, 50.0f);
-    ImGui::DragFloat2("Tile Offset", &terrainLayers_[0].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
-    ImGui::Spacing();
-
-    bool detailsNeedPlacing = ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", detailMesh_);
-    detailsNeedPlacing |= ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", detailMaterial_);
-    detailsNeedPlacing |= ImGui::DragFloatRange2("Detail Scale", &detailScale_.x, &detailScale_.y, 0.05f, 0.01f, 100.0f);
-    detailsNeedPlacing |= ImGui::DragFloatRange2("Altitude Limits", &detailAltitudeLimits_.x, &detailAltitudeLimits_.y, 0.5f, -100.0f, 500.0f);
-    detailsNeedPlacing |= ImGui::DragFloat("Slope Limit", &detailSlopeLimit_, 0.05f, 0.0f, 1.0f);
-    ImGui::Spacing();
-
-    // Regenerate terrain layers when a change is detected
-    if (detailsNeedPlacing)
+    // Draw the popout for editing terrain details
+    if(ImGui::TreeNode("Details"))
     {
-        placeDetailMeshes();
+        drawDetailsProperties();
+        ImGui::TreePop();
     }
 
-    if (ImGui::TreeNode("Terrain Layers"))
+    ImGui::Spacing();
+
+    // Draw the popout for editing terrain layers & colors
+    if (ImGui::TreeNode("Appearence"))
     {
-        if (ImGui::Button("Add Layer"))
-        {
-            terrainLayers_.resize(terrainLayers_.size() + 1);
-        }
-
-        for (unsigned int layerIndex = 1; layerIndex < terrainLayers_.size(); layerIndex++)
-        {
-            ImGui::PushID(layerIndex);
-
-            TerrainLayer& layer = terrainLayers_[layerIndex];
-
-            ImGui::ResourceSelect<Material>("Material", "Select Layer Material", layer.material);
-            ImGui::DragFloat2("Tile Size", &layer.textureTileSize.x, 0.1f, 0.5f, 50.0f);
-            ImGui::DragFloat2("Tile Offset", &layer.textureTileOffset.x, 0.1f, 0.0f, 50.0f);
-            ImGui::Spacing();
-
-            ImGui::DragFloat("Altitude", &layer.altitudeBorder, 0.1f, 0.0f, 300.0f);
-            ImGui::DragFloat("Transition", &layer.altitudeTransition, 0.1f, 0.0f, 20.0f);
-            ImGui::Spacing();
-
-            ImGui::DragFloat("Slope", &layer.slopeBorder, 0.01f, -1.0f, 1.0f);
-            ImGui::DragFloat("Hardness", &layer.slopeHardness, 0.01f, 0.001f, 1.0f);
-            ImGui::Spacing();
-
-            ImGui::PopID();
-        }
-
+        drawAppearenceProperties();
         ImGui::TreePop();
     }
 }
@@ -160,6 +105,80 @@ void Terrain::serialize(PropertyTable &table)
     if (table.mode() == PropertyTableMode::Reading)
     {
         generateTerrain();
+    }
+}
+
+void Terrain::drawGenerationProperties()
+{
+    bool terrainGenerationNeeded = ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
+    ImGui::Spacing();
+
+    terrainGenerationNeeded |= ImGui::InputInt("Seed", &seed_);
+    ImGui::SameLine();
+    if (ImGui::Button("Randomise"))
+    {
+        seed_ = rand();
+        terrainGenerationNeeded = true;
+    }
+
+    terrainGenerationNeeded |= ImGui::DragFloat("Fractal Smoothness", &fractalSmoothness_, 0.01f, 1.5f, 2.5f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Mountain Scale", &mountainScale_, 0.05f, 1.0f, 10.0f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Island Factor", &islandFactor_, 0.05f, 0.1f, 20.0f);
+
+    // If any generation property was modified, regenerate the terrain.
+    if (terrainGenerationNeeded)
+    {
+        generateTerrain();
+    }
+}
+
+void Terrain::drawDetailsProperties()
+{
+    bool detailsNeedPlacing = ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", detailMesh_);
+    detailsNeedPlacing |= ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", detailMaterial_);
+    detailsNeedPlacing |= ImGui::DragFloatRange2("Detail Scale", &detailScale_.x, &detailScale_.y, 0.05f, 0.01f, 100.0f);
+    detailsNeedPlacing |= ImGui::DragFloatRange2("Altitude Limits", &detailAltitudeLimits_.x, &detailAltitudeLimits_.y, 0.5f, -100.0f, 500.0f);
+    detailsNeedPlacing |= ImGui::DragFloat("Slope Limit", &detailSlopeLimit_, 0.05f, 0.0f, 1.0f);
+
+    // Regenerate terrain layers when a change is detected
+    if (detailsNeedPlacing)
+    {
+        placeDetailMeshes();
+    }
+}
+
+void Terrain::drawAppearenceProperties()
+{
+    ImGui::ColorEdit3("Water Color", &waterColor_.r);
+    ImGui::Spacing();
+
+    ImGui::ResourceSelect<Material>("Base Material", "Select Layer Material", terrainLayers_[0].material);
+    ImGui::DragFloat2("Tile Size", &terrainLayers_[0].textureTileSize.x, 0.1f, 0.5f, 50.0f);
+    ImGui::DragFloat2("Tile Offset", &terrainLayers_[0].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
+    ImGui::Spacing();
+
+    for (unsigned int layerIndex = 1; layerIndex < terrainLayers_.size(); layerIndex++)
+    {
+        ImGui::PushID(layerIndex);
+
+        TerrainLayer& layer = terrainLayers_[layerIndex];
+
+        ImGui::ResourceSelect<Material>("Material", "Select Layer Material", layer.material);
+        ImGui::DragFloat2("Tile Size", &layer.textureTileSize.x, 0.1f, 0.5f, 50.0f);
+        ImGui::DragFloat2("Tile Offset", &layer.textureTileOffset.x, 0.1f, 0.0f, 50.0f);
+        ImGui::DragFloat("Altitude", &layer.altitudeBorder, 0.1f, 0.0f, 300.0f);
+        ImGui::DragFloat("Transition", &layer.altitudeTransition, 0.1f, 0.0f, 20.0f);
+        ImGui::DragFloat("Slope", &layer.slopeBorder, 0.01f, -1.0f, 1.0f);
+        ImGui::DragFloat("Hardness", &layer.slopeHardness, 0.01f, 0.001f, 1.0f);
+        ImGui::Spacing();
+
+        ImGui::PopID();
+    }
+
+    if (ImGui::Button("Add Layer"))
+    {
+        terrainLayers_.resize(terrainLayers_.size() + 1);
     }
 }
 
