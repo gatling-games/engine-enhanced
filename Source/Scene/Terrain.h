@@ -116,6 +116,7 @@ private:
     // Draws sections of the terrain editor
     void drawGenerationProperties();
     void drawDetailsProperties();
+    void drawObjectsProperties();
     void drawAppearenceProperties();
 
     // Regenerates the terrain
