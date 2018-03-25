@@ -10,6 +10,7 @@
 #include "SceneManager.h"
 #include "Utils/Clock.h"
 #include "Scene/Transform.h"
+#include "Scene/Shield.h"
 
 Renderer::Renderer()
     : Renderer(Framebuffer::backbuffer())
@@ -39,6 +40,12 @@ Renderer::Renderer(const Framebuffer* targetFramebuffer)
     deferredAmbientOcclusionShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-AmbientOcclusion.shader");
     deferredLightingShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Lighting.shader");
     deferredDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Deferred-Debug.shader");
+
+    // Load shield rendering resources
+    shieldShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Shield.shader");
+    shieldFlowTexture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/shield_flow.tga");
+    shieldOpacityTexture_ = ResourceManager::instance()->load<Texture>("Resources/Textures/shield_opacity.tga");
+    shieldMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/sphere.obj");
 
     // Load skybox shader and mesh
     skyboxShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/SkyboxPass.shader");
@@ -148,6 +155,12 @@ void Renderer::renderFrame(const Camera* camera)
     {
         executeSkyboxPass(camera);
     }
+
+    // Alpha blended shields are then rendered on top of the water and sky
+    if (RenderManager::instance()->debugMode() == RenderDebugMode::None)
+    {
+        executeShieldPass();
+    }
 }
 
 void Renderer::createGBuffer()
@@ -249,6 +262,12 @@ void Renderer::updateCameraUniformBuffer(const Camera* camera) const
 
 void Renderer::updatePerDrawUniformBuffer(const Matrix4x4 &localToWorld, const Material* material) const
 {
+    // Use the default material if none was specified
+    if(material == nullptr)
+    {
+        material = ResourceManager::instance()->load<Material>("Resources/Materials/default.material");
+    }
+
     // Gather the new contents of the per-draw buffer
     PerDrawUniformData data;
     data.localToWorld = localToWorld;
@@ -489,6 +508,42 @@ void Renderer::executeSkyboxPass(const Camera* camera) const
 
     // Draw skybox mesh
     glDrawElements(GL_TRIANGLES, skyboxMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+}
+
+void Renderer::executeShieldPass() const
+{
+    // Ensure that depth testing is turned on, but dont write depth
+    glEnable(GL_DEPTH_TEST);
+    glDepthMask(false);
+
+    // Use alpha blending
+    glEnable(GL_BLEND);
+    glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+
+    // Use the shield texture and shield mesh
+    shieldFlowTexture_->bind(6);
+    shieldOpacityTexture_->bind(7);
+    shieldMesh_->bind();
+
+    // Use the shield shader
+    shieldShader_->bindVariant(ALL_SHADER_FEATURES);
+
+    // Render each shield
+    for (const Shield* shield : SceneManager::instance()->shields())
+    {
+        // Create the shield matrix using the transform + radius.
+        const Matrix4x4 transformMat = shield->gameObject()->transform()->localToWorld();
+        const Matrix4x4 radiusMat = Matrix4x4::scale(Vector3(shield->radius(), shield->radius(), shield->radius()));
+        const Matrix4x4 localToWorld = transformMat * radiusMat;
+
+        // Draw the shield
+        updatePerDrawUniformBuffer(localToWorld, nullptr);
+        glDrawElements(GL_TRIANGLES, shieldMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+    }
+
+    // Reset blending state
+    glDisable(GL_BLEND);
 }
 
 void Renderer::regenerateSkyTransmittanceLUT()

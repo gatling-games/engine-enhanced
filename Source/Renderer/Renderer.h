@@ -60,6 +60,12 @@ private:
     // Shader used for the forward water pass
     Shader* waterShader_;
 
+    // Shader used for the shield rendering pass
+    Shader* shieldShader_;
+    Texture* shieldFlowTexture_;
+    Texture* shieldOpacityTexture_;
+    Mesh* shieldMesh_;
+
     // Resources used for skybox shader pass
     Shader* skyboxShader_;
     Mesh* skyboxMesh_;
@@ -96,6 +102,7 @@ private:
     void executeDeferredDebugPass() const;
     void executeWaterPass() const;
     void executeSkyboxPass(const Camera* camera) const;
+    void executeShieldPass() const;
 
     // Computes the sky transmittance lut
     // This is slow and should only be done when needed (aka when the atmosphere composition changes).

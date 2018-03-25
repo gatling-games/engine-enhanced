@@ -145,6 +145,7 @@
     <None Include="Resources\Shaders\Includes\DeferredGBuffer.inc.shader" />
     <None Include="Resources\Shaders\Includes\PhysicallyBasedShading.inc.shader" />
     <None Include="Resources\Shaders\Includes\Shadows.inc.shader" />
+    <None Include="Resources\Shaders\Shield.shader" />
     <None Include="Resources\Shaders\Sky\PrecomputeTransmittance.shader" />
     <None Include="Resources\Shaders\Standard.shader" />
     <None Include="Resources\Shaders\Includes\Deferred.inc.shader" />
