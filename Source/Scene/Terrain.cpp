@@ -8,6 +8,7 @@
 
 #include "Scene/Transform.h"
 #include "Serialization/Prefab.h"
+#include "Utils/Clock.h"
 
 void TerrainLayer::serialize(PropertyTable& table)
 {
@@ -127,6 +128,7 @@ void Terrain::drawGenerationProperties()
     ImGui::SameLine();
     if (ImGui::Button("Randomise"))
     {
+        srand((int)Clock::instance()->frameCount());
         seed_ = rand();
         terrainGenerationNeeded = true;
     }
@@ -174,6 +176,7 @@ void Terrain::drawObjectsProperties()
         ImGui::SameLine();
         if (ImGui::Button("Randomise"))
         {
+            srand((int)Clock::instance()->frameCount());
             object.seed = rand();
             objectsNeedPlacing = true;
         }
