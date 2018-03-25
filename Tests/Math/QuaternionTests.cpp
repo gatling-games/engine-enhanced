@@ -146,6 +146,13 @@ namespace EngineTests
             Assert::AreEqual(0.1330222f, b.w, tol);
         }
 
+        TEST_METHOD(EulerIdentity)
+        {
+            // Check that the quaternion built from (0, 0, 0) euler
+            // angles is the identity quaternion
+            Assert::IsTrue(Quaternion::identity() == Quaternion::euler(0.0f, 0.0f, 0.0f));
+        }
+
         TEST_METHOD(MultiplyVector)
         {
             // Construct 2 unit quaternions.
