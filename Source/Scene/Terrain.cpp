@@ -29,6 +29,7 @@ void TerrainObject::serialize(PropertyTable& table)
     table.serialize("max_slope", maxSlope, 1.0f);
     table.serialize("min_instances", minInstances, 1);
     table.serialize("max_instances", maxInstances, 100);
+    table.serialize("seed", seed, 0);
 }
 
 Terrain::Terrain(GameObject* gameObject)
