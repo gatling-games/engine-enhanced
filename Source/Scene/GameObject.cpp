@@ -159,6 +159,7 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Camera")) createComponent<Camera>();
         if (ImGui::Selectable("Static Mesh")) createComponent<StaticMesh>();
         if (ImGui::Selectable("Helicopter")) createComponent<Helicopter>();
+        if (ImGui::Selectable("Shield")) createComponent<Shield>();
 
         ImGui::EndPopup();
     }
@@ -364,6 +365,9 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "Terrain")
         return createComponent<Terrain>();
+
+    if (typeName == "Shield")
+        return createComponent<Shield>();
 
     return nullptr;
 }

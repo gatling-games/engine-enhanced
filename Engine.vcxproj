@@ -46,6 +46,7 @@
     <ClInclude Include="Source\Scene\GameObject.h" />
     <ClInclude Include="Source\Scene\Helicopter.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
+    <ClInclude Include="Source\Scene\Shield.h" />
     <ClInclude Include="Source\Scene\StaticMesh.h" />
     <ClInclude Include="Source\Scene\Terrain.h" />
     <ClInclude Include="Source\Scene\Transform.h" />
@@ -102,6 +103,7 @@
     <ClCompile Include="Source\Scene\GameObject.cpp" />
     <ClCompile Include="Source\Scene\Helicopter.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
+    <ClCompile Include="Source\Scene\Shield.cpp" />
     <ClCompile Include="Source\Scene\StaticMesh.cpp" />
     <ClCompile Include="Source\Scene\Terrain.cpp" />
     <ClCompile Include="Source\Scene\Transform.cpp" />
@@ -143,6 +145,7 @@
     <None Include="Resources\Shaders\Includes\DeferredGBuffer.inc.shader" />
     <None Include="Resources\Shaders\Includes\PhysicallyBasedShading.inc.shader" />
     <None Include="Resources\Shaders\Includes\Shadows.inc.shader" />
+    <None Include="Resources\Shaders\Shield.shader" />
     <None Include="Resources\Shaders\Sky\PrecomputeTransmittance.shader" />
     <None Include="Resources\Shaders\Standard.shader" />
     <None Include="Resources\Shaders\Includes\Deferred.inc.shader" />

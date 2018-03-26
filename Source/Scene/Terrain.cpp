@@ -8,6 +8,7 @@
 
 #include "Scene/Transform.h"
 #include "Serialization/Prefab.h"
+#include "Utils/Clock.h"
 
 void TerrainLayer::serialize(PropertyTable& table)
 {
@@ -18,6 +19,17 @@ void TerrainLayer::serialize(PropertyTable& table)
     table.serialize("texture_tile_size", textureTileSize, Vector2(10.0f, 10.0f));
     table.serialize("texture_tile_offset", textureTileOffset, Vector2::zero());
     table.serialize("material", material);
+}
+
+void TerrainObject::serialize(PropertyTable& table)
+{
+    table.serialize("prefab", prefab);
+    table.serialize("min_altitude", minAltitude, 0.0f);
+    table.serialize("max_altitude", maxAltitude, 1000.0f);
+    table.serialize("max_slope", maxSlope, 1.0f);
+    table.serialize("min_instances", minInstances, 1);
+    table.serialize("max_instances", maxInstances, 100);
+    table.serialize("seed", seed, 0);
 }
 
 Terrain::Terrain(GameObject* gameObject)
@@ -48,83 +60,37 @@ Terrain::Terrain(GameObject* gameObject)
 
 void Terrain::drawProperties()
 {
-    // Keep track of whether the terrain settings have been modified in a 
-    // way that requires the terrain to be regenerated.
-    bool terrainGenerationNeeded = false;
-
-    terrainGenerationNeeded |= ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
-    ImGui::ColorEdit3("Water Color", &waterColor_.r);
-
-    terrainGenerationNeeded |= ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
-    ImGui::Spacing();
-
-    terrainGenerationNeeded |= ImGui::InputInt("Seed", &seed_);
-    ImGui::SameLine();
-    if (ImGui::Button("Randomise"))
+    // Draw the popout for terrain generation settings
+    if (ImGui::TreeNode("Generation"))
     {
-        seed_ = rand();
-        terrainGenerationNeeded = true;
-    }
-
-    terrainGenerationNeeded |= ImGui::DragFloat("Fractal Smoothness", &fractalSmoothness_, 0.01f, 1.5f, 2.5f);
-    terrainGenerationNeeded |= ImGui::DragFloat("Mountain Scale", &mountainScale_, 0.05f, 1.0f, 10.0f);
-    terrainGenerationNeeded |= ImGui::DragFloat("Island Factor", &islandFactor_, 0.05f, 0.1f, 20.0f);
-
-    // If any generation property was modified, regenerate the terrain.
-    if (terrainGenerationNeeded)
-    {
-        generateTerrain();
+        drawGenerationProperties();
+        ImGui::TreePop();
     }
 
     ImGui::Spacing();
 
-    ImGui::ResourceSelect<Material>("Base Material", "Select Layer Material", terrainLayers_[0].material);
-    ImGui::DragFloat2("Tile Size", &terrainLayers_[0].textureTileSize.x, 0.1f, 0.5f, 50.0f);
-    ImGui::DragFloat2("Tile Offset", &terrainLayers_[0].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
-    ImGui::Spacing();
-
-    bool detailsNeedPlacing = ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", detailMesh_);
-    detailsNeedPlacing |= ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", detailMaterial_);
-    detailsNeedPlacing |= ImGui::DragFloatRange2("Detail Scale", &detailScale_.x, &detailScale_.y, 0.05f, 0.01f, 100.0f);
-    detailsNeedPlacing |= ImGui::DragFloatRange2("Altitude Limits", &detailAltitudeLimits_.x, &detailAltitudeLimits_.y, 0.5f, -100.0f, 500.0f);
-    detailsNeedPlacing |= ImGui::DragFloat("Slope Limit", &detailSlopeLimit_, 0.05f, 0.0f, 1.0f);
-    ImGui::Spacing();
-
-    // Regenerate terrain layers when a change is detected
-    if (detailsNeedPlacing)
+    // Draw the popout for editing terrain details
+    if (ImGui::TreeNode("Details"))
     {
-        placeDetailMeshes();
+        drawDetailsProperties();
+        ImGui::TreePop();
     }
 
-    if (ImGui::TreeNode("Terrain Layers"))
+    ImGui::Spacing();
+
+    // Draw the popout for editing the types of object that are spawned
+    if (ImGui::TreeNode("Objects"))
     {
-        if (ImGui::Button("Add Layer"))
-        {
-            terrainLayers_.resize(terrainLayers_.size() + 1);
-        }
+        drawObjectsProperties();
+        ImGui::TreePop();
+    }
 
-        for (unsigned int layerIndex = 1; layerIndex < terrainLayers_.size(); layerIndex++)
-        {
-            ImGui::PushID(layerIndex);
+    ImGui::Spacing();
 
-            TerrainLayer& layer = terrainLayers_[layerIndex];
-
-            ImGui::ResourceSelect<Material>("Material", "Select Layer Material", layer.material);
-            ImGui::DragFloat2("Tile Size", &layer.textureTileSize.x, 0.1f, 0.5f, 50.0f);
-            ImGui::DragFloat2("Tile Offset", &layer.textureTileOffset.x, 0.1f, 0.0f, 50.0f);
-            ImGui::Spacing();
-
-            ImGui::DragFloat("Altitude", &layer.altitudeBorder, 0.1f, 0.0f, 300.0f);
-            ImGui::DragFloat("Transition", &layer.altitudeTransition, 0.1f, 0.0f, 20.0f);
-            ImGui::Spacing();
-
-            ImGui::DragFloat("Slope", &layer.slopeBorder, 0.01f, -1.0f, 1.0f);
-            ImGui::DragFloat("Hardness", &layer.slopeHardness, 0.01f, 0.001f, 1.0f);
-            ImGui::Spacing();
-
-            ImGui::PopID();
-        }
-
+    // Draw the popout for editing terrain layers & colors
+    if (ImGui::TreeNode("Appearence"))
+    {
+        drawAppearenceProperties();
         ImGui::TreePop();
     }
 }
@@ -135,6 +101,7 @@ void Terrain::serialize(PropertyTable &table)
     table.serialize("water_color", waterColor_, Color(0.05f, 0.066f, 0.093f));
     table.serialize("water_depth", waterDepth_, 30.0f);
     table.serialize("layers", terrainLayers_);
+    table.serialize("placed_objects", placedObjects_);
     table.serialize("seed", seed_, 0);
     table.serialize("factal_smoothness", fractalSmoothness_, 2.0f);
     table.serialize("mountain_scale", mountainScale_, 4.0f);
@@ -149,6 +116,121 @@ void Terrain::serialize(PropertyTable &table)
     if (table.mode() == PropertyTableMode::Reading)
     {
         generateTerrain();
+    }
+}
+
+void Terrain::drawGenerationProperties()
+{
+    bool terrainGenerationNeeded = ImGui::DragFloat3("Size", &dimensions_.x, 1.0f, 1.0f, 4096.0f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Water Depth", &waterDepth_, 0.1f, 0.0f, 100.0f);
+    ImGui::Spacing();
+
+    terrainGenerationNeeded |= ImGui::InputInt("Seed", &seed_);
+    ImGui::SameLine();
+    if (ImGui::Button("Randomise"))
+    {
+        srand((int)Clock::instance()->frameCount());
+        seed_ = rand();
+        terrainGenerationNeeded = true;
+    }
+
+    terrainGenerationNeeded |= ImGui::DragFloat("Fractal Smoothness", &fractalSmoothness_, 0.01f, 1.5f, 2.5f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Mountain Scale", &mountainScale_, 0.05f, 1.0f, 10.0f);
+    terrainGenerationNeeded |= ImGui::DragFloat("Island Factor", &islandFactor_, 0.05f, 0.1f, 20.0f);
+
+    // If any generation property was modified, regenerate the terrain.
+    if (terrainGenerationNeeded)
+    {
+        generateTerrain();
+    }
+}
+
+void Terrain::drawDetailsProperties()
+{
+    bool detailsNeedPlacing = ImGui::ResourceSelect<Mesh>("Detail Mesh", "Select Detail Mesh", detailMesh_);
+    detailsNeedPlacing |= ImGui::ResourceSelect<Material>("Detail Material", "Select Detail Material", detailMaterial_);
+    detailsNeedPlacing |= ImGui::DragFloatRange2("Detail Scale", &detailScale_.x, &detailScale_.y, 0.05f, 0.01f, 100.0f);
+    detailsNeedPlacing |= ImGui::DragFloatRange2("Altitude Limits", &detailAltitudeLimits_.x, &detailAltitudeLimits_.y, 0.5f, -100.0f, 500.0f);
+    detailsNeedPlacing |= ImGui::DragFloat("Slope Limit", &detailSlopeLimit_, 0.05f, 0.0f, 1.0f);
+
+    // Regenerate terrain layers when a change is detected
+    if (detailsNeedPlacing)
+    {
+        placeDetailMeshes();
+    }
+}
+
+void Terrain::drawObjectsProperties()
+{
+    bool objectsNeedPlacing = false;
+
+    for (unsigned int i = 0; i < placedObjects_.size(); i++)
+    {
+        ImGui::PushID(i);
+
+        TerrainObject& object = placedObjects_[i];
+        objectsNeedPlacing |= ImGui::ResourceSelect<Prefab>("Prefab", "Select Prefab", object.prefab);
+        objectsNeedPlacing |= ImGui::DragFloatRange2("Altitude Range", &object.minAltitude, &object.maxAltitude, 1.0f, -100.0f, 1000.0f);
+        objectsNeedPlacing |= ImGui::DragFloat("Max Slope", &object.maxSlope, 0.005f, 0.0f, 1.0f);
+        objectsNeedPlacing |= ImGui::DragIntRange2("Instances", &object.minInstances, &object.maxInstances, 1, 0, 1000);
+        objectsNeedPlacing |= ImGui::InputInt("Seed", &object.seed);
+        ImGui::SameLine();
+        if (ImGui::Button("Randomise"))
+        {
+            srand((int)Clock::instance()->frameCount());
+            object.seed = rand();
+            objectsNeedPlacing = true;
+        }
+
+        ImGui::Spacing();
+
+        ImGui::PopID();
+    }
+
+    if (ImGui::Button("Add Layer"))
+    {
+        placedObjects_.resize(placedObjects_.size() + 1);
+        placedObjects_.back().seed = rand();
+        objectsNeedPlacing = true;
+    }
+
+    if (objectsNeedPlacing)
+    {
+        placeObjects();
+    }
+}
+
+void Terrain::drawAppearenceProperties()
+{
+    ImGui::ColorEdit3("Water Color", &waterColor_.r);
+    ImGui::Spacing();
+
+    ImGui::ResourceSelect<Material>("Base Material", "Select Layer Material", terrainLayers_[0].material);
+    ImGui::DragFloat2("Tile Size", &terrainLayers_[0].textureTileSize.x, 0.1f, 0.5f, 50.0f);
+    ImGui::DragFloat2("Tile Offset", &terrainLayers_[0].textureTileOffset.x, 0.1f, 0.0f, 50.0f);
+    ImGui::Spacing();
+
+    for (unsigned int layerIndex = 1; layerIndex < terrainLayers_.size(); layerIndex++)
+    {
+        ImGui::PushID(layerIndex);
+
+        TerrainLayer& layer = terrainLayers_[layerIndex];
+
+        ImGui::ResourceSelect<Material>("Material", "Select Layer Material", layer.material);
+        ImGui::DragFloat2("Tile Size", &layer.textureTileSize.x, 0.1f, 0.5f, 50.0f);
+        ImGui::DragFloat2("Tile Offset", &layer.textureTileOffset.x, 0.1f, 0.0f, 50.0f);
+        ImGui::DragFloat("Altitude", &layer.altitudeBorder, 0.1f, 0.0f, 300.0f);
+        ImGui::DragFloat("Transition", &layer.altitudeTransition, 0.1f, 0.0f, 20.0f);
+        ImGui::DragFloat("Slope", &layer.slopeBorder, 0.01f, -1.0f, 1.0f);
+        ImGui::DragFloat("Hardness", &layer.slopeHardness, 0.01f, 0.001f, 1.0f);
+        ImGui::Spacing();
+
+        ImGui::PopID();
+    }
+
+    if (ImGui::Button("Add Layer"))
+    {
+        terrainLayers_.resize(terrainLayers_.size() + 1);
     }
 }
 
@@ -277,38 +359,16 @@ void Terrain::generateTerrain()
 void Terrain::placeObjects()
 {
     // Delete any existing objects
-    for (GameObject* go : placedObjects_)
+    for (GameObject* go : placedObjectInstances_)
     {
         delete go;
     }
-    placedObjects_.clear();
+    placedObjectInstances_.clear();
 
-    // Pick random points on the heightmap and check if they are suitable for a windmill.
-    int placed = 0;
-    int attempts = 0;
-    while (attempts < 2000 && placed < 30)
+    // Consider each type of object we are supposed to place
+    for (const TerrainObject& objectType : placedObjects_)
     {
-        attempts++;
-
-        // Pick a random point
-        float x = random_float(0.0f, dimensions_.x);
-        float z = random_float(0.0f, dimensions_.z);
-        float y = sampleHeightmap(x, z);
-
-        // Only place windmills hills, but not too high
-        if (y < 30.0f || y > 100.0f)
-        {
-            continue;
-        }
-
-        // Place the object at that point
-        GameObject* newGO = new GameObject("Windmill", ResourceManager::instance()->load<Prefab>("Resources/Prefabs/Environment/wind_turbine.prefab"));
-        newGO->setFlag(GameObjectFlag::NotShownOrSaved, true);
-        newGO->transform()->setPositionLocal(Point3(x, y, z));
-        newGO->transform()->setRotationLocal(Quaternion::euler(0.0f, 32.0f, 0.0f));
-        placedObjects_.push_back(newGO);
-
-        placed++;
+        generateObjectInstances(objectType);
     }
 }
 
@@ -352,6 +412,59 @@ void Terrain::placeDetailMeshes()
                     }
                 }
             }
+        }
+    }
+}
+
+void Terrain::generateObjectInstances(const TerrainObject& objectType)
+{
+    // Use the object type seed
+    // This ensures that multiple runs are deterministic.
+    srand(objectType.seed);
+
+    // Check the object type is ok
+    if (objectType.prefab == nullptr)
+    {
+        return;
+    }
+
+    // Pick random points on the heightmap and check if they are suitable for a windmill.
+    int placed = 0;
+    int attempts = 0;
+    while (placed < objectType.minInstances || (attempts < objectType.maxInstances * 10 && placed < objectType.maxInstances))
+    {
+        attempts++;
+
+        // Pick a random point
+        float x = random_float(0.0f, dimensions_.x);
+        float z = random_float(0.0f, dimensions_.z);
+        float y = sampleHeightmap(x, z);
+
+        // Check the altitude constraints are met
+        if (y < objectType.minAltitude || y > objectType.maxAltitude)
+        {
+            continue;
+        }
+
+        // Check the slope constraints are met
+        if (sampleHeightmapNormal(x, z).y < (1.0f - objectType.maxSlope))
+        {
+            continue;
+        }
+
+        // Place the object at that point
+        GameObject* newGO = new GameObject(objectType.prefab->resourceName(), objectType.prefab);
+        newGO->setFlag(GameObjectFlag::NotShownOrSaved, true);
+        newGO->transform()->setPositionLocal(Point3(x, y, z));
+        newGO->transform()->setRotationLocal(Quaternion::euler(0.0f, random_float(0.0f, 360.0f), 0.0f));
+        placedObjectInstances_.push_back(newGO);
+        placed++;
+
+        // Safety - if we have done a huge number of attempts, exit
+        if (attempts > 100000)
+        {
+            printf("Failed to place object type %s on terrain - too many attempts", objectType.prefab->resourceName().c_str());
+            return;
         }
     }
 }

@@ -1,0 +1,11 @@
+{
+    name = base_small
+    Transform {
+        Position = 346 -5.9 86
+        Scale = 4 4 4
+    }
+    StaticMesh {
+        mesh = Resources\Meshes\base_small.obj
+        material = Resources\Materials\cardboard.material
+    }
+}

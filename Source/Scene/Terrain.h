@@ -24,6 +24,20 @@ struct TerrainLayer : ISerializedObject
     void serialize(PropertyTable& table) override;
 };
 
+// A type of prefab that can be spawned on the terrain
+struct TerrainObject : ISerializedObject
+{
+    Prefab* prefab = nullptr;
+    float minAltitude = 0.0f;
+    float maxAltitude = 1000.0f;
+    float maxSlope = 1.0f;
+    int minInstances = 0;
+    int maxInstances = 100;
+    int seed = 0;
+
+    void serialize(PropertyTable& table) override;
+};
+
 // A group of detail meshes drawn in a single batch
 struct DetailBatch
 {
@@ -83,6 +97,7 @@ private:
     Color waterColor_;
     float waterDepth_;
     std::vector<TerrainLayer> terrainLayers_;
+    std::vector<TerrainObject> placedObjects_;
 
     // Terrain generation settings
     int seed_;
@@ -94,15 +109,24 @@ private:
     std::vector<float> heights_;
 
     // A list of objects placed on the terrain
-    std::vector<GameObject*> placedObjects_;
+    std::vector<GameObject*> placedObjectInstances_;
 
     // A list of detail mesh layers on the terrain
     std::vector<DetailBatch> detailMeshBatches_;
+
+    // Draws sections of the terrain editor
+    void drawGenerationProperties();
+    void drawDetailsProperties();
+    void drawObjectsProperties();
+    void drawAppearenceProperties();
 
     // Regenerates the terrain
     void generateTerrain();
     void placeObjects();
     void placeDetailMeshes();
+
+    // Generates object instances for the given object type
+    void generateObjectInstances(const TerrainObject &objectType);
 
     // Generates detail positions for the given detail batch
     void generateDetailPositions(DetailBatch &batch, uint32_t seed) const;

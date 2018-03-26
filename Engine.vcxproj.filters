@@ -192,6 +192,9 @@
     <ClInclude Include="Source\Math\Random.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\Shield.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -332,6 +335,9 @@
     <ClCompile Include="Source\Math\Random.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Scene\Shield.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\SkyboxPass.shader">
@@ -386,6 +392,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\Deferred-AmbientOcclusion.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\Shield.shader">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

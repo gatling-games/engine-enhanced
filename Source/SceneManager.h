@@ -8,6 +8,7 @@
 #include "Scene/GameObject.h"
 #include "Scene/StaticMesh.h"
 #include "Scene/Terrain.h"
+#include "Scene/Shield.h"
 
 class SceneManager : public Singleton<SceneManager>
 {
@@ -41,6 +42,7 @@ public:
     // Gets a list of all static mesh components in the scene
     const std::vector<StaticMesh*> staticMeshes() const;
     const Terrain* terrain() const;
+    const std::vector<Shield*> shields() const;
 
 private:
     // The currently loaded scene
