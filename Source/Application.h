@@ -29,6 +29,14 @@ public:
     bool isEditing() const { return (mode_ == ApplicationMode::Edit); }
     bool isPlaying() const { return (mode_ == ApplicationMode::Play); }
 
+    // Switches to playing mode
+    // The current scene will be saved immediately before playing
+    void enterPlayMode();
+
+    // Switches to editing mode.
+    // The current scene will be restored immediately after playing
+    void enterEditMode();
+
     // Called when the window is resized.
     void resize(int newWidth, int newHeight);
 

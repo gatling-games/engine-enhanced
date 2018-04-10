@@ -44,6 +44,40 @@ Application::~Application()
     delete clock_;
 }
 
+void Application::enterPlayMode()
+{
+    // Do nothing if already in play mode.
+    if(isPlaying())
+    {
+        return;
+    }
+
+    // First, save the current scene
+    // This allows the original scene to be restored when exiting play mode.
+    SceneManager::instance()->saveScene();
+
+    // Now, enter play mode and start the clock
+    mode_ = ApplicationMode::Play;
+    Clock::instance()->restart();
+}
+
+void Application::enterEditMode()
+{
+    // Do nothing if already in edit mode
+    if(isEditing())
+    {
+        return;
+    }
+
+    // Enter edit mode and stop the clock
+    mode_ = ApplicationMode::Edit;
+    Clock::instance()->stop();
+
+    // When we entered play mode, we saved the scene.
+    // We now need to restore the original scene to undo changes made while playing.
+    SceneManager::instance()->openScene(SceneManager::instance()->scenePath());
+}
+
 void Application::resize(int width, int height)
 {
     // Each time a resize occurs we need to update the backbuffer size.

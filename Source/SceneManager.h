@@ -25,6 +25,7 @@ public:
 
     // Gets the name of the current scene
     std::string sceneName() const { return currentScene_->resourceName(); }
+    std::string scenePath() const { return currentScene_->resourcePath(); }
 
     // Gets all gameobjects that currently exist
     // Note - This includes hidden objects and objects flagged to not be saved.
