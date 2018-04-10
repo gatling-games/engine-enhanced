@@ -12,6 +12,7 @@
 
 Application::Application(const std::string &name, GLFWwindow* window)
     : name_(name),
+    mode_(ApplicationMode::Edit),
     window_(window),
     running_(true)
 {
@@ -76,7 +77,8 @@ void Application::frameStart()
         const float frameRate = 1.0f / deltaTime;
         const float frameTime = deltaTime * 1000.0f;
         std::string titleWithFPS = name_ + " - " + SceneManager::instance()->sceneName() + " [" + std::to_string(frameRate).substr(0, 4) + "FPS] [" + std::to_string(frameTime).substr(0, 5) + "ms]";
-        if (clock_->paused()) titleWithFPS += " [Paused]";
+        if (isEditing()) titleWithFPS += " [Editing]";
+        if (isPlaying()) titleWithFPS += " [Playing]";
         glfwSetWindowTitle(window_, titleWithFPS.c_str());
     }
 }

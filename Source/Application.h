@@ -11,6 +11,12 @@ class ResourceManager;
 class SceneManager;
 class RenderManager;
 
+enum class ApplicationMode
+{
+    Edit,
+    Play,
+};
+
 class Application
 {
 public:
@@ -18,6 +24,8 @@ public:
     ~Application();
 
     bool running() const { return running_; }
+    bool isEditing() const { return (mode_ == ApplicationMode::Edit); }
+    bool isPlaying() const { return (mode_ == ApplicationMode::Play); }
 
     // Called when the window is resized.
     void resize(int newWidth, int newHeight);
@@ -31,6 +39,8 @@ public:
 
 private:
     const std::string name_;
+
+    ApplicationMode mode_;
 
     // The main window
     GLFWwindow* window_;
