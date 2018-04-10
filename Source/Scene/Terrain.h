@@ -56,7 +56,7 @@ public:
     const static int MAX_LAYERS = 32;
 
     explicit Terrain(GameObject* gameObject);
-    ~Terrain() override { }
+    ~Terrain() override;
 
     // Draws the properties fold out
     void drawProperties() override;

@@ -58,6 +58,17 @@ Terrain::Terrain(GameObject* gameObject)
     generateTerrain();
 }
 
+Terrain::~Terrain()
+{
+    // Delete all the sub-objects when the terrain is deleted.
+    for (GameObject* go : placedObjectInstances_)
+    {
+        delete go;
+    }
+    placedObjectInstances_.clear();
+
+}
+
 void Terrain::drawProperties()
 {
     // Draw the popout for terrain generation settings
@@ -455,6 +466,7 @@ void Terrain::generateObjectInstances(const TerrainObject& objectType)
         // Place the object at that point
         GameObject* newGO = new GameObject(objectType.prefab->resourceName(), objectType.prefab);
         newGO->setFlag(GameObjectFlag::NotShownOrSaved, true);
+        newGO->setFlag(GameObjectFlag::SurviveSceneChanges, true); // The terrain handles deleting its sub-objects manually
         newGO->transform()->setPositionLocal(Point3(x, y, z));
         newGO->transform()->setRotationLocal(Quaternion::euler(0.0f, random_float(0.0f, 360.0f), 0.0f));
         placedObjectInstances_.push_back(newGO);
