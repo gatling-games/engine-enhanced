@@ -146,12 +146,13 @@ void VRManager::updateHmdPose()
     {
         vr::HmdMatrix34_t mat = trackedDevicePoses_[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking;
         Matrix4x4 matrix;
+
         matrix.setCol(0, mat.m[0][0], mat.m[1][0], mat.m[2][0], 0.0f);
         matrix.setCol(1, mat.m[0][1], mat.m[1][1], mat.m[2][1], 0.0f);
         matrix.setCol(2, mat.m[0][2], mat.m[1][2], mat.m[2][2], 0.0f);
         matrix.setCol(3, -mat.m[0][3], -mat.m[1][3], -mat.m[2][3], 1.0f);
 
-        hmdPose_ = matrix;
+        hmdPose_ = matrix.invert();
     }
 }
 

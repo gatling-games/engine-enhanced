@@ -131,6 +131,65 @@ Matrix4x4 Matrix4x4::scale(const Vector3 &s)
     return mat;
 }
 
+Matrix4x4 Matrix4x4::invert() const
+{
+    float c0 = getCofactor(elements[5], elements[6], elements[7], elements[9], elements[10], elements[11], elements[13], elements[14], elements[15]);
+    float c1 = getCofactor(elements[4], elements[6], elements[7], elements[8], elements[10], elements[11], elements[12], elements[14], elements[15]);
+    float c2 = getCofactor(elements[4], elements[5], elements[7], elements[8], elements[9], elements[11], elements[12], elements[13], elements[15]);
+    float c3 = getCofactor(elements[4], elements[5], elements[6], elements[8], elements[9], elements[10], elements[12], elements[13], elements[14]);
+
+    float determ = elements[0] * c0 - elements[1] * c1 + elements[2] * c2 - elements[3] * c3;
+    if (fabs(determ) <= FLT_EPSILON)
+    {
+        return identity();
+    }
+
+    float c4 = getCofactor(elements[1], elements[2], elements[3], elements[9], elements[10], elements[11], elements[13], elements[14], elements[15]);
+    float c5 = getCofactor(elements[0], elements[2], elements[3], elements[8], elements[10], elements[11], elements[12], elements[14], elements[15]);
+    float c6 = getCofactor(elements[0], elements[1], elements[3], elements[8], elements[9], elements[11], elements[12], elements[13], elements[15]);
+    float c7 = getCofactor(elements[0], elements[1], elements[2], elements[8], elements[9], elements[10], elements[12], elements[13], elements[14]);
+
+    float c8 = getCofactor(elements[1], elements[2], elements[3], elements[5], elements[6], elements[7], elements[13], elements[14], elements[15]);
+    float c9 = getCofactor(elements[0], elements[2], elements[3], elements[4], elements[6], elements[7], elements[12], elements[14], elements[15]);
+    float c10 = getCofactor(elements[0], elements[1], elements[3], elements[4], elements[5], elements[7], elements[12], elements[13], elements[15]);
+    float c11 = getCofactor(elements[0], elements[1], elements[2], elements[4], elements[5], elements[6], elements[12], elements[13], elements[14]);
+
+    float c12 = getCofactor(elements[1], elements[2], elements[3], elements[5], elements[6], elements[7], elements[9], elements[10], elements[11]);
+    float c13 = getCofactor(elements[0], elements[2], elements[3], elements[4], elements[6], elements[7], elements[8], elements[10], elements[11]);
+    float c14 = getCofactor(elements[0], elements[1], elements[3], elements[4], elements[5], elements[7], elements[8], elements[9], elements[11]);
+    float c15 = getCofactor(elements[0], elements[1], elements[2], elements[4], elements[5], elements[6], elements[8], elements[9], elements[10]);
+
+    float invdeterm = 1.0f / determ;
+
+    Matrix4x4 m;
+    m.elements[0] = invdeterm * c0;
+    m.elements[1] = -invdeterm * c4;
+    m.elements[2] = invdeterm * c8;
+    m.elements[3] = -invdeterm * c12;
+
+    m.elements[4] = -invdeterm * c1;
+    m.elements[5] = invdeterm * c5;
+    m.elements[6] = -invdeterm * c9;
+    m.elements[7] = invdeterm * c13;
+
+    m.elements[8] = invdeterm * c2;
+    m.elements[9] = -invdeterm * c6;
+    m.elements[10] = invdeterm * c10;
+    m.elements[11] = -invdeterm * c14;
+
+    m.elements[12] = -invdeterm * c3;
+    m.elements[13] = invdeterm * c7;
+    m.elements[14] = -invdeterm * c11;
+    m.elements[15] = invdeterm * c15;
+
+    return m;
+}
+
+float Matrix4x4::getCofactor(float m0, float m1, float m2, float m3, float m4, float m5, float m6, float m7, float m8)
+{
+    return m0 * (m4 * m8 - m5 * m7) - m1 * (m3 * m8 - m5 * m6) + m2 * (m3 * m7 - m4 * m6);
+}
+
 Matrix4x4 Matrix4x4::trs(const Vector3 &translation, const Quaternion &rotation, const Vector3 &scale)
 {
     Matrix4x4 translationMat = Matrix4x4::translation(translation);
