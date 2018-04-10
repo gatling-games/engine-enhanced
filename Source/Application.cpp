@@ -29,6 +29,15 @@ Application::Application(const std::string &name, GLFWwindow* window)
 
     // Create a Quit menu item
     MainWindowMenu::instance()->addMenuItem("File/Exit", [&] { running_ = false; });
+
+    // Create a menu item for toggling between play & edit modes
+    MainWindowMenu::instance()->addMenuItem("Game/Toggle Playing", [&]
+    {
+        if (isEditing())
+            enterPlayMode();
+        else
+            enterEditMode();
+    }, [&] { return isPlaying(); });
 }
 
 Application::~Application()

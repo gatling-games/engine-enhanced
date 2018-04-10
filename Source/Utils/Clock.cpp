@@ -18,9 +18,6 @@ Clock::Clock()
     // Get clock frequency and initial time stamp
     QueryPerformanceFrequency((LARGE_INTEGER*)&clockFrequency_);
     prevFrameTimestamp_ = getTimestamp();
-
-    // Add a play/pause menu item
-    MainWindowMenu::instance()->addMenuItem("Game/Toggle Pause", [&] { setPaused(!paused()); });
 }
 
 // Return game pause state
