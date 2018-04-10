@@ -195,6 +195,9 @@
     <ClInclude Include="Source\Scene\Shield.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\Windmill.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -336,6 +339,9 @@
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Shield.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Windmill.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>

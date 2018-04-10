@@ -16,6 +16,7 @@
 #include "Serialization/Prefab.h"
 
 #include "EditorManager.h"
+#include "Windmill.h"
 
 GameObject::GameObject()
     : GameObject("Blank GameObject")
@@ -160,6 +161,7 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Static Mesh")) createComponent<StaticMesh>();
         if (ImGui::Selectable("Helicopter")) createComponent<Helicopter>();
         if (ImGui::Selectable("Shield")) createComponent<Shield>();
+        if (ImGui::Selectable("Windmill")) createComponent<Windmill>();
 
         ImGui::EndPopup();
     }
@@ -368,6 +370,9 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "Shield")
         return createComponent<Shield>();
+
+    if (typeName == "Windmill")
+        return createComponent<Windmill>();
 
     return nullptr;
 }

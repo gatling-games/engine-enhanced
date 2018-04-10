@@ -61,6 +61,7 @@
     <ClInclude Include="Source\Renderer\Mesh.h" />
     <ClInclude Include="Source\Renderer\Texture.h" />
     <ClInclude Include="Source\ResourceManager.h" />
+    <ClInclude Include="Source\Scene\Windmill.h" />
     <ClInclude Include="Source\Serialization\BitReader.h" />
     <ClInclude Include="Source\Serialization\BitWriter.h" />
     <ClInclude Include="Source\Serialization\Prefab.h" />
@@ -118,6 +119,7 @@
     <ClCompile Include="Source\Renderer\Mesh.cpp" />
     <ClCompile Include="Source\Renderer\Texture.cpp" />
     <ClCompile Include="Source\ResourceManager.cpp" />
+    <ClCompile Include="Source\Scene\Windmill.cpp" />
     <ClCompile Include="Source\Serialization\BitReader.cpp" />
     <ClCompile Include="Source\Serialization\BitWriter.cpp" />
     <ClCompile Include="Source\Serialization\Prefab.cpp" />

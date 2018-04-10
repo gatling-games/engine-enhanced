@@ -4,6 +4,7 @@
         name = Static Mesh
         Transform {
             Position = -2.2 21.15 0
+            Rotation = 0.804193 0 0 0.594369
         }
         StaticMesh {
             mesh = Resources\Meshes\turbine_blades.mesh
@@ -11,8 +12,11 @@
         }
     }
     Transform {
-        Position = 1234.79 42.7703 1337.23
+        Position = 1234.79 269.27 1337.23
         Rotation = 0 0.275637 0 0.961262
+    }
+    Windmill {
+        rotation_speed = 79.128
     }
     StaticMesh {
         mesh = Resources\Meshes\turbine_tower.mesh
