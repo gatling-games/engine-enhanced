@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Utils/Singleton.h"
+
 struct GLFWwindow;
 
 class Clock;
@@ -17,7 +19,7 @@ enum class ApplicationMode
     Play,
 };
 
-class Application
+class Application : public Singleton<Application>
 {
 public:
     Application(const std::string &name, GLFWwindow* window);

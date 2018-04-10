@@ -1,5 +1,7 @@
 #include "SceneManager.h"
 
+#include "Application.h"
+
 #include "Editor/MainWindowMenu.h"
 #include "Editor/PropertiesPanel.h"
 
@@ -74,6 +76,12 @@ void SceneManager::createScene(const std::string& scenePath)
 
 void SceneManager::saveScene()
 {
+    // Do not save scenes when in play mode
+    if(Application::instance()->isPlaying())
+    {
+        return;
+    }
+
     currentScene_->saveGameObjects();
 }
 
