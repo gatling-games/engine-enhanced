@@ -16,6 +16,12 @@ public:
     // Gets the total number of processed frames since startup
     uint64_t frameCount() const { return frameCount_; }
 
+    // Sets the clock to unpaused and the current time to 0
+    void restart();
+
+    // Sets the clock to paused and the current time to 0
+    void stop();
+
     // Return and set timescale
     float timeScale() const;
     void setTimeScale(float timeScale);

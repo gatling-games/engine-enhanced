@@ -35,6 +35,20 @@ void Clock::setPaused(bool paused)
     paused_ = paused;
 }
 
+void Clock::restart()
+{
+    paused_ = false;
+    timeScale_ = 1.0f;
+    time_ = 0.0f;
+}
+
+void Clock::stop()
+{
+    paused_ = true;
+    timeScale_ = 1.0f;
+    time_ = 0.0f;
+}
+
 // Return timescale
 float Clock::timeScale() const
 {
