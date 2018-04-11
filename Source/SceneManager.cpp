@@ -52,6 +52,10 @@ void SceneManager::frameStart()
 
 void SceneManager::openScene(const std::string& scenePath)
 {
+    // If we are reloading the current scene, the scene values (lighting settings etc) 
+    // may need to be reset.
+    ResourceManager::instance()->importResource(ResourceManager::instance()->pathToResourceID(scenePath));
+
     // Change the current scene
     currentScene_ = ResourceManager::instance()->load<Scene>(scenePath);
 
