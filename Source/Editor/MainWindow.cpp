@@ -44,8 +44,12 @@ void MainWindow::repaint()
         return;
     }
 
-    // Draw each editor panel in the correct location
+    // Change the colour around the game panel when in play mode
+    ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = Application::instance()->isPlaying() ? ImVec4(0.25f, 0.01f, 0.01f, 1.00f) : ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
     drawPanel(gamePanel_, gamePanelRect());
+    ImGui::GetStyle().Colors[ImGuiCol_WindowBg] = ImVec4(0.02f, 0.02f, 0.02f, 1.00f);
+
+    // Draw each editor panel in the correct location
     drawPanel(outputPanel_, outputPanelRect());
     drawPanel(scenePanel_, scenePanelRect());
     drawPanel(resourcesPanel_, resourcesPanelRect());
