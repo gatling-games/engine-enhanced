@@ -18,4 +18,5 @@ public:
 
 private:
     float rotationSpeed_;
+    int axis_;
 };
