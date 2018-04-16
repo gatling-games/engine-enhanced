@@ -40,6 +40,9 @@ public:
     // Updates the current scenes serialized gameobject list to match the gameobjects currently in the scene.
     void saveScene();
 
+    // Gets the main camera, i.e. the scene camera that has existed for the longest
+    Camera* mainCamera() const;
+
     // Gets a list of all static mesh components in the scene
     const std::vector<StaticMesh*> staticMeshes() const;
     const Terrain* terrain() const;

@@ -89,6 +89,20 @@ void SceneManager::saveScene()
     currentScene_->saveGameObjects();
 }
 
+Camera* SceneManager::mainCamera() const
+{
+    for (GameObject* gameObject : gameObjects_)
+    {
+        Camera* camera = gameObject->findComponent<Camera>();
+        if (camera != nullptr && gameObject->hasFlag(GameObjectFlag::NotShownInScenePanel) == false)
+        {
+            return camera;
+        }
+    }
+
+    return nullptr;
+}
+
 const std::vector<StaticMesh*> SceneManager::staticMeshes() const
 {
     // Make a vector to store the meshes
