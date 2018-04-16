@@ -331,6 +331,11 @@ void GameObject::update(float deltaTime)
 {
     for (unsigned int i = 0; i < components_.size(); ++i)
     {
+        if(components_[i]->updateEnabled() == false)
+        {
+            continue;
+        }
+
         components_[i]->update(deltaTime);
     }
 }

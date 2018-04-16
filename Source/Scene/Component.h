@@ -18,6 +18,10 @@ public:
     // The GameObject that the component is attached to
     GameObject* gameObject() const { return gameObject_; }
 
+    // True if the update() method is currently called each frame
+    bool updateEnabled() const { return updateEnabled_; }
+    void setUpdateEnabled(bool enabled) { updateEnabled_ = enabled; }
+
     // Called each frame.
 	virtual void update(float deltaTime);
 
@@ -30,4 +34,5 @@ public:
 
 private:
     GameObject* gameObject_;
+    bool updateEnabled_;
 };

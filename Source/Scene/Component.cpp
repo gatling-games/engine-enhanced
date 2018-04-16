@@ -3,7 +3,8 @@
 #include <imgui.h>
 
 Component::Component(GameObject* gameObject)
-    : gameObject_(gameObject)
+    : gameObject_(gameObject),
+    updateEnabled_(true)
 {
 
 }
