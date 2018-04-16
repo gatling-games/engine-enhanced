@@ -57,8 +57,12 @@ void GamePanel::draw()
         camera_ = cameraGO->createComponent<Camera>();
     }
 
+    // Make sure the game camera only moves in edit mode
+    camera_->gameObject()->findComponent<Freecam>()->setUpdateEnabled(Application::instance()->isEditing());
+
     // Re-render the framebuffer on each draw
-    renderer_->renderFrame(camera_);
+    // Use the game panel camera in edit mode, and the scene main camera in play mode
+    renderer_->renderFrame(Application::instance()->isPlaying() ? SceneManager::instance()->mainCamera() : camera_);
 
     // Draw the texture
     ImGui::Image((ImTextureID)(uint64_t)colorBuffer_->glid(), ImGui::GetContentRegionAvail(), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
