@@ -26,8 +26,11 @@ Helicopter::Helicopter(GameObject* gameObject)
 void Helicopter::drawProperties()
 {
     // Debugging helicopter controls
-    ImGui::DragFloat("Thrust speed", &horizontalMaxSpeed_, 0.1f);
-    ImGui::DragFloat3("Velocity", &worldVelocity_.x, 0.1f);
+    ImGui::DragFloat("Max lateral speed", &horizontalMaxSpeed_, 0.1f);
+    ImGui::DragFloat("Max upward speed", &upMaxSpeed_, 0.1f);
+    ImGui::DragFloat("Max downward speed", &downMaxSpeed_);
+    ImGui::DragFloat("Deceleration factor", &decelerationFactor_, 0.1f);
+    ImGui::DragFloat("Yaw rotation factor", &turnFactor_, 0.1f);
 }
 
 void Helicopter::serialize(PropertyTable &table)
