@@ -57,6 +57,9 @@ void GamePanel::draw()
         camera_ = cameraGO->createComponent<Camera>();
     }
 
+    // Make sure the game camera only moves in edit mode
+    camera_->gameObject()->findComponent<Freecam>()->setUpdateEnabled(Application::instance()->isEditing());
+
     // Re-render the framebuffer on each draw
     // Use the game panel camera in edit mode, and the scene main camera in play mode
     renderer_->renderFrame(Application::instance()->isPlaying() ? SceneManager::instance()->mainCamera() : camera_);
