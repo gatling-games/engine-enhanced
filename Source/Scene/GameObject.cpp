@@ -17,6 +17,7 @@
 
 #include "EditorManager.h"
 #include "Windmill.h"
+#include "HelicopterView.h"
 
 GameObject::GameObject()
     : GameObject("Blank GameObject")
@@ -160,6 +161,7 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Camera")) createComponent<Camera>();
         if (ImGui::Selectable("Static Mesh")) createComponent<StaticMesh>();
         if (ImGui::Selectable("Helicopter")) createComponent<Helicopter>();
+        if (ImGui::Selectable("Helicopter View")) createComponent<HelicopterView>();
         if (ImGui::Selectable("Shield")) createComponent<Shield>();
         if (ImGui::Selectable("Windmill")) createComponent<Windmill>();
 
@@ -369,6 +371,9 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "Helicopter")
         return createComponent<Helicopter>();
+
+    if (typeName == "HelicopterView")
+        return createComponent<HelicopterView>();
 
     if (typeName == "Terrain")
         return createComponent<Terrain>();

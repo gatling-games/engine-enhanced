@@ -198,6 +198,9 @@
     <ClInclude Include="Source\Scene\Windmill.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\HelicopterView.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -342,6 +345,9 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Windmill.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\HelicopterView.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
