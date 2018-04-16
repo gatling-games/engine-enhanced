@@ -18,6 +18,8 @@ class Terrain;
 // Identify gameobjects with a unique 32 bit ID
 typedef uint32_t GameObjectID;
 
+struct InputCmd;
+
 typedef uint32_t GameObjectFlagList;
 enum class GameObjectFlag
 {
@@ -72,6 +74,8 @@ public:
 
     // Called once per frame
     void update(float deltaTime);
+
+    void handleInput(const InputCmd& inputs);
 
     // Looks for a component of the given type on the GameObject.
     // Returns nullptr if none is found.

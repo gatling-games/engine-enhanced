@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include "SceneManager.h"
 
 #include <GLFW/glfw3.h>
 
@@ -45,19 +46,23 @@ void InputManager::frameStart(const Clock* clock)
 
     Vector3 axes;
     axes.z = getAxis(InputKey::W, InputKey::S); // Get forward input
-    axes.x = getAxis(InputKey::D, InputKey::A);
-    axes.y = getAxis(InputKey::Q, InputKey::E);
+    axes.x = getAxis(InputKey::D, InputKey::A); // Get strafing input
+    axes.y = getAxis(InputKey::Q, InputKey::E); // Get vertical input
+
+    InputCmd inputs;
 
     // Set input object parameters
     inputs.deltaTime = clock->deltaTime();
     inputs.lookRotation = Quaternion::identity();
     inputs.axes = axes;
-    inputs.yawAcceleration = mouseDeltaX();
-    inputs.pitchAcceleration = mouseDeltaY();
+    inputs.deltaPixelsX = mouseDeltaX();
+    inputs.deltaPixelsY = mouseDeltaY();
 
     // Store array of previously pressed joypad inputs
     previousFrameJoystickButtons_ = joystickButtons_;
     previousFrameJoystickAxes_ = joystickAxes_;
+
+    SceneManager::instance()->handleInput(inputs);
 }
 
 void InputManager::enableInput()

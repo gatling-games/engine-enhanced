@@ -4,6 +4,8 @@
 #include "Serialization/SerializedObject.h"
 #include "Serialization/PropertyTable.h"
 
+struct InputCmd;
+
 // The base class for every component that is attached to a GameObject.
 // It contains a series of callbacks that are triggered
 class Component : public ISerializedObject
@@ -24,6 +26,9 @@ public:
 
     // Called each frame.
 	virtual void update(float deltaTime);
+
+    // Handle input
+    virtual void handleInput(const InputCmd& inputs);
 
     // Used to draw the imgui properties section
 	virtual void drawProperties();

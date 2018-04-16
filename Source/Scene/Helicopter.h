@@ -5,6 +5,7 @@
 #include "Math/Quaternion.h"
 
 class Transform;
+struct InputCmd;
 
 class Helicopter : public Component
 {
@@ -17,6 +18,8 @@ public:
     void serialize(PropertyTable &table) override;
 
     void update(float deltaTime) override;
+
+    void handleInput(const InputCmd& inputs) override;
 
 private:
 

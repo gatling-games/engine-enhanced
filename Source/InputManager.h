@@ -121,8 +121,8 @@ struct InputCmd
     float deltaTime; // Elapsed time since last update
     Quaternion lookRotation; // Current camera orientation relative to helicopter
     Vector3 axes; // Input helicopter velocity
-    float yawAcceleration; // Current helicopter rotational accelleration
-    float pitchAcceleration;
+    float deltaPixelsX; // Current helicopter rotational accelleration
+    float deltaPixelsY;
 };
 
 class InputManager : public Singleton<InputManager>
@@ -138,8 +138,6 @@ public:
     void enableInput();
     void disableInput();
     void setInputEnabled(bool enabled);
-
-    InputCmd inputs;
 
     // Returns true if a key is currently down
     bool isKeyDown(InputKey key) const;

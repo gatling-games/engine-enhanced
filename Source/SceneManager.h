@@ -10,6 +10,8 @@
 #include "Scene/Terrain.h"
 #include "Scene/Shield.h"
 
+struct InputCmd;
+
 class SceneManager : public Singleton<SceneManager>
 {
     friend class GameObject;
@@ -42,6 +44,9 @@ public:
 
     // Gets the main camera, i.e. the scene camera that has existed for the longest
     Camera* mainCamera() const;
+
+    // Passes input struct to all gameobjects
+    void handleInput(const InputCmd& inputs);
 
     // Gets a list of all static mesh components in the scene
     const std::vector<StaticMesh*> staticMeshes() const;

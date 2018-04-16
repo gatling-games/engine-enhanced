@@ -342,6 +342,14 @@ void GameObject::update(float deltaTime)
     }
 }
 
+void GameObject::handleInput(const InputCmd& inputs)
+{
+    for (Component* component : components_)
+    {
+        component->handleInput(inputs);
+    }
+}
+
 Component* GameObject::findComponent(const std::string &typeName)
 {
     for (Component* component : components_)

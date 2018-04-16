@@ -12,6 +12,7 @@
 #include "Scene/Terrain.h"
 
 #include "ResourceManager.h"
+#include "InputManager.h"
 
 #include "Utils/Clock.h"
 #include "EditorManager.h"
@@ -101,6 +102,14 @@ Camera* SceneManager::mainCamera() const
     }
 
     return nullptr;
+}
+
+void SceneManager::handleInput(const InputCmd& inputs)
+{
+    for (GameObject* gameObject : gameObjects_)
+    {
+        gameObject->handleInput(inputs);
+    }
 }
 
 const std::vector<StaticMesh*> SceneManager::staticMeshes() const

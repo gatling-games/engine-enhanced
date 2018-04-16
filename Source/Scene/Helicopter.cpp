@@ -44,19 +44,24 @@ void Helicopter::serialize(PropertyTable &table)
 
 void Helicopter::update(float deltaTime)
 {
+    // Do nothing
+}
+
+void Helicopter::handleInput(const InputCmd& inputs)
+{
     // Get input axes (scale from -1 to 1)
-    Vector3 axis = InputManager::instance()->inputs.axes;
+    Vector3 axis = inputs.axes;
     Vector3 desiredVelocity;
     desiredVelocity.z = axis.z;
     desiredVelocity.x = axis.x;
     desiredVelocity.y = axis.y;
 
     // Get yaw rotation based on mouse movement
-    float yaw = InputManager::instance()->inputs.yawAcceleration;
+    float yaw = inputs.deltaPixelsX;
     remainingYaw_ += yaw;
 
     // Get pitch rotation based on mouse movement
-    float pitch = InputManager::instance()->inputs.pitchAcceleration;
+    float pitch = inputs.deltaPixelsY;
     remainingPitch_ += pitch;
 
     // Clamp tilt to max angle of 45 degrees
@@ -92,7 +97,7 @@ void Helicopter::update(float deltaTime)
         desiredVelocity.y *= downMaxSpeed_;
     }
 
-    // Copy world rotation and extract rotation about y axis
+    // Copy world rotation and extract rotation about world y axis
     Quaternion yawQuaternion = worldRotation_;
     yawQuaternion.x = 0.0f;
     yawQuaternion.z = 0.0f;
@@ -100,23 +105,24 @@ void Helicopter::update(float deltaTime)
     yawQuaternion.normalize();
 
     // Lerp world velocity and translate, modifying horizontal velocity to account for orientation
-    worldVelocity_ = Vector3::lerp(worldVelocity_, desiredVelocity, 0.5f * deltaTime);
-    transform_->translateWorld(yawQuaternion * worldVelocity_ * deltaTime);
+    worldVelocity_ = Vector3::lerp(worldVelocity_, desiredVelocity, 0.5f * inputs.deltaTime);
+    transform_->translateWorld(yawQuaternion * worldVelocity_ * inputs.deltaTime);
 
     // Rotate percentage of remaining yaw
-    transform_->rotateLocal(remainingYaw_ * turnFactor_ * deltaTime, Vector3::up());
+    transform_->rotateLocal(remainingYaw_ * turnFactor_ * inputs.deltaTime, Vector3::up());
 
     // Construct yaw rotation and modify world rotation
     // This forces translation to be dependent on rotation
-    Quaternion newRotation = Quaternion::rotation(remainingYaw_ * turnFactor_ * deltaTime, Vector3::up());
+    Quaternion newRotation = Quaternion::rotation(remainingYaw_ * turnFactor_ * inputs.deltaTime, Vector3::up());
+
     worldRotation_ = newRotation * worldRotation_;
-    
+
     // Reduce remaining yaw
     remainingYaw_ -= remainingYaw_ * decelerationFactor_;
 
     // Rotate percentage of remaining pitch and modify tracked forward tilt angle
-    transform_->rotateLocal(remainingPitch_ * turnFactor_ * deltaTime, transform_->right());
-    currentTilt_ += remainingPitch_ * turnFactor_ * deltaTime;
+    transform_->rotateLocal(remainingPitch_ * turnFactor_ * inputs.deltaTime, transform_->right());
+    currentTilt_ += remainingPitch_ * turnFactor_ * inputs.deltaTime;
 
     // Reduce remaining pitch
     remainingPitch_ -= remainingPitch_ * decelerationFactor_;
