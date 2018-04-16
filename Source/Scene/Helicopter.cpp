@@ -75,8 +75,7 @@ void Helicopter::update(float deltaTime)
     if (horizontalMoveSqrd > 1.0f)
     {
         // Scale factor to ensure magnitude of horizontal velocity <= thrustSpeed_
-        desiredVelocity.z /= horizontalMoveSqrd;
-        desiredVelocity.x /= horizontalMoveSqrd;
+        desiredVelocity = desiredVelocity.normalized();
     }
 
     // Multiply desired velocity by max move speed
