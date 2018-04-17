@@ -1,5 +1,33 @@
 {
     name = Helicopter
+    Transform {
+        Position = 673.81 63.0475 524.914
+        Rotation = 0.222197 -0.278208 -0.0663197 -0.932111
+    }
+    StaticMesh {
+        mesh = Resources\Meshes\helicopter.obj
+        material = Resources\Materials\cardboard.material
+    }
+    Helicopter {
+        turn_factor = 4.1
+        deceleration_factor = 0.28
+    }
+    children::0 {
+        name = MainBlade
+        Transform {
+            Position = 0 3 0.2
+            Rotation = -0.5181 -0.48506 -0.514273 -0.481474
+            Scale = 0.7 0.7 0.7
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\turbine_blades.mesh
+            material = Resources\Materials\cardboard.material
+        }
+        Windmill {
+            rotation_speed = -2000
+            rotation_axis = 1
+        }
+    }
     children::1 {
         name = Main Camera
         Transform {
@@ -19,31 +47,6 @@
                 mesh = Resources\Meshes\sphere.obj
                 material = Resources\Materials\default.material
             }
-        }
-    }
-    Transform {
-        Position = 398.2 21.6 88.5
-    }
-    StaticMesh {
-        mesh = Resources\Meshes\helicopter.obj
-        material = Resources\Materials\cardboard.material
-    }
-    Helicopter {
-    }
-    children::0 {
-        name = MainBlade
-        Transform {
-            Position = 0 3 0.2
-            Rotation = 0 0 0.73 0.683447
-            Scale = 0.7 0.7 0.7
-        }
-        StaticMesh {
-            mesh = Resources\Meshes\turbine_blades.mesh
-            material = Resources\Materials\cardboard.material
-        }
-        Windmill {
-            rotation_speed = -2000
-            rotation_axis = 1
         }
     }
 }
