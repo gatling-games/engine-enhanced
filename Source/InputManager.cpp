@@ -84,17 +84,16 @@ bool InputManager::isKeyUp(InputKey key) const
 
 float InputManager::getAxis(InputKey positiveKey, InputKey negativeKey) const
 {
-    float axisPlus = 0.0f;
-    float axisMinus = 0.0f;
+    float axis = 0.0f;
 
     if (isKeyDown(positiveKey))
     {
-        axisPlus += 1.0f;
+        axis += 1.0f;
     }
 
     if (isKeyDown(negativeKey))
     {
-        axisMinus += 1.0f;
+        axis -= 1.0f;
     }
 
     return axisPlus - axisMinus;
@@ -116,6 +115,7 @@ float InputManager::getAxisLerp(InputKey positiveKey, InputKey negativeKey, floa
     }
 
     return axisPlus - axisMinus;
+    return axis;
 }
 
 bool InputManager::mouseButtonDown(MouseButton button) const
