@@ -1,5 +1,19 @@
 {
     name = Helicopter
+    children::2 {
+        name = TailBlade
+        Transform {
+            Position = -0.25 1.1 -8.5
+            Scale = 0.1 0.1 0.1
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\turbine_blades.mesh
+            material = Resources\Materials\cardboard.material
+        }
+        Windmill {
+            rotation_speed = 2000
+        }
+    }
     Transform {
         Position = 398.2 21.6 88.5
     }
@@ -31,6 +45,7 @@
         Camera {
         }
         HelicopterView {
+            mouse_look_centring_rate = 4.643
         }
         children::0 {
             name = Static Mesh
@@ -41,20 +56,6 @@
                 mesh = Resources\Meshes\sphere.obj
                 material = Resources\Materials\default.material
             }
-        }
-    }
-    children::2 {
-        name = TailBlade
-        Transform {
-            Position = -0.25 1.1 -8.5
-            Scale = 0.1 0.1 0.1
-        }
-        StaticMesh {
-            mesh = Resources\Meshes\turbine_blades.mesh
-            material = Resources\Materials\cardboard.material
-        }
-        Windmill {
-            rotation_speed = 2000
         }
     }
 }
