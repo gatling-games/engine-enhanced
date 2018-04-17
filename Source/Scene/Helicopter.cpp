@@ -42,11 +42,6 @@ void Helicopter::serialize(PropertyTable &table)
     table.serialize("deceleration_factor", decelerationFactor_, 0.08f);
 }
 
-void Helicopter::update(float deltaTime)
-{
-    // Do nothing
-}
-
 void Helicopter::handleInput(const InputCmd& inputs)
 {
     // Get input axes (scale from -1 to 1)

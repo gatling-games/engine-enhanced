@@ -17,8 +17,6 @@ public:
     // Serialisation method
     void serialize(PropertyTable &table) override;
 
-    void update(float deltaTime) override;
-
     void handleInput(const InputCmd& inputs) override;
 
 private:
