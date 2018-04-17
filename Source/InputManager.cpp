@@ -34,16 +34,6 @@ void InputManager::frameStart(const Clock* clock)
 
     pollMouse();
 
-    // Capture mouse when game window is clicked and release on esc. press
-    if (ignoringInput_)
-    {
-        releaseMouse();
-    }
-    else
-    {
-        captureMouse();
-    }
-
     Vector3 axes;
     axes.z = getAxis(InputKey::W, InputKey::S); // Get forward input
     axes.x = getAxis(InputKey::D, InputKey::A); // Get strafing input

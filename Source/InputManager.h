@@ -154,12 +154,6 @@ public:
     // Returns true if the specified mouse button is currently pressed.
     bool mouseButtonDown(MouseButton button) const;
 
-    // Capture mouse input and hide mouse from viewer
-    void captureMouse();
-
-    // Release mouse
-    void releaseMouse();
-
     // The number of pixels that the mouse has moved in the last frame.
     float mouseDeltaX() const { return (float)mouseDeltaX_; }
     float mouseDeltaY() const { return (float)mouseDeltaY_; }
