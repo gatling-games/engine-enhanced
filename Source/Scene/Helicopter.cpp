@@ -8,6 +8,7 @@
 
 Helicopter::Helicopter(GameObject* gameObject)
     : Component(gameObject),
+    transform_(gameObject->createComponent<Transform>()),
     worldVelocity_(Vector3::zero()),
     worldRotation_(Quaternion::identity()),
     horizontalMaxSpeed_(60.0f),
@@ -19,8 +20,8 @@ Helicopter::Helicopter(GameObject* gameObject)
     turnFactor_(0.2f),
     decelerationFactor_(0.08f)
 {
-    transform_ = gameObject->createComponent<Transform>();
     transform_->setRotationLocal(Quaternion::identity());
+
 }
 
 void Helicopter::drawProperties()
