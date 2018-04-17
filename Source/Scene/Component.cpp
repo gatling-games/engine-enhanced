@@ -29,7 +29,7 @@ void Component::update(float)
 	// Do nothing
 }
 
-void Component::handleInput(const InputCmd& inputs)
+void Component::handleInput(const InputCmd&)
 {
     // Do nothing
 }
