@@ -149,8 +149,6 @@ public:
     // Only positive = 1, only negative = -1, both/neither = 0
     float getAxis(InputKey positiveKey, InputKey negativeKey) const;
 
-    float getAxisLerp(InputKey positiveKey, InputKey negativeKey, float timeToMax) const;
-
     // Returns true if the specified mouse button is currently pressed.
     bool mouseButtonDown(MouseButton button) const;
 

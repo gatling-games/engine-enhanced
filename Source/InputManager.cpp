@@ -96,25 +96,6 @@ float InputManager::getAxis(InputKey positiveKey, InputKey negativeKey) const
         axis -= 1.0f;
     }
 
-    return axisPlus - axisMinus;
-}
-
-float InputManager::getAxisLerp(InputKey positiveKey, InputKey negativeKey, float timeToMax) const
-{
-    float axisPlus = 0.0f;
-    float axisMinus = 0.0f;
-
-    if (isKeyDown(positiveKey))
-    {
-        axisPlus += 1.0f;
-    }
-
-    if (isKeyDown(negativeKey))
-    {
-        axisMinus += 1.0f;
-    }
-
-    return axisPlus - axisMinus;
     return axis;
 }
 
