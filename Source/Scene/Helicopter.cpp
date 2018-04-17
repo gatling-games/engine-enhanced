@@ -87,6 +87,12 @@ void Helicopter::handleInput(const InputCmd& inputs)
     desiredVelocity.x *= horizontalMaxSpeed_;
     desiredVelocity.z *= horizontalMaxSpeed_;
 
+    // Determine the current horizontal rotation of the helicopter and change the rotation by it
+    Quaternion yawQuaternion = worldRotation_;
+    yawQuaternion.x = 0.0f;
+    yawQuaternion.z = 0.0f;
+    desiredVelocity = yawQuaternion * desiredVelocity;
+
     // Simulate effects of gravity
     if (desiredVelocity.y > 0.0f)
     {
@@ -97,16 +103,9 @@ void Helicopter::handleInput(const InputCmd& inputs)
         desiredVelocity.y *= downMaxSpeed_;
     }
 
-    // Copy world rotation and extract rotation about world y axis
-    Quaternion yawQuaternion = worldRotation_;
-    yawQuaternion.x = 0.0f;
-    yawQuaternion.z = 0.0f;
-
-    yawQuaternion.normalize();
-
     // Lerp world velocity and translate, modifying horizontal velocity to account for orientation
     worldVelocity_ = Vector3::lerp(worldVelocity_, desiredVelocity, 0.5f * inputs.deltaTime);
-    transform_->translateWorld(yawQuaternion * worldVelocity_ * inputs.deltaTime);
+    transform_->translateWorld(worldVelocity_ * inputs.deltaTime);
 
     // Rotate percentage of remaining yaw
     transform_->rotateLocal(remainingYaw_ * turnFactor_ * inputs.deltaTime, Vector3::up());
