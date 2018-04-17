@@ -24,7 +24,7 @@ InputManager::InputManager(GLFWwindow* window)
 }
 
 // Called every time a new frame starts, storing previous frame's input data
-void InputManager::frameStart(const Clock* clock)
+void InputManager::frameStart()
 {
     // Poll joystick inputs
     if(!ignoringInput_)
@@ -33,24 +33,21 @@ void InputManager::frameStart(const Clock* clock)
     }
 
     pollMouse();
+}
 
+void InputManager::dispatchInput(float deltaTime) const
+{
     Vector3 axes;
     axes.z = getAxis(InputKey::W, InputKey::S); // Get forward input
     axes.x = getAxis(InputKey::D, InputKey::A); // Get strafing input
     axes.y = getAxis(InputKey::Q, InputKey::E); // Get vertical input
 
     InputCmd inputs;
-
-    // Set input object parameters
-    inputs.deltaTime = clock->deltaTime();
+    inputs.deltaTime = deltaTime;
     inputs.lookRotation = Quaternion::identity();
     inputs.axes = axes;
     inputs.deltaPixelsX = mouseDeltaX();
     inputs.deltaPixelsY = mouseDeltaY();
-
-    // Store array of previously pressed joypad inputs
-    previousFrameJoystickButtons_ = joystickButtons_;
-    previousFrameJoystickAxes_ = joystickAxes_;
 
     SceneManager::instance()->handleInput(inputs);
 }

@@ -108,9 +108,15 @@ void Application::frameStart()
 {
     // Update each module manager
     clock_->frameStart();
-    inputManager_->frameStart(clock_);
+    inputManager_->frameStart();
     sceneManager_->frameStart();
     resourceManager_->update();
+
+    // When in play mode, dispatch user input
+    if(isPlaying())
+    {
+        inputManager_->dispatchInput(clock_->deltaTime());
+    }
 
     // Put the FPS in the window title.
     // Update every 20 frames (start at frame 1)

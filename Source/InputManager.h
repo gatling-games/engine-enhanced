@@ -131,7 +131,11 @@ public:
     explicit InputManager(GLFWwindow* window);
 
     // Called every frame
-    void frameStart(const Clock* clock);
+    void frameStart();
+
+    // Sends the current input to all components in the scene
+    // This sends the input to the handleInput() component functions
+    void dispatchInput(float deltaTime) const;
 
     // Allows all input to be enabled and disabled.
     // This should be used when the game is paused, or the game panel does not have focus.
