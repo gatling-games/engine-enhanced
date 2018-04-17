@@ -6,6 +6,7 @@
 #include "Scene/Camera.h"
 #include "InputManager.h"
 #include "Scene/Freecam.h"
+#include "Editor/MainWindowMenu.h"
 
 GamePanel::GamePanel()
     : frameBuffer_(nullptr)
@@ -13,8 +14,12 @@ GamePanel::GamePanel()
     , colorBuffer_(nullptr)
     , renderer_(nullptr)
     , camera_(nullptr)
+	, alwaysUseSceneCamera_(false)
 {
-
+	MainWindowMenu::instance()->addMenuItem("View/Force Scene Camera", [&]
+	{
+		alwaysUseSceneCamera_ = !alwaysUseSceneCamera_;
+	}, [&] { return alwaysUseSceneCamera_; });
 }
 
 GamePanel::~GamePanel()
@@ -31,7 +36,7 @@ GamePanel::~GamePanel()
 
 void GamePanel::draw()
 {
-    // When using the game panel, disable input if focus is lost.=
+    // When using the game panel, disable input if focus is lost.
     InputManager::instance()->setInputEnabled(ImGui::IsWindowFocused());
 
     // Determine the size of the region we need to render for
@@ -57,12 +62,14 @@ void GamePanel::draw()
         camera_ = cameraGO->createComponent<Camera>();
     }
 
+	bool usingSceneCamera = Application::instance()->isEditing() || alwaysUseSceneCamera_;
+
     // Make sure the game camera only moves in edit mode
-    camera_->gameObject()->findComponent<Freecam>()->setUpdateEnabled(Application::instance()->isEditing());
+    camera_->gameObject()->findComponent<Freecam>()->setUpdateEnabled(usingSceneCamera);
 
     // Re-render the framebuffer on each draw
     // Use the game panel camera in edit mode, and the scene main camera in play mode
-    renderer_->renderFrame(Application::instance()->isPlaying() ? SceneManager::instance()->mainCamera() : camera_);
+    renderer_->renderFrame(usingSceneCamera ? camera_ : SceneManager::instance()->mainCamera());
 
     // Draw the texture
     ImGui::Image((ImTextureID)(uint64_t)colorBuffer_->glid(), ImGui::GetContentRegionAvail(), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));

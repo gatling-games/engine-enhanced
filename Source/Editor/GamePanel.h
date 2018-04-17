@@ -26,6 +26,9 @@ private:
 
     // Create a hidden camera in the game for use
     Camera* camera_;
+
+	// Flag to force rendering with scene camera, even in play mode
+	bool alwaysUseSceneCamera_;
 	
     void createFramebuffer(int width, int height);
 
