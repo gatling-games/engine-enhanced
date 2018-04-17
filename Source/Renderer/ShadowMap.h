@@ -27,8 +27,8 @@ class ShadowMap
 public:
     static const int RESOLUTION = 4096; // Cannot increase past 16384 on most hardware
     static const int CASCADE_COUNT = 4; // Increasing past 4 will require reworking the uniform buffer layout
-    const float DEPTH_BIAS_PER_CASCADE[CASCADE_COUNT] = { 0.0004f, 0.0005f, 0.001f, 0.0015f };
-    const float SHADOW_DRAW_DISTANCE = 300.0f;
+    const float DEPTH_BIAS_PER_CASCADE[CASCADE_COUNT] = { 0.00001f, 0.0002f, 0.0003f, 0.0005f };
+    const float DRAW_DISTANCE_PER_CASCADE[CASCADE_COUNT] = { 15.0f, 70.0f, 150.0f, 300.0f };
 
 public:
     ShadowMap();

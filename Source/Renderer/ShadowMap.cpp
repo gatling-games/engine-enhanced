@@ -135,27 +135,11 @@ float ShadowMap::getCascadeMin(int cascade) const
         return 0.0f;
     }
 
-    // Ensure the last cascade finished at farPlane
-    // i.e. ensure the index after the last cascade starts at farPlane
-    if (cascade == CASCADE_COUNT)
-    {
-        return SHADOW_DRAW_DISTANCE;
-    }
-
-    // Compute the linear and logarithmic distances
-    float linearDistance = (SHADOW_DRAW_DISTANCE / (float)CASCADE_COUNT) * cascade;
-    float logarithmicDistance = powf(SHADOW_DRAW_DISTANCE, (1.0f / (float)CASCADE_COUNT) * cascade);
-
-    // Perform a weighted average of the 2 distances
-    const float linearWeight = 0.6f;
-    const float logarithmicWeight = 1.0f - linearWeight;
-
-    // Combine the 2 distances
-    return (linearDistance * linearWeight) + (logarithmicDistance * logarithmicWeight);
+    // Otherwise, use the draw distance for the previous cascade
+    return getCascadeMax(cascade - 1);
 }
 
 float ShadowMap::getCascadeMax(int cascade) const
 {
-    // = min distance of next cascade
-    return getCascadeMin(cascade + 1);
+    return DRAW_DISTANCE_PER_CASCADE[cascade];
 }
