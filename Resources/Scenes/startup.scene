@@ -4,6 +4,9 @@
     }
     gameobjects::1 {
         prefab = Resources\Prefabs\Helicopter.prefab
+        Transform {
+            Rotation = 0 -0.286003 0 -0.958229
+        }
     }
     ambient_intensity = 1.567
     sun_intensity = 5.8
