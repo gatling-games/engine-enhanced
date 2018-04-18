@@ -280,5 +280,35 @@ namespace EngineTests
 			}
 		}
 
+        TEST_METHOD(Invert)
+		{
+            Matrix4x4 a;
+            a.setRow(0, 1.0f, -2.0f, -3.0f, 4.0f);
+            a.setRow(1, 3.0f, 0.5f, 0.0f, -1.0f);
+            a.setRow(2, 0.0f, 8.5f, 1.2f, -9.0f);
+            a.setRow(3, 5.0f, -5.0f, 1.0f, -1.0f);
+
+            Matrix4x4 b = a.invert();
+
+            const Matrix4x4 I = a * b;
+
+            Assert::AreEqual(1.0f, I.get(0, 0), tol);
+            Assert::AreEqual(0.0f, I.get(0, 1), tol);
+            Assert::AreEqual(0.0f, I.get(0, 2), tol);
+            Assert::AreEqual(0.0f, I.get(0, 3), tol);
+            Assert::AreEqual(0.0f, I.get(1, 0), tol);
+            Assert::AreEqual(1.0f, I.get(1, 1), tol);
+            Assert::AreEqual(0.0f, I.get(1, 2), tol);
+            Assert::AreEqual(0.0f, I.get(1, 3), tol);
+            Assert::AreEqual(0.0f, I.get(2, 0), tol);
+            Assert::AreEqual(0.0f, I.get(2, 1), tol);
+            Assert::AreEqual(1.0f, I.get(2, 2), tol);
+            Assert::AreEqual(0.0f, I.get(2, 3), tol);
+            Assert::AreEqual(0.0f, I.get(3, 0), tol);
+            Assert::AreEqual(0.0f, I.get(3, 1), tol);
+            Assert::AreEqual(0.0f, I.get(3, 2), tol);
+            Assert::AreEqual(1.0f, I.get(3, 3), tol);
+		}
+
 	};
 }
