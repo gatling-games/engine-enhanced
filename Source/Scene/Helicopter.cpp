@@ -58,6 +58,12 @@ void Helicopter::handleInput(const InputCmd& inputs)
         desiredVelocity.x /= sqrtf(horizontalMoveSqrd);
         desiredVelocity.z /= sqrtf(horizontalMoveSqrd);
     }
+
+    // Multiply desired velocity by max move speed
+    desiredVelocity.x *= horizontalMaxSpeed_;
+    desiredVelocity.y *= (desiredVelocity.y < 0.0f) ? downMaxSpeed_ : upMaxSpeed_;
+    desiredVelocity.z *= horizontalMaxSpeed_;
+
     // Get yaw rotation based on mouse movement
     float yaw = inputs.deltaPixelsX;
     remainingYaw_ += yaw;
@@ -76,25 +82,11 @@ void Helicopter::handleInput(const InputCmd& inputs)
     {
         remainingPitch_ = std::max(remainingPitch_, 0.0f);
     }
-    // Multiply desired velocity by max move speed
-    desiredVelocity.x *= horizontalMaxSpeed_;
-    desiredVelocity.z *= horizontalMaxSpeed_;
-
     // Determine the current horizontal rotation of the helicopter and change the rotation by it
     Quaternion yawQuaternion = worldRotation_;
     yawQuaternion.x = 0.0f;
     yawQuaternion.z = 0.0f;
     desiredVelocity = yawQuaternion * desiredVelocity;
-
-    // Simulate effects of gravity
-    if (desiredVelocity.y > 0.0f)
-    {
-        desiredVelocity.y *= upMaxSpeed_;
-    }
-    else
-    {
-        desiredVelocity.y *= downMaxSpeed_;
-    }
 
     // Lerp world velocity and translate, modifying horizontal velocity to account for orientation
     worldVelocity_ = Vector3::lerp(worldVelocity_, desiredVelocity, 0.5f * inputs.deltaTime);
