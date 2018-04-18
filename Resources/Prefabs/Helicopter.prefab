@@ -9,6 +9,8 @@
         material = Resources\Materials\cardboard.material
     }
     Helicopter {
+        horizontal_max_speed = 81.3
+        up_max_speed = 68.5
         turn_factor = 4.1
         deceleration_factor = 0.28
     }
