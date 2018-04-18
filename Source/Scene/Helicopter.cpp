@@ -50,6 +50,14 @@ void Helicopter::handleInput(const InputCmd& inputs)
     desiredVelocity.x = inputs.sidewaysMovement;
     desiredVelocity.y = inputs.verticalMovement;
 
+    // When the player moves diagonally, they can travel faster than 1
+    // Normalize the horizontal movement to fix this
+    float horizontalMoveSqrd = Vector2(desiredVelocity.x, desiredVelocity.z).sqrMagnitude();
+    if (horizontalMoveSqrd > 1.0f)
+    {
+        desiredVelocity.x /= sqrtf(horizontalMoveSqrd);
+        desiredVelocity.z /= sqrtf(horizontalMoveSqrd);
+    }
     // Get yaw rotation based on mouse movement
     float yaw = inputs.deltaPixelsX;
     remainingYaw_ += yaw;
@@ -68,15 +76,6 @@ void Helicopter::handleInput(const InputCmd& inputs)
     {
         remainingPitch_ = std::max(remainingPitch_, 0.0f);
     }
-
-    // Ensure total horizontal movement is no greater than thrust speed
-    float horizontalMoveSqrd = Vector2(desiredVelocity.x, desiredVelocity.z).sqrMagnitude();
-    if (horizontalMoveSqrd > 1.0f)
-    {
-        // Scale factor to ensure magnitude of horizontal velocity <= thrustSpeed_
-        desiredVelocity = desiredVelocity.normalized();
-    }
-
     // Multiply desired velocity by max move speed
     desiredVelocity.x *= horizontalMaxSpeed_;
     desiredVelocity.z *= horizontalMaxSpeed_;
