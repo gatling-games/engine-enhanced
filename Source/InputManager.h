@@ -127,8 +127,6 @@ struct InputCmd
 
     float horizontalRotation; // Desired helicopter rotation horizontally, relative to the helicopter
     float verticalRotation; // Desired helicopter rotation vertically, relative to the helicopter
-
-    Quaternion lookRotation; // Current camera orientation relative to helicopter
 };
 
 class InputManager : public Singleton<InputManager>
