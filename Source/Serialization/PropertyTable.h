@@ -98,8 +98,14 @@ public:
             // A vector is serialized by storing multiple properties with the same name.
             // Search the entire property list for matching ones.
             int totalFound = 0;
-            for (const SerializedProperty& property : properties_)
+
+            // Each property has the name propertyname::index
+            // eg. children::0, children::1, children::2 etc
+            // search the entire property list for each one.
+            for(unsigned int i = 0; i < properties_.size(); ++i)
             {
+                const SerializedProperty& property = properties_[i];
+
                 // Skip properties that do not match the specified name
                 const std::string desiredName = name + std::string("::") + std::to_string(totalFound);
                 if (property.name != desiredName)
@@ -121,6 +127,10 @@ public:
                 // Deserialize the property into the object
                 values[totalFound]->serialize(*property.subTable);
                 totalFound++;
+
+                // Properties can be in any order, so index 2 could be before index 1 etc.
+                // We need to start the search from the start of the list for the next one
+                i = 0;
             }
 
             // If there is left over space at the end, shrink the vector.
