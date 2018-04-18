@@ -31,9 +31,7 @@ public:
     void updateHmdPose();
     
     Matrix4x4 getProjectionMatrix(EyeType eye, float nearPlane, float farPlane) const;
-    Matrix4x4 getInverseProjectionMatrix(EyeType eye, float nearPlane, float farPlane) const;
     Matrix4x4 getEyeMatrix(EyeType eye) const;
-    Matrix4x4 getInverseEyeMatrix(EyeType eye) const;
     Matrix4x4 getHmdMatrix() { return hmdPose_; }
 
 private:
