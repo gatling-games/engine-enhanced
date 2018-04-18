@@ -225,15 +225,8 @@ void Renderer::createGBuffer()
     gbufferTextures_[1] = new Texture(TextureFormat::RGBA1010102, targetFramebuffers_[0]->width(), targetFramebuffers_[0]->height());
     assert(GBUFFER_RENDER_TARGETS == 2); // should be one higher than the last index
 
-<<<<<<< HEAD
-        // Create the textures    
-        gbufferTextures_[0] = new Texture(TextureFormat::RGBA8, targetFramebuffers_[fb]->width(), targetFramebuffers_[fb]->height());
-        gbufferTextures_[1] = new Texture(TextureFormat::RGBA8, targetFramebuffers_[fb]->width(), targetFramebuffers_[fb]->height());
-        assert(GBUFFER_RENDER_TARGETS == 2); // should be one higher than the last index
-=======
     // Create the gbuffer framebuffers
     gbufferFramebuffers_.resize(targetFramebuffers_.size());
->>>>>>> Renderer - [Fix] Make a different gbuffer fbo for each target fbo
 
     // Use the target framebuffer's depth texture and the gbuffer textures
     // The same gbuffer textures are used for each framebuffer, only the depth texture is different
