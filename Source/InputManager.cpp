@@ -40,7 +40,7 @@ void InputManager::dispatchInput(float deltaTime) const
     Vector3 axes;
     axes.z = getAxis(InputKey::W, InputKey::S); // Get forward input
     axes.x = getAxis(InputKey::D, InputKey::A); // Get strafing input
-    axes.y = getAxis(InputKey::Q, InputKey::E); // Get vertical input
+    axes.y = getAxis(InputKey::Space, InputKey::LCtrl); // Get vertical input
 
     InputCmd inputs;
     inputs.deltaTime = deltaTime;
