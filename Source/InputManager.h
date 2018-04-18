@@ -120,8 +120,12 @@ enum class MouseButton
 struct InputCmd
 {
     float deltaTime; // Elapsed time since last update
+
+    float forwardsMovement; // Desired movement forwards, relative to the helicopter
+    float sidewaysMovement; // Desired movement sideways, relative to the helicopter
+    float verticalMovement; // Desired movement vertically, relative to the world
+
     Quaternion lookRotation; // Current camera orientation relative to helicopter
-    Vector3 axes; // Input helicopter velocity
     float deltaPixelsX; // Current helicopter rotational accelleration
     float deltaPixelsY;
 };

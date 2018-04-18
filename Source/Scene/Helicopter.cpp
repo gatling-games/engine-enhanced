@@ -45,11 +45,10 @@ void Helicopter::serialize(PropertyTable &table)
 void Helicopter::handleInput(const InputCmd& inputs)
 {
     // Get input axes (scale from -1 to 1)
-    Vector3 axis = inputs.axes;
     Vector3 desiredVelocity;
-    desiredVelocity.z = axis.z;
-    desiredVelocity.x = axis.x;
-    desiredVelocity.y = axis.y;
+    desiredVelocity.z = inputs.forwardsMovement;
+    desiredVelocity.x = inputs.sidewaysMovement;
+    desiredVelocity.y = inputs.verticalMovement;
 
     // Get yaw rotation based on mouse movement
     float yaw = inputs.deltaPixelsX;
