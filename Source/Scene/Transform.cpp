@@ -169,6 +169,12 @@ void Transform::translateLocal(const Vector3& translation)
     recomputeMatrices();
 }
 
+void Transform::translateWorld(const Vector3& translation)
+{
+    position_ += translation;
+    recomputeMatrices();
+}
+
 void Transform::rotateLocal(float angle, const Vector3& axis)
 {
     // Construct quaternion using input angle and axis

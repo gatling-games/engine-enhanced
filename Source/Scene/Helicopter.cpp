@@ -4,57 +4,111 @@
 #include "Scene/Transform.h"
 #include "imgui.h"
 
+#include <algorithm>
+
 Helicopter::Helicopter(GameObject* gameObject)
     : Component(gameObject),
+    transform_(gameObject->createComponent<Transform>()),
     worldVelocity_(Vector3::zero()),
-    thrustSpeed_(35.0f),
-    pitchSpeed_(40.0f),
-    yawSpeed_(25.0f),
-    rollSpeed(40.0f)
+    worldRotation_(Quaternion::identity()),
+    horizontalMaxSpeed_(60.0f),
+    upMaxSpeed_(25.0f),
+    downMaxSpeed_(80.0f),
+    remainingYaw_(0.0f),
+    remainingPitch_(0.0f),
+    currentTilt_(0.0f),
+    turnFactor_(0.2f),
+    decelerationFactor_(0.08f)
 {
-    transform_ = gameObject->createComponent<Transform>();
+
 }
 
 void Helicopter::drawProperties()
 {
     // Debugging helicopter controls
-    ImGui::DragFloat("Thrust speed", &thrustSpeed_, 0.1f);
-    ImGui::DragFloat("Pitch speed", &pitchSpeed_, 0.1f);
-    ImGui::DragFloat("Roll speed", &rollSpeed, 0.1f);
-    ImGui::DragFloat("Yaw speed", &yawSpeed_, 0.1f);
-    ImGui::DragFloat3("Velocity", &worldVelocity_.x, 0.1f);
+    ImGui::DragFloat("Max lateral speed", &horizontalMaxSpeed_, 0.1f);
+    ImGui::DragFloat("Max upward speed", &upMaxSpeed_, 0.1f);
+    ImGui::DragFloat("Max downward speed", &downMaxSpeed_);
+    ImGui::DragFloat("Deceleration factor", &decelerationFactor_, 0.1f);
+    ImGui::DragFloat("Yaw rotation factor", &turnFactor_, 0.1f);
 }
 
 void Helicopter::serialize(PropertyTable &table)
 {
-    table.serialize("thrust_speed", thrustSpeed_, 35.0f);
-    table.serialize("pitch_speed", pitchSpeed_, 40.0f);
-    table.serialize("roll_speed", rollSpeed, 40.0f);
-    table.serialize("yaw_speed", yawSpeed_, 25.0f);
-    table.serialize("velocity", worldVelocity_, Vector3::zero());
+    table.serialize("horizontal_max_speed", horizontalMaxSpeed_, 60.0f);
+    table.serialize("up_max_speed", upMaxSpeed_, 25.0f);
+    table.serialize("down_max_speed", downMaxSpeed_, 80.0f);
+    table.serialize("turn_factor", turnFactor_, 0.2f);
+    table.serialize("deceleration_factor", decelerationFactor_, 0.08f);
 }
 
-void Helicopter::update(float deltaTime)
+void Helicopter::handleInput(const InputCmd& inputs)
 {
-    // Setup simple helicopter controls
-    const float forward = InputManager::instance()->getAxis(InputKey::G, InputKey::B);
-    const float lateral = InputManager::instance()->getAxis(InputKey::V, InputKey::N);
-    const float yaw = InputManager::instance()->getAxis(InputKey::H, InputKey::F);
-    const float vertical = InputManager::instance()->getAxis(InputKey::T, InputKey::Y);
+    // Get input axes (scale from -1 to 1)
+    Vector3 desiredVelocity;
+    desiredVelocity.z = inputs.forwardsMovement;
+    desiredVelocity.x = inputs.sidewaysMovement;
+    desiredVelocity.y = inputs.verticalMovement;
 
-    // Thrust if holding appropriate key
-    if (vertical > 0.01f)
+    // When the player moves diagonally, they can travel faster than 1
+    // Normalize the horizontal movement to fix this
+    float horizontalMoveSqrd = Vector2(desiredVelocity.x, desiredVelocity.z).sqrMagnitude();
+    if (horizontalMoveSqrd > 1.0f)
     {
-        worldVelocity_ += transform_->up() * thrustSpeed_ * deltaTime;
+        desiredVelocity.x /= sqrtf(horizontalMoveSqrd);
+        desiredVelocity.z /= sqrtf(horizontalMoveSqrd);
     }
 
-    // Gravity
-    worldVelocity_.y -= 9.81f * deltaTime;
-    
-    // Allow pitching, rolling, yawing, and thrust
-    transform_->rotateLocal(forward * pitchSpeed_ * deltaTime, transform_->right());
-    transform_->rotateLocal(lateral * rollSpeed * deltaTime, transform_->forwards());
-    transform_->rotateLocal(yaw * yawSpeed_ * deltaTime, transform_->up());
-    transform_->translateLocal(worldVelocity_ * deltaTime);
+    // Multiply desired velocity by max move speed
+    desiredVelocity.x *= horizontalMaxSpeed_;
+    desiredVelocity.y *= (desiredVelocity.y < 0.0f) ? downMaxSpeed_ : upMaxSpeed_;
+    desiredVelocity.z *= horizontalMaxSpeed_;
+
+    // Get yaw rotation based on mouse movement
+    float yaw = inputs.horizontalRotation;
+    remainingYaw_ += yaw;
+
+    // Get pitch rotation based on mouse movement
+    float pitch = inputs.verticalRotation;
+    remainingPitch_ += pitch;
+
+    // Clamp tilt to max angle of 45 degrees
+    if (currentTilt_ >= 45.0f)
+    {
+        remainingPitch_ = std::min(remainingPitch_, 0.0f);
+    }
+
+    if (currentTilt_ <= -45.0f)
+    {
+        remainingPitch_ = std::max(remainingPitch_, 0.0f);
+    }
+    // Determine the current horizontal rotation of the helicopter and change the rotation by it
+    Quaternion yawQuaternion = worldRotation_;
+    yawQuaternion.x = 0.0f;
+    yawQuaternion.z = 0.0f;
+    desiredVelocity = yawQuaternion * desiredVelocity;
+
+    // Lerp world velocity and translate, modifying horizontal velocity to account for orientation
+    worldVelocity_ = Vector3::lerp(worldVelocity_, desiredVelocity, 0.5f * inputs.deltaTime);
+    transform_->translateWorld(worldVelocity_ * inputs.deltaTime);
+
+    // Rotate percentage of remaining yaw
+    transform_->rotateLocal(remainingYaw_ * turnFactor_ * inputs.deltaTime, Vector3::up());
+
+    // Construct yaw rotation and modify world rotation
+    // This forces translation to be dependent on rotation
+    Quaternion newRotation = Quaternion::rotation(remainingYaw_ * turnFactor_ * inputs.deltaTime, Vector3::up());
+
+    worldRotation_ = newRotation * worldRotation_;
+
+    // Reduce remaining yaw
+    remainingYaw_ -= remainingYaw_ * decelerationFactor_;
+
+    // Rotate percentage of remaining pitch and modify tracked forward tilt angle
+    transform_->rotateLocal(remainingPitch_ * turnFactor_ * inputs.deltaTime, transform_->right());
+    currentTilt_ += remainingPitch_ * turnFactor_ * inputs.deltaTime;
+
+    // Reduce remaining pitch
+    remainingPitch_ -= remainingPitch_ * decelerationFactor_;
 }
 

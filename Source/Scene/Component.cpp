@@ -29,6 +29,11 @@ void Component::update(float)
 	// Do nothing
 }
 
+void Component::handleInput(const InputCmd&)
+{
+    // Do nothing
+}
+
 void Component::drawProperties()
 {
 	ImGui::Text("%s", "This component has no properties.");

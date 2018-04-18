@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include "SceneManager.h"
 
 #include <GLFW/glfw3.h>
 
@@ -23,7 +24,7 @@ InputManager::InputManager(GLFWwindow* window)
 }
 
 // Called every time a new frame starts, storing previous frame's input data
-void InputManager::frameStart(const Clock* clock)
+void InputManager::frameStart()
 {
     // Poll joystick inputs
     if(!ignoringInput_)
@@ -32,18 +33,22 @@ void InputManager::frameStart(const Clock* clock)
     }
 
     pollMouse();
+}
 
-    // Create object holding input data to send to server
+void InputManager::dispatchInput(float deltaTime) const
+{
     InputCmd inputs;
+    inputs.deltaTime = deltaTime;
+    inputs.forwardsMovement = getAxis(InputKey::W, InputKey::S);
+    inputs.sidewaysMovement = getAxis(InputKey::D, InputKey::A);
+    inputs.verticalMovement = getAxis(InputKey::Space, InputKey::LCtrl);
+    inputs.horizontalRotation = mouseDeltaX();
+    inputs.verticalRotation = mouseDeltaY();
+    inputs.lookRotation = Quaternion::identity();
 
-    // Set input object parameters
-    inputs.deltaTime = clock->deltaTime();
-    inputs.joystickButtons = joystickButtons_;
-    inputs.joystickAxes = joystickAxes_;
-
-    // Store array of previously pressed joypad inputs
-    previousFrameJoystickButtons_ = joystickButtons_;
-    previousFrameJoystickAxes_ = joystickAxes_;
+    // The scene manager passes the input to all components
+    // They can use the input by implementing the handleInput callback.
+    SceneManager::instance()->handleInput(inputs);
 }
 
 void InputManager::enableInput()
@@ -75,20 +80,19 @@ bool InputManager::isKeyUp(InputKey key) const
 
 float InputManager::getAxis(InputKey positiveKey, InputKey negativeKey) const
 {
-    float axisPlus = 0.0f;
-    float axisMinus = 0.0f;
+    float axis = 0.0f;
 
     if (isKeyDown(positiveKey))
     {
-        axisPlus += 1.0f;
+        axis += 1.0f;
     }
 
     if (isKeyDown(negativeKey))
     {
-        axisMinus += 1.0f;
+        axis -= 1.0f;
     }
 
-    return axisPlus - axisMinus;
+    return axis;
 }
 
 bool InputManager::mouseButtonDown(MouseButton button) const

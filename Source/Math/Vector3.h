@@ -3,6 +3,7 @@
 #include <iostream>
 
 struct Point3;
+struct Quaternion;
 
 struct Vector3
 {

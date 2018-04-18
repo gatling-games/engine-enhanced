@@ -7,6 +7,7 @@
 #include "Utils/Singleton.h"
 #include "Math\Vector2.h"
 #include "Math\Vector3.h"
+#include "Math\Quaternion.h"
 
 class Clock;
 
@@ -105,7 +106,8 @@ enum class InputKey
     PageUp = GLFW_KEY_PAGE_UP,
     PageDown = GLFW_KEY_PAGE_DOWN,
     Delete = GLFW_KEY_DELETE,
-    End = GLFW_KEY_END
+    End = GLFW_KEY_END,
+    Space = GLFW_KEY_SPACE,
 };
 
 enum class MouseButton
@@ -117,14 +119,16 @@ enum class MouseButton
 
 struct InputCmd
 {
-    float deltaTime;
-    Vector2 rotationVelocity;
-    Vector3 movementVelocity;
+    float deltaTime; // Elapsed time since last update
 
-    const unsigned char* joystickButtons;
-    const float* joystickAxes;
+    float forwardsMovement; // Desired movement forwards, relative to the helicopter
+    float sidewaysMovement; // Desired movement sideways, relative to the helicopter
+    float verticalMovement; // Desired movement vertically, relative to the world
 
-    // Add commands for shooting etc
+    float horizontalRotation; // Desired helicopter rotation horizontally, relative to the helicopter
+    float verticalRotation; // Desired helicopter rotation vertically, relative to the helicopter
+
+    Quaternion lookRotation; // Current camera orientation relative to helicopter
 };
 
 class InputManager : public Singleton<InputManager>
@@ -133,7 +137,11 @@ public:
     explicit InputManager(GLFWwindow* window);
 
     // Called every frame
-    void frameStart(const Clock* clock);
+    void frameStart();
+
+    // Sends the current input to all components in the scene
+    // This sends the input to the handleInput() component functions
+    void dispatchInput(float deltaTime) const;
 
     // Allows all input to be enabled and disabled.
     // This should be used when the game is paused, or the game panel does not have focus.
