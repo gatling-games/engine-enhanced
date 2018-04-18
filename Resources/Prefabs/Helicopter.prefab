@@ -2,7 +2,7 @@
     name = Helicopter
     Transform {
         Position = 673.81 63.0475 524.914
-        Rotation = 0.222197 -0.278208 -0.0663197 -0.932111
+        Rotation = 0 -0.286003 0 -0.958229
     }
     StaticMesh {
         mesh = Resources\Meshes\helicopter.obj
