@@ -247,31 +247,6 @@ Matrix4x4 Matrix4x4::perspective(float fov, float aspect, float near, float far)
     return mat;
 }
 
-Matrix4x4 Matrix4x4::perspectiveInverse(float fov, float aspect, float near, float far)
-{
-    // Transforms x,y,z from [0 to 1] range to [-1 to 1]
-    Matrix4x4 toNDC;
-    toNDC.setRow(0, 2.0f, 0.0f, 0.0f, -1.0f);
-    toNDC.setRow(1, 0.0f, 2.0f, 0.0f, -1.0f);
-    toNDC.setRow(2, 0.0f, 0.0f, 2.0f, -1.0f);
-    toNDC.setRow(3, 0.0f, 0.0f, 0.0f, 1.0f);
-
-    // Compute the size of the image plane
-    float halfFov = (fov / 2.0f) * ((float)M_PI / 180.0f);
-    float h = 2.0f * near * tan(halfFov);
-    float w = h * aspect;
-
-    // Create the inverse projection matrix
-    Matrix4x4 mat;
-    mat.setRow(0, w / (2.0f * near), 0.0f, 0.0f, 0.0f);
-    mat.setRow(1, 0.0f, h / (2.0f * near), 0.0f, 0.0f);
-    mat.setRow(2, 0.0f, 0.0f, 0.0f, 1.0f);
-    mat.setRow(3, 0.0f, 0.0f, -(far - near) / (2.0f * far * near), (far + near) / (2.0f * far * near));
-
-    // Convert to ndc, then use inverse projection
-    return mat * toNDC;
-}
-
 Matrix4x4 operator * (const Matrix4x4 &mat, float scalar)
 {
     Matrix4x4 result;

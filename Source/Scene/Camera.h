@@ -58,9 +58,6 @@ public:
     // Gets the combined world -> clip space transformation matrix
     Matrix4x4 getWorldToCameraMatrix(float aspectRatio, EyeType eye = EyeType::None) const;
 
-    // Gets the inverse of the world -> clip space matrix
-    Matrix4x4 getCameraToWorldMatrix(float aspectRatio, EyeType eye = EyeType::None) const;
-
 private:
     CameraType type_;
 

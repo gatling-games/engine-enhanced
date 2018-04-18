@@ -45,9 +45,6 @@ struct Matrix4x4
     // Constructs a perspective projection matrix
     // Z depth is in the range 0 to 1.
     static Matrix4x4 perspective(float fov, float aspectRatio, float near, float far);
-
-    // Constructs the inverse of a perspective projection matrix.
-    static Matrix4x4 perspectiveInverse(float fov, float aspectRatio, float near, float far);
 };
 
 // Matrix and scalar operations

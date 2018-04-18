@@ -115,31 +115,3 @@ Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio, EyeType eye) const
 
     return projection * eyeMat * worldToLocal;
 }
-
-Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio, EyeType eye) const
-{
-    const Transform* transform = gameObject()->findComponent<Transform>();
-    const Matrix4x4 localToWorld = transform->localToWorld();
-
-    Matrix4x4 inverseProjection;
-    if (type_ == CameraType::Perspective)
-    {
-        inverseProjection = Matrix4x4::perspectiveInverse(fov_, aspectRatio, nearPlane_, farPlane_);
-    }
-    else
-    {
-        // Not implemented
-        // We are only using ortho cameras for render-to-texture effects,
-        // and dont currently need to go camera space -> world space
-        return Matrix4x4::identity();
-    }
-
-    Matrix4x4 eyeMat = Matrix4x4::identity();
-    if (eye != EyeType::None)
-    {
-       //inverseProjection = VRManager::instance()->getProjectionMatrix(eye, nearPlane_, farPlane_);
-        eyeMat = VRManager::instance()->getInverseEyeMatrix(eye);
-    }
-
-    return localToWorld * eyeMat * inverseProjection;
-}

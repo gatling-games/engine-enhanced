@@ -77,7 +77,7 @@ SurfaceProperties unpackGBuffer(vec4 gbuffer0, vec4 gbuffer1)
         float depth = texture(_CameraDepthTexture, texcoord).r;
 
         // Construct the clip position of the pixel fragment
-        vec4 clipPos = vec4(texcoord, depth, 1.0);
+        vec4 clipPos = vec4(texcoord.xy * 2.0 - 1.0, 2.0 * depth - 1.0, 1.0);
 
         // Convert the clip pos to world space
         vec4 worldPos = _ClipToWorld * clipPos;

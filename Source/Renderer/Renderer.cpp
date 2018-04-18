@@ -294,19 +294,17 @@ void Renderer::updateCameraUniformBuffer(const Camera* camera, int targetFrameBu
         if (targetFrameBuffer == 0)
         {
             data.worldToClip = camera->getWorldToCameraMatrix(aspect, EyeType::LeftEye);
-            data.clipToWorld = camera->getCameraToWorldMatrix(aspect, EyeType::LeftEye);
         }
         else if (targetFrameBuffer == 1)
         {
             data.worldToClip = camera->getWorldToCameraMatrix(aspect, EyeType::RightEye);
-            data.clipToWorld = camera->getCameraToWorldMatrix(aspect, EyeType::RightEye);
         }
     }
     else
     {
         data.worldToClip = camera->getWorldToCameraMatrix(aspect);
-        data.clipToWorld = camera->getCameraToWorldMatrix(aspect);
     }
+    data.clipToWorld = data.worldToClip.invert();
 
     // Update the uniform buffer.
     cameraUniformBuffer_.update(data);
