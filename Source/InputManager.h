@@ -106,7 +106,8 @@ enum class InputKey
     PageUp = GLFW_KEY_PAGE_UP,
     PageDown = GLFW_KEY_PAGE_DOWN,
     Delete = GLFW_KEY_DELETE,
-    End = GLFW_KEY_END
+    End = GLFW_KEY_END,
+    Space = GLFW_KEY_SPACE,
 };
 
 enum class MouseButton
