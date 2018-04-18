@@ -117,6 +117,36 @@ enum class MouseButton
     Middle = GLFW_MOUSE_BUTTON_MIDDLE,
 };
 
+enum class JoystickAxis
+{
+    // Values are correct for an xbox 360 controller on windows
+
+    LeftStickHorizontal = 0,
+    LeftStickVertical = 1,
+    RightStickHorizontal = 2,
+    RightStickVertical = 3,
+};
+
+enum class JoystickButton
+{
+    // Values are correct for an xbox 360 controller on windows
+
+    A = 0,
+    B = 1,
+    X = 2,
+    Y = 3,
+    LeftBumper = 4,
+    RightBumper = 5,
+    Back = 6,
+    Start = 7,
+    LeftStick = 8,
+    RightStick = 9,
+    DPadUp = 10,
+    DPadRight = 11,
+    DPadDown = 12,
+    DPadLeft = 13
+};
+
 struct InputCmd
 {
     float deltaTime; // Elapsed time since last update
@@ -153,9 +183,18 @@ public:
     // Returns true if a key is not currently down
     bool isKeyUp(InputKey key) const;
 
+    // Returns true if a controller button is currently down.
+    bool isJoystickButtonDown(JoystickButton button) const;
+
     // Returns -1, 0, or 1 based on which keys are pressed.
     // Only positive = 1, only negative = -1, both/neither = 0
     float getAxis(InputKey positiveKey, InputKey negativeKey) const;
+
+    // Returns a value between -1 and 1, depending on the state of the axis,
+    // or on which buttons are pressed
+    // Only positive button = 1, only negative = -1, both/neither = 0
+    float getJoystickAxis(JoystickAxis axis) const;
+    float getJoystickAxis(JoystickButton positiveButton, JoystickButton negativeButton) const;
 
     // Returns true if the specified mouse button is currently pressed.
     bool mouseButtonDown(MouseButton button) const;
@@ -171,19 +210,10 @@ private:
     // When true, the input manager ignores all button presses.
     bool ignoringInput_;
 
-    // Arrays for holding pressed joystick buttons and last frame's joystick buttons
-    const unsigned char* joystickButtons_;
-    const unsigned char* previousFrameJoystickButtons_;
-
-    // Arrays for holding joystick axis data
-    const float* joystickAxes_;
-    const float* previousFrameJoystickAxes_;
-
     double mouseDeltaX_;
     double mouseDeltaY_;
     double prevMouseX_;
     double prevMouseY_;
 
-    void pollJoystick();
     void pollMouse();
 };
