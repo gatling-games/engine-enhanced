@@ -44,20 +44,31 @@ void Helicopter::serialize(PropertyTable &table)
 
 void Helicopter::handleInput(const InputCmd& inputs)
 {
-    // Get input axes (scale from -1 to 1)
-    Vector3 desiredVelocity;
-    desiredVelocity.z = inputs.forwardsMovement;
-    desiredVelocity.x = inputs.sidewaysMovement;
-    desiredVelocity.y = inputs.verticalMovement;
+    // We first need to find the world-space axes that the three inputs correspond with
+    Vector3 forwardsDir = transform_->forwards();
+    forwardsDir.y = 0.0f;
+    forwardsDir = forwardsDir.normalized();
+    Vector3 upwardsDir = Vector3::up();
+    Vector3 sidewaysDir = transform_->right();
+    sidewaysDir.y = 0.0f;
+    sidewaysDir = sidewaysDir.normalized();
+
+    // Combine the forwards and sideways velocities.
+    // The vertical is added later.
+    Vector3 desiredVelocity =
+        forwardsDir * inputs.forwardsMovement
+        + sidewaysDir * inputs.sidewaysMovement;
 
     // When the player moves diagonally, they can travel faster than 1
     // Normalize the horizontal movement to fix this
-    float horizontalMoveSqrd = Vector2(desiredVelocity.x, desiredVelocity.z).sqrMagnitude();
+    float horizontalMoveSqrd = desiredVelocity.sqrMagnitude();
     if (horizontalMoveSqrd > 1.0f)
     {
-        desiredVelocity.x /= sqrtf(horizontalMoveSqrd);
-        desiredVelocity.z /= sqrtf(horizontalMoveSqrd);
+        desiredVelocity = desiredVelocity.normalized();
     }
+
+    // Now the horizontal velocity has been clamped at 1, add the vertical movement
+    desiredVelocity += upwardsDir * inputs.verticalMovement;
 
     // Multiply desired velocity by max move speed
     desiredVelocity.x *= horizontalMaxSpeed_;
@@ -82,11 +93,6 @@ void Helicopter::handleInput(const InputCmd& inputs)
     {
         remainingPitch_ = std::max(remainingPitch_, 0.0f);
     }
-    // Determine the current horizontal rotation of the helicopter and change the rotation by it
-    Quaternion yawQuaternion = worldRotation_;
-    yawQuaternion.x = 0.0f;
-    yawQuaternion.z = 0.0f;
-    desiredVelocity = yawQuaternion * desiredVelocity;
 
     // Lerp world velocity and translate, modifying horizontal velocity to account for orientation
     worldVelocity_ = Vector3::lerp(worldVelocity_, desiredVelocity, 0.5f * inputs.deltaTime);
