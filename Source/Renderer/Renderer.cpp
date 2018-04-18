@@ -109,7 +109,7 @@ void Renderer::renderFrame(const Camera* camera)
         for (int cascade = 0; cascade < ShadowMap::CASCADE_COUNT; ++cascade)
         {
             shadowMap_.cascadeFramebuffer(cascade).use();
-            updateCameraUniformBuffer(shadowMap_.cascadeCamera(cascade), 0);
+            updateCameraUniformBuffer(shadowMap_.cascadeCamera(cascade), EyeType::None);
             executeGeometryPass(shadowMap_.cascadeCamera(cascade), SF_HighTessellation);
         }
     }
@@ -132,7 +132,8 @@ void Renderer::renderFrame(const Camera* camera)
     for (unsigned int fb = 0; fb < targetFramebuffers_.size(); ++fb)
     {
         // Set the camera parameters for the current camera + eye
-        updateCameraUniformBuffer(camera, fb);
+        const EyeType eye = (targetFramebuffers_.size() == 1) ? EyeType::None : (fb == 0 ? EyeType::LeftEye : EyeType::RightEye);
+        updateCameraUniformBuffer(camera, eye);
 
         // Each target framebuffer uses a different depth texture, so
         // bind the correct one to slot 15
@@ -276,34 +277,18 @@ void Renderer::updateSceneUniformBuffer() const
     sceneUniformBuffer_.update(data);
 }
 
-void Renderer::updateCameraUniformBuffer(const Camera* camera, int targetFrameBuffer) const
+void Renderer::updateCameraUniformBuffer(const Camera* camera, EyeType eye) const
 {
     // Find out the resolution and aspect ratio of the framebuffer
-    const float width = (float)targetFramebuffers_[targetFrameBuffer]->width();
-    const float height = (float)targetFramebuffers_[targetFrameBuffer]->height();
+    const float width = (float)targetFramebuffers_[0]->width();
+    const float height = (float)targetFramebuffers_[0]->height();
     const float aspect = width / height;
 
     // Gather the new contents of the camera buffer
     CameraUniformData data;
     data.screenResolution = Vector4(width, height, 1.0f / width, 1.0f / height);
     data.cameraPosition = Vector4(camera->gameObject()->transform()->positionWorld());
-
-    // If VR
-    if (targetFramebuffers_.size() == 2)
-    {
-        if (targetFrameBuffer == 0)
-        {
-            data.worldToClip = camera->getWorldToCameraMatrix(aspect, EyeType::LeftEye);
-        }
-        else if (targetFrameBuffer == 1)
-        {
-            data.worldToClip = camera->getWorldToCameraMatrix(aspect, EyeType::RightEye);
-        }
-    }
-    else
-    {
-        data.worldToClip = camera->getWorldToCameraMatrix(aspect);
-    }
+    data.worldToClip = camera->getWorldToCameraMatrix(aspect, eye);
     data.clipToWorld = data.worldToClip.invert();
 
     // Update the uniform buffer.

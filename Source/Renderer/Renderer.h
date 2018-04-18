@@ -91,7 +91,7 @@ private:
 
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;
-    void updateCameraUniformBuffer(const Camera* camera, int targetFrameBuffer) const;
+    void updateCameraUniformBuffer(const Camera* camera, EyeType eye) const;
     void updatePerDrawUniformBuffer(const Matrix4x4 &localToWorld, const Material* material) const;
     void updateTerrainUniformBuffer(const Terrain* terrain) const;
     void updateTerrainDetailsUniformBuffer(const DetailBatch& details) const;
