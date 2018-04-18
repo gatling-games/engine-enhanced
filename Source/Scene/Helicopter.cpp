@@ -65,11 +65,11 @@ void Helicopter::handleInput(const InputCmd& inputs)
     desiredVelocity.z *= horizontalMaxSpeed_;
 
     // Get yaw rotation based on mouse movement
-    float yaw = inputs.deltaPixelsX;
+    float yaw = inputs.horizontalRotation;
     remainingYaw_ += yaw;
 
     // Get pitch rotation based on mouse movement
-    float pitch = inputs.deltaPixelsY;
+    float pitch = inputs.verticalRotation;
     remainingPitch_ += pitch;
 
     // Clamp tilt to max angle of 45 degrees

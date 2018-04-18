@@ -125,9 +125,10 @@ struct InputCmd
     float sidewaysMovement; // Desired movement sideways, relative to the helicopter
     float verticalMovement; // Desired movement vertically, relative to the world
 
+    float horizontalRotation; // Desired helicopter rotation horizontally, relative to the helicopter
+    float verticalRotation; // Desired helicopter rotation vertically, relative to the helicopter
+
     Quaternion lookRotation; // Current camera orientation relative to helicopter
-    float deltaPixelsX; // Current helicopter rotational accelleration
-    float deltaPixelsY;
 };
 
 class InputManager : public Singleton<InputManager>

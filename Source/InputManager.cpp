@@ -42,9 +42,9 @@ void InputManager::dispatchInput(float deltaTime) const
     inputs.forwardsMovement = getAxis(InputKey::W, InputKey::S);
     inputs.sidewaysMovement = getAxis(InputKey::D, InputKey::A);
     inputs.verticalMovement = getAxis(InputKey::Space, InputKey::LCtrl);
+    inputs.horizontalRotation = mouseDeltaX();
+    inputs.verticalRotation = mouseDeltaY();
     inputs.lookRotation = Quaternion::identity();
-    inputs.deltaPixelsX = mouseDeltaX();
-    inputs.deltaPixelsY = mouseDeltaY();
 
     // The scene manager passes the input to all components
     // They can use the input by implementing the handleInput callback.
