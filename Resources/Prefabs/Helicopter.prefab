@@ -33,7 +33,7 @@
     children::1 {
         name = Main Camera
         Transform {
-            Position = 0.1 1.6 1.6
+            Position = 0 1.6 1.6
         }
         Camera {
         }
