@@ -91,6 +91,7 @@ void Renderer::renderFrame(const Camera* camera)
     cameraUniformBuffer_.use();
     perDrawUniformBuffer_.use();
     terrainUniformBuffer_.use();
+    terrainDetailsUniformBuffer_.use();
 
     // Ensure the contents of the uniform buffers is up to date
     // The per-draw buffer is handled separately
