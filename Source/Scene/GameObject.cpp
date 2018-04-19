@@ -13,6 +13,9 @@
 #include "Scene/Freecam.h"
 #include "Scene/Terrain.h"
 
+#include "Physics/SphereCollider.h"
+#include "Physics/BoxCollider.h"
+
 #include "Serialization/Prefab.h"
 
 #include "EditorManager.h"
@@ -164,6 +167,8 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Helicopter View")) createComponent<HelicopterView>();
         if (ImGui::Selectable("Shield")) createComponent<Shield>();
         if (ImGui::Selectable("Windmill")) createComponent<Windmill>();
+        if (ImGui::Selectable("Sphere Collider")) createComponent<SphereCollider>();
+        if (ImGui::Selectable("Box Collider")) createComponent<BoxCollider>();
 
         ImGui::EndPopup();
     }
@@ -391,6 +396,12 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "Windmill")
         return createComponent<Windmill>();
+
+    if (typeName == "SphereCollider")
+        return createComponent<SphereCollider>();
+
+    if (typeName == "BoxCollider")
+        return createComponent<BoxCollider>();
 
     return nullptr;
 }

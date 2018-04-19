@@ -18,6 +18,9 @@
     <ClInclude Include="Source\Importers\SceneImporter.h" />
     <ClInclude Include="Source\Math\Bounds.h" />
     <ClInclude Include="Source\Math\Random.h" />
+    <ClInclude Include="Source\Physics\BoxCollider.h" />
+    <ClInclude Include="Source\Physics\Collider.h" />
+    <ClInclude Include="Source\Physics\SphereCollider.h" />
     <ClInclude Include="Source\Renderer\Material.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
@@ -80,6 +83,9 @@
     <ClCompile Include="Source\Importers\SceneImporter.cpp" />
     <ClCompile Include="Source\Math\Bounds.cpp" />
     <ClCompile Include="Source\Math\Random.cpp" />
+    <ClCompile Include="Source\Physics\BoxCollider.cpp" />
+    <ClCompile Include="Source\Physics\Collider.cpp" />
+    <ClCompile Include="Source\Physics\SphereCollider.cpp" />
     <ClCompile Include="Source\Renderer\Material.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
