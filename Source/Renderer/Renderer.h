@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Renderer/Framebuffer.h"
 #include "Renderer/Shader.h"
 #include "Renderer/UniformBuffer.h"
@@ -17,8 +19,9 @@ public:
     // Creates a renderer that draws directly to the back buffer
     Renderer();
 
-    // Creates a renderer that draws to the specified framebuffer.
-    explicit Renderer(const Framebuffer* targetFramebuffer);
+    // Creates a renderer that draws to the specified framebuffer(s).
+    explicit Renderer(Framebuffer* targetFramebuffer);
+    explicit Renderer(std::vector<Framebuffer*> targetFramebuffers);
 
     ~Renderer();
 
@@ -28,11 +31,14 @@ public:
 
 private:
     // The framebuffer being rendered to
-    const Framebuffer* targetFramebuffer_;
+    const std::vector<Framebuffer*> targetFramebuffers_;
+
+    // The depth buffer texture ids for each framebuffer
+    std::vector<GLint> framebufferDepthTextures_;
 
     // The current GBuffer objects
     Texture* gbufferTextures_[GBUFFER_RENDER_TARGETS];
-    Framebuffer gbufferFramebuffer_;
+    std::vector<Framebuffer> gbufferFramebuffers_;
 
     // The shadow map rendering manager
     ShadowMap shadowMap_;
@@ -85,7 +91,7 @@ private:
 
     // Methods for updating the contents of uniform buffers
     void updateSceneUniformBuffer() const;
-    void updateCameraUniformBuffer(const Camera* camera) const;
+    void updateCameraUniformBuffer(const Camera* camera, EyeType eye) const;
     void updatePerDrawUniformBuffer(const Matrix4x4 &localToWorld, const Material* material) const;
     void updateTerrainUniformBuffer(const Terrain* terrain) const;
     void updateTerrainDetailsUniformBuffer(const DetailBatch& details) const;

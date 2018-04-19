@@ -45,7 +45,7 @@ public:
     void bind();
 
     // Moves the shadow map camera to match the specified view camera
-    void updatePosition(const Camera* viewCamera, float viewCameraAspect);
+    void updatePosition(const Camera* viewCamera, float viewCameraAspect, bool vr);
 
 private:
     // A single array texture stores all of the shadow cascades

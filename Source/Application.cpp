@@ -9,6 +9,7 @@
 #include "ResourceManager.h"
 #include "SceneManager.h"
 #include "RenderManager.h"
+#include "VRManager.h"
 
 Application::Application(const std::string &name, GLFWwindow* window)
     : name_(name),
@@ -22,6 +23,7 @@ Application::Application(const std::string &name, GLFWwindow* window)
     resourceManager_ = new ResourceManager("Resources/", "Build/CompiledResources");
     sceneManager_ = new SceneManager();
     renderManager_ = new RenderManager();
+    vrManager_ = new VRManager();
 
     // Create core classes
     clock_ = new Clock();
@@ -47,6 +49,7 @@ Application::~Application()
 
     // Delete modules in opposite order to
     // how they were created.
+    delete vrManager_;
     delete sceneManager_;
     delete editorManager_;
     delete inputManager_;
@@ -110,6 +113,7 @@ void Application::frameStart()
     clock_->frameStart();
     inputManager_->frameStart();
     sceneManager_->frameStart();
+    vrManager_->frameStart();
     resourceManager_->update();
 
     // When in play mode, dispatch user input

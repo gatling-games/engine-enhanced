@@ -28,6 +28,11 @@ struct Matrix4x4
     static Matrix4x4 rotation(const Quaternion &q);
     static Matrix4x4 scale(const Vector3 &s);
 
+    Matrix4x4 invert() const;
+    static float getCofactor(float m0, float m1, float m2,
+        float m3, float m4, float m5,
+        float m6, float m7, float m8);
+
     // Constructs a matrix for performing a scale, then a rotation, then a translation.
     static Matrix4x4 trs(const Vector3 &translation, const Quaternion &rotation, const Vector3 &scale);
 
@@ -40,9 +45,6 @@ struct Matrix4x4
     // Constructs a perspective projection matrix
     // Z depth is in the range 0 to 1.
     static Matrix4x4 perspective(float fov, float aspectRatio, float near, float far);
-
-    // Constructs the inverse of a perspective projection matrix.
-    static Matrix4x4 perspectiveInverse(float fov, float aspectRatio, float near, float far);
 };
 
 // Matrix and scalar operations

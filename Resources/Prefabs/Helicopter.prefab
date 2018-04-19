@@ -1,5 +1,16 @@
 {
     name = Helicopter
+    children::1 {
+        name = Main Camera
+        Transform {
+            Position = 0 1.6 1.6
+        }
+        Camera {
+        }
+        HelicopterView {
+            mouse_look_centring_rate = 4.643
+        }
+    }
     Transform {
         Position = 673.81 63.0475 524.914
         Rotation = 0 -0.286003 0 -0.958229
@@ -28,27 +39,6 @@
         Windmill {
             rotation_speed = -2000
             rotation_axis = 1
-        }
-    }
-    children::1 {
-        name = Main Camera
-        Transform {
-            Position = 0 1.6 1.6
-        }
-        Camera {
-        }
-        HelicopterView {
-            mouse_look_centring_rate = 4.643
-        }
-        children::0 {
-            name = Static Mesh
-            Transform {
-                Scale = 0.7 0.7 0.7
-            }
-            StaticMesh {
-                mesh = Resources\Meshes\sphere.obj
-                material = Resources\Materials\default.material
-            }
         }
     }
 }

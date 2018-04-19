@@ -6,6 +6,7 @@
 #include <math.h>
 
 #include "Scene/Transform.h"
+#include "VRManager.h"
 
 Camera::Camera(GameObject* gameObject)
     : Component(gameObject),
@@ -84,7 +85,7 @@ void Camera::setFov(float fov)
     fov_ = fov;
 }
 
-Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio) const
+Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio, EyeType eye) const
 {
     const Transform* transform = gameObject()->findComponent<Transform>();
     const Matrix4x4 worldToLocal = transform->worldToLocal();
@@ -104,26 +105,12 @@ Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio) const
         projection = Matrix4x4::orthographic(l, r, b, t, nearPlane_, farPlane_);
     }
 
-    return projection * worldToLocal;
-}
-
-Matrix4x4 Camera::getCameraToWorldMatrix(float aspectRatio) const
-{
-    const Transform* transform = gameObject()->findComponent<Transform>();
-    const Matrix4x4 localToWorld = transform->localToWorld();
-
-    Matrix4x4 inverseProjection;
-    if (type_ == CameraType::Perspective)
+    Matrix4x4 eyeMat = Matrix4x4::identity();
+    if(eye != EyeType::None)
     {
-        inverseProjection = Matrix4x4::perspectiveInverse(fov_, aspectRatio, nearPlane_, farPlane_);
-    }
-    else
-    {
-        // Not implemented
-        // We are only using ortho cameras for render-to-texture effects,
-        // and dont currently need to go camera space -> world space
-        return Matrix4x4::identity();
+        projection = VRManager::instance()->getProjectionMatrix(eye, nearPlane_, farPlane_);
+        eyeMat = VRManager::instance()->getEyeMatrix(eye);
     }
 
-    return localToWorld * inverseProjection;
+    return projection * eyeMat * worldToLocal;
 }

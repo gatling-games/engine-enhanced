@@ -71,6 +71,7 @@
     <ClInclude Include="Source\Utils\Clock.h" />
     <ClInclude Include="Source\Utils\ImGuiExtensions.h" />
     <ClInclude Include="Source\Utils\Singleton.h" />
+    <ClInclude Include="Source\VRManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Editor\MainWindowMenu.cpp" />
@@ -128,6 +129,7 @@
     <ClCompile Include="Source\Serialization\PropertyTable.cpp" />
     <ClCompile Include="Source\Utils\Clock.cpp" />
     <ClCompile Include="Source\Utils\ImGuiExtensions.cpp" />
+    <ClCompile Include="Source\VRManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\crunch\crnlib\crnlib.2008.vcxproj">
@@ -209,7 +211,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);NOMINMAX;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source/;Vendor/;Vendor/imgui/;Vendor/gl3w/%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source/;Vendor/;Vendor/imgui/;Vendor/gl3w/;Vendor/openvr/headers/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -225,7 +227,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);NOMINMAX;GL_GLEXT_PROTOTYPES</PreprocessorDefinitions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <AdditionalIncludeDirectories>Source/;Vendor/;Vendor/imgui/;Vendor/gl3w/%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source/;Vendor/;Vendor/imgui/;Vendor/gl3w/;Vendor/openvr/headers/;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

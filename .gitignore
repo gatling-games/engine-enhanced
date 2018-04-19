@@ -275,3 +275,6 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Allow VR binary
+!Vendor/openvr/bin

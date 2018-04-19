@@ -40,6 +40,13 @@ void glErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLs
         return;
     }
 
+    // Ignore errors relating to "Target doesn't match the texture's target."
+    // It's a bug in openvr, but doesnt actually break stuff
+    if(std::string(message).find("Target doesn't match the texture's target.") != std::string::npos)
+    {
+        return;
+    }
+
 #ifdef NDEBUG
     // Release mode - dont throw exceptions, just print an error.
     printf("GLError: %s\n", message);
@@ -75,6 +82,8 @@ int main(int argc, const char* argv[])
     int windowHeight = 1080;
     GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, "", NULL, NULL);
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(0);
+
     gl3wInit();
 
     // Register a callback for opengl errors.
