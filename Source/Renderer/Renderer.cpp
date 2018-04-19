@@ -86,6 +86,8 @@ Renderer::~Renderer()
 
 void Renderer::renderFrame(const Camera* camera)
 {
+    const bool vr = (targetFramebuffers_.size() > 1);
+
     // Ensure the correct uniform buffers are bound
     sceneUniformBuffer_.use();
     cameraUniformBuffer_.use();
@@ -104,7 +106,7 @@ void Renderer::renderFrame(const Camera* camera)
     // Render the shadow map prior to the main render passes
     if (RenderManager::instance()->filterFeatureList(SF_Shadows | SF_DebugShadows | SF_DebugShadowCascades) != 0)
     {
-        shadowMap_.updatePosition(camera, aspectRatio);
+        shadowMap_.updatePosition(camera, aspectRatio, vr);
         shadowMap_.bind();
 
         for (int cascade = 0; cascade < ShadowMap::CASCADE_COUNT; ++cascade)

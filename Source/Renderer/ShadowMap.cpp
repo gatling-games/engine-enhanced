@@ -6,6 +6,7 @@
 #include "Scene/GameObject.h"
 #include "Scene/Transform.h"
 #include "Scene/Camera.h"
+#include "VRManager.h"
 
 ShadowMap::ShadowMap()
     : texture_(TextureFormat::ShadowMap, RESOLUTION, RESOLUTION, CASCADE_COUNT),
@@ -45,7 +46,7 @@ void ShadowMap::bind()
     texture_.bind(10);
 }
 
-void ShadowMap::updatePosition(const Camera* viewCamera, float viewCameraAspect)
+void ShadowMap::updatePosition(const Camera* viewCamera, float viewCameraAspect, bool vr)
 {
     const Scene* scene = SceneManager::instance()->currentScene();
 
@@ -70,6 +71,11 @@ void ShadowMap::updatePosition(const Camera* viewCamera, float viewCameraAspect)
 
     // Compute the view to light matrix
     Matrix4x4 viewToLight = worldToLight * viewCamera->gameObject()->transform()->localToWorld();
+    if (vr)
+    {
+        // Ideally we should use matrix without the eye offset, but its close enough
+        viewToLight = viewToLight * VRManager::instance()->getEyeMatrix(EyeType::LeftEye).invert();
+    }
 
     // Set up each cascade camera size and centre
     for (int i = 0; i < CASCADE_COUNT; ++i)
