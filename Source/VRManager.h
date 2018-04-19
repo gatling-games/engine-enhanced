@@ -32,7 +32,6 @@ public:
     
     Matrix4x4 getProjectionMatrix(EyeType eye, float nearPlane, float farPlane) const;
     Matrix4x4 getEyeMatrix(EyeType eye) const;
-    Matrix4x4 getHmdMatrix() { return hmdPose_; }
 
 private:
     bool vrEnabled_;

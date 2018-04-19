@@ -110,7 +110,6 @@ Matrix4x4 Camera::getWorldToCameraMatrix(float aspectRatio, EyeType eye) const
     {
         projection = VRManager::instance()->getProjectionMatrix(eye, nearPlane_, farPlane_);
         eyeMat = VRManager::instance()->getEyeMatrix(eye);
-        eyeMat = eyeMat * VRManager::instance()->getHmdMatrix();
     }
 
     return projection * eyeMat * worldToLocal;

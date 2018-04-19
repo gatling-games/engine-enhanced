@@ -180,5 +180,7 @@ Matrix4x4 VRManager::getEyeMatrix(EyeType eye) const
     vr::HmdMatrix34_t em = hmd_->GetEyeToHeadTransform(eye == EyeType::LeftEye ? vr::Eye_Left : vr::Eye_Right);
     Matrix4x4 matrix = Matrix4x4::identity();
     matrix.setCol(3, -em.m[0][3], -em.m[1][3], -em.m[2][3], 1.0f);
-    return matrix;
+
+    // Merge the toeye matrix with the camera->head matrix
+    return matrix * hmdPose_;
 }
