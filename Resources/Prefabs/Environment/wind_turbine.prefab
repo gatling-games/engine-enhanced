@@ -1,7 +1,7 @@
 {
     name = wind_turbine
     children::0 {
-        name = Static Mesh
+        name = blades
         Transform {
             Position = -2.2 21.15 0
             Rotation = 0.804193 0 0 0.594369
@@ -13,6 +13,35 @@
         Windmill {
             rotation_speed = -79.128
         }
+        children::0 {
+            name = collider
+            Transform {
+            }
+            BoxCollider {
+                size = 0.615 8.596 1
+                offset = 0 4.474 0
+            }
+        }
+        children::1 {
+            name = collider
+            Transform {
+                Rotation = 0.86 0 0 0.510294
+            }
+            BoxCollider {
+                size = 0.615 8.596 1
+                offset = 0 4.474 0
+            }
+        }
+        children::2 {
+            name = collider
+            Transform {
+                Rotation = -0.869964 0 0 0.493115
+            }
+            BoxCollider {
+                size = 0.615 8.596 1
+                offset = 0 4.474 0
+            }
+        }
     }
     Transform {
         Position = 1234.79 269.27 1337.23
@@ -21,5 +50,12 @@
     StaticMesh {
         mesh = Resources\Meshes\turbine_tower.mesh
         material = Resources\Materials\Environment\wind_turbine.material
+    }
+    SphereCollider {
+        offset = 0 7.046 0
+    }
+    BoxCollider {
+        size = 1.634 30 1.645
+        offset = 0 7.046 0
     }
 }

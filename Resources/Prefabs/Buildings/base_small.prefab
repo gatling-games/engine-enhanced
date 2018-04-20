@@ -1,5 +1,9 @@
 {
     name = base_small
+    BoxCollider {
+        size = 8.024 17 8.006
+        offset = 0 5.203 0
+    }
     Transform {
         Position = 346 -5.9 86
         Scale = 4 4 4

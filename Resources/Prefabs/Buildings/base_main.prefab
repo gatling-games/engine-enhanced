@@ -1,14 +1,26 @@
 {
     name = base_main
-    StaticMesh {
-        mesh = Resources\Meshes\base_main.obj
-        material = Resources\Materials\cardboard.material
+    children::0 {
+        name = shield
+        Transform {
+        }
+        Shield {
+        }
+        SphereCollider {
+            radius = 70
+        }
     }
     Transform {
         Position = 662 0 372.8
         Rotation = 0 0.939714 0 0.341961
         Scale = 4 4 4
     }
-    Shield {
+    BoxCollider {
+        size = 31 20 31
+        offset = 0 3.604 0
+    }
+    StaticMesh {
+        mesh = Resources\Meshes\base_main.obj
+        material = Resources\Materials\cardboard.material
     }
 }
