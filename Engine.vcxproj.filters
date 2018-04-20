@@ -214,6 +214,7 @@
     <ClInclude Include="Source\Physics\BoxCollider.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\PhysicsManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -373,6 +374,7 @@
     <ClCompile Include="Source\Physics\BoxCollider.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Source\PhysicsManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\SkyboxPass.shader">
@@ -430,6 +432,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\Shield.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\PhysicsDebug.shader">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
