@@ -1,5 +1,6 @@
 #include "VRManager.h"
 #include "SceneManager.h"
+#include "Utils/Console.h"
 
 VRManager::VRManager()
     : vrEnabled_(false),
@@ -42,19 +43,19 @@ void VRManager::initVR()
 
     if(error != vr::VRInitError_None)
     {
-        printf("Error calling VR_GetGenericInterface \n");
+        log("Error calling VR_GetGenericInterface \n");
     }
 
     std::string driver = getTrackedDeviceString(hmd_, vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_TrackingSystemName_String);
     std::string display = getTrackedDeviceString(hmd_, vr::k_unTrackedDeviceIndex_Hmd, vr::Prop_SerialNumber_String);
-    printf("Connected to %s %s.\n", driver.c_str(), display.c_str());
+    log("Connected to %s %s.\n", driver.c_str(), display.c_str());
 }
 
 bool VRManager::initCompositor()
 {
     if (!vr::VRCompositor())
     {
-        printf("Compositor initialization failed");
+        log("Compositor initialization failed");
         return false;
     }
     return true;

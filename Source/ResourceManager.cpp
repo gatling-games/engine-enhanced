@@ -23,6 +23,7 @@
 #include "Renderer/Texture.h"
 #include "Serialization/Prefab.h"
 #include "Scene/Scene.h"
+#include "Utils/Console.h"
 
 std::string Resource::resourceName() const
 {
@@ -147,7 +148,7 @@ std::string ResourceManager::resourceIDToPath(ResourceID id) const
     }
 
     // Id not found
-    printf("Could not find path for resource %llu \n", id);
+    log("Could not find path for resource %llu \n", id);
     throw;
 }
 
@@ -254,7 +255,7 @@ void ResourceManager::removeDeletedResources()
         // Remove the file if it does not exist in the imported paths list.
         if (find(resourceImportedPaths_.begin(), resourceImportedPaths_.end(), filePath.string()) == resourceImportedPaths_.end())
         {
-            printf("Removing %s \n", filePath.string().c_str());
+            log("Removing %s \n", filePath.string().c_str());
             remove_all(filePath);
         }
     }
@@ -308,7 +309,7 @@ void ResourceManager::executeFilesystemScan()
 
 void ResourceManager::executeResourceImport(ResourceID id)
 {
-    printf("Executing resource import for resource %llu \n", id);
+    log("Executing resource import for resource %llu \n", id);
 
     // Get the source and imported path
     const std::string sourcePath = resourceIDToPath(id);
@@ -327,7 +328,7 @@ void ResourceManager::executeResourceImport(ResourceID id)
     // Trigger the importer
     if (!importer->importFile(sourcePath, outputPath))
     {
-        printf("Failed to import resource \n");
+        log("Failed to import resource \n");
         return;
     }
 
@@ -335,12 +336,12 @@ void ResourceManager::executeResourceImport(ResourceID id)
     std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
     loadQueue_.emplace(id);
 
-    printf("Resource import finished \n");
+    log("Resource import finished \n");
 }
 
 void ResourceManager::executeResourceLoad(ResourceID id)
 {
-    printf("Executing resource load for id %llu \n", id);
+    log("Executing resource load for id %llu \n", id);
 
     // Check if a matching resource is already loaded.
     Resource* resource = nullptr;
@@ -413,7 +414,7 @@ void ResourceManager::emptyImportQueue()
 
         // Import, without blocking other threads.
         resourceListsMutex_.unlock();
-        printf("Importing resource %s \n", resourceIDToPath(id).c_str());
+        log("Importing resource %s\n", resourceIDToPath(id).c_str());
         executeResourceImport(id);
     }
 }
@@ -466,7 +467,7 @@ ResourceImporter* ResourceManager::getImporter(const std::string &sourcePath) co
     }
 
     // No importer found.
-    printf("No importer found for %s \n", sourcePath.c_str());
+    log("No importer found for %s \n", sourcePath.c_str());
     return nullptr;
 }
 
@@ -482,6 +483,6 @@ ResourceInstantiationFunc ResourceManager::getInstantiationFunc(const std::strin
     }
 
     // No function found.
-    printf("No instantiation function found for %s \n", sourcePath.c_str());
+    log("No instantiation function found for %s \n", sourcePath.c_str());
     return nullptr;
 }

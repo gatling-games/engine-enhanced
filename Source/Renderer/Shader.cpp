@@ -10,6 +10,7 @@
 
 #include "ResourceManager.h"
 #include "RenderManager.h"
+#include "Utils/Console.h"
 
 ShaderInclude::ShaderInclude(ResourceID resourceID)
     : Resource(resourceID),
@@ -60,14 +61,14 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     GLuint vertexShader;
     if (!compileShader(GL_VERTEX_SHADER, vertexSource.c_str(), vertexShader))
     {
-        printf("Failed to compile vertex shader");
+        log("Failed to compile vertex shader");
     }
 
     // Attempt to compile the fragment shader code.
     GLuint fragmentShader;
     if (!compileShader(GL_FRAGMENT_SHADER, fragmentSource.c_str(), fragmentShader))
     {
-        printf("Failed to compile fragment shader");
+        log("Failed to compile fragment shader");
     }
 
     // Create and link the shader program.
@@ -82,7 +83,7 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
         GLuint tessEvaluationShader;
         if (!compileShader(GL_TESS_CONTROL_SHADER, tessEvaluationSource.c_str(), tessEvaluationShader))
         {
-            printf("Failed to compile tessellation control shader \n");
+            log("Failed to compile tessellation control shader \n");
         }
         else
         {
@@ -97,7 +98,7 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
         GLuint tessEvaluationShader;
         if(!compileShader(GL_TESS_EVALUATION_SHADER, tessEvaluationSource.c_str(), tessEvaluationShader))
         {
-            printf("Failed to compile tessellation evaluation shader \n");
+            log("Failed to compile tessellation evaluation shader \n");
         }
         else
         {
@@ -114,7 +115,7 @@ ShaderVariant::ShaderVariant(ShaderFeatureList features, const std::string &orig
     // Check that the program linking succeeded.
     if (!checkLinkerErrors(program_))
     {
-        printf("Failed to create program \n");
+        log("Failed to create program \n");
     }
 
     // We no longer need the vertex and fragment shader objects
@@ -265,7 +266,7 @@ bool ShaderVariant::compileShader(GLenum type, const char* shader, GLuint& id)
 
     if (!checkShaderErrors(id))
     {
-        printf("Error compiling shader with ID: %d \n", id);
+        log("Error compiling shader with ID: %d \n", id);
         return false;
     }
     return true;
@@ -282,10 +283,10 @@ bool ShaderVariant::checkShaderErrors(GLuint shaderID)
         GLint logLength;
         glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &logLength);
 
-        char* log = new char[logLength];
-        glGetShaderInfoLog(shaderID, logLength, NULL, log);
-        printf("Shader Error. Log: %s \n", log);
-        delete[] log;
+        char* outputLog = new char[logLength];
+        glGetShaderInfoLog(shaderID, logLength, NULL, outputLog);
+        log("Shader Error. Log: %s \n", outputLog);
+        delete[] outputLog;
 
         return false;
     }
@@ -305,10 +306,10 @@ bool ShaderVariant::checkLinkerErrors(GLuint programID)
         glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &logLength);
 
         //Print error
-        char* log = new char[logLength];
-        glGetProgramInfoLog(programID, logLength, NULL, log);
-        printf("Program link error. Log %s \n", log);
-        delete[] log;
+        char* outputLog = new char[logLength];
+        glGetProgramInfoLog(programID, logLength, NULL, outputLog);
+        log("Program link error. Log %s \n", outputLog);
+        delete[] outputLog;
 
         return false;
     }

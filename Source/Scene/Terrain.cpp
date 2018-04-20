@@ -9,6 +9,7 @@
 #include "Scene/Transform.h"
 #include "Serialization/Prefab.h"
 #include "Utils/Clock.h"
+#include "Utils/Console.h"
 
 void TerrainLayer::serialize(PropertyTable& table)
 {
@@ -475,7 +476,7 @@ void Terrain::generateObjectInstances(const TerrainObject& objectType)
         // Safety - if we have done a huge number of attempts, exit
         if (attempts > 100000)
         {
-            printf("Failed to place object type %s on terrain - too many attempts", objectType.prefab->resourceName().c_str());
+            log("Failed to place object type %s on terrain - too many attempts", objectType.prefab->resourceName().c_str());
             return;
         }
     }

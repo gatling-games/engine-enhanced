@@ -10,6 +10,7 @@
 #include "SceneManager.h"
 #include "RenderManager.h"
 #include "VRManager.h"
+#include "Utils/Console.h"
 
 Application::Application(const std::string &name, GLFWwindow* window)
     : name_(name),
@@ -36,9 +37,16 @@ Application::Application(const std::string &name, GLFWwindow* window)
     MainWindowMenu::instance()->addMenuItem("Game/Toggle Playing", [&]
     {
         if (isEditing())
+        {
             enterPlayMode();
+            log("Play mode entered.\n");
+        }
+            
         else
+        {
             enterEditMode();
+            log("Play mode exited.\n");
+        }
     }, [&] { return isPlaying(); });
 }
 

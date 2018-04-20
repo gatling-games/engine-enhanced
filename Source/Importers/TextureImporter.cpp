@@ -5,6 +5,8 @@
 #include <crunch/crnlib/crn_texture_conversion.h>
 #include <crunch/crnlib/crn_console.h>
 
+#include "Utils/Console.h"
+
 bool TextureImporter::importFile(const std::string &sourceFile, const std::string &outputFile) const
 {
 	// Read the texture file.
@@ -12,7 +14,7 @@ bool TextureImporter::importFile(const std::string &sourceFile, const std::strin
 	crnlib::mipmapped_texture sourceTexture;
 	if (!(sourceTexture.read_from_file(sourceFile.c_str(), sourceFormat)))
 	{
-		printf("- ERROR: Failed to read source file \n");
+		log("- ERROR: Failed to read source file \n");
 		return false;
 	}
 
@@ -44,7 +46,7 @@ bool TextureImporter::importFile(const std::string &sourceFile, const std::strin
 	crnlib::texture_conversion::convert_stats stats;
 	if (!process(settings, stats))
 	{
-		printf(" - ERROR: Texture conversion failed \n");
+		log(" - ERROR: Texture conversion failed \n");
 		return false;
 	}
 

@@ -1,9 +1,10 @@
 #include "MeshImporter.h"
 
-#include "Math\Vector3.h"
-#include "Math\Point3.h"
-#include "Math\Point2.h"
-#include "Renderer\Mesh.h"
+#include "Math/Vector3.h"
+#include "Math/Point3.h"
+#include "Math/Point2.h"
+#include "Renderer/Mesh.h"
+#include "Utils/Console.h"
 
 #include <assert.h>
 #include <vector>
@@ -31,7 +32,7 @@ bool MeshImporter::importFile(const std::string& sourceFile, const std::string& 
         return importDotMeshFile(sourceFile, outputFile);
     }
 
-    printf("MeshImporter cannot handle %s files \n", fileExtension.c_str());
+    log("MeshImporter cannot handle %s files \n", fileExtension.c_str());
     return false;
 }
 
@@ -275,7 +276,7 @@ bool MeshImporter::importDotMeshFile(const std::string &sourceFile, const std::s
     // Check for file reading errors
     if (file.fail())
     {
-        printf("Error reading mesh file \n");
+        log("Error reading mesh file \n");
         return false;
     }
 

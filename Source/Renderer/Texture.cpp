@@ -5,6 +5,7 @@
 #include <cassert>
 
 #include "imgui.h"
+#include "Utils/Console.h"
 
 // Ensure that srgb dxt parameters have been defined
 #ifndef GL_COMPRESSED_SRGB_S3TC_DXT1_EXT
@@ -233,8 +234,8 @@ void Texture::load(std::ifstream& file)
     assert(file.good());
     if (magicNumber != 0x20534444)
     {
-        printf("Failed to load texture \n");
-        printf("DDS magic number 0x%x incorrect \n", magicNumber);
+        log("Failed to load texture \n");
+        log("DDS magic number 0x%x incorrect \n", magicNumber);
         return;
     }
 
@@ -248,8 +249,8 @@ void Texture::load(std::ifstream& file)
     const int imageHeight = header.dwHeight;
     if (imageWidth < 1 || imageWidth > 65536 || imageHeight < 1 || imageHeight > 65536)
     {
-        printf("Failed to load texture \n");
-        printf("Image resolution %dx%d invalid \n", width_, height_);
+        log("Failed to load texture \n");
+        log("Image resolution %dx%d invalid \n", width_, height_);
         return;
     }
 
@@ -271,8 +272,8 @@ void Texture::load(std::ifstream& file)
     }
     else
     {
-        printf("Failed to load texture \n");
-        printf("Image format invalid \n");
+        log("Failed to load texture \n");
+        log("Image format invalid \n");
         return;
     }
 
@@ -280,8 +281,8 @@ void Texture::load(std::ifstream& file)
     const int mipLevels = header.dwMipMapCount;
     if (mipLevels <= 0 || mipLevels > 100)
     {
-        printf("Failed to load texture \n");
-        printf("Image levels %d invalid \n", levels_);
+        log("Failed to load texture \n");
+        log("Image levels %d invalid \n", levels_);
         return;
     }
 
