@@ -5,9 +5,10 @@
         Transform {
         }
         Shield {
+            radius = 35
         }
         SphereCollider {
-            radius = 70
+            radius = 35
         }
     }
     Transform {
