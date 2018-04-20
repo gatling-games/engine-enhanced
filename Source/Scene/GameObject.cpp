@@ -21,6 +21,7 @@
 #include "EditorManager.h"
 #include "Windmill.h"
 #include "HelicopterView.h"
+#include "Physics/Rigidbody.h"
 
 GameObject::GameObject()
     : GameObject("Blank GameObject")
@@ -169,6 +170,7 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Windmill")) createComponent<Windmill>();
         if (ImGui::Selectable("Sphere Collider")) createComponent<SphereCollider>();
         if (ImGui::Selectable("Box Collider")) createComponent<BoxCollider>();
+        if (ImGui::Selectable("Rigidbody")) createComponent<Rigidbody>();
 
         ImGui::EndPopup();
     }
@@ -402,6 +404,9 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "BoxCollider")
         return createComponent<BoxCollider>();
+
+    if (typeName == "Rigidbody")
+        return createComponent<Rigidbody>();
 
     return nullptr;
 }

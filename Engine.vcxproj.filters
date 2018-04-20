@@ -215,6 +215,9 @@
       <Filter>Physics</Filter>
     </ClInclude>
     <ClInclude Include="Source\PhysicsManager.h" />
+    <ClInclude Include="Source\Physics\Rigidbody.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -375,6 +378,9 @@
       <Filter>Physics</Filter>
     </ClCompile>
     <ClCompile Include="Source\PhysicsManager.cpp" />
+    <ClCompile Include="Source\Physics\Rigidbody.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\SkyboxPass.shader">
