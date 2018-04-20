@@ -5,9 +5,7 @@
 #include <vector>
 
 #include "Utils/Singleton.h"
-#include "Math\Vector2.h"
-#include "Math\Vector3.h"
-#include "Math\Quaternion.h"
+#include "Math/Quaternion.h"
 
 class Clock;
 
@@ -123,34 +121,34 @@ enum class JoystickAxis
     LeftStickVertical,
     RightStickHorizontal,
     RightStickVertical,
-	NumAxes
+    NumAxes
 };
 
 enum class JoystickButton
 {
-	A,
-	B,
-	X,
-	Y,
-	LeftBumper,
-	RightBumper,
-	Back,
-	Start,
-	LeftStick,
-	RightStick,
-	DPadUp,
-	DPadRight,
-	DPadDown,
-	DPadLeft,
-	NumButtons
+    A,
+    B,
+    X,
+    Y,
+    LeftBumper,
+    RightBumper,
+    Back,
+    Start,
+    LeftStick,
+    RightStick,
+    DPadUp,
+    DPadRight,
+    DPadDown,
+    DPadLeft,
+    NumButtons
 };
 
 struct JoystickMapping
 {
-	std::string name;
-	int axes[(int)JoystickAxis::NumAxes];
-	float axesSensitivity[(int)JoystickAxis::NumAxes];
-	int buttons[(int)JoystickButton::NumButtons];
+    std::string name;
+    int axes[(int)JoystickAxis::NumAxes];
+    float axesSensitivity[(int)JoystickAxis::NumAxes];
+    int buttons[(int)JoystickButton::NumButtons];
 };
 
 struct InputCmd
@@ -220,6 +218,8 @@ private:
     double mouseDeltaY_;
     double prevMouseX_;
     double prevMouseY_;
+
+    std::vector<JoystickMapping> mappings_;
 
     void pollMouse();
 };

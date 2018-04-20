@@ -3,7 +3,7 @@
 
 #include <GLFW/glfw3.h>
 
-#include "Utils\Clock.h"
+#include "Utils/Clock.h"
 
 InputManager::InputManager(GLFWwindow* window)
     : ignoringInput_(false)
@@ -15,6 +15,33 @@ InputManager::InputManager(GLFWwindow* window)
     glfwGetCursorPos(window, &prevMouseX_, &prevMouseY_);
     mouseDeltaX_ = 0.0;
     mouseDeltaY_ = 0.0;
+
+    // Setup Xbox Controller
+    JoystickMapping mapping;
+    mapping.name = "Xbox 360 Controller";
+    mapping.axes[(int)JoystickAxis::LeftStickHorizontal] = 0;
+    mapping.axes[(int)JoystickAxis::LeftStickVertical] = 1;
+    mapping.axes[(int)JoystickAxis::RightStickHorizontal] = 2;
+    mapping.axes[(int)JoystickAxis::RightStickVertical] = 3;
+
+    mapping.axesSensitivity[(int)JoystickAxis::LeftStickHorizontal] = 1.0f;
+    mapping.axesSensitivity[(int)JoystickAxis::LeftStickVertical] = 1.0f;
+    mapping.axesSensitivity[(int)JoystickAxis::RightStickHorizontal] = 5.0f;
+    mapping.axesSensitivity[(int)JoystickAxis::RightStickVertical] = -5.0f;
+    mappings_.push_back(mapping);
+
+    // Setup Hotas Joystick
+    mapping.name = "T.Flight Hotas X";
+    mapping.axes[(int)JoystickAxis::LeftStickHorizontal] = 0;
+    mapping.axes[(int)JoystickAxis::LeftStickVertical] = 1;
+    mapping.axes[(int)JoystickAxis::RightStickVertical] = 2;
+    mapping.axes[(int)JoystickAxis::RightStickHorizontal] = 3;
+
+    mapping.axesSensitivity[(int)JoystickAxis::LeftStickHorizontal] = 1.0f;
+    mapping.axesSensitivity[(int)JoystickAxis::LeftStickVertical] = -1.0f;
+    mapping.axesSensitivity[(int)JoystickAxis::RightStickHorizontal] = 3.0f;
+    mapping.axesSensitivity[(int)JoystickAxis::RightStickVertical] = 1.0f;
+    mappings_.push_back(mapping);
 }
 
 // Called every time a new frame starts, storing previous frame's input data
@@ -40,8 +67,8 @@ void InputManager::dispatchInput(float deltaTime) const
     if (fabs(inputs.forwardsMovement) < 0.001f) inputs.forwardsMovement = getJoystickAxis(JoystickAxis::LeftStickVertical);
     if (fabs(inputs.sidewaysMovement) < 0.001f) inputs.sidewaysMovement = getJoystickAxis(JoystickAxis::LeftStickHorizontal);
     if (fabs(inputs.verticalMovement) < 0.001f) inputs.verticalMovement = getJoystickAxis(JoystickButton::RightBumper, JoystickButton::LeftBumper);
-    if (fabs(inputs.horizontalRotation) < 0.001f) inputs.horizontalRotation = getJoystickAxis(JoystickAxis::RightStickHorizontal) * 5.0f;
-    if (fabs(inputs.verticalRotation) < 0.001f) inputs.verticalRotation = getJoystickAxis(JoystickAxis::RightStickVertical) * -5.0f;
+	if (fabs(inputs.horizontalRotation) < 0.001f) inputs.horizontalRotation = getJoystickAxis(JoystickAxis::RightStickHorizontal);
+	if (fabs(inputs.verticalRotation) < 0.001f) inputs.verticalRotation = getJoystickAxis(JoystickAxis::RightStickVertical);
 
     // The scene manager passes the input to all components
     // They can use the input by implementing the handleInput callback.
@@ -145,11 +172,19 @@ float InputManager::getJoystickAxis(JoystickAxis axis) const
             continue;
         }
 
-        // Read the axis value, and check if it is the biggest magnitude
-        // one for any controller that has been polled.
-        const float value = axesValues[(int)axis];
-        if(fabs(value) > fabs(max))
+		// Read the axis value, and check if it is the biggest magnitude
+        float value = 0.0f;
+
+        for (JoystickMapping mapping : mappings_)
         {
+            if (glfwGetJoystickName(joy) == mapping.name)
+            {
+                value = axesValues[mapping.axes[(int)axis]] * mapping.axesSensitivity[(int)axis];
+            }
+        }       
+        
+        if(fabs(value) > fabs(max))
+    	{
             max = value;
         }
     }
