@@ -9,8 +9,9 @@
 #include "ScenePanel.h"
 #include "ResourcesPanel.h"
 #include "PropertiesPanel.h"
+#include "Utils/Singleton.h"
 
-class MainWindow
+class MainWindow : public Singleton<MainWindow>
 {
 private:
     static const float GamePanelWidth;
