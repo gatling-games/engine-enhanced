@@ -5,7 +5,7 @@
 class Collider : public Component
 {
 public:
-    Collider(GameObject* gameObject);
+    explicit Collider(GameObject* gameObject);
 
 private:
 

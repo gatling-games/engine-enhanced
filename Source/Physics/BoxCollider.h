@@ -6,7 +6,7 @@
 class BoxCollider : public Collider
 {
 public:
-    BoxCollider(GameObject* gameObject);
+    explicit BoxCollider(GameObject* gameObject);
 
     void drawProperties() override;
     void serialize(PropertyTable& table) override;

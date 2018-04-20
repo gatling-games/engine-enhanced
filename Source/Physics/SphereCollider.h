@@ -6,7 +6,7 @@
 class SphereCollider : public Collider
 {
 public:
-    SphereCollider(GameObject* gameObject);
+    explicit SphereCollider(GameObject* gameObject);
 
     void drawProperties() override;
     void serialize(PropertyTable& table) override;
