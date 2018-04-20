@@ -28,6 +28,14 @@ InputManager::InputManager(GLFWwindow* window)
     mapping.axesSensitivity[(int)JoystickAxis::LeftStickVertical] = 1.0f;
     mapping.axesSensitivity[(int)JoystickAxis::RightStickHorizontal] = 5.0f;
     mapping.axesSensitivity[(int)JoystickAxis::RightStickVertical] = -5.0f;
+
+    mapping.buttons[(int)JoystickButton::A] = 0;
+    mapping.buttons[(int)JoystickButton::B] = 1;
+    mapping.buttons[(int)JoystickButton::X] = 2;
+    mapping.buttons[(int)JoystickButton::Y] = 3;
+    mapping.buttons[(int)JoystickButton::LeftBumper] = 4;
+    mapping.buttons[(int)JoystickButton::RightBumper] = 5;
+
     mappings_.push_back(mapping);
 
     // Setup Hotas Joystick
@@ -40,7 +48,15 @@ InputManager::InputManager(GLFWwindow* window)
     mapping.axesSensitivity[(int)JoystickAxis::LeftStickHorizontal] = 1.0f;
     mapping.axesSensitivity[(int)JoystickAxis::LeftStickVertical] = -1.0f;
     mapping.axesSensitivity[(int)JoystickAxis::RightStickHorizontal] = 3.0f;
-    mapping.axesSensitivity[(int)JoystickAxis::RightStickVertical] = 1.0f;
+    mapping.axesSensitivity[(int)JoystickAxis::RightStickVertical] = -1.5f;
+
+    mapping.buttons[(int)JoystickButton::A] = 0;
+    mapping.buttons[(int)JoystickButton::B] = 1;
+    mapping.buttons[(int)JoystickButton::X] = 2;
+    mapping.buttons[(int)JoystickButton::Y] = 3;
+    mapping.buttons[(int)JoystickButton::LeftBumper] = 5;
+    mapping.buttons[(int)JoystickButton::RightBumper] = 4;
+
     mappings_.push_back(mapping);
 }
 
@@ -121,8 +137,18 @@ bool InputManager::isJoystickButtonDown(JoystickButton button) const
             continue;
         }
 
+        int value = 0;
+
+        for (JoystickMapping mapping : mappings_)
+        {
+            if (glfwGetJoystickName(joy) == mapping.name)
+            {
+                value = mapping.buttons[(int)button];
+            }
+        }
+
         // Read the button value and see if it is down
-        if(buttonValues[(int)button] == GLFW_PRESS)
+        if(buttonValues[value] == GLFW_PRESS)
         {
             return true;
         }
