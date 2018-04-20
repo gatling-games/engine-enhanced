@@ -5,9 +5,7 @@
 #include <vector>
 
 #include "Utils/Singleton.h"
-#include "Math\Vector2.h"
-#include "Math\Vector3.h"
-#include "Math\Quaternion.h"
+#include "Math/Quaternion.h"
 
 class Clock;
 
@@ -119,32 +117,38 @@ enum class MouseButton
 
 enum class JoystickAxis
 {
-    // Values are correct for an xbox 360 controller on windows
-
-    LeftStickHorizontal = 0,
-    LeftStickVertical = 1,
-    RightStickHorizontal = 2,
-    RightStickVertical = 3,
+    LeftStickHorizontal,
+    LeftStickVertical,
+    RightStickHorizontal,
+    RightStickVertical,
+    NumAxes
 };
 
 enum class JoystickButton
 {
-    // Values are correct for an xbox 360 controller on windows
+    A,
+    B,
+    X,
+    Y,
+    LeftBumper,
+    RightBumper,
+    Back,
+    Start,
+    LeftStick,
+    RightStick,
+    DPadUp,
+    DPadRight,
+    DPadDown,
+    DPadLeft,
+    NumButtons
+};
 
-    A = 0,
-    B = 1,
-    X = 2,
-    Y = 3,
-    LeftBumper = 4,
-    RightBumper = 5,
-    Back = 6,
-    Start = 7,
-    LeftStick = 8,
-    RightStick = 9,
-    DPadUp = 10,
-    DPadRight = 11,
-    DPadDown = 12,
-    DPadLeft = 13
+struct JoystickMapping
+{
+    std::string name;
+    int axes[(int)JoystickAxis::NumAxes];
+    float axesSensitivity[(int)JoystickAxis::NumAxes];
+    int buttons[(int)JoystickButton::NumButtons];
 };
 
 struct InputCmd
@@ -214,6 +218,8 @@ private:
     double mouseDeltaY_;
     double prevMouseX_;
     double prevMouseY_;
+
+    std::vector<JoystickMapping> mappings_;
 
     void pollMouse();
 };
