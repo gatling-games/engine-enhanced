@@ -29,6 +29,10 @@ public:
     // of the specified camera.
     void renderFrame(const Camera* camera);
 
+    // Renders physics objects as wireframes on top 
+    // of the currently rendered objects.
+    void renderPhysicsObjects(const Camera* camera);
+
 private:
     // The framebuffer being rendered to
     const std::vector<Framebuffer*> targetFramebuffers_;
@@ -84,6 +88,11 @@ private:
 
     // The poisson disks used for ambient occlusion
     Vector4 poissonDisks_[16];
+
+    // Meshes and shaders used for rendering physics objects for debugging
+    Shader* physicsDebugShader_;
+    Mesh* physicsBoxMesh_;
+    Mesh* physicsSphereMesh_;
 
     // GBuffer management
     void createGBuffer();

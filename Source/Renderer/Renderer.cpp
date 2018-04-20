@@ -58,6 +58,11 @@ Renderer::Renderer(std::vector<Framebuffer*> targetFramebuffers)
     skyboxMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/skybox.obj");
     skyTransmittanceShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/Sky/PrecomputeTransmittance.shader");
 
+    // Load the resources needed for physics debugging
+    physicsDebugShader_ = ResourceManager::instance()->load<Shader>("Resources/Shaders/PhysicsDebug.shader");
+    physicsBoxMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/cube.obj");
+    physicsSphereMesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/sphere.obj");
+
     // Generate the sky transmittance lut on startup.
     // It should be ok for the entire app lifetime and shouldn't need to be remade.
     regenerateSkyTransmittanceLUT();
@@ -206,6 +211,43 @@ void Renderer::renderFrame(const Camera* camera)
         {
             executeShieldPass();
         }
+    }
+}
+
+void Renderer::renderPhysicsObjects(const Camera * camera)
+{
+    // Ensure the correct uniform buffers are bound
+    sceneUniformBuffer_.use();
+    cameraUniformBuffer_.use();
+    perDrawUniformBuffer_.use();
+
+    // Draw each of the bound framebuffers
+    // There is one per eye, so either 1 (no vr) or 2 (vr).
+    for (unsigned int fb = 0; fb < targetFramebuffers_.size(); ++fb)
+    {
+        // Set the camera parameters for the current camera + eye
+        const EyeType eye = (targetFramebuffers_.size() == 1) ? EyeType::None : (fb == 0 ? EyeType::LeftEye : EyeType::RightEye);
+        updateCameraUniformBuffer(camera, eye);
+
+        // Render to the final target
+        targetFramebuffers_[fb]->use();
+
+        // Render every physics object using wireframe mode.
+        physicsDebugShader_->bindVariant(ALL_SHADER_FEATURES);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        for (const BoxCollider* box : SceneManager::instance()->boxColliders())
+        {
+            updatePerDrawUniformBuffer(box->gameObject()->transform()->localToWorld() * Matrix4x4::translation(box->offset()) * Matrix4x4::scale(box->size()), nullptr);
+            physicsBoxMesh_->bind();
+            glDrawElements(GL_TRIANGLES, physicsBoxMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+        }
+        for (const SphereCollider* sphere : SceneManager::instance()->sphereColliders())
+        {
+            updatePerDrawUniformBuffer(sphere->gameObject()->transform()->localToWorld() * Matrix4x4::translation(sphere->offset())  * Matrix4x4::scale(Vector3(sphere->radius(), sphere->radius(), sphere->radius())), nullptr);
+            physicsSphereMesh_->bind();
+            glDrawElements(GL_TRIANGLES, physicsSphereMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
+        }
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 }
 
