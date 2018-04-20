@@ -42,13 +42,10 @@ void OutputPanel::clear()
     buffer_.clear(); lineOffsets_.clear();
 }
 
-void OutputPanel::log(const char* fmt, ...) IM_FMTARGS(2)
+void OutputPanel::log(const char* fmt, va_list args)
 {
     int old_size = buffer_.size();
-    va_list args;
-    va_start(args, fmt);
     buffer_.appendv(fmt, args);
-    va_end(args);
     for (int new_size = buffer_.size(); old_size < new_size; old_size++)
         if (buffer_[old_size] == '\n')
         {

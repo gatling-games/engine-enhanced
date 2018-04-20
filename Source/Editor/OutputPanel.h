@@ -11,7 +11,7 @@ public:
     virtual std::string name() const { return "Output Panel"; }
     virtual void draw();
 
-    void log(const char* fmt, ...);
+    void log(const char* fmt, va_list args);
 
 private:
     ImGuiTextBuffer     buffer_;
