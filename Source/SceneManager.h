@@ -54,6 +54,7 @@ public:
     const std::vector<StaticMesh*> staticMeshes() const;
     const Terrain* terrain() const;
     const std::vector<Shield*> shields() const;
+    const std::vector<Collider*> colliders() const;
     const std::vector<BoxCollider*> boxColliders() const;
     const std::vector<SphereCollider*> sphereColliders() const;
 

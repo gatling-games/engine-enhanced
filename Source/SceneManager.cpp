@@ -163,6 +163,22 @@ const std::vector<Shield*> SceneManager::shields() const
     return shields;
 }
 
+const std::vector<Collider*> SceneManager::colliders() const
+{
+    std::vector<Collider*> colliders;
+
+    for (GameObject* gameObject : gameObjects_)
+    {
+        Collider* collider = gameObject->findComponent<Collider>();
+        if (collider != nullptr)
+        {
+            colliders.push_back(collider);
+        }
+    }
+
+    return colliders;
+}
+
 const std::vector<BoxCollider*> SceneManager::boxColliders() const
 {
     std::vector<BoxCollider*> colliders;
