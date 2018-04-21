@@ -30,3 +30,8 @@ void SphereCollider::setOffset(const Vector3& offset)
 {
     offset_ = offset;
 }
+
+bool SphereCollider::checkForCollision(Point3 point, float radius, ColliderHit& hit) const
+{
+        return false;
+}

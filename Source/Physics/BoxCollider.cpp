@@ -30,3 +30,8 @@ void BoxCollider::setOffset(const Vector3& offset)
 {
     offset_ = offset;
 }
+
+bool BoxCollider::checkForCollision(Point3 point, float radius, ColliderHit& hit) const
+{
+    return false;
+}
