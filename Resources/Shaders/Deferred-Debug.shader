@@ -53,7 +53,7 @@ void main()
 #ifdef DEBUG_SHADOWS
     float distance = length(_CameraPosition.xyz - readGBufferWorldPos());
     vec3 worldPosition = readGBufferWorldPos();
-    fragColor = vec4(SampleSunShadow(worldPosition, distance) * clamp(dot(_LightDirection.xyz, surface.worldNormal) * 5.0, 0.0, 1.0));
+    fragColor = vec4(SampleSunShadow(worldPosition, distance) * clamp(dot(_LightDirectionIntensity.xyz, surface.worldNormal) * 5.0, 0.0, 1.0));
 #endif
 
     // Shadow cascade splits mode
