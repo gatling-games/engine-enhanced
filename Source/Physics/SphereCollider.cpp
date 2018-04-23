@@ -34,28 +34,22 @@ void SphereCollider::setOffset(const Vector3& offset)
     offset_ = offset;
 }
 
-bool SphereCollider::checkForCollision(Point3 point, float radius, ColliderHit& hit) const
+bool SphereCollider::checkForCollision(Point3 point, ColliderHit& hit) const
 {
-    // Get the local space centre of the collider in world space
-    const Point3 localSpaceCentre(offset_);
-    const Point3 worldSpaceCentre = gameObject()->transform()->localToWorld() * localSpaceCentre;
+    // Get the centre of the sphere collider in world space
+    const Point3 colliderCentre = gameObject()->transform()->localToWorld() * Point3(offset_);
 
-    // Find the vector between the two centres
-    const Vector3 colliderToPoint = point - worldSpaceCentre;
+    // Find the vector from the collider centre to the point
+    const Vector3 colliderToPoint = point - colliderCentre;
 
-    // Scale the radius by the transfrm scale
-    const float radiusScale = gameObject()->transform()->scaleWorld();
+    // Scale the radius by the transform scale
+	// This code assumes the scale is uniform in x, y and z
+    const float sphereColliderRadius = radius_ * gameObject()->transform()->scaleWorld().x;
 
     // A hit occurs if the 2 radii are greater than the distance between the colliders
-    if(colliderToPoint.magnitude() < (radius + radius_))
+    if(colliderToPoint.magnitude() < sphereColliderRadius)
     {
-        std::cout << "Point at " << point << std::endl;
-        std::cout << "Point radius " << radius << std::endl;
-        std::cout << "Collider at " << worldSpaceCentre << std::endl;
-        std::cout << "Collider radius " << radius_ << std::endl;
-        printf("Collision with %s \n", gameObject()->name().c_str());
-
-        hit.position = worldSpaceCentre + colliderToPoint.normalized() * radius_;
+        hit.position = colliderCentre + colliderToPoint.normalized() * sphereColliderRadius;
         hit.normal = colliderToPoint.normalized();
         return true;
     }
