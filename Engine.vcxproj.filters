@@ -218,6 +218,9 @@
     <ClInclude Include="Source\Physics\Rigidbody.h">
       <Filter>Physics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Physics\TerrainCollider.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -379,6 +382,9 @@
     </ClCompile>
     <ClCompile Include="Source\PhysicsManager.cpp" />
     <ClCompile Include="Source\Physics\Rigidbody.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Physics\TerrainCollider.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
   </ItemGroup>

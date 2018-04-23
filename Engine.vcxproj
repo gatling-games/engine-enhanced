@@ -23,6 +23,7 @@
     <ClInclude Include="Source\Physics\Collider.h" />
     <ClInclude Include="Source\Physics\Rigidbody.h" />
     <ClInclude Include="Source\Physics\SphereCollider.h" />
+    <ClInclude Include="Source\Physics\TerrainCollider.h" />
     <ClInclude Include="Source\Renderer\Material.h" />
     <ClInclude Include="Source\Renderer\Renderer.h" />
     <ClInclude Include="Source\Application.h" />
@@ -90,6 +91,7 @@
     <ClCompile Include="Source\Physics\Collider.cpp" />
     <ClCompile Include="Source\Physics\Rigidbody.cpp" />
     <ClCompile Include="Source\Physics\SphereCollider.cpp" />
+    <ClCompile Include="Source\Physics\TerrainCollider.cpp" />
     <ClCompile Include="Source\Renderer\Material.cpp" />
     <ClCompile Include="Source\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Application.cpp" />
