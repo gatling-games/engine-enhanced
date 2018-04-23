@@ -135,6 +135,9 @@ public:
     // Gets a list of all components attached to the gameobject
     const std::vector<Component*> componentList() const { return components_; }
 
+protected:
+	void removeComponent(Component* component);
+
 private:
     std::string name_;
     GameObjectFlagList flags_;
@@ -144,4 +147,6 @@ private:
 
     // The components that currently exist on the GameObject
     std::vector<Component*> components_;
+
+	friend class Component;
 };

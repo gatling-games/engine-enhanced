@@ -141,6 +141,17 @@ void GameObject::drawComponentsSection()
         // Put the component controls inside a drop down
         if (ImGui::CollapsingHeader(component->name().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
         {
+			if (component->name() != "Transform")
+			{
+				if (ImGui::Button("Remove Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 20.0f)))
+				{
+					// Remove component from gameobject and return from function
+					delete component;
+
+					return;
+				}
+			}
+
             component->drawProperties();
         }
     }
@@ -413,4 +424,14 @@ StaticMesh* GameObject::staticMesh() const
 Terrain* GameObject::terrain() const
 {
     return findComponent<Terrain>();
+}
+
+void GameObject::removeComponent(Component* discard)
+{
+	auto it = std::find(components_.begin(), components_.end(), discard);
+
+	if (it != components_.end())
+	{
+		components_.erase(it);
+	}
 }

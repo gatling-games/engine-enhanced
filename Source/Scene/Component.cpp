@@ -11,7 +11,7 @@ Component::Component(GameObject* gameObject)
 
 Component::~Component()
 {
-
+	gameObject()->removeComponent(this);
 }
 
 const std::string Component::name() const
