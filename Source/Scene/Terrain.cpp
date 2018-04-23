@@ -35,6 +35,7 @@ void TerrainObject::serialize(PropertyTable& table)
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
     heightMap_(TextureFormat::R16, HEIGHTMAP_RESOLUTION, HEIGHTMAP_RESOLUTION),
+    destructionMap_(TextureFormat::R8, HEIGHTMAP_RESOLUTION / 4, HEIGHTMAP_RESOLUTION / 4),
     detailAltitudeLimits_(Vector2(0.0f, 500.0f)),
     detailSlopeLimit_(0.0f),
     dimensions_(Vector3(1024.0f, 80.0f, 1024.0f)),

@@ -392,6 +392,7 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
         //Set mesh and heightmap
         terrain->mesh()->bind();
         terrain->heightmap()->bind(8);
+        terrain->destructionmap()->bind(9);
         updateTerrainUniformBuffer(terrain);
 
         // Render the terrain with tessellation

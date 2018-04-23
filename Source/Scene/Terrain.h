@@ -66,6 +66,7 @@ public:
 
     const Mesh* mesh() const { return mesh_; }
     const Texture* heightmap() const { return &heightMap_; }
+    const Texture* destructionmap() const { return &destructionMap_; }
     const Mesh* detailMesh() const { return detailMesh_; }
     const Material* detailMaterial() const { return detailMaterial_; }
 
@@ -88,6 +89,7 @@ public:
 private:
     Mesh* mesh_;
     Texture heightMap_;
+    Texture destructionMap_;
     Mesh* detailMesh_;
     Material* detailMaterial_;
     Vector2 detailScale_;
