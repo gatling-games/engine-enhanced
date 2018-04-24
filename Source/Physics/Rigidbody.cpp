@@ -37,13 +37,12 @@ void Rigidbody::update(float deltaTime)
     const Point3 rigidbodyPoint = gameObject()->transform()->positionWorld();
     for(Collider* collider : SceneManager::instance()->colliders())
     {
-        ColliderHit hit;
-        if(!collider->checkForCollision(rigidbodyPoint, hit))
+        if(collider->checkForCollision(rigidbodyPoint))
         {
-            continue;
+			gameObject()->transform()->translateWorld(velocity_ * -deltaTime);
+			velocity_ *= -0.7f;
+			return;
         }
-
-        velocity_ *= -0.7f;
     }
 }
 
