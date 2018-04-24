@@ -53,9 +53,11 @@ GameObject::GameObject(const std::string &name, Prefab* prefab)
 
 GameObject::~GameObject()
 {
-    for (Component* component : components_)
+	// Use a while loop, not a for loop, as the components list
+	//   is modified whenever a component gets deleted.
+	while(!components_.empty())
     {
-        delete component;
+        delete components_.back();
     }
 
     // Ensure the scene manager knows the object has been deleted.
