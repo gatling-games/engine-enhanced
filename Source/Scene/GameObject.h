@@ -6,6 +6,7 @@
 #include "Editor/EditableObject.h"
 #include "Serialization/SerializedObject.h"
 
+class Collider;
 class Component;
 class BitWriter;
 class BitReader;
@@ -75,7 +76,11 @@ public:
     // Called once per frame
     void update(float deltaTime);
 
+	// Dispatches an input command to all components on the gameobject
     void handleInput(const InputCmd& inputs);
+
+	// Dispatches a collision event to all components on the gameobject
+	void handleCollision(Collider* collider);
 
     // Looks for a component of the given type on the GameObject.
     // Returns nullptr if none is found.

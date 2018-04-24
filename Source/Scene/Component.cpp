@@ -34,6 +34,11 @@ void Component::handleInput(const InputCmd&)
     // Do nothing
 }
 
+void Component::handleCollision(Collider*)
+{
+	// Do nothing
+}
+
 void Component::drawProperties()
 {
 	ImGui::Text("%s", "This component has no properties.");

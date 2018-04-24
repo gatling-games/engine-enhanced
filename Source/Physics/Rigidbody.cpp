@@ -8,20 +8,9 @@
 
 Rigidbody::Rigidbody(GameObject* gameObject)
     : Component(gameObject),
-    simulating_(true),
     velocity_(Vector3::zero())
 {
 
-}
-
-void Rigidbody::drawProperties()
-{
-    ImGui::Checkbox("Simulating", &simulating_);
-}
-
-void Rigidbody::serialize(PropertyTable& table)
-{
-    table.serialize("simulating", simulating_, true);
 }
 
 void Rigidbody::update(float deltaTime)
@@ -38,17 +27,22 @@ void Rigidbody::update(float deltaTime)
     for(Collider* collider : SceneManager::instance()->colliders())
     {
         if(collider->checkForCollision(rigidbodyPoint))
-        {
+		{
+			// Move the rigidbody back one timestep to before there was a collision
 			gameObject()->transform()->translateWorld(velocity_ * -deltaTime);
+
+			// Make the rigidbody velocity change to simulate a bounce
+			// Note - This is basic, we should instead split the velocity into components
+			//              that are parallel and perpendicular with the collider normal
 			velocity_ *= -0.7f;
+
+			// Call the handleCollision callbacks
+			gameObject()->handleCollision(collider);
+
+			// Limit to one collision per frame
 			return;
         }
     }
-}
-
-void Rigidbody::setSimulating(bool value)
-{
-    simulating_ = value;
 }
 
 void Rigidbody::setVelocity(const Vector3& value)

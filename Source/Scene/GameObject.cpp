@@ -359,6 +359,14 @@ void GameObject::handleInput(const InputCmd& inputs)
     }
 }
 
+void GameObject::handleCollision(Collider* collider)
+{
+	for(Component* component : components_)
+	{
+		component->handleCollision(collider);
+	}
+}
+
 Component* GameObject::findComponent(const std::string &typeName)
 {
     for (Component* component : components_)
