@@ -58,9 +58,11 @@ GameObject::GameObject(const std::string &name, Prefab* prefab)
 
 GameObject::~GameObject()
 {
-    for (Component* component : components_)
+	// Use a while loop, not a for loop, as the components list
+	//   is modified whenever a component gets deleted.
+	while(!components_.empty())
     {
-        delete component;
+        delete components_.back();
     }
 
     // Ensure the scene manager knows the object has been deleted.
@@ -144,9 +146,19 @@ void GameObject::drawComponentsSection()
         ImGui::Spacing();
 
         // Put the component controls inside a drop down
-        if (ImGui::CollapsingHeader(component->name().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-        {
-            component->drawProperties();
+		if (ImGui::CollapsingHeader(component->name().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			// Display a remove component button
+			// This must not be shown for transform components, they cannot be removed.
+			if (static_cast<Transform*>(component) != nullptr
+				&& ImGui::Button("Remove Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 20.0f)))
+			{
+				delete component;
+			}
+			else
+			{
+				component->drawProperties();
+			}
         }
     }
 }
@@ -442,4 +454,14 @@ StaticMesh* GameObject::staticMesh() const
 Terrain* GameObject::terrain() const
 {
     return findComponent<Terrain>();
+}
+
+void GameObject::removeComponent(Component* discard)
+{
+	auto it = std::find(components_.begin(), components_.end(), discard);
+
+	if (it != components_.end())
+	{
+		components_.erase(it);
+	}
 }
