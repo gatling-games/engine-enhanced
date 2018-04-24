@@ -139,20 +139,19 @@ void GameObject::drawComponentsSection()
         ImGui::Spacing();
 
         // Put the component controls inside a drop down
-        if (ImGui::CollapsingHeader(component->name().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
-        {
-			if (component->name() != "Transform")
+		if (ImGui::CollapsingHeader(component->name().c_str(), ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			// Display a remove component button
+			// This must not be shown for transform components, they cannot be removed.
+			if (static_cast<Transform*>(component) != nullptr
+				&& ImGui::Button("Remove Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 20.0f)))
 			{
-				if (ImGui::Button("Remove Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 20.0f)))
-				{
-					// Remove component from gameobject and return from function
-					delete component;
-
-					return;
-				}
+				delete component;
 			}
-
-            component->drawProperties();
+			else
+			{
+				component->drawProperties();
+			}
         }
     }
 }
