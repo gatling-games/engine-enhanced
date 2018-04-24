@@ -4,6 +4,7 @@
 #include "Serialization/SerializedObject.h"
 #include "Serialization/PropertyTable.h"
 
+class Collider;
 struct InputCmd;
 
 // The base class for every component that is attached to a GameObject.
@@ -29,6 +30,9 @@ public:
 
     // Handle input
     virtual void handleInput(const InputCmd& inputs);
+
+	// Called when a rigidbody on this gameobject detects an intersection with a collider
+	virtual void handleCollision(Collider* collider);
 
     // Used to draw the imgui properties section
 	virtual void drawProperties();

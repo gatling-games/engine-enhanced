@@ -131,6 +131,7 @@ private:
     // Generates detail positions for the given detail batch
     void generateDetailPositions(DetailBatch &batch, uint32_t seed) const;
 
+public:
     // Gets the heightmap height at a specified point
     // The x and z coordinates are in world space.
     float sampleHeightmap(float x, float z) const;

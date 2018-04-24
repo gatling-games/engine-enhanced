@@ -521,6 +521,13 @@ void Terrain::generateDetailPositions(DetailBatch& batch, uint32_t seed) const
 
 float Terrain::sampleHeightmap(float x, float z) const
 {
+	// Clamp the x and z to the terrain dimensions
+	if (x < 0.0f) x = 0.0f;
+	if (x > dimensions_.x) x = dimensions_.x;
+	if (z < 0.0f) z = 0.0f;
+	if (z > dimensions_.z) z = dimensions_.z;
+
+	// Now sample the correct heightmap texel
     int xTexel = (int)((x / dimensions_.x) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
     int zTexel = (int)((z / dimensions_.z) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
     return heights_[xTexel + zTexel * HEIGHTMAP_RESOLUTION] - waterDepth_;
@@ -528,6 +535,13 @@ float Terrain::sampleHeightmap(float x, float z) const
 
 Vector3 Terrain::sampleHeightmapNormal(float x, float z) const
 {
+	// Clamp the x and z to the terrain dimensions
+	if (x < 1.0f) x = 0.0f;
+	if (x > dimensions_.x) x = dimensions_.x;
+	if (z < 1.0f) z = 0.0f;
+	if (z > dimensions_.z) z = dimensions_.z;
+
+	// Now sample the correct heightmap texels and perform finite difference
     int xTexel = (int)((x / dimensions_.x) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
     int zTexel = (int)((z / dimensions_.z) * (HEIGHTMAP_RESOLUTION - 1) + 0.5f);
     int x1Texel = std::max(xTexel - 1, 0);

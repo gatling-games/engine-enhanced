@@ -31,6 +31,9 @@
     <Filter Include="Serialization">
       <UniqueIdentifier>{b18a182e-0f5d-4fe0-b4e8-5f9f260f20dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{da7052f0-2df9-48f8-b88e-e815408f13a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Math\Matrix4x4.h">
@@ -202,6 +205,22 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\VRManager.h" />
+    <ClInclude Include="Source\Physics\Collider.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics\SphereCollider.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics\BoxCollider.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\PhysicsManager.h" />
+    <ClInclude Include="Source\Physics\Rigidbody.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Physics\TerrainCollider.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -352,6 +371,22 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\VRManager.cpp" />
+    <ClCompile Include="Source\Physics\Collider.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Physics\SphereCollider.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Physics\BoxCollider.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\PhysicsManager.cpp" />
+    <ClCompile Include="Source\Physics\Rigidbody.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Physics\TerrainCollider.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Shaders\SkyboxPass.shader">
@@ -409,6 +444,9 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Resources\Shaders\Shield.shader">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Resources\Shaders\PhysicsDebug.shader">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

@@ -9,6 +9,8 @@
 #include "Scene/StaticMesh.h"
 #include "Scene/Terrain.h"
 #include "Scene/Shield.h"
+#include "Physics/BoxCollider.h"
+#include "Physics/SphereCollider.h"
 
 struct InputCmd;
 
@@ -52,6 +54,9 @@ public:
     const std::vector<StaticMesh*> staticMeshes() const;
     const Terrain* terrain() const;
     const std::vector<Shield*> shields() const;
+    const std::vector<Collider*> colliders() const;
+    const std::vector<BoxCollider*> boxColliders() const;
+    const std::vector<SphereCollider*> sphereColliders() const;
 
 private:
     // The currently loaded scene

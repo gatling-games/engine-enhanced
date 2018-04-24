@@ -7,6 +7,7 @@
 #include "InputManager.h"
 #include "Scene/Freecam.h"
 #include "Editor/MainWindowMenu.h"
+#include "PhysicsManager.h"
 
 GamePanel::GamePanel()
     : frameBuffer_(nullptr)
@@ -70,6 +71,12 @@ void GamePanel::draw()
     // Re-render the framebuffer on each draw
     // Use the game panel camera in edit mode, and the scene main camera in play mode
     renderer_->renderFrame(usingSceneCamera ? camera_ : SceneManager::instance()->mainCamera());
+
+    // Render physics debugging on top if requested
+    if (PhysicsManager::instance()->physicsDebugEnabled())
+    {
+        renderer_->renderPhysicsObjects(usingSceneCamera ? camera_ : SceneManager::instance()->mainCamera());
+    }
 
     // Draw the texture
     ImGui::Image((ImTextureID)(uint64_t)colorBuffer_->glid(), ImGui::GetContentRegionAvail(), ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));

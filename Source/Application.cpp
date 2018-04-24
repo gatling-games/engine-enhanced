@@ -10,6 +10,7 @@
 #include "SceneManager.h"
 #include "RenderManager.h"
 #include "VRManager.h"
+#include "PhysicsManager.h"
 
 Application::Application(const std::string &name, GLFWwindow* window)
     : name_(name),
@@ -24,6 +25,7 @@ Application::Application(const std::string &name, GLFWwindow* window)
     sceneManager_ = new SceneManager();
     renderManager_ = new RenderManager();
     vrManager_ = new VRManager();
+    physicsManager_ = new PhysicsManager();
 
     // Create core classes
     clock_ = new Clock();
@@ -49,6 +51,7 @@ Application::~Application()
 
     // Delete modules in opposite order to
     // how they were created.
+    delete physicsManager_;
     delete vrManager_;
     delete sceneManager_;
     delete editorManager_;

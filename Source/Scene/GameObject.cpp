@@ -13,11 +13,16 @@
 #include "Scene/Freecam.h"
 #include "Scene/Terrain.h"
 
+#include "Physics/SphereCollider.h"
+#include "Physics/BoxCollider.h"
+
 #include "Serialization/Prefab.h"
 
 #include "EditorManager.h"
 #include "Windmill.h"
 #include "HelicopterView.h"
+#include "Physics/Rigidbody.h"
+#include "Physics/TerrainCollider.h"
 
 GameObject::GameObject()
     : GameObject("Blank GameObject")
@@ -164,6 +169,10 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Helicopter View")) createComponent<HelicopterView>();
         if (ImGui::Selectable("Shield")) createComponent<Shield>();
         if (ImGui::Selectable("Windmill")) createComponent<Windmill>();
+        if (ImGui::Selectable("Sphere Collider")) createComponent<SphereCollider>();
+        if (ImGui::Selectable("Box Collider")) createComponent<BoxCollider>();
+        if (ImGui::Selectable("Rigidbody")) createComponent<Rigidbody>();
+		if (ImGui::Selectable("Terrain Collider")) createComponent<TerrainCollider>();
 
         ImGui::EndPopup();
     }
@@ -350,6 +359,14 @@ void GameObject::handleInput(const InputCmd& inputs)
     }
 }
 
+void GameObject::handleCollision(Collider* collider)
+{
+	for(Component* component : components_)
+	{
+		component->handleCollision(collider);
+	}
+}
+
 Component* GameObject::findComponent(const std::string &typeName)
 {
     for (Component* component : components_)
@@ -391,6 +408,18 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "Windmill")
         return createComponent<Windmill>();
+
+    if (typeName == "SphereCollider")
+        return createComponent<SphereCollider>();
+
+    if (typeName == "BoxCollider")
+        return createComponent<BoxCollider>();
+
+    if (typeName == "Rigidbody")
+        return createComponent<Rigidbody>();
+
+	if (typeName == "TerrainCollider")
+		return createComponent<TerrainCollider>();
 
     return nullptr;
 }

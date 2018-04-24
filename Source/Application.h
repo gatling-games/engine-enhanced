@@ -13,6 +13,7 @@ class ResourceManager;
 class SceneManager;
 class RenderManager;
 class VRManager;
+class PhysicsManager;
 
 enum class ApplicationMode
 {
@@ -63,6 +64,7 @@ private:
     SceneManager* sceneManager_;
     RenderManager* renderManager_;
     VRManager* vrManager_;
+    PhysicsManager* physicsManager_;
 
     // The clock manager
     Clock* clock_;
