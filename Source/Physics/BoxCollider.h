@@ -22,7 +22,7 @@ public:
     void setOffset(const Vector3 &offset);
 
     // Checks if the sphere is intersecting with a point with the specified radius.
-    bool checkForCollision(Point3 point, ColliderHit &hit) const override;
+    bool checkForCollision(const Point3 &point) const override;
 
 private:
     Vector3 size_;

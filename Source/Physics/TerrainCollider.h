@@ -9,5 +9,5 @@ public:
 	explicit TerrainCollider(GameObject* gameObject);
 
 	// Checks if the terrain is intersecting with a point
-	bool checkForCollision(Point3 point, ColliderHit &hit) const override;
+	bool checkForCollision(const Point3 &point) const override;
 };

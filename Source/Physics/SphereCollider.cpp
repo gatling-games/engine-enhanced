@@ -34,27 +34,11 @@ void SphereCollider::setOffset(const Vector3& offset)
     offset_ = offset;
 }
 
-bool SphereCollider::checkForCollision(Point3 point, ColliderHit& hit) const
+bool SphereCollider::checkForCollision(const Point3 &point) const
 {
-    // Get the centre of the sphere collider in world space
-    const Point3 colliderCentre = gameObject()->transform()->localToWorld() * Point3(offset_);
+	// Put the point into local space
+	const Point3 p = gameObject()->transform()->worldToLocal() * point;
 
-    // Find the vector from the collider centre to the point
-    const Vector3 colliderToPoint = point - colliderCentre;
-
-    // Scale the radius by the transform scale
-	// This code assumes the scale is uniform in x, y and z
-    const float sphereColliderRadius = radius_ * gameObject()->transform()->scaleWorld().x;
-
-    // A hit occurs if the 2 radii are greater than the distance between the colliders
-    if(colliderToPoint.magnitude() < sphereColliderRadius)
-    {
-        hit.position = colliderCentre + colliderToPoint.normalized() * sphereColliderRadius;
-        hit.normal = colliderToPoint.normalized();
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+	// Check it against the sphere
+	return (Point3::sqrDistance(Point3::origin(), p) < radius_ * radius_);
 }
