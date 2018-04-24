@@ -68,7 +68,8 @@ void main()
         float heightmapHeight = sampleHeightmap(samplingPosition);
 
         // If the point is lower than the heightmap, it isnt visible
-        if (heightmapHeight < worldPosition.y)
+        const float bias = 0.0005;
+        if (heightmapHeight < worldPosition.y + bias)
         {
             sum += 1.0;
         }
