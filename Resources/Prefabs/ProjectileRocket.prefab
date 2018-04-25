@@ -1,0 +1,15 @@
+{
+    name = Blank GameObject
+    Transform {
+        Position = 0 123.9 0
+        Scale = 10 10 10
+    }
+    StaticMesh {
+        mesh = Resources\Meshes\rocket.obj
+        material = Resources\Materials\cardboard.material
+    }
+    Rocket {
+    }
+    Rigidbody {
+    }
+}
