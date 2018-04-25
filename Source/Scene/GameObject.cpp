@@ -13,6 +13,7 @@
 #include "Scene/Freecam.h"
 #include "Scene/Terrain.h"
 #include "Scene/StaticTurret.h"
+#include "Scene/Rocket.h"
 
 #include "Physics/SphereCollider.h"
 #include "Physics/BoxCollider.h"
@@ -186,6 +187,7 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Rigidbody")) createComponent<Rigidbody>();
         if (ImGui::Selectable("Terrain Collider")) createComponent<TerrainCollider>();
         if (ImGui::Selectable("Static Turret")) createComponent<StaticTurret>();
+        if (ImGui::Selectable("Rocket")) createComponent<Rocket>();
 
         ImGui::EndPopup();
     }
@@ -436,6 +438,9 @@ Component* GameObject::createComponent(const std::string &typeName)
 
 	if (typeName == "TerrainCollider")
 		return createComponent<TerrainCollider>();
+
+    if (typeName == "Rocket")
+        return createComponent<Rocket>();
 
     return nullptr;
 }

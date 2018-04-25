@@ -60,6 +60,7 @@
     <ClInclude Include="Source\Scene\GameObject.h" />
     <ClInclude Include="Source\Scene\Helicopter.h" />
     <ClInclude Include="Source\Scene\HelicopterView.h" />
+    <ClInclude Include="Source\Scene\Rocket.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Scene\Shield.h" />
     <ClInclude Include="Source\Scene\StaticMesh.h" />
@@ -127,6 +128,7 @@
     <ClCompile Include="Source\Scene\GameObject.cpp" />
     <ClCompile Include="Source\Scene\Helicopter.cpp" />
     <ClCompile Include="Source\Scene\HelicopterView.cpp" />
+    <ClCompile Include="Source\Scene\Rocket.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Scene\Shield.cpp" />
     <ClCompile Include="Source\Scene\StaticMesh.cpp" />
