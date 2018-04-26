@@ -46,15 +46,7 @@ void StaticTurret::update(float deltaTime)
 
     // Vector from turret to chopper
     Vector3 chopperVector = chopperPosition - turretPosition;
-
-    // Vector representing turret's vertical and lateral view vectors
-    Vector3 verticalViewVector = Vector3(0.0f, transform_->forwards().y, 0.0f);
-    Vector3 lateralViewVector = Vector3(transform_->forwards().x, 0.0f, transform_->forwards().z).normalized();
-
-    // Separate vectors representing direction to chopper's lateral and vertical positions
-    Vector3 verticalChopperVector = Vector3(transform_->forwards().x, chopperVector.y, transform_->forwards().z).normalized();
-    Vector3 lateralChopperVector = Vector3(chopperVector.x, 0.0f, chopperVector.z).normalized();
-
+    
     // Magnitude of lateral chopper vector for trigonometry
     float chopperXZ = sqrt((chopperVector.x * chopperVector.x) + (chopperVector.z * chopperVector.z));
 
@@ -62,6 +54,11 @@ void StaticTurret::update(float deltaTime)
     float verticalAngle = atan2f(chopperVector.y, chopperXZ) * (-180.0f / (float)M_PI);
     float lateralAngle = atan2f(chopperVector.x, chopperVector.z) * (180.0f / (float)M_PI);
 
-    // Set rotation to point at helicopter
-    transform_->setRotationLocal(Quaternion::euler(verticalAngle, lateralAngle, 0.0f));
+    // Rotate first component child (turret pivot) in world space
+    const std::vector<Transform*> children = transform_->children();
+    children[0]->setRotationWorld(Quaternion::euler(0.0f, lateralAngle, 0.0f));
+
+    // Rotate second component child (turret cannon) in local space
+    const std::vector<Transform*> grandchildren = children[0]->children();
+    grandchildren[0]->setRotationLocal(Quaternion::euler(verticalAngle, 0.0f, 0.0f));
 }
