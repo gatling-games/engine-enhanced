@@ -1,8 +1,8 @@
 {
     name = Blank GameObject
     Transform {
-        Position = 0 123.9 0
-        Scale = 10 10 10
+        Position = 0 0 0
+        Scale = 4 4 4
     }
     StaticMesh {
         mesh = Resources\Meshes\rocket.obj
