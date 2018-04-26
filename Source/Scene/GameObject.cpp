@@ -18,7 +18,6 @@
 #include "Physics/BoxCollider.h"
 
 #include "Serialization/Prefab.h"
-
 #include "EditorManager.h"
 #include "Windmill.h"
 #include "HelicopterView.h"
@@ -413,6 +412,9 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "HelicopterView")
         return createComponent<HelicopterView>();
+
+    if (typeName == "StaticTurret")
+        return createComponent<StaticTurret>();
 
     if (typeName == "Terrain")
         return createComponent<Terrain>();
