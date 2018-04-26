@@ -157,6 +157,19 @@ void Transform::setRotationLocal(const Quaternion& rot)
     recomputeMatrices();
 }
 
+void Transform::setRotationWorld(const Quaternion& rot)
+{
+    if (parentTransform() != nullptr)
+    {
+        rotation_ = parent_->rotationWorld().inverse() * rot;
+    }
+    else
+    {
+        rotation_ = rot;
+    }
+    recomputeMatrices();
+}
+
 void Transform::setScaleLocal(const Vector3& scale)
 {
     scale_ = scale;
