@@ -35,6 +35,24 @@ public:
     // Note - This includes hidden objects and objects flagged to not be saved.
     const std::vector<GameObject*>& gameObjects() const { return gameObjects_; }
 
+    template<typename T>
+    const std::vector<T*> getComponentOfType() const
+    {
+        std::vector<T*> vector;
+
+        for (GameObject* gameObject : gameObjects_)
+        {
+            T* component = gameObject->findComponent<T>();
+
+            if (component != nullptr)
+            {
+                vector.push_back(component);
+            }
+        }
+
+        return vector;
+    }
+
     // Closes the current scene and opens the one at the specified path.
     void openScene(const std::string &scenePath);
 
