@@ -1,4 +1,5 @@
 #include "UniformBuffers.inc.shader"
+#include "Terrain.inc.shader"
 
 #define USE_GBUFFER_WRITE
 #include "Deferred.inc.shader"
@@ -57,8 +58,6 @@ out vec2 texcoord;
 #ifdef NORMAL_MAP_ON
 out vec3 tangentToWorld[3];
 #endif
-
-layout(binding = 8) uniform sampler2D _TerrainHeightmap;
 
 void main()
 {

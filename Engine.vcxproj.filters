@@ -411,5 +411,8 @@
     <None Include="Resources\Shaders\Shield.shader">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\Includes\Terrain.inc.shader">
+      <Filter>Shaders\Includes</Filter>
+    </None>
   </ItemGroup>
 </Project>

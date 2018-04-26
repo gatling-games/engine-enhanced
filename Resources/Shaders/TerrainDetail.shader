@@ -1,12 +1,11 @@
 
 #include "UniformBuffers.inc.shader"
+#include "Terrain.inc.shader"
 
 #define USE_GBUFFER_WRITE
 #include "Deferred.inc.shader"
 
 #ifdef VERTEX_SHADER
-
-layout(binding = 8) uniform sampler2D _TerrainHeightmap;
 
 layout(location = 0) in vec4 _position;
 layout(location = 1) in vec3 _normal;
