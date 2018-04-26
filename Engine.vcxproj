@@ -63,6 +63,7 @@
     <ClInclude Include="Source\Scene\Rocket.h" />
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Scene\Shield.h" />
+    <ClInclude Include="Source\Scene\Spawner.h" />
     <ClInclude Include="Source\Scene\StaticMesh.h" />
     <ClInclude Include="Source\Scene\StaticTurret.h" />
     <ClInclude Include="Source\Scene\Terrain.h" />
@@ -131,6 +132,7 @@
     <ClCompile Include="Source\Scene\Rocket.cpp" />
     <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Scene\Shield.cpp" />
+    <ClCompile Include="Source\Scene\Spawner.cpp" />
     <ClCompile Include="Source\Scene\StaticMesh.cpp" />
     <ClCompile Include="Source\Scene\StaticTurret.cpp" />
     <ClCompile Include="Source\Scene\Terrain.cpp" />
