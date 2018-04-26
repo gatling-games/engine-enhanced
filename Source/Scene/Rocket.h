@@ -4,7 +4,6 @@
 #include "Math/Vector3.h"
 
 class Transform;
-class RigidBody;
 
 class Rocket : public Component
 {
@@ -12,7 +11,6 @@ public:
     Rocket(GameObject* gameObject);
 
     void drawProperties() override;
-    void update(float deltaTime) override;
     void handleCollision(Collider* collider) override;
 
 private:
