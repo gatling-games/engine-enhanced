@@ -227,7 +227,7 @@
     <ClInclude Include="Source\Scene\Rocket.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene\Spawner.h">
+    <ClInclude Include="Source\Scene\TurretGun.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
@@ -402,7 +402,7 @@
     <ClCompile Include="Source\Scene\Rocket.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Scene\Spawner.cpp">
+    <ClCompile Include="Source\Scene\TurretGun.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
