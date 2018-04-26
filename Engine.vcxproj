@@ -55,6 +55,7 @@
     <ClInclude Include="Source\Scene\Scene.h" />
     <ClInclude Include="Source\Scene\Shield.h" />
     <ClInclude Include="Source\Scene\StaticMesh.h" />
+    <ClInclude Include="Source\Scene\StaticTurret.h" />
     <ClInclude Include="Source\Scene\Terrain.h" />
     <ClInclude Include="Source\Scene\Transform.h" />
     <ClInclude Include="Source\Math\Color.h" />
@@ -121,6 +122,7 @@
     <ClCompile Include="Source\Scene\Scene.cpp" />
     <ClCompile Include="Source\Scene\Shield.cpp" />
     <ClCompile Include="Source\Scene\StaticMesh.cpp" />
+    <ClCompile Include="Source\Scene\StaticTurret.cpp" />
     <ClCompile Include="Source\Scene\Terrain.cpp" />
     <ClCompile Include="Source\Scene\Transform.cpp" />
     <ClCompile Include="Source\Math\Color.cpp" />
