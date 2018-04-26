@@ -4,7 +4,6 @@
 #include "Math/Vector3.h"
 
 class Transform;
-class RigidBody;
 
 class Rocket : public Component
 {
