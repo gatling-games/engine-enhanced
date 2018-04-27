@@ -13,7 +13,7 @@ StaticTurret::StaticTurret(GameObject* gameObject)
     transform_ = gameObject->createComponent<Transform>();
 }
 
-void StaticTurret::update(float deltaTime)
+void StaticTurret::update(float)
 {
     choppers = SceneManager::instance()->getComponentOfType<Helicopter>();
 
