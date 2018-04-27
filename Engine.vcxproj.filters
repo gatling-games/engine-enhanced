@@ -227,9 +227,6 @@
     <ClInclude Include="Source\Scene\Rocket.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Scene\Spawner.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -400,9 +397,6 @@
       <Filter>Physics</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Rocket.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Scene\Spawner.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
