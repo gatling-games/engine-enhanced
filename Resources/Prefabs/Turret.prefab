@@ -1,0 +1,33 @@
+{
+    name = Neoturret
+    Transform {
+        Position = 341.2 -0.8 133.7
+        Scale = 2 2 2
+    }
+    StaticMesh {
+        mesh = Resources\Meshes\turret_base.obj
+        material = Resources\Materials\cardboard_enemy.material
+    }
+    StaticTurret {
+    }
+    children::0 {
+        name = Pivot
+        Transform {
+            Position = 0 1.6 0
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\turret_pivot.obj
+            material = Resources\Materials\cardboard_enemy.material
+        }
+        children::0 {
+            name = Cannon
+            Transform {
+                Position = 0.0 0.6 0.0
+            }
+            StaticMesh {
+                mesh = Resources\Meshes\turret_cannon.obj
+                material = Resources\Materials\cardboard_enemy.material
+            }
+        }
+    }
+}

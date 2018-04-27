@@ -59,6 +59,7 @@ public:
     // Directly sets the transformation TRS values
     void setPositionLocal(const Point3 &pos);
     void setRotationLocal(const Quaternion &rot);
+    void setRotationWorld(const Quaternion &rot);
     void setScaleLocal(const Vector3 &scale);
 
     // Translates the object by the vector

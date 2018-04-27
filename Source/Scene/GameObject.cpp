@@ -12,12 +12,12 @@
 #include "Scene/Transform.h"
 #include "Scene/Freecam.h"
 #include "Scene/Terrain.h"
+#include "Scene/StaticTurret.h"
 
 #include "Physics/SphereCollider.h"
 #include "Physics/BoxCollider.h"
 
 #include "Serialization/Prefab.h"
-
 #include "EditorManager.h"
 #include "Windmill.h"
 #include "HelicopterView.h"
@@ -58,9 +58,9 @@ GameObject::GameObject(const std::string &name, Prefab* prefab)
 
 GameObject::~GameObject()
 {
-	// Use a while loop, not a for loop, as the components list
-	//   is modified whenever a component gets deleted.
-	while(!components_.empty())
+    // Use a while loop, not a for loop, as the components list
+    //   is modified whenever a component gets deleted.
+    while(!components_.empty())
     {
         delete components_.back();
     }
@@ -184,7 +184,8 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Sphere Collider")) createComponent<SphereCollider>();
         if (ImGui::Selectable("Box Collider")) createComponent<BoxCollider>();
         if (ImGui::Selectable("Rigidbody")) createComponent<Rigidbody>();
-		if (ImGui::Selectable("Terrain Collider")) createComponent<TerrainCollider>();
+        if (ImGui::Selectable("Terrain Collider")) createComponent<TerrainCollider>();
+        if (ImGui::Selectable("Static Turret")) createComponent<StaticTurret>();
 
         ImGui::EndPopup();
     }
@@ -411,6 +412,9 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "HelicopterView")
         return createComponent<HelicopterView>();
+
+    if (typeName == "StaticTurret")
+        return createComponent<StaticTurret>();
 
     if (typeName == "Terrain")
         return createComponent<Terrain>();

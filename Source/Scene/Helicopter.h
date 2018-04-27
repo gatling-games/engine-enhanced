@@ -19,6 +19,8 @@ public:
 
     void handleInput(const InputCmd& inputs) override;
 
+    Transform* transform() { return transform_; };
+
 private:
 
     Transform* transform_;

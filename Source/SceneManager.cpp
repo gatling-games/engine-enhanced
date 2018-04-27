@@ -10,6 +10,7 @@
 #include "Scene/Camera.h"
 #include "Scene/StaticMesh.h"
 #include "Scene/Terrain.h"
+#include "Scene/StaticTurret.h"
 
 #include "ResourceManager.h"
 #include "InputManager.h"
@@ -29,6 +30,7 @@ SceneManager::SceneManager()
     addCreateGameObjectMenuItem<Camera>("Camera");
     addCreateGameObjectMenuItem<StaticMesh>("Static Mesh");
     addCreateGameObjectMenuItem<Terrain>("Terrain");
+    addCreateGameObjectMenuItem<StaticTurret>("Static turret");
 
     // Add a create scene menu item
     MainWindowMenu::instance()->addMenuItem("File/New Scene", [&] {
