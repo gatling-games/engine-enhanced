@@ -9,6 +9,7 @@ class TurretGun : public Component
 public:
     TurretGun(GameObject* gameObject);
 
+    void serialize(PropertyTable &table);
     void drawProperties() override;
     void update(float deltaTime) override;
 
