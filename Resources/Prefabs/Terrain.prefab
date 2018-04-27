@@ -56,6 +56,13 @@
             max_instances = 1
             seed = 3839
         }
+        placed_objects::3 {
+            prefab = Resources\Prefabs\Turret.prefab
+            max_altitude = 1000
+            min_instances = 0
+            max_instances = 83
+            seed = 6261
+        }
         seed = 3465
         factal_smoothness = 1.99
         mountain_scale = 6.9
