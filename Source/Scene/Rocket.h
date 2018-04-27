@@ -13,6 +13,7 @@ public:
 
     void drawProperties() override;
     void update(float deltaTime) override;
+    void handleCollision(Collider* collider) override;
 
 private:
     Transform* transform_;

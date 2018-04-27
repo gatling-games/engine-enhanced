@@ -2,6 +2,9 @@
 
 #include "Scene/Transform.h"
 #include "Physics/Rigidbody.h"
+
+#include "SceneManager.h"
+
 #include "imgui.h"
 
 Rocket::Rocket(GameObject* gameObject)
@@ -26,10 +29,13 @@ void Rocket::update(float deltaTime)
         {
             Vector3 velocity = transform_->forwards() * speed_;
             collider->setVelocity(velocity);
-            std::cout << "Forwards is " << transform_->forwards().x << ", " << transform_->forwards().y << ", " << transform_->forwards().z << std::endl;
-            std::cout << "Velocity is " << velocity.x << ", " << velocity.y << ", " << velocity.z << std::endl;
+
             initialised_ = true;
         }
     }
 }
 
+void Rocket::handleCollision(Collider* collider)
+{
+    delete gameObject();
+}
