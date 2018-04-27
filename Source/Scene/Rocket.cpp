@@ -34,3 +34,8 @@ void Rocket::handleCollision(Collider* collider)
     // Delete gameObject on collision
     delete gameObject();
 }
+
+void Rocket::setRocketSpeed(float speed)
+{
+    speed_ = speed;
+}
