@@ -446,7 +446,7 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "TurretGun")
         return createComponent<TurretGun>();
-
+	
     return nullptr;
 }
 
