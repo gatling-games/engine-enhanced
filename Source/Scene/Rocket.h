@@ -4,6 +4,7 @@
 #include "Math/Vector3.h"
 
 class Transform;
+class Quaternion;
 
 class Rocket : public Component
 {
@@ -14,6 +15,7 @@ public:
     void handleCollision(Collider* collider) override;
 
     void setRocketSpeed(float speed);
+    void initRocket(const Point3& pos, const Quaternion& rot);
 
 private:
     Transform* transform_;
