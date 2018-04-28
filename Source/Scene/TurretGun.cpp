@@ -1,6 +1,7 @@
 #include "TurretGun.h"
 
 #include "Scene/Transform.h"
+#include "Scene/Rocket.h"
 #include "Math/Quaternion.h"
 #include "Serialization/Prefab.h"
 
@@ -46,6 +47,6 @@ void TurretGun::spawnPrefab()
     {
         // Create new gameObject using prefab and set parent transform
         GameObject* projectile = new GameObject("Projectile", prefab_);
-        projectile->transform()->setParentTransform(transform_);
+        projectile->findComponent<Rocket>()->initRocket(transform_->positionWorld(), transform_->rotationWorld());
     }
 }
