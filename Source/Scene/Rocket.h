@@ -17,7 +17,7 @@ public:
 
 private:
     Transform* transform_;
-
+	
     float speed_;
 
     bool initialised_ = false;
