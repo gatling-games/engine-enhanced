@@ -125,6 +125,12 @@ Vector3 Transform::down() const
 
 void Transform::setParentTransform(Transform* parent)
 {
+    // Remove child from parent if setting parent to nullptr
+    if (parent == nullptr && parent_ != nullptr)
+    {
+        parent_->removeChild(this);
+    }
+
     // If we already have a parent, remove us from it.
     if (parent_ != nullptr)
     {
