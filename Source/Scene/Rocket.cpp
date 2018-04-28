@@ -14,14 +14,6 @@ Rocket::Rocket(GameObject* gameObject)
 {
     // Initialise rotation
     transform_->setRotationLocal(Quaternion::identity());
-
-    // Create rigidbody for collisions
-    gameObject->createComponent<Rigidbody>();
-    Rigidbody* collider = gameObject->findComponent<Rigidbody>();
-
-    // Calculate velocity and send to rigidbody component
-    Vector3 velocity = transform_->forwards() * speed_;
-    collider->setVelocity(velocity);
 }
 
 void Rocket::drawProperties()
@@ -38,4 +30,17 @@ void Rocket::handleCollision(Collider* collider)
 void Rocket::setRocketSpeed(float speed)
 {
     speed_ = speed;
+}
+void Rocket::initRocket(const Point3& pos, const Quaternion& rot)
+{
+    transform_->setPositionLocal(pos);
+    transform_->setRotationLocal(rot);
+
+    // Create rigidbody for collisions
+    gameObject()->createComponent<Rigidbody>();
+    Rigidbody* collider = gameObject()->findComponent<Rigidbody>();
+
+    // Calculate velocity and send to rigidbody component
+    Vector3 velocity = transform_->forwards() * speed_;
+    collider->setVelocity(velocity);
 }
