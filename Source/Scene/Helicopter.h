@@ -21,6 +21,8 @@ public:
 
     Transform* transform() { return transform_; };
 
+    Vector3 velocity() { return worldVelocity_; }
+
 private:
 
     Transform* transform_;
