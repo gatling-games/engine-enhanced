@@ -1,6 +1,10 @@
 #include "StaticTurret.h"
 #include "SceneManager.h"
+
 #include "Scene/Helicopter.h"
+#include "Physics/Rigidbody.h"
+
+#include "imgui.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -36,25 +40,39 @@ void StaticTurret::update(float)
         return;
     }
 
-    // Positions of turret and chopper
-    const Point3 turretPosition = transform_->positionWorld();
-    const Point3 chopperPosition = chopper->transform()->positionWorld();
+    const std::vector<Transform*> children = transform_->children();
+    const std::vector<Transform*> grandchildren = children[0]->children();
 
     // Vector from turret to chopper
-    Vector3 chopperVector = chopperPosition - turretPosition;
+    Vector3 chopperVector = getChopperPredictedPosition(chopper);
     
     // Magnitude of lateral chopper vector for trigonometry
     float chopperXZ = sqrt((chopperVector.x * chopperVector.x) + (chopperVector.z * chopperVector.z));
 
-    // Get vertical and lateral angles to chopper separately
+    /*float deltaH = getPredictedVerticalDisplacement(t);
+    chopperVector.y -= deltaH + 3.0f;*/
+    
     float verticalAngle = atan2f(chopperVector.y, chopperXZ) * (-180.0f / (float)M_PI);
     float lateralAngle = atan2f(chopperVector.x, chopperVector.z) * (180.0f / (float)M_PI);
 
-    // Rotate first component child (turret pivot) in world space
-    const std::vector<Transform*> children = transform_->children();
     children[0]->setRotationWorld(Quaternion::euler(0.0f, lateralAngle, 0.0f));
-
-    // Rotate second component child (turret cannon) in local space
-    const std::vector<Transform*> grandchildren = children[0]->children();
     grandchildren[0]->setRotationLocal(Quaternion::euler(verticalAngle, 0.0f, 0.0f));
+}
+
+Vector3 StaticTurret::getChopperPredictedPosition(Helicopter* chopper)
+{
+    const Point3 turretPos = transform_->positionWorld();
+    const Point3 chopperPos = chopper->transform()->positionWorld();
+
+    Vector3 vectorToChopper = chopperPos - turretPos;
+
+    // Get time for rocket to laterally reach chopper
+    float t = vectorToChopper.magnitude() / 100.0f;
+
+    // Predict chopper movement using time step
+    Vector3 predictedChopperPos = vectorToChopper + (t * chopper->velocity());
+    // Account for gravity
+    predictedChopperPos.y += (0.5 * 9.7 * t * t);
+
+    return predictedChopperPos;
 }
