@@ -7,6 +7,11 @@
 
 namespace ImGui
 {
+    // Makes a large imgui button, filling its entire row
+    // This is used for important buttons eg. add component, remove component etc.
+    bool BigButton(const std::string &label);
+    bool BigButton(const char* label);
+
     // Shows a modal window when for changing the specified resouce.
     // Returns true if the resource was changed.
     template<typename T>

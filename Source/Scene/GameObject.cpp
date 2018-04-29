@@ -23,6 +23,7 @@
 #include "HelicopterView.h"
 #include "Physics/Rigidbody.h"
 #include "Physics/TerrainCollider.h"
+#include "Utils/ImGuiExtensions.h"
 
 GameObject::GameObject()
     : GameObject("Blank GameObject")
@@ -150,8 +151,7 @@ void GameObject::drawComponentsSection()
 		{
 			// Display a remove component button
 			// This must not be shown for transform components, they cannot be removed.
-			if (static_cast<Transform*>(component) != nullptr
-				&& ImGui::Button("Remove Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 20.0f)))
+			if (static_cast<Transform*>(component) != nullptr && ImGui::BigButton("Remove Component"))
 			{
 				delete component;
 			}
@@ -167,7 +167,7 @@ void GameObject::drawAddComponentSection()
 {
     // Display a big add component button
     ImGui::Spacing();
-    if (ImGui::Button("Add Component", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    if (ImGui::BigButton("Add Component"))
     {
         ImGui::OpenPopup("Add Component");
     }
@@ -193,7 +193,7 @@ void GameObject::drawAddComponentSection()
 void GameObject::drawSaveAsPrefabSection()
 {
     ImGui::Spacing();
-    if (ImGui::Button("Save As Prefab", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    if (ImGui::BigButton("Save As Prefab"))
     {
         // Display a save dialog
         const std::string savePath = EditorManager::instance()->showSaveDialog("Save As Prefab", name_, "prefab");
@@ -216,7 +216,7 @@ void GameObject::drawSaveAsPrefabSection()
 void GameObject::drawPrefabInfoSection()
 {
     // Display a break link button
-    if (ImGui::Button(("Break Link With " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    if (ImGui::BigButton("Break Link With " + prefab_->resourceName()))
     {
         prefab_ = nullptr;
 
@@ -226,13 +226,13 @@ void GameObject::drawPrefabInfoSection()
     }
 
     // Display an apply changes button
-    if (ImGui::Button(("Apply Changes to " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    if (ImGui::BigButton("Apply Changes to " + prefab_->resourceName()))
     {
         prefab_->cloneGameObject(this);
     }
 
     // Display a revert changes button
-    if (ImGui::Button(("Revert Changes from " + prefab_->resourceName()).c_str(), ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    if (ImGui::BigButton("Revert Changes from " + prefab_->resourceName()))
     {
         // Write all prefab properties into a property table
         PropertyTable table(PropertyTableMode::Writing);
