@@ -145,9 +145,6 @@ public:
     // (Re)imports all resources.
     void importAllResources();
 
-    // Removes imported versions of source files that have been deleted.
-    void removeDeletedResources();
-
     // Returns a list of all the resources of type T that are currently loaded.
     template<typename T>
     std::vector<T*> loadedResourcesOfType() const
@@ -176,7 +173,6 @@ private:
     // The same location in each list refers to the same resource
     std::vector<ResourceID> resourceIDs_;
     std::vector<std::string> resourceSourcePaths_;
-    std::vector<std::string> resourceImportedPaths_;
 
     // A list of *currently loaded* resources
     std::vector<Resource*> loadedResources_;
