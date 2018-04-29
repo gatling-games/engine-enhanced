@@ -40,6 +40,12 @@ void StaticTurret::update(float deltaTime)
         }
     }
 
+    if(chopper == nullptr)
+    {
+        // The turrets remain still when no helicopters are in the scene
+        return;
+    }
+
     // Positions of turret and chopper
     const Point3 turretPosition = transform_->positionWorld();
     const Point3 chopperPosition = chopper->transform()->positionWorld();
