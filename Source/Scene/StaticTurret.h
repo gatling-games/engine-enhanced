@@ -9,10 +9,6 @@ class StaticTurret : public Component
 public:
     StaticTurret(GameObject* gameObject);
 
-    //void drawProperties() override;
-
-    //void serialize(PropertyTable &table) override;
-
     void update(float deltaTime) override;
 
     std::vector<Helicopter*> choppers;
