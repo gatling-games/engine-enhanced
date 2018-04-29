@@ -4,6 +4,7 @@
 
 #include "SceneManager.h"
 #include "Editor/PropertiesPanel.h"
+#include "Utils/ImGuiExtensions.h"
 
 Prefab::Prefab(ResourceID resourceID)
     : Resource(resourceID),
@@ -14,7 +15,7 @@ Prefab::Prefab(ResourceID resourceID)
 
 void Prefab::drawEditor()
 {
-    if(ImGui::Button("Create Instance in Scene", ImVec2(ImGui::GetContentRegionAvailWidth(), 40.0f)))
+    if(ImGui::BigButton("Create Instance in Scene"))
     {
         new GameObject(resourceName() + " Copy", this);
     }
