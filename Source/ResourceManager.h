@@ -145,9 +145,6 @@ public:
     // (Re)imports all resources.
     void importAllResources();
 
-    // Removes imported versions of source files that have been deleted.
-    void removeDeletedResources();
-
     // Returns a list of all the resources of type T that are currently loaded.
     template<typename T>
     std::vector<T*> loadedResourcesOfType() const
@@ -165,15 +162,9 @@ public:
         return results;
     }
 
-    // Called frequently on the main thread to finish resource loading jobs
-    void update();
-
 private:
     std::string sourceDirectory_;
     std::string importedDirectory_;
-
-    // A mutex used when accessing the list of resources and import queue.
-    std::recursive_mutex resourceListsMutex_;
 
     // A list of all registered resource types.
     std::vector<ResourceType> typeRegister_;
@@ -182,20 +173,9 @@ private:
     // The same location in each list refers to the same resource
     std::vector<ResourceID> resourceIDs_;
     std::vector<std::string> resourceSourcePaths_;
-    std::vector<std::string> resourceImportedPaths_;
 
     // A list of *currently loaded* resources
     std::vector<Resource*> loadedResources_;
-
-    // A queue of resources waiting to be imported or reimported.
-    std::queue<ResourceID> importQueue_;
-
-    // A queue of resources waiting to be loaded or reloaded
-    std::queue<ResourceID> loadQueue_;
-
-    // A thread running background resource imports
-    bool importThreadRunning_;
-    std::thread importThread_;
 
     // Registers a menu item for creating new instances of a resource type
     template<typename ResourceT>
@@ -226,13 +206,6 @@ private:
     void executeFilesystemScan();
     void executeResourceImport(ResourceID id);
     void executeResourceLoad(ResourceID id);
-
-    // Executes queued import/load steps
-    void emptyImportQueue();
-    void emptyLoadQueue();
-
-    // Repeatedly clears the import queue on a background thread.
-    void runImportThread();
 
     // Unloads and reloads the resource with the given id, if it is currently loaded.
     // Used for hot-reloading of resources when the change at runtime.

@@ -39,12 +39,12 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     importedDirectory_(importedDirectory),
     resourceIDs_(),
     resourceSourcePaths_(),
-    resourceImportedPaths_(),
     loadedResources_()
 {
     // If the resources directory does not exist, move upwards through the directory 
     // tree and look for it
     int steps = 0;
+#ifndef STANDALONE
     while (fs::exists(sourceDirectory_) == false)
     {
         const fs::path parent = fs::absolute("").parent_path();
@@ -58,6 +58,22 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
             throw;
         }
     }
+#else
+    // Standalone builds do not have a source directory, so look for the imported directory instead
+    while (fs::exists(importedDirectory) == false)
+    {
+        const fs::path parent = fs::absolute("").parent_path();
+        SetCurrentDirectory(parent.c_str());
+
+        // Prevent infinite loops
+        steps++;
+        if (steps > 20)
+        {
+            std::cerr << "Unable to find imported directory" << std::endl;
+            throw;
+        }
+    }
+#endif
 
     // Register each supported resource type, file extension, and importer
     registerResourceType<Mesh, MeshImporter>(".obj");
@@ -86,19 +102,11 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     // Scan the resources directory for changed files.
     executeFilesystemScan();
 
-    // Import any resources that need it
-    emptyImportQueue();
-
     // Ensure all resources are loaded
     for (ResourceID id : resourceIDs_)
     {
         executeResourceLoad(id);
     }
-    emptyLoadQueue();
-
-    // Start up the background thread
-    importThreadRunning_ = true;
-    importThread_ = std::thread(&ResourceManager::runImportThread, this);
 
     // Create menu items for controlling the resource manager
     MainWindowMenu::instance()->addMenuItem("File/Save All", [&] { saveAllSourceFiles(); });
@@ -108,10 +116,6 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
 
 ResourceManager::~ResourceManager()
 {
-    // Close the import thread
-    importThreadRunning_ = false;
-    importThread_.join();
-
     // Ensure all changes to source files are saved to disk.
     saveAllSourceFiles();
 
@@ -153,8 +157,6 @@ std::string ResourceManager::resourceIDToPath(ResourceID id) const
 
 Resource* ResourceManager::load(ResourceID id)
 {
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-
     // Check the list of resources for a match.
     for (Resource* loadedResource : loadedResources_)
     {
@@ -180,8 +182,7 @@ Resource* ResourceManager::load(ResourceID id)
 
 void ResourceManager::saveAllSourceFiles()
 {
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-
+#ifndef STANDALONE
     // Test every loaded resource
     for (Resource* resource : loadedResources_)
     {
@@ -201,12 +202,12 @@ void ResourceManager::saveAllSourceFiles()
             writeStream.close();
         }
     }
+#endif
 }
 
 void ResourceManager::importResource(ResourceID id)
 {
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-    importQueue_.emplace(id);
+    executeResourceImport(id);
 }
 
 void ResourceManager::importChangedResources()
@@ -214,9 +215,6 @@ void ResourceManager::importChangedResources()
     // Ensure the resources list is up to date
     // This will trigger imports of resources that need it
     executeFilesystemScan();
-
-    // Then remove unneeded files from the imported folder
-    removeDeletedResources();
 }
 
 void ResourceManager::importAllResources()
@@ -229,40 +227,6 @@ void ResourceManager::importAllResources()
     {
         importResource(resourceIDs_[i]);
     }
-
-    // Finally, remove unneeded files from the imported folder
-    removeDeletedResources();
-}
-
-void ResourceManager::removeDeletedResources()
-{
-    // Rebuild a list of valid output paths
-    executeFilesystemScan();
-
-    // Check every file in the output folder and delete unexpected ones.
-    for (auto& file : fs::recursive_directory_iterator(importedDirectory_))
-    {
-        // Skip directories
-        if (is_directory(file))
-        {
-            continue;
-        }
-
-        // Get the file path
-        const fs::path filePath(file);
-
-        // Remove the file if it does not exist in the imported paths list.
-        if (find(resourceImportedPaths_.begin(), resourceImportedPaths_.end(), filePath.string()) == resourceImportedPaths_.end())
-        {
-            printf("Removing %s \n", filePath.string().c_str());
-            remove_all(filePath);
-        }
-    }
-}
-
-void ResourceManager::update()
-{
-    emptyLoadQueue();
 }
 
 void ResourceManager::executeFilesystemScan()
@@ -270,8 +234,8 @@ void ResourceManager::executeFilesystemScan()
     // Recreate the lists from scratch
     resourceIDs_.clear();
     resourceSourcePaths_.clear();
-    resourceImportedPaths_.clear();
-
+    
+#ifndef STANDALONE
     // Loop through every file in the source directory add add them to the lists
     for (auto& file : fs::recursive_directory_iterator(sourceDirectory_))
     {
@@ -280,12 +244,10 @@ void ResourceManager::executeFilesystemScan()
             // Get the resource id and imported path from the source paht
             const std::string sourcePath = fs::path(file).string();
             ResourceID id = pathToResourceID(sourcePath);
-            const std::string importedPath = importedResourcePath(sourcePath);
 
             // Save to the resource lists
             resourceIDs_.push_back(id);
             resourceSourcePaths_.push_back(sourcePath);
-            resourceImportedPaths_.push_back(importedPath);
         }
     }
 
@@ -293,7 +255,7 @@ void ResourceManager::executeFilesystemScan()
     for (unsigned int i = 0; i < resourceIDs_.size(); ++i)
     {
         const std::string& sourcePath = resourceSourcePaths_[i];
-        const std::string& outputPath = resourceImportedPaths_[i];
+        const std::string& outputPath = importedResourcePath(resourceIDs_[i]);
 
         // Import resources that are not yet imported, or are out of date
         if (!exists(fs::path(outputPath)) || last_write_time(fs::path(outputPath)) < last_write_time(fs::path(sourcePath)))
@@ -302,12 +264,32 @@ void ResourceManager::executeFilesystemScan()
         }
     }
 
+#else
+    // Standalone builds have no source directory.
+    // Instead, load every pre-imported resource
+    for (auto& file : fs::recursive_directory_iterator(importedDirectory_))
+    {
+        if (!is_directory(file))
+        {
+            // Get the resource id from the file name
+            const std::string importedPath = fs::path(file).string();
+            const std::string sourcePath = fs::path(importedPath.substr(importedDirectory_.length() + 1)).string();
+            ResourceID id = pathToResourceID(sourcePath);
+
+            // Save to the resource lists
+            resourceIDs_.push_back(id);
+            resourceSourcePaths_.push_back(sourcePath);
+        }
+    }
+#endif
+
     // Force the resources panel to recreate its tree
     ResourcesPanel::instance()->clearTree();
 }
 
 void ResourceManager::executeResourceImport(ResourceID id)
 {
+#ifndef STANDALONE
     printf("Executing resource import for resource %llu \n", id);
 
     // Get the source and imported path
@@ -332,10 +314,10 @@ void ResourceManager::executeResourceImport(ResourceID id)
     }
 
     // Finally, enqueue the resource to be loaded or reloaded.
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-    loadQueue_.emplace(id);
+    executeResourceLoad(id);
 
     printf("Resource import finished \n");
+#endif
 }
 
 void ResourceManager::executeResourceLoad(ResourceID id)
@@ -394,59 +376,14 @@ void ResourceManager::executeResourceLoad(ResourceID id)
     }
 }
 
-void ResourceManager::emptyImportQueue()
-{
-    for (;;)
-    {
-        resourceListsMutex_.lock();
-
-        // Keep going until the queue is empty
-        if (importQueue_.empty())
-        {
-            resourceListsMutex_.unlock();
-            return;
-        };
-
-        // Get the next item 
-        const ResourceID id = importQueue_.front();
-        importQueue_.pop();
-
-        // Import, without blocking other threads.
-        resourceListsMutex_.unlock();
-        printf("Importing resource %s \n", resourceIDToPath(id).c_str());
-        executeResourceImport(id);
-    }
-}
-
-void ResourceManager::emptyLoadQueue()
-{
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-
-    while (!loadQueue_.empty())
-    {
-        executeResourceLoad(loadQueue_.front());
-        loadQueue_.pop();
-    }
-}
-
-void ResourceManager::runImportThread()
-{
-    while(importThreadRunning_)
-    {
-        Sleep(500);
-        emptyImportQueue();
-    }
-}
-
 void ResourceManager::reloadResourceIfLoaded(ResourceID id)
 {
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-    loadQueue_.emplace(id);
+    executeResourceLoad(id);
 }
 
 std::string ResourceManager::importedResourcePath(ResourceID id) const
 {
-    return (fs::path(importedDirectory_) / (std::to_string(id) + ".resource")).string();
+    return (fs::path(importedDirectory_) / resourceIDToPath(id)).string();
 }
 
 std::string ResourceManager::importedResourcePath(const std::string &sourcePath) const

@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Utils/Singleton.h"
+#include "Renderer/Renderer.h"
 
 struct GLFWwindow;
 
@@ -21,13 +22,22 @@ enum class ApplicationMode
     Play,
 };
 
+enum class ApplicationPlayType
+{
+    // Editor interface visible
+    InEditorPreview,
+
+    // No editor interface visible
+    FullScreen,
+};
+
 class Application : public Singleton<Application>
 {
 public:
     Application(const std::string &name, GLFWwindow* window);
     ~Application();
 
-    bool running() const { return running_; }
+    bool running() const;
     bool isEditing() const { return (mode_ == ApplicationMode::Edit); }
     bool isPlaying() const { return (mode_ == ApplicationMode::Play); }
 
@@ -38,6 +48,9 @@ public:
     // Switches to editing mode.
     // The current scene will be restored immediately after playing
     void enterEditMode();
+
+    // Sets the type of play mode currently being used
+    void setPlayType(ApplicationPlayType type);
 
     // Called when the window is resized.
     void resize(int newWidth, int newHeight);
@@ -53,6 +66,7 @@ private:
     const std::string name_;
 
     ApplicationMode mode_;
+    ApplicationPlayType playType_;
 
     // The main window
     GLFWwindow* window_;
@@ -69,6 +83,12 @@ private:
     // The clock manager
     Clock* clock_;
 
-    // True until quitting
-    bool running_;
+    // A renderer used for full screen play mode
+    Renderer* fullScreenRenderer_;
+    Texture* fullScreenDepthTexture_;
+    Texture* fullScreenColorTexture_;
+    Framebuffer* fullScreenFramebuffer_;
+
+    void createFullScreenRenderer();
+    void destroyFullScreenRenderer();
 };
