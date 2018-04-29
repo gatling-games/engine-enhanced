@@ -146,6 +146,14 @@ void Application::frameStart()
     vrManager_->frameStart();
     resourceManager_->update();
 
+    // Let a user press G + C + L simultenously to exit full screen play mode
+    if (InputManager::instance()->isKeyDown(InputKey::G)
+        && InputManager::instance()->isKeyDown(InputKey::C)
+        && InputManager::instance()->isKeyDown(InputKey::L))
+    {
+        setPlayType(ApplicationPlayType::InEditorPreview);
+    }
+
     // When in play mode, dispatch user input
     if(isPlaying())
     {
