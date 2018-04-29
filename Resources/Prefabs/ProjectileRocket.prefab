@@ -6,7 +6,7 @@
     }
     StaticMesh {
         mesh = Resources\Meshes\rocket.obj
-        material = Resources\Materials\cardboard.material
+        material = Resources\Materials\cardboard_enemy.material
     }
     Rocket {
     }
