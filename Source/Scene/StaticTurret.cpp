@@ -18,7 +18,7 @@ void StaticTurret::update(float)
     float closestHeliDistanceSqr = 9999999.0f;
 
     // Find closest chopper
-    for (Helicopter* helicopter : SceneManager::instance()->getComponentOfType<Helicopter>())
+    for (Helicopter* helicopter : SceneManager::instance()->findAllComponentsInScene<Helicopter>())
     {
         Vector3 vectorToHeli = transform_->positionWorld() - helicopter->transform()->positionWorld();
 

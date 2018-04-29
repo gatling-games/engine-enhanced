@@ -35,22 +35,39 @@ public:
     // Note - This includes hidden objects and objects flagged to not be saved.
     const std::vector<GameObject*>& gameObjects() const { return gameObjects_; }
 
+    // Gets a single instance of a specified component attached to a gameobject in the scene.
+    // If none is found, returns null.
     template<typename T>
-    const std::vector<T*> getComponentOfType() const
+    T* findComponentInScene() const
     {
-        std::vector<T*> vector;
+        for (GameObject* gameObject : gameObjects_)
+        {
+            T* component = gameObject->findComponent<T>();
+            if (component != nullptr)
+            {
+                return component;
+            }
+        }
+
+        return nullptr;
+    }
+
+    // Gets a list of all instances of a specified comonent, on any gameobject in the scene.
+    template<typename T>
+    std::vector<T*> findAllComponentsInScene() const
+    {
+        std::vector<T*> components;
 
         for (GameObject* gameObject : gameObjects_)
         {
             T* component = gameObject->findComponent<T>();
-
             if (component != nullptr)
             {
-                vector.push_back(component);
+                components.push_back(component);
             }
         }
 
-        return vector;
+        return components;
     }
 
     // Closes the current scene and opens the one at the specified path.
@@ -67,14 +84,6 @@ public:
 
     // Passes input struct to all gameobjects
     void handleInput(const InputCmd& inputs);
-
-    // Gets a list of all static mesh components in the scene
-    const std::vector<StaticMesh*> staticMeshes() const;
-    const Terrain* terrain() const;
-    const std::vector<Shield*> shields() const;
-    const std::vector<Collider*> colliders() const;
-    const std::vector<BoxCollider*> boxColliders() const;
-    const std::vector<SphereCollider*> sphereColliders() const;
 
 private:
     // The currently loaded scene
