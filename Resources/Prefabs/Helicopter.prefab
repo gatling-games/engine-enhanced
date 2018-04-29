@@ -33,8 +33,8 @@
         name = MainBlade
         Transform {
             Position = 0 3 0.2
-            Rotation = -0.5181 -0.48506 -0.514273 -0.481474
-            Scale = 0.7 0.7 0.7
+            Rotation = -0.518099 -0.485059 -0.514272 -0.481473
+            Scale = 0.25 0.25 0.25
         }
         StaticMesh {
             mesh = Resources\Meshes\turbine_blades.mesh
