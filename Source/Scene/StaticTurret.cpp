@@ -2,8 +2,6 @@
 #include "SceneManager.h"
 #include "Scene/Helicopter.h"
 
-#include "imgui.h"
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 
