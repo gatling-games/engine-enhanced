@@ -1,6 +1,8 @@
 #include "Rocket.h"
 
 #include "Scene/Transform.h"
+#include "Scene/Helicopter.h"
+
 #include "Physics/Rigidbody.h"
 
 #include "SceneManager.h"
@@ -10,7 +12,8 @@
 Rocket::Rocket(GameObject* gameObject)
     : Component(gameObject),
     transform_(gameObject->createComponent<Transform>()),
-    speed_(100.0f)
+    speed_(100.0f),
+    damage_(15.0f)
 {
     // Initialise rotation
     transform_->setRotationLocal(Quaternion::identity());
@@ -23,6 +26,12 @@ void Rocket::drawProperties()
 
 void Rocket::handleCollision(Collider* collider)
 {
+    Helicopter* chopper = collider->gameObject()->findComponent<Helicopter>();
+    if (chopper != nullptr)
+    {
+        chopper->takeDamage(damage_);
+    }
+
     // Delete gameObject on collision
     delete gameObject();
 }

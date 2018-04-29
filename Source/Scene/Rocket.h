@@ -21,6 +21,7 @@ private:
     Transform* transform_;
 
     float speed_;
+    float damage_;
 
     bool initialised_ = false;
 };

@@ -23,11 +23,15 @@ public:
 
     Vector3 velocity() { return worldVelocity_; }
 
+    void takeDamage(float damage);
+
 private:
 
     Transform* transform_;
     Vector3 worldVelocity_;
     Quaternion worldRotation_;
+
+    float HP;
 
     float currentTilt_;
 
