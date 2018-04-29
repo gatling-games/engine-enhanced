@@ -15,7 +15,12 @@
 Application::Application(const std::string &name, GLFWwindow* window)
     : name_(name),
     mode_(ApplicationMode::Edit),
+    playType_(ApplicationPlayType::InEditorPreview),
     window_(window),
+    fullScreenRenderer_(nullptr),
+    fullScreenDepthTexture_(nullptr),
+    fullScreenColorTexture_(nullptr),
+    fullScreenFramebuffer_(nullptr),
     running_(true)
 {
     // Create engine modules
@@ -42,6 +47,12 @@ Application::Application(const std::string &name, GLFWwindow* window)
         else
             enterEditMode();
     }, [&] { return isPlaying(); });
+
+    // In standalone builds, start the game immediately
+#ifdef STANDALONE
+    enterPlayMode();
+    setPlayType(ApplicationPlayType::FullScreen);
+#endif
 }
 
 Application::~Application()
@@ -57,6 +68,8 @@ Application::~Application()
     delete editorManager_;
     delete inputManager_;
     delete clock_;
+
+    destroyFullScreenRenderer();
 }
 
 void Application::enterPlayMode()
@@ -93,6 +106,11 @@ void Application::enterEditMode()
     SceneManager::instance()->openScene(SceneManager::instance()->scenePath());
 }
 
+void Application::setPlayType(ApplicationPlayType type)
+{
+    playType_ = type;
+}
+
 void Application::resize(int width, int height)
 {
     // Each time a resize occurs we need to update the backbuffer size.
@@ -100,6 +118,9 @@ void Application::resize(int width, int height)
 
     // Inform relevent modules of the resize
     editorManager_->resize(width, height);
+
+    // Make a new full screen renderer / framebuffer etc
+    createFullScreenRenderer();
 }
 
 void Application::windowFocused()
@@ -141,6 +162,50 @@ void Application::frameStart()
 
 void Application::drawFrame()
 {
+    // Full-screen play mode just draws the scene to the backbuffer
+    if (isPlaying() && playType_ == ApplicationPlayType::FullScreen)
+    {
+        if (fullScreenRenderer_ == nullptr)
+        {
+            createFullScreenRenderer();
+        }
+
+        // OpenGL doesn't like us grabbing the default framebuffer's depth texture
+        // As a workaround, render to a separate framebuffer and blit to the default fbo.
+        fullScreenRenderer_->renderFrame(SceneManager::instance()->mainCamera());
+        glBlitNamedFramebuffer(fullScreenFramebuffer_->glid(), Framebuffer::backbuffer()->glid(),
+            0, 0, Framebuffer::backbuffer()->width(), Framebuffer::backbuffer()->height(),
+            0, 0, Framebuffer::backbuffer()->width(), Framebuffer::backbuffer()->height(),
+            GL_COLOR_BUFFER_BIT, GL_NEAREST);
+        return;
+    }
+
     // Re-draw the editor window
-    editorManager_->render();
+    if (!isPlaying() || playType_ != ApplicationPlayType::FullScreen)
+    {
+        editorManager_->render();
+    }
+}
+
+void Application::createFullScreenRenderer()
+{
+    if(fullScreenRenderer_ != nullptr)
+    {
+        destroyFullScreenRenderer();
+    }
+
+    fullScreenDepthTexture_ = new Texture(TextureFormat::Depth, Framebuffer::backbuffer()->width(), Framebuffer::backbuffer()->height());
+    fullScreenColorTexture_ = new Texture(TextureFormat::RGBA8_SRGB, Framebuffer::backbuffer()->width(), Framebuffer::backbuffer()->height());
+    fullScreenFramebuffer_ = new Framebuffer();
+    fullScreenFramebuffer_->attachDepthTexture(fullScreenDepthTexture_);
+    fullScreenFramebuffer_->attachColorTexture(fullScreenColorTexture_);
+    fullScreenRenderer_ = new Renderer(fullScreenFramebuffer_);
+}
+
+void Application::destroyFullScreenRenderer()
+{
+    delete fullScreenRenderer_;
+    delete fullScreenFramebuffer_;
+    delete fullScreenDepthTexture_;
+    delete fullScreenColorTexture_;
 }
