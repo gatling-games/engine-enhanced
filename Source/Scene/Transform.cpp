@@ -17,9 +17,10 @@ Transform::Transform(GameObject* gameObject)
 Transform::~Transform()
 {
     // If we have child transforms, delete their gameobjects too
-    for(Transform* child : children_)
+    // Each delete call modifies the children_ vector, so we cannot do a for loop.
+    while(!children_.empty())
     {
-        delete child->gameObject();
+        delete children_.back()->gameObject();
     }
 
     // If we have a parent, unparent from it
