@@ -235,13 +235,13 @@ void Renderer::renderPhysicsObjects(const Camera * camera)
         // Render every physics object using wireframe mode.
         physicsDebugShader_->bindVariant(ALL_SHADER_FEATURES);
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        for (const BoxCollider* box : SceneManager::instance()->boxColliders())
+        for (const BoxCollider* box : SceneManager::instance()->findAllComponentsInScene<BoxCollider>())
         {
             updatePerDrawUniformBuffer(box->gameObject()->transform()->localToWorld() * Matrix4x4::translation(box->offset()) * Matrix4x4::scale(box->size()), nullptr);
             physicsBoxMesh_->bind();
             glDrawElements(GL_TRIANGLES, physicsBoxMesh_->elementsCount(), GL_UNSIGNED_SHORT, (void*)0);
         }
-        for (const SphereCollider* sphere : SceneManager::instance()->sphereColliders())
+        for (const SphereCollider* sphere : SceneManager::instance()->findAllComponentsInScene<SphereCollider>())
         {
             updatePerDrawUniformBuffer(sphere->gameObject()->transform()->localToWorld() * Matrix4x4::translation(sphere->offset())  * Matrix4x4::scale(Vector3(sphere->radius(), sphere->radius(), sphere->radius())), nullptr);
             physicsSphereMesh_->bind();
@@ -402,7 +402,7 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
     glClear(GL_DEPTH_BUFFER_BIT);
 
     // Draw every static mesh component in the scene with the standard shaders
-    for (StaticMesh* staticMesh : SceneManager::instance()->staticMeshes())
+    for (StaticMesh* staticMesh : SceneManager::instance()->findAllComponentsInScene<StaticMesh>())
     {
         // Skip instances with no material
         if (staticMesh->material() == nullptr || staticMesh->mesh() == nullptr)
@@ -426,7 +426,7 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
     }
 
     // Draw terrain
-    const Terrain* terrain = SceneManager::instance()->terrain();
+    const Terrain* terrain = SceneManager::instance()->findComponentInScene<Terrain>();
     if (terrain != nullptr)
     {
         terrainShader_->bindVariant(shaderFeatures);
@@ -528,7 +528,7 @@ void Renderer::executeDeferredDebugPass() const
 void Renderer::executeWaterPass() const
 {
     // This pass requires a terrain in the scene
-    const Terrain* terrain = SceneManager::instance()->terrain();
+    const Terrain* terrain = SceneManager::instance()->findComponentInScene<Terrain>();
     if (terrain == nullptr)
     {
         return;
@@ -608,7 +608,7 @@ void Renderer::executeShieldPass() const
     shieldShader_->bindVariant(ALL_SHADER_FEATURES);
 
     // Render each shield
-    for (const Shield* shield : SceneManager::instance()->shields())
+    for (const Shield* shield : SceneManager::instance()->findAllComponentsInScene<Shield>())
     {
         // Create the shield matrix using the transform + radius.
         const Matrix4x4 transformMat = shield->gameObject()->transform()->localToWorld();
