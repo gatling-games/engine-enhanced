@@ -2,8 +2,6 @@
 #include "SceneManager.h"
 #include "Scene/Helicopter.h"
 
-#include "imgui.h"
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -15,20 +13,12 @@ StaticTurret::StaticTurret(GameObject* gameObject)
 
 void StaticTurret::update(float)
 {
-    choppers = SceneManager::instance()->getComponentOfType<Helicopter>();
-
-    // Disable when no choppers in play
-    if (choppers.size() == 0)
-    {
-        return;
-    }
-
     // Pointer to chopper and vector storing 
     Helicopter* chopper = nullptr;
     float closestHeliDistanceSqr = 9999999.0f;
 
     // Find closest chopper
-    for (Helicopter* helicopter : choppers)
+    for (Helicopter* helicopter : SceneManager::instance()->getComponentOfType<Helicopter>())
     {
         Vector3 vectorToHeli = transform_->positionWorld() - helicopter->transform()->positionWorld();
 
