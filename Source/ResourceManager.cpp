@@ -86,19 +86,11 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
     // Scan the resources directory for changed files.
     executeFilesystemScan();
 
-    // Import any resources that need it
-    emptyImportQueue();
-
     // Ensure all resources are loaded
     for (ResourceID id : resourceIDs_)
     {
         executeResourceLoad(id);
     }
-    emptyLoadQueue();
-
-    // Start up the background thread
-    importThreadRunning_ = true;
-    importThread_ = std::thread(&ResourceManager::runImportThread, this);
 
     // Create menu items for controlling the resource manager
     MainWindowMenu::instance()->addMenuItem("File/Save All", [&] { saveAllSourceFiles(); });
@@ -108,10 +100,6 @@ ResourceManager::ResourceManager(const std::string sourceDirectory, const std::s
 
 ResourceManager::~ResourceManager()
 {
-    // Close the import thread
-    importThreadRunning_ = false;
-    importThread_.join();
-
     // Ensure all changes to source files are saved to disk.
     saveAllSourceFiles();
 
@@ -153,8 +141,6 @@ std::string ResourceManager::resourceIDToPath(ResourceID id) const
 
 Resource* ResourceManager::load(ResourceID id)
 {
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-
     // Check the list of resources for a match.
     for (Resource* loadedResource : loadedResources_)
     {
@@ -180,8 +166,6 @@ Resource* ResourceManager::load(ResourceID id)
 
 void ResourceManager::saveAllSourceFiles()
 {
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-
     // Test every loaded resource
     for (Resource* resource : loadedResources_)
     {
@@ -205,8 +189,7 @@ void ResourceManager::saveAllSourceFiles()
 
 void ResourceManager::importResource(ResourceID id)
 {
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-    importQueue_.emplace(id);
+    executeResourceImport(id);
 }
 
 void ResourceManager::importChangedResources()
@@ -258,11 +241,6 @@ void ResourceManager::removeDeletedResources()
             remove_all(filePath);
         }
     }
-}
-
-void ResourceManager::update()
-{
-    emptyLoadQueue();
 }
 
 void ResourceManager::executeFilesystemScan()
@@ -332,8 +310,7 @@ void ResourceManager::executeResourceImport(ResourceID id)
     }
 
     // Finally, enqueue the resource to be loaded or reloaded.
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-    loadQueue_.emplace(id);
+    executeResourceLoad(id);
 
     printf("Resource import finished \n");
 }
@@ -394,54 +371,9 @@ void ResourceManager::executeResourceLoad(ResourceID id)
     }
 }
 
-void ResourceManager::emptyImportQueue()
-{
-    for (;;)
-    {
-        resourceListsMutex_.lock();
-
-        // Keep going until the queue is empty
-        if (importQueue_.empty())
-        {
-            resourceListsMutex_.unlock();
-            return;
-        };
-
-        // Get the next item 
-        const ResourceID id = importQueue_.front();
-        importQueue_.pop();
-
-        // Import, without blocking other threads.
-        resourceListsMutex_.unlock();
-        printf("Importing resource %s \n", resourceIDToPath(id).c_str());
-        executeResourceImport(id);
-    }
-}
-
-void ResourceManager::emptyLoadQueue()
-{
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-
-    while (!loadQueue_.empty())
-    {
-        executeResourceLoad(loadQueue_.front());
-        loadQueue_.pop();
-    }
-}
-
-void ResourceManager::runImportThread()
-{
-    while(importThreadRunning_)
-    {
-        Sleep(500);
-        emptyImportQueue();
-    }
-}
-
 void ResourceManager::reloadResourceIfLoaded(ResourceID id)
 {
-    std::lock_guard<std::recursive_mutex> gate(resourceListsMutex_);
-    loadQueue_.emplace(id);
+    executeResourceLoad(id);
 }
 
 std::string ResourceManager::importedResourcePath(ResourceID id) const
