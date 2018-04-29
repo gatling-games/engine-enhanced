@@ -133,6 +133,12 @@ void Application::windowFocused()
 
 void Application::frameStart()
 {
+    // Hide and lock the cursor in full screen playing mode.
+    if (isPlaying() && playType_ == ApplicationPlayType::FullScreen)
+    {
+        glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
+
     // Update each module manager
     clock_->frameStart();
     inputManager_->frameStart();
