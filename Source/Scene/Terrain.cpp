@@ -198,7 +198,7 @@ void Terrain::drawObjectsProperties()
         ImGui::PopID();
     }
 
-    if (ImGui::Button("Add Layer"))
+    if (ImGui::BigButton("Add Layer"))
     {
         placedObjects_.resize(placedObjects_.size() + 1);
         placedObjects_.back().seed = rand();
@@ -239,7 +239,7 @@ void Terrain::drawAppearenceProperties()
         ImGui::PopID();
     }
 
-    if (ImGui::Button("Add Layer"))
+    if (ImGui::BigButton("Add Layer"))
     {
         terrainLayers_.resize(terrainLayers_.size() + 1);
     }
