@@ -182,6 +182,7 @@ Resource* ResourceManager::load(ResourceID id)
 
 void ResourceManager::saveAllSourceFiles()
 {
+#ifndef STANDALONE
     // Test every loaded resource
     for (Resource* resource : loadedResources_)
     {
@@ -201,6 +202,7 @@ void ResourceManager::saveAllSourceFiles()
             writeStream.close();
         }
     }
+#endif
 }
 
 void ResourceManager::importResource(ResourceID id)
