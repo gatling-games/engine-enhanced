@@ -48,6 +48,15 @@ Application::Application(const std::string &name, GLFWwindow* window)
             enterEditMode();
     }, [&] { return isPlaying(); });
 
+    // Create a menu item for toggling full screen play mode
+    MainWindowMenu::instance()->addMenuItem("Game/Play FullScreen (G+C+L to exit)", [&]
+    {
+        if (isEditing())
+            enterPlayMode();
+    
+        setPlayType(ApplicationPlayType::FullScreen);
+    });
+
     // In standalone builds, start the game immediately
 #ifdef STANDALONE
     enterPlayMode();
