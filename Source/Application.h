@@ -37,7 +37,7 @@ public:
     Application(const std::string &name, GLFWwindow* window);
     ~Application();
 
-    bool running() const { return running_; }
+    bool running() const;
     bool isEditing() const { return (mode_ == ApplicationMode::Edit); }
     bool isPlaying() const { return (mode_ == ApplicationMode::Play); }
 
@@ -88,9 +88,6 @@ private:
     Texture* fullScreenDepthTexture_;
     Texture* fullScreenColorTexture_;
     Framebuffer* fullScreenFramebuffer_;
-
-    // True until quitting
-    bool running_;
 
     void createFullScreenRenderer();
     void destroyFullScreenRenderer();

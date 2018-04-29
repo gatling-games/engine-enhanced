@@ -20,8 +20,7 @@ Application::Application(const std::string &name, GLFWwindow* window)
     fullScreenRenderer_(nullptr),
     fullScreenDepthTexture_(nullptr),
     fullScreenColorTexture_(nullptr),
-    fullScreenFramebuffer_(nullptr),
-    running_(true)
+    fullScreenFramebuffer_(nullptr)
 {
     // Create engine modules
     editorManager_ = new EditorManager(window, true);
@@ -37,7 +36,7 @@ Application::Application(const std::string &name, GLFWwindow* window)
     clock_->setPaused(true);
 
     // Create a Quit menu item
-    MainWindowMenu::instance()->addMenuItem("File/Exit", [&] { running_ = false; });
+    MainWindowMenu::instance()->addMenuItem("File/Exit", [&] { glfwSetWindowShouldClose(window_, GLFW_TRUE); });
 
     // Create a menu item for toggling between play & edit modes
     MainWindowMenu::instance()->addMenuItem("Game/Toggle Playing", [&]
@@ -79,6 +78,11 @@ Application::~Application()
     delete clock_;
 
     destroyFullScreenRenderer();
+}
+
+bool Application::running() const
+{
+    return !glfwWindowShouldClose(window_);
 }
 
 void Application::enterPlayMode()
