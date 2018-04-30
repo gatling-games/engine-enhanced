@@ -37,6 +37,12 @@ void main()
     //Get position from heightmap and destruction map
     worldPosition.y += (getHeightmapHeight(worldPosition.xz) * _TerrainSize.y) - _WaterColorDepth.a;
 
+    if (texture(_TerrainDestructionmap, offset.xz / _TerrainSize.xz).r > float(gl_InstanceID) / (3.0 * 1024.0))
+    {
+        gl_Position = vec4(0.0, 0.0, 0.0, 0.0);
+        return;
+    }
+
     // Apply a wind offset to the world position
     float offsetMagnitude = sin(_Time.x * 1.5 + dot(worldPosition, vec3(0.2))) * _position.y;
     vec2 offsetDir = vec2(0.45, 0.2);
