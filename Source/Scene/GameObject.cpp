@@ -14,7 +14,9 @@
 #include "Scene/Terrain.h"
 #include "Scene/StaticTurret.h"
 #include "Scene/Rocket.h"
+#include "Scene/FriendlyRocket.h"
 #include "Scene/TurretGun.h"
+#include "Scene/ChopperGun.h"
 #include "Scene/Destructible.h"
 
 #include "Physics/SphereCollider.h"
@@ -190,7 +192,9 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Terrain Collider")) createComponent<TerrainCollider>();
         if (ImGui::Selectable("Static Turret")) createComponent<StaticTurret>();
         if (ImGui::Selectable("Rocket")) createComponent<Rocket>();
+        if (ImGui::Selectable("Friendly Rocker")) createComponent<FriendlyRocket>();
         if (ImGui::Selectable("Turret Gun")) createComponent<TurretGun>();
+        if (ImGui::Selectable("Chopper Gun")) createComponent<ChopperGun>();
         if (ImGui::Selectable("Destructible")) createComponent<Destructible>();
 
         ImGui::EndPopup();
@@ -446,8 +450,14 @@ Component* GameObject::createComponent(const std::string &typeName)
     if (typeName == "Rocket")
         return createComponent<Rocket>();
 
+    if (typeName == "FriendlyRocket")
+        return createComponent<FriendlyRocket>();
+
     if (typeName == "TurretGun")
         return createComponent<TurretGun>();
+
+    if (typeName == "ChopperGun")
+        return createComponent<ChopperGun>();
 
     if (typeName == "Destructible")
         return createComponent<Destructible>();
