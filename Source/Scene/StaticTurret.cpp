@@ -1,7 +1,6 @@
 #include "StaticTurret.h"
 #include "SceneManager.h"
 
-#include "Scene/Helicopter.h"
 #include "Physics/Rigidbody.h"
 
 #include "imgui.h"
