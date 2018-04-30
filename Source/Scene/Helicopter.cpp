@@ -2,6 +2,9 @@
 #include "InputManager.h"
 
 #include "Scene/Transform.h"
+#include "Scene/StaticMesh.h"
+#include "Utils/Clock.h"
+
 #include "imgui.h"
 
 #include <algorithm>
@@ -125,6 +128,7 @@ void Helicopter::takeDamage(float damage)
 
     if (HP <= 0.0f)
     {
-        delete gameObject();
+        gameObject()->findComponent<StaticMesh>()->setMaterial(ResourceManager::instance()->load<Material>("Resources/Materials/cardboard_enemy.material"));
+        Clock::instance()->setPaused(true);
     }
 }
