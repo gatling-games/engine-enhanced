@@ -1,0 +1,14 @@
+{
+    name = FriendlyRocket
+    Rigidbody {
+    }
+    Transform {
+	Position = 0 0 10
+    }
+    StaticMesh {
+        mesh = Resources\Meshes\rocket.obj
+        material = Resources\Materials\cardboard_enemy.material
+    }
+    FriendlyRocket {
+    }
+}
