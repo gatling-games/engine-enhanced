@@ -2,6 +2,8 @@
 
 #include "Scene/Transform.h"
 #include "Scene/Helicopter.h"
+#include "Scene/Destructible.h"
+
 #include "Physics/Rigidbody.h"
 
 #include "SceneManager.h"
@@ -29,6 +31,13 @@ void Rocket::handleCollision(Collider* collider)
     if (chopper != nullptr)
     {
         chopper->takeDamage(damage_);
+    }
+
+    Destructible* destructible = collider->gameObject()->findComponent<Destructible>();
+
+    if (destructible != nullptr)
+    {
+        destructible->takeDamage(damage_);
     }
 	
     // Delete gameObject on collision
