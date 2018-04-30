@@ -6,6 +6,13 @@
 layout(binding = 8) uniform sampler2D _TerrainHeightmap;
 layout(binding = 9) uniform sampler2D _TerrainDestructionmap;
 
+float getHeightmapHeight(vec2 coords)
+{
+    float heightmap = texture(_TerrainHeightmap, coords / _TerrainSize.xz).r;
+    float destruction = texture(_TerrainDestructionmap, coords / _TerrainSize.xz).r;
+
+    return heightmap - destruction;
+}
 
 vec3 getWorldNormal(vec2 coords, out vec3 worldTangent, out vec3 worldBitangent)
 {
