@@ -77,6 +77,7 @@ void InputManager::dispatchInput(float deltaTime) const
     inputs.verticalMovement = getAxis(InputKey::Space, InputKey::LCtrl);
     inputs.horizontalRotation = mouseDeltaX();
     inputs.verticalRotation = mouseDeltaY();
+    inputs.firing = mouseButtonDown(MouseButton::Left);
 
     // Joystick inputs
     // They override any keyboard/mouse inputs set to zero.
@@ -85,6 +86,7 @@ void InputManager::dispatchInput(float deltaTime) const
     if (fabs(inputs.verticalMovement) < 0.001f) inputs.verticalMovement = getJoystickAxis(JoystickButton::RightBumper, JoystickButton::LeftBumper);
 	if (fabs(inputs.horizontalRotation) < 0.001f) inputs.horizontalRotation = getJoystickAxis(JoystickAxis::RightStickHorizontal);
 	if (fabs(inputs.verticalRotation) < 0.001f) inputs.verticalRotation = getJoystickAxis(JoystickAxis::RightStickVertical);
+    if (fabs(inputs.firing) < 0.001f) inputs.firing = getJoystickAxis(JoystickButton::A, JoystickButton::Y);
 
     // The scene manager passes the input to all components
     // They can use the input by implementing the handleInput callback.

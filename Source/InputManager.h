@@ -161,6 +161,8 @@ struct InputCmd
 
     float horizontalRotation; // Desired helicopter rotation horizontally, relative to the helicopter
     float verticalRotation; // Desired helicopter rotation vertically, relative to the helicopter
+
+    float firing; // Whether or not chopper is firing
 };
 
 class InputManager : public Singleton<InputManager>
