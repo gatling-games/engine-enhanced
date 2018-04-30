@@ -22,7 +22,10 @@ void TurretGun::serialize(PropertyTable &table)
     table.serialize("prefab", prefab_);
     table.serialize("refire_time", refireTime_, 2.5f);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> f479f53300e74471785dda683048104a56e96980
 void TurretGun::drawProperties()
 {
     ImGui::ResourceSelect<Prefab>("Prefab", "Select Prefab", prefab_);

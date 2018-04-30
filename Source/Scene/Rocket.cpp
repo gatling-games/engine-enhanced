@@ -2,7 +2,6 @@
 
 #include "Scene/Transform.h"
 #include "Scene/Helicopter.h"
-
 #include "Physics/Rigidbody.h"
 
 #include "SceneManager.h"
@@ -31,7 +30,7 @@ void Rocket::handleCollision(Collider* collider)
     {
         chopper->takeDamage(damage_);
     }
-
+	
     // Delete gameObject on collision
     delete gameObject();
 }
