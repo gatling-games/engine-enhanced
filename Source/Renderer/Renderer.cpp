@@ -408,6 +408,7 @@ void Renderer::executeGeometryPass(const Camera* camera, ShaderFeatureList shade
     {
         // Use the terrain's detail mesh
         terrain->detailMesh()->bind();
+        terrain->destructionmap()->bind(9);
         const int elementsCount = terrain->detailMesh()->elementsCount();
 
         // Use the terrain's detail material
