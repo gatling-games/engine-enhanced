@@ -37,6 +37,14 @@ void Helicopter::drawProperties()
     ImGui::DragFloat("Yaw rotation factor", &turnFactor_, 0.1f);
 }
 
+void Helicopter::handleCollision(Collider* collider)
+{
+    if (collider->gameObject()->findComponent<Terrain>() != nullptr)
+    {
+        die();
+    }
+}
+
 void Helicopter::serialize(PropertyTable &table)
 {
     table.serialize("horizontal_max_speed", horizontalMaxSpeed_, 60.0f);
@@ -128,7 +136,12 @@ void Helicopter::takeDamage(float damage)
 
     if (HP <= 0.0f)
     {
-        gameObject()->findComponent<StaticMesh>()->setMaterial(ResourceManager::instance()->load<Material>("Resources/Materials/cardboard_enemy.material"));
-        Clock::instance()->setPaused(true);
+        die();
     }
+}
+
+void Helicopter::die()
+{
+    gameObject()->findComponent<StaticMesh>()->setMaterial(ResourceManager::instance()->load<Material>("Resources/Materials/cardboard_enemy.material"));
+    Clock::instance()->setPaused(true);
 }
