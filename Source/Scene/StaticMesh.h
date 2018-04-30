@@ -18,6 +18,8 @@ public:
     // Handles component serialization
     void serialize(PropertyTable &table) override;
 
+    void setMaterial(Material* material);
+
     Material* material() const { return material_; }
     Mesh* mesh() const { return mesh_; }
 

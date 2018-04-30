@@ -2,6 +2,7 @@
 
 #include "Scene/Component.h"
 #include "Scene/Transform.h"
+#include "Scene/Helicopter.h"
 
 class StaticTurret : public Component
 {
@@ -12,4 +13,9 @@ public:
 
 private:
     Transform* transform_;
+
+    float rotationCap_ = 45.0f;
+    float rotationSpeed_ = 90.0f;
+
+    Vector3 getChopperPredictedPosition(Helicopter* chopper);
 };

@@ -16,8 +16,8 @@
         Rotation = 0 -0.286003 0 -0.958229
     }
     BoxCollider {
-        size = 2.694 3.253 5.317
-        offset = 0 0.733 2.037
+        size = 2.694 5 8
+        offset = 0 0.733 0
     }
     StaticMesh {
         mesh = Resources\Meshes\helicopter.obj

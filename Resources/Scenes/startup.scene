@@ -5,6 +5,30 @@
     gameobjects::1 {
         prefab = Resources\Prefabs\Helicopter.prefab
     }
+    gameobjects::2 {
+        name = Static Mesh
+        Transform {
+            Position = 0 9.4 0
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\car.mesh
+            material = Resources\Materials\cardboard.material
+        }
+        children::0 {
+            name = Static Mesh
+            Transform {
+                Scale = 10 10 10
+            }
+            StaticMesh {
+                mesh = Resources\Meshes\rocket.obj
+                material = Resources\Materials\cardboard.material
+            }
+            Rocket {
+            }
+            Rigidbody {
+            }
+        }
+    }
     ambient_intensity = 1.567
     sun_intensity = 5.8
     sun_rotation = 27 281

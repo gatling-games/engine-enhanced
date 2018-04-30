@@ -1,8 +1,7 @@
 {
-    name = Neoturret
+    name = Turret
     Transform {
-        Position = 341.2 -0.8 133.7
-        Scale = 2 2 2
+        Position = 0 0 0
     }
     StaticMesh {
         mesh = Resources\Meshes\turret_base.obj
@@ -22,11 +21,14 @@
         children::0 {
             name = Cannon
             Transform {
-                Position = 0.0 0.6 0.0
+                Position = 0 0.6 0
             }
             StaticMesh {
                 mesh = Resources\Meshes\turret_cannon.obj
                 material = Resources\Materials\cardboard_enemy.material
+            }
+            TurretGun {
+                prefab = Resources\Prefabs\ProjectileRocket.prefab
             }
         }
     }

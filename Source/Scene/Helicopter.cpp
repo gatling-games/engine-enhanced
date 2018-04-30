@@ -2,6 +2,9 @@
 #include "InputManager.h"
 
 #include "Scene/Transform.h"
+#include "Scene/StaticMesh.h"
+#include "Utils/Clock.h"
+
 #include "imgui.h"
 
 #include <algorithm>
@@ -11,6 +14,7 @@ Helicopter::Helicopter(GameObject* gameObject)
     transform_(gameObject->createComponent<Transform>()),
     worldVelocity_(Vector3::zero()),
     worldRotation_(Quaternion::identity()),
+    HP(100.0f),
     horizontalMaxSpeed_(60.0f),
     upMaxSpeed_(25.0f),
     downMaxSpeed_(80.0f),
@@ -31,6 +35,14 @@ void Helicopter::drawProperties()
     ImGui::DragFloat("Max downward speed", &downMaxSpeed_);
     ImGui::DragFloat("Deceleration factor", &decelerationFactor_, 0.1f);
     ImGui::DragFloat("Yaw rotation factor", &turnFactor_, 0.1f);
+}
+
+void Helicopter::handleCollision(Collider* collider)
+{
+    if (collider->gameObject()->findComponent<Terrain>() != nullptr)
+    {
+        die();
+    }
 }
 
 void Helicopter::serialize(PropertyTable &table)
@@ -118,3 +130,18 @@ void Helicopter::handleInput(const InputCmd& inputs)
     remainingPitch_ -= remainingPitch_ * decelerationFactor_;
 }
 
+void Helicopter::takeDamage(float damage)
+{
+    HP -= damage;
+
+    if (HP <= 0.0f)
+    {
+        die();
+    }
+}
+
+void Helicopter::die()
+{
+    gameObject()->findComponent<StaticMesh>()->setMaterial(ResourceManager::instance()->load<Material>("Resources/Materials/cardboard_enemy.material"));
+    Clock::instance()->setPaused(true);
+}
