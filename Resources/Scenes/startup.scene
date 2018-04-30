@@ -29,6 +29,9 @@
             }
         }
     }
+    gameobjects::3 {
+        prefab = Resources\Prefabs\TestDestructible.prefab
+    }
     ambient_intensity = 1.567
     sun_intensity = 5.8
     sun_rotation = 27 281

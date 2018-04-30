@@ -1,0 +1,14 @@
+{
+    name = Destructible
+    StaticMesh {
+        mesh = Resources\Meshes\truck.mesh
+        material = Resources\Materials\cardboard.material
+    }
+    Transform {
+        Position = 0 38.4 0
+        Scale = 10 10 10
+    }
+    Destructible {
+        health = 60
+    }
+}
