@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Scene/Component.h"
+#include "Physics/Collider.h"
 #include "Math/Vector3.h"
 #include "Math/Quaternion.h"
 
@@ -14,6 +15,8 @@ public:
 
     void drawProperties() override;
 
+    void handleCollision(Collider* collider) override;
+
     // Serialisation method
     void serialize(PropertyTable &table) override;
 
@@ -24,6 +27,8 @@ public:
     Vector3 velocity() { return worldVelocity_; }
 
     void takeDamage(float damage);
+
+    void die();
 
 private:
 
