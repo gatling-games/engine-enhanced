@@ -65,8 +65,7 @@ void main()
     // Use the x and z and take the y from the heightmap
     vec4 normalizedPosition = gl_in[0].gl_Position * gl_TessCoord.x
         + gl_in[1].gl_Position * gl_TessCoord.y
-        + gl_in[2].gl_Position * gl_TessCoord.z;;
-    normalizedPosition.y = texture(_TerrainHeightmap, normalizedPosition.xz).r;
+        + gl_in[2].gl_Position * gl_TessCoord.z;
 
 	// The normalized position is only in the range 0 to 1.
 	// This causes the underwater terrain to abruptly stop a few m away from the shore.
@@ -81,34 +80,20 @@ void main()
     // We also need to offset the terrain downwards to take account of the water depth
     worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz + vec3(0.0, -_WaterColorDepth.a, 0.0), 1.0);
 
+    // Get the terrrain height from the heightmap
+    worldPosition.y += getHeightmapHeight(worldPosition.xz) * _TerrainSize.y;
+
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * worldPosition;
 
     // Compute the Texture coordinates from the normalized position
     texcoord = normalizedPosition.xz;
 
-    // Compute the offset from the normalized position to get the adjacent heightmap pixels
-    ivec2 heightmapRes = textureSize(_TerrainHeightmap, 0);
-    vec2 heightmapTexelSize = 1.0 / heightmapRes;
+    // Declare variables to pass into worldNormal function
+    vec3 worldTangent;
+    vec3 worldBitangent;
 
-    // Determine the gradient along x and z at the vertex position
-    float x1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(-1.0, 0.0)).r;
-    float x2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(1.0, 0.0)).r;
-    float z1 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, -1.0)).r;
-    float z2 = texture(_TerrainHeightmap, normalizedPosition.xz + heightmapTexelSize * vec2(0.0, 1.0)).r;
-    float dydx = x2 - x1;
-    float dydz = z2 - z1;
-    dydx *= _TerrainSize.y;
-    dydz *= _TerrainSize.y;
-    dydx /= (2.0 * heightmapTexelSize.x) * _TerrainSize.x;
-    dydz /= (2.0 * heightmapTexelSize.y) * _TerrainSize.z;
-
-    // Determine the tangents along the X and Z
-    vec3 worldTangent = normalize(vec3(1.0, dydx, 0.0));
-    vec3 worldBitangent = normalize(vec3(0.0, dydz, 1.0));
-
-    // Cross product to get the world normal
-    worldNormal = cross(worldBitangent, worldTangent);
+    worldNormal = getWorldNormal(texcoord, worldTangent, worldBitangent);
 
     // Compute the tangent and bitangent to make a tangent to world space matrix
 #ifdef NORMAL_MAP_ON
