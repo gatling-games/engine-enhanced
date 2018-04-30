@@ -233,6 +233,12 @@
     <ClInclude Include="Source\Scene\Destructible.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\ChopperGun.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\FriendlyRocket.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -409,6 +415,12 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\Destructible.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\ChopperGun.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\FriendlyRocket.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>

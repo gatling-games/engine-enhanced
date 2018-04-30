@@ -55,9 +55,11 @@
     <ClInclude Include="Source\RenderManager.h" />
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\Scene\Camera.h" />
+    <ClInclude Include="Source\Scene\ChopperGun.h" />
     <ClInclude Include="Source\Scene\Component.h" />
     <ClInclude Include="Source\Scene\Destructible.h" />
     <ClInclude Include="Source\Scene\Freecam.h" />
+    <ClInclude Include="Source\Scene\FriendlyRocket.h" />
     <ClInclude Include="Source\Scene\GameObject.h" />
     <ClInclude Include="Source\Scene\Helicopter.h" />
     <ClInclude Include="Source\Scene\HelicopterView.h" />
@@ -125,9 +127,11 @@
     <ClCompile Include="Source\RenderManager.cpp" />
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\Scene\Camera.cpp" />
+    <ClCompile Include="Source\Scene\ChopperGun.cpp" />
     <ClCompile Include="Source\Scene\Component.cpp" />
     <ClCompile Include="Source\Scene\Destructible.cpp" />
     <ClCompile Include="Source\Scene\Freecam.cpp" />
+    <ClCompile Include="Source\Scene\FriendlyRocket.cpp" />
     <ClCompile Include="Source\Scene\GameObject.cpp" />
     <ClCompile Include="Source\Scene\Helicopter.cpp" />
     <ClCompile Include="Source\Scene\HelicopterView.cpp" />
