@@ -56,6 +56,7 @@
     <ClInclude Include="Source\SceneManager.h" />
     <ClInclude Include="Source\Scene\Camera.h" />
     <ClInclude Include="Source\Scene\Component.h" />
+    <ClInclude Include="Source\Scene\Destructible.h" />
     <ClInclude Include="Source\Scene\Freecam.h" />
     <ClInclude Include="Source\Scene\GameObject.h" />
     <ClInclude Include="Source\Scene\Helicopter.h" />
@@ -125,6 +126,7 @@
     <ClCompile Include="Source\SceneManager.cpp" />
     <ClCompile Include="Source\Scene\Camera.cpp" />
     <ClCompile Include="Source\Scene\Component.cpp" />
+    <ClCompile Include="Source\Scene\Destructible.cpp" />
     <ClCompile Include="Source\Scene\Freecam.cpp" />
     <ClCompile Include="Source\Scene\GameObject.cpp" />
     <ClCompile Include="Source\Scene\Helicopter.cpp" />

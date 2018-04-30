@@ -202,7 +202,7 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\HelicopterView.h">
-	<Filter>Scene</Filter>
+      <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\StaticTurret.h">
       <Filter>Scene</Filter>
@@ -228,6 +228,9 @@
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Source\Scene\TurretGun.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\Destructible.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
@@ -377,7 +380,7 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\HelicopterView.cpp">
-	<Filter>Scene</Filter>
+      <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\StaticTurret.cpp">
       <Filter>Scene</Filter>
@@ -403,6 +406,9 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\TurretGun.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\Destructible.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
