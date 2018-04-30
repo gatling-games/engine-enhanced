@@ -21,3 +21,8 @@ void StaticMesh::serialize(PropertyTable &table)
     table.serialize("mesh", mesh_);
     table.serialize("material", material_);
 }
+
+void StaticMesh::setMaterial(Material* material)
+{
+    material_ = material;
+}
