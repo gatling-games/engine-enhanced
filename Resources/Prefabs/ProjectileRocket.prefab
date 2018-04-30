@@ -1,15 +1,13 @@
 {
-    name = Blank GameObject
+    name = Rocket
+    Rigidbody {
+    }
     Transform {
-        Position = 0 0 0
-        Scale = 4 4 4
     }
     StaticMesh {
         mesh = Resources\Meshes\rocket.obj
         material = Resources\Materials\cardboard_enemy.material
     }
     Rocket {
-    }
-    Rigidbody {
     }
 }
