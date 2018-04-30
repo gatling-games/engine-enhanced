@@ -14,7 +14,7 @@ Helicopter::Helicopter(GameObject* gameObject)
     transform_(gameObject->createComponent<Transform>()),
     worldVelocity_(Vector3::zero()),
     worldRotation_(Quaternion::identity()),
-    HP(100.0f),
+    health_(100.0f),
     horizontalMaxSpeed_(60.0f),
     upMaxSpeed_(25.0f),
     downMaxSpeed_(80.0f),
@@ -132,9 +132,9 @@ void Helicopter::handleInput(const InputCmd& inputs)
 
 void Helicopter::takeDamage(float damage)
 {
-    HP -= damage;
+    health_ -= damage;
 
-    if (HP <= 0.0f)
+    if (health_ <= 0.0f)
     {
         die();
     }

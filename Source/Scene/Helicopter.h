@@ -36,7 +36,7 @@ private:
     Vector3 worldVelocity_;
     Quaternion worldRotation_;
 
-    float HP;
+    float health_;
 
     float currentTilt_;
 
