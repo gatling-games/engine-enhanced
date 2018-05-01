@@ -35,7 +35,7 @@ void main()
     vec3 worldPosition = (localPosition * scale) + offset;
 
     //Get position from heightmap and destruction map
-    worldPosition.y += (getHeightmapHeight(worldPosition.xz) * _TerrainSize.y) - _WaterColorDepth.a;
+    worldPosition.y += getHeightmapHeight(worldPosition.xz);
 
     if (texture(_TerrainDestructionmap, offset.xz / _TerrainSize.xz).r > float(gl_InstanceID) / (3.0 * 1024.0))
     {

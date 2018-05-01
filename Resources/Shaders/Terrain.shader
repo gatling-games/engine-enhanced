@@ -77,11 +77,10 @@ void main()
 	}
 
     // Scale by the terrain size to get the world position
-    // We also need to offset the terrain downwards to take account of the water depth
-    worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz + vec3(0.0, -_WaterColorDepth.a, 0.0), 1.0);
+    worldPosition = vec4(normalizedPosition.xyz * _TerrainSize.xyz, 1.0);
 
     // Get the terrrain height from the heightmap
-    worldPosition.y += getHeightmapHeight(worldPosition.xz) * _TerrainSize.y;
+    worldPosition.y += getHeightmapHeight(worldPosition.xz);
 
     // Project the vertex position to clip space
     gl_Position = _ViewProjectionMatrix * worldPosition;
