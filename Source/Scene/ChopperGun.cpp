@@ -39,7 +39,6 @@ void ChopperGun::update(float deltaTime)
 
 void ChopperGun::handleInput(const InputCmd &inputs)
 {
-    std::cout << "Firing: " << inputs.firing << std::endl;
     if (inputs.firing > 0.0f && timeSinceShot_ >= refireTime_)
     {
         spawnPrefab();
