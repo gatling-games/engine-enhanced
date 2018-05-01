@@ -1,27 +1,22 @@
 {
     name = Helicopter
-    children::1 {
-        name = Main Camera
+    children::2 {
+        prefab = Resources\Prefabs\Gun.prefab
         Transform {
-            Position = 0 1.6 1.6
-        }
-        Camera {
-        }
-        HelicopterView {
-            mouse_look_centring_rate = 4.643
+            Position = 0 0 6
         }
     }
     Transform {
-        Position = 673.81 63.0475 524.914
-        Rotation = 0 -0.286003 0 -0.958229
-    }
-    BoxCollider {
-        size = 2.694 5 8
-        offset = 0 0.733 0
+        Position = 970.378 162.354 194.243
+        Rotation = -0.207788 0.178336 0.03856 0.961007
     }
     StaticMesh {
         mesh = Resources\Meshes\helicopter.obj
         material = Resources\Materials\cardboard.material
+    }
+    BoxCollider {
+        size = 2.694 5 8
+        offset = 0 0.733 0
     }
     Helicopter {
         horizontal_max_speed = 81.3
@@ -33,7 +28,7 @@
         name = MainBlade
         Transform {
             Position = 0 3 0.2
-            Rotation = -0.518099 -0.485059 -0.514272 -0.481473
+            Rotation = -0.00157659 -0.00147882 -0.73 -0.683444
             Scale = 0.25 0.25 0.25
         }
         StaticMesh {
@@ -43,6 +38,17 @@
         Windmill {
             rotation_speed = -2000
             rotation_axis = 1
+        }
+    }
+    children::1 {
+        name = Main Camera
+        Transform {
+            Position = 0 1.6 1.6
+        }
+        Camera {
+        }
+        HelicopterView {
+            mouse_look_centring_rate = 4.643
         }
     }
 }
