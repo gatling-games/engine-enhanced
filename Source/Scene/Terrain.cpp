@@ -35,7 +35,8 @@ void TerrainObject::serialize(PropertyTable& table)
 Terrain::Terrain(GameObject* gameObject)
     : Component(gameObject),
     heightMap_(TextureFormat::R16, HEIGHTMAP_RESOLUTION, HEIGHTMAP_RESOLUTION),
-    destructionMap_(TextureFormat::R8, HEIGHTMAP_RESOLUTION / 4, HEIGHTMAP_RESOLUTION / 4),
+    destructionMap_(TextureFormat::R16, DESTRUCTIONMAP_RESOLUTION, DESTRUCTIONMAP_RESOLUTION),
+    destruction_(std::vector<float>(DESTRUCTIONMAP_RESOLUTION * DESTRUCTIONMAP_RESOLUTION, 0.0f)),
     detailAltitudeLimits_(Vector2(0.0f, 500.0f)),
     detailSlopeLimit_(0.0f),
     dimensions_(Vector3(1024.0f, 80.0f, 1024.0f)),
@@ -44,12 +45,16 @@ Terrain::Terrain(GameObject* gameObject)
     mountainScale_(4.0f),
     islandFactor_(2.0f),
     waterColor_(Color(0.05f, 0.066f, 0.093f)),
-    waterDepth_(30.0f)
+    waterDepth_(30.0f),
+    testpoint_(Point3(0.0f,0.0f,0.0f)),
+    intensity_(5.0f)
 {
     mesh_ = ResourceManager::instance()->load<Mesh>("Resources/Meshes/terrain.obj");
 
     // Ensure bilinear filtering is used on the heightmap
     heightMap_.setFilterMode(TextureFilterMode::Bilinear);
+
+    destructionMap_.setFilterMode(TextureFilterMode::Bilinear);
 
     // Set up the default layer
     TerrainLayer layer;
@@ -103,6 +108,17 @@ void Terrain::drawProperties()
     if (ImGui::TreeNode("Appearence"))
     {
         drawAppearenceProperties();
+        ImGui::TreePop();
+    }
+
+    if (ImGui::TreeNode("Crater Tester"))
+    {
+        ImGui::DragFloat3("Point to hit", &testpoint_.x);
+        ImGui::DragFloat("Intensity", &intensity_);
+        if(ImGui::Button("Fireboi"))
+        {
+            createCrater(testpoint_, intensity_);
+        }
         ImGui::TreePop();
     }
 }
@@ -362,7 +378,7 @@ void Terrain::generateTerrain()
     // Upload the heightmap data to the gpu
     heightMap_.setData(textureHeights.data(), 2 * HEIGHTMAP_RESOLUTION * HEIGHTMAP_RESOLUTION, 0);
 
-    // The heightmap is now build.
+    // The heightmap is now built.
     // Place objects on it.
     placeObjects();
     placeDetailMeshes();
@@ -515,7 +531,8 @@ void Terrain::generateDetailPositions(DetailBatch& batch, uint32_t seed) const
         }
 
         float scale = random_float(detailScale_.x, detailScale_.y);
-        batch.instancePositions[batch.count] = Vector4(x, y, z, scale);
+        // Y value not set, as height is adjusted in shader
+        batch.instancePositions[batch.count] = Vector4(x, 0, z, scale);
         batch.count++;
     }
 }
@@ -544,4 +561,32 @@ Vector3 Terrain::sampleHeightmapNormal(float x, float z) const
     Vector3 worldTangent = Vector3(1.0f, dydx, 0.0f).normalized();
     Vector3 worldBitangent = Vector3(0.0f, dydz, 1.0f).normalized();
     return Vector3::cross(worldBitangent, worldTangent);
+}
+
+void Terrain::createCrater(Point3 position, float intensity)
+{
+    Point3 pos = Point3(673.910f,0.0f, 524.914f);
+    float worldx, worldz, distance;
+
+    for(int x = 0; x < destructionMap_.width(); ++x)
+    { 
+        for(int z = 0; z < destructionMap_.height(); ++z)
+        {
+            worldx = x * dimensions_.x;
+            worldz = z * dimensions_.z;
+
+            distance = pow((pos.x - worldx), 2) + pow((pos.z -worldz), 2);
+
+            if(sqrt(distance) < 1000.0f)
+            {
+                destruction_[x + z * DESTRUCTIONMAP_RESOLUTION] = (1.0f - (intensity / distance));
+            }
+        }
+    }
+    std::vector<uint16_t> textureValues(DESTRUCTIONMAP_RESOLUTION * DESTRUCTIONMAP_RESOLUTION);
+    for (int i = 0; i < textureValues.size(); ++i)
+    {
+        textureValues[i] = (uint16_t)(destruction_[i] * 65535.0f);
+    }
+    destructionMap_.setData(textureValues.data(), sizeof(uint16_t) * DESTRUCTIONMAP_RESOLUTION * DESTRUCTIONMAP_RESOLUTION, 0);
 }

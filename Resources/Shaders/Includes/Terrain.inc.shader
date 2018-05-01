@@ -12,7 +12,7 @@ float getHeightmapHeight(vec2 coords)
     float destruction = texture(_TerrainDestructionmap, coords / _TerrainSize.xz).r;
 
     // Scale and reduce based on water level
-    return max((heightmap - destruction), 0) * _TerrainSize.y -_WaterColorDepth.a;
+    return max((heightmap - destruction*0.05), 0) * _TerrainSize.y -_WaterColorDepth.a;
 }
 
 vec3 getWorldNormal(vec2 coords, out vec3 worldTangent, out vec3 worldBitangent)

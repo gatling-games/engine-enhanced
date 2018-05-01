@@ -53,6 +53,7 @@ class Terrain : public Component
 {
 public:
     const static int HEIGHTMAP_RESOLUTION = 1024;
+    const static int DESTRUCTIONMAP_RESOLUTION = 64;
     const static int MAX_LAYERS = 32;
 
     explicit Terrain(GameObject* gameObject);
@@ -86,6 +87,9 @@ public:
     // The detail mesh batches on the terrain
     const std::vector<DetailBatch>& detailBatches() const { return detailMeshBatches_; }
 
+    // Damage the terrain
+    void createCrater(Point3 position, float intensity);
+
 private:
     Mesh* mesh_;
     Texture heightMap_;
@@ -109,6 +113,11 @@ private:
 
     // The current heightmap
     std::vector<float> heights_;
+
+    std::vector<float> destruction_;
+
+    Point3 testpoint_;
+    float intensity_;
 
     // A list of objects placed on the terrain
     std::vector<GameObject*> placedObjectInstances_;

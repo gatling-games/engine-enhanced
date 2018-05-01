@@ -179,7 +179,9 @@ void main()
         albedoSmoothness = mix(albedoSmoothness, layerAlbedoSmoothness, alpha);
         tangentNormal = mix(tangentNormal, layerTangentNormal, alpha);
     }
-
+    vec4 destruct = texture(_TerrainDestructionmap, worldPosition.xz/ _TerrainSize.xz);
+    destruct = vec4(destruct.r, 0, 0, 0.2);
+    albedoSmoothness = mix(albedoSmoothness, destruct, 0.8);
     // Pack the data into the surface structure.
     SurfaceProperties surface;
     surface.diffuseColor = albedoSmoothness.rgb;
