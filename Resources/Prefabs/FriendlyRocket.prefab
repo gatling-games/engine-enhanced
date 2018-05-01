@@ -3,7 +3,8 @@
     Rigidbody {
     }
     Transform {
-	Position = 0 0 10
+        Position = 0 0 10
+	Scale = 2 2 2
     }
     StaticMesh {
         mesh = Resources\Meshes\rocket.obj
