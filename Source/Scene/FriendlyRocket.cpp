@@ -46,7 +46,7 @@ void FriendlyRocket::setRocketSpeed(float speed)
     speed_ = speed;
 }
 
-void FriendlyRocket::initRocket(const Point3& pos, const Quaternion& rot)
+void FriendlyRocket::initRocket(const Point3& pos, const Quaternion& rot, const Vector3& initialVelocity)
 {
     transform_->setPositionLocal(pos);
     transform_->setRotationLocal(rot);
@@ -56,6 +56,6 @@ void FriendlyRocket::initRocket(const Point3& pos, const Quaternion& rot)
     Rigidbody* collider = gameObject()->findComponent<Rigidbody>();
 
     // Calculate velocity and send to rigidbody component
-    Vector3 velocity = transform_->forwards() * speed_;
+    Vector3 velocity = (initialVelocity * 0.4f) + (transform_->forwards() * speed_);
     collider->setVelocity(velocity);
 }

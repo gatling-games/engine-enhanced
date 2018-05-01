@@ -12,4 +12,9 @@
         mesh = Resources\Meshes\base_small.obj
         material = Resources\Materials\cardboard.material
     }
+    Destructible {
+        health = 180
+    }
+    SubBase {
+    }
 }

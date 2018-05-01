@@ -2,6 +2,8 @@
 
 #include "Scene/Transform.h"
 #include "Scene/FriendlyRocket.h"
+#include "Scene/Helicopter.h"
+
 #include "Math/Quaternion.h"
 #include "Serialization/Prefab.h"
 
@@ -52,6 +54,7 @@ void ChopperGun::spawnPrefab()
     {
         // Create new gameObject using prefab and set parent transform
         GameObject* projectile = new GameObject("Projectile", prefab_);
-        projectile->findComponent<FriendlyRocket>()->initRocket(transform_->positionWorld(), transform_->rotationWorld());
+        Vector3 vel = transform_->parentTransform()->gameObject()->findComponent<Helicopter>()->velocity();
+        projectile->findComponent<FriendlyRocket>()->initRocket(transform_->positionWorld(), transform_->rotationWorld(), vel);
     }
 }

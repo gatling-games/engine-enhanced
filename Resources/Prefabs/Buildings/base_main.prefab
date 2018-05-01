@@ -24,4 +24,9 @@
         mesh = Resources\Meshes\base_main.obj
         material = Resources\Materials\cardboard.material
     }
+    Destructible {
+        health = 380
+    }
+    MainBase {
+    }
 }

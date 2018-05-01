@@ -18,6 +18,8 @@
 #include "Scene/TurretGun.h"
 #include "Scene/ChopperGun.h"
 #include "Scene/Destructible.h"
+#include "Scene/MainBase.h"
+#include "Scene/SubBase.h"
 
 #include "Physics/SphereCollider.h"
 #include "Physics/BoxCollider.h"
@@ -196,6 +198,8 @@ void GameObject::drawAddComponentSection()
         if (ImGui::Selectable("Turret Gun")) createComponent<TurretGun>();
         if (ImGui::Selectable("Chopper Gun")) createComponent<ChopperGun>();
         if (ImGui::Selectable("Destructible")) createComponent<Destructible>();
+        if (ImGui::Selectable("Main Base")) createComponent<MainBase>();
+        if (ImGui::Selectable("Sub Base")) createComponent<SubBase>();
 
         ImGui::EndPopup();
     }
@@ -461,6 +465,11 @@ Component* GameObject::createComponent(const std::string &typeName)
 
     if (typeName == "Destructible")
         return createComponent<Destructible>();
+
+    if (typeName == "MainBase")
+        return createComponent<MainBase>();
+    if (typeName == "SubBase")
+        return createComponent<SubBase>();
 	
     return nullptr;
 }

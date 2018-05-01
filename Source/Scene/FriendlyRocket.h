@@ -15,7 +15,7 @@ public:
     void handleCollision(Collider* collider) override;
 
     void setRocketSpeed(float speed);
-    void initRocket(const Point3& pos, const Quaternion& rot);
+    void initRocket(const Point3& pos, const Quaternion& rot, const Vector3& initialVelocity);
 
 private:
     Transform* transform_;

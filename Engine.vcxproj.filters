@@ -239,6 +239,12 @@
     <ClInclude Include="Source\Scene\FriendlyRocket.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Scene\MainBase.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Scene\SubBase.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Math\Point2.cpp">
@@ -421,6 +427,12 @@
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Source\Scene\FriendlyRocket.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\MainBase.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Scene\SubBase.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
