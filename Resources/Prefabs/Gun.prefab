@@ -1,0 +1,8 @@
+{
+    name = Gun
+    Transform {
+    }
+    ChopperGun {
+        prefab = Resources\Prefabs\FriendlyRocket.prefab
+    }
+}
