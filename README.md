@@ -10,3 +10,5 @@ For detailed setup instructions, see the [Quick Start Guide](https://github.com/
 - Joshua Crinall
 - George Loines
 - Michael Nisbet
+
+This project has been archived for preservation in it's final state at the time of submission.
