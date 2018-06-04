@@ -1,16 +1,5 @@
 {
     name = Helicopter
-    children::1 {
-        name = Main Camera
-        Transform {
-            Position = 0 1.6 1.6
-        }
-        Camera {
-        }
-        HelicopterView {
-            mouse_look_centring_rate = 4.643
-        }
-    }
     Transform {
         Position = 673.81 63.0475 524.914
         Rotation = 0 -0.286003 0 -0.958229
@@ -43,6 +32,31 @@
         Windmill {
             rotation_speed = -2000
             rotation_axis = 1
+        }
+    }
+    children::1 {
+        name = Main Camera
+        Transform {
+            Position = 0 1.6 1.6
+        }
+        Camera {
+        }
+        HelicopterView {
+            mouse_look_centring_rate = 4.643
+        }
+    }
+    children::2 {
+        name = TailBlade
+        Transform {
+            Position = -0.2 1.12 -8.505
+            Scale = 0.1 0.07 0.07
+        }
+        StaticMesh {
+            mesh = Resources\Meshes\turbine_blades.mesh
+            material = Resources\Materials\cardboard.material
+        }
+        Windmill {
+            rotation_speed = 1000
         }
     }
 }
